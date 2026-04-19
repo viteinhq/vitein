@@ -1,0 +1,32 @@
+name = "vitein-api-dev"
+main = "src/index.ts"
+compatibility_date = "2026-04-19"
+compatibility_flags = ["nodejs_compat"]
+
+[observability]
+enabled = true
+
+[vars]
+ENVIRONMENT = "dev"
+
+# Staging: deployed from main branch
+[env.staging]
+name = "vitein-api-staging"
+route = { pattern = "api-staging.vite.in/*", zone_name = "vite.in" }
+
+[env.staging.vars]
+ENVIRONMENT = "staging"
+
+# Production: deployed from tagged releases
+[env.production]
+name = "vitein-api"
+route = { pattern = "api.vite.in/*", zone_name = "vite.in" }
+
+[env.production.vars]
+ENVIRONMENT = "production"
+
+# Secrets (DATABASE_URL, SENTRY_DSN, STRIPE_SECRET_KEY, RESEND_API_KEY, etc.)
+# are set per environment via:
+#   wrangler secret put <NAME> --env staging
+#   wrangler secret put <NAME> --env production
+# For local dev, put them in apps/api/.dev.vars (gitignored).
