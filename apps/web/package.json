@@ -10,7 +10,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "sync": "svelte-kit sync",
-    "lint": "eslint src",
+    "lint": "svelte-kit sync && eslint src",
     "typecheck": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "test": "vitest run"
   },

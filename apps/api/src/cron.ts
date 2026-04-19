@@ -24,7 +24,7 @@ export async function runScheduled(env: Env): Promise<void> {
   }
 
   const webBase = env.WEB_BASE_URL ?? 'https://vite.in';
-  console.log(`[cron] sending ${String(due.length)} reminders`);
+  console.warn(`[cron] sending ${String(due.length)} reminders`);
 
   for (const { reminder, event } of due) {
     try {
