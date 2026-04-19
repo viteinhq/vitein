@@ -44,7 +44,7 @@ describe('requireUser', () => {
       scopes: ['*'],
     }).request('/protected');
     expect(res.status).toBe(200);
-    const body = (await res.json()) as { ok: boolean };
+    const body: { ok: boolean } = await res.json();
     expect(body.ok).toBe(true);
   });
 });
