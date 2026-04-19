@@ -99,6 +99,75 @@ export type EventCreateResponse = {
   creatorTokenPreview?: string | null;
 };
 
+export type RsvpInput = {
+  name: string;
+  email?: string | null;
+  status: 'yes' | 'maybe' | 'no';
+  message?: string | null;
+  plusOnes?: number;
+  /**
+   * Optional link to a pre-invited guest.
+   */
+  guestId?: string | null;
+};
+
+export type Rsvp = {
+  id: string;
+  eventId: string;
+  guestId?: string | null;
+  name: string;
+  email?: string | null;
+  status: 'yes' | 'maybe' | 'no';
+  plusOnes: number;
+  message?: string | null;
+  respondedAt: string;
+};
+
+export type GuestInput = {
+  name?: string | null;
+  email?: string | null;
+  /**
+   * E.164 formatted phone number.
+   */
+  phone?: string | null;
+  invitedVia: 'link' | 'email' | 'sms' | 'whatsapp' | 'agent';
+};
+
+export type Guest = {
+  id: string;
+  eventId: string;
+  name?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  invitedVia: string;
+  invitedAt: string;
+};
+
+export type UserProfile = {
+  id: string;
+  email: string;
+  emailVerified: boolean;
+  name?: string | null;
+  image?: string | null;
+  locale: string;
+  timezone: string;
+  createdAt: string;
+};
+
+export type UserExport = {
+  exportedAt: string;
+  user: UserProfile;
+  events: Array<EventPublic>;
+  rsvps: Array<Rsvp>;
+};
+
+export type ClaimResponse = {
+  /**
+   * Number of events newly linked to this user.
+   */
+  claimed: number;
+};
+
 export type Error = {
   error: {
     /**
@@ -327,3 +396,286 @@ export type GetEventManageResponses = {
 };
 
 export type GetEventManageResponse = GetEventManageResponses[keyof GetEventManageResponses];
+
+export type ListRsvpsData = {
+  body?: never;
+  headers: {
+    /**
+     * Plaintext creator token (the value delivered by the magic-link email).
+     * The server hashes it and compares against `event_tokens.token_hash`.
+     *
+     */
+    'X-Creator-Token': string;
+  };
+  path: {
+    /**
+     * Server-generated UUIDv7 of the event.
+     */
+    id: string;
+  };
+  query?: never;
+  url: '/v1/events/{id}/rsvps';
+};
+
+export type ListRsvpsErrors = {
+  /**
+   * Missing or invalid creator token.
+   */
+  401: Error;
+};
+
+export type ListRsvpsError = ListRsvpsErrors[keyof ListRsvpsErrors];
+
+export type ListRsvpsResponses = {
+  /**
+   * RSVP list.
+   */
+  200: {
+    items: Array<Rsvp>;
+  };
+};
+
+export type ListRsvpsResponse = ListRsvpsResponses[keyof ListRsvpsResponses];
+
+export type SubmitRsvpData = {
+  body: RsvpInput;
+  path: {
+    /**
+     * Server-generated UUIDv7 of the event.
+     */
+    id: string;
+  };
+  query?: never;
+  url: '/v1/events/{id}/rsvps';
+};
+
+export type SubmitRsvpErrors = {
+  /**
+   * Request body or query parameters failed validation.
+   */
+  400: Error;
+  /**
+   * Resource not found.
+   */
+  404: Error;
+};
+
+export type SubmitRsvpError = SubmitRsvpErrors[keyof SubmitRsvpErrors];
+
+export type SubmitRsvpResponses = {
+  /**
+   * RSVP recorded.
+   */
+  201: Rsvp;
+};
+
+export type SubmitRsvpResponse = SubmitRsvpResponses[keyof SubmitRsvpResponses];
+
+export type ListGuestsData = {
+  body?: never;
+  headers: {
+    /**
+     * Plaintext creator token (the value delivered by the magic-link email).
+     * The server hashes it and compares against `event_tokens.token_hash`.
+     *
+     */
+    'X-Creator-Token': string;
+  };
+  path: {
+    /**
+     * Server-generated UUIDv7 of the event.
+     */
+    id: string;
+  };
+  query?: never;
+  url: '/v1/events/{id}/guests';
+};
+
+export type ListGuestsErrors = {
+  /**
+   * Missing or invalid creator token.
+   */
+  401: Error;
+};
+
+export type ListGuestsError = ListGuestsErrors[keyof ListGuestsErrors];
+
+export type ListGuestsResponses = {
+  /**
+   * Guest list.
+   */
+  200: {
+    items: Array<Guest>;
+  };
+};
+
+export type ListGuestsResponse = ListGuestsResponses[keyof ListGuestsResponses];
+
+export type AddGuestData = {
+  body: GuestInput;
+  headers: {
+    /**
+     * Plaintext creator token (the value delivered by the magic-link email).
+     * The server hashes it and compares against `event_tokens.token_hash`.
+     *
+     */
+    'X-Creator-Token': string;
+  };
+  path: {
+    /**
+     * Server-generated UUIDv7 of the event.
+     */
+    id: string;
+  };
+  query?: never;
+  url: '/v1/events/{id}/guests';
+};
+
+export type AddGuestErrors = {
+  /**
+   * Request body or query parameters failed validation.
+   */
+  400: Error;
+  /**
+   * Missing or invalid creator token.
+   */
+  401: Error;
+};
+
+export type AddGuestError = AddGuestErrors[keyof AddGuestErrors];
+
+export type AddGuestResponses = {
+  /**
+   * Guest added.
+   */
+  201: Guest;
+};
+
+export type AddGuestResponse = AddGuestResponses[keyof AddGuestResponses];
+
+export type DeleteMeData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/v1/users/me';
+};
+
+export type DeleteMeErrors = {
+  /**
+   * Missing or invalid creator token.
+   */
+  401: Error;
+};
+
+export type DeleteMeError = DeleteMeErrors[keyof DeleteMeErrors];
+
+export type DeleteMeResponses = {
+  /**
+   * Account soft-deleted.
+   */
+  204: void;
+};
+
+export type DeleteMeResponse = DeleteMeResponses[keyof DeleteMeResponses];
+
+export type GetMeData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/v1/users/me';
+};
+
+export type GetMeErrors = {
+  /**
+   * Missing or invalid creator token.
+   */
+  401: Error;
+};
+
+export type GetMeError = GetMeErrors[keyof GetMeErrors];
+
+export type GetMeResponses = {
+  /**
+   * Current user.
+   */
+  200: UserProfile;
+};
+
+export type GetMeResponse = GetMeResponses[keyof GetMeResponses];
+
+export type GetMyEventsData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/v1/users/me/events';
+};
+
+export type GetMyEventsErrors = {
+  /**
+   * Missing or invalid creator token.
+   */
+  401: Error;
+};
+
+export type GetMyEventsError = GetMyEventsErrors[keyof GetMyEventsErrors];
+
+export type GetMyEventsResponses = {
+  /**
+   * Events claimed or created while signed in.
+   */
+  200: {
+    items: Array<EventPublic>;
+  };
+};
+
+export type GetMyEventsResponse = GetMyEventsResponses[keyof GetMyEventsResponses];
+
+export type ExportMeData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/v1/users/me/export';
+};
+
+export type ExportMeErrors = {
+  /**
+   * Missing or invalid creator token.
+   */
+  401: Error;
+};
+
+export type ExportMeError = ExportMeErrors[keyof ExportMeErrors];
+
+export type ExportMeResponses = {
+  /**
+   * Data export bundle.
+   */
+  200: UserExport;
+};
+
+export type ExportMeResponse = ExportMeResponses[keyof ExportMeResponses];
+
+export type ClaimEventsData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/v1/auth/claim';
+};
+
+export type ClaimEventsErrors = {
+  /**
+   * Missing or invalid creator token.
+   */
+  401: Error;
+};
+
+export type ClaimEventsError = ClaimEventsErrors[keyof ClaimEventsErrors];
+
+export type ClaimEventsResponses = {
+  /**
+   * Claim summary.
+   */
+  200: ClaimResponse;
+};
+
+export type ClaimEventsResponse = ClaimEventsResponses[keyof ClaimEventsResponses];

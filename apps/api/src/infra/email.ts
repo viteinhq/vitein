@@ -22,6 +22,22 @@ export interface SignInMagicLinkInput {
   url: string;
 }
 
+export interface RsvpConfirmationInput {
+  to: string;
+  eventTitle: string;
+  status: 'yes' | 'maybe' | 'no';
+  eventUrl: string;
+}
+
+export interface RsvpNotificationInput {
+  to: string;
+  eventTitle: string;
+  guestName: string;
+  status: 'yes' | 'maybe' | 'no';
+  plusOnes: number;
+  manageUrl: string;
+}
+
 const FROM_ADDRESS = 'vite.in <no-reply@vite.in>';
 
 export async function sendCreatorMagicLink(
@@ -45,6 +61,30 @@ export async function sendSignInMagicLink(
     subject: 'Your vite.in sign-in link',
     text: signInMagicLinkBody(input),
     logHint: { kind: 'sign-in' },
+  });
+}
+
+export async function sendRsvpConfirmation(
+  env: Env,
+  input: RsvpConfirmationInput,
+): Promise<SendResult> {
+  return sendEmail(env, {
+    to: input.to,
+    subject: `RSVP recorded: ${input.eventTitle}`,
+    text: rsvpConfirmationBody(input),
+    logHint: { kind: 'rsvp-confirmation' },
+  });
+}
+
+export async function sendRsvpNotification(
+  env: Env,
+  input: RsvpNotificationInput,
+): Promise<SendResult> {
+  return sendEmail(env, {
+    to: input.to,
+    subject: `New RSVP for ${input.eventTitle}`,
+    text: rsvpNotificationBody(input),
+    logHint: { kind: 'rsvp-notification' },
   });
 }
 
@@ -105,6 +145,40 @@ function signInMagicLinkBody({ url }: SignInMagicLinkInput): string {
     url,
     '',
     'This link expires in 10 minutes. If you did not request it, you can ignore this email.',
+    '',
+    '— vite.in',
+  ].join('\n');
+}
+
+function rsvpConfirmationBody({ eventTitle, status, eventUrl }: RsvpConfirmationInput): string {
+  const verb =
+    status === 'yes' ? 'going to' : status === 'maybe' ? 'tentatively attending' : 'declining';
+  return [
+    `Thanks — we recorded your RSVP for "${eventTitle}".`,
+    `You are ${verb} this event.`,
+    '',
+    'Event details:',
+    eventUrl,
+    '',
+    'You can update your RSVP any time by re-submitting the form.',
+    '',
+    '— vite.in',
+  ].join('\n');
+}
+
+function rsvpNotificationBody({
+  eventTitle,
+  guestName,
+  status,
+  plusOnes,
+  manageUrl,
+}: RsvpNotificationInput): string {
+  const extras = plusOnes > 0 ? ` (+${String(plusOnes)})` : '';
+  return [
+    `New RSVP on "${eventTitle}": ${guestName} — ${status}${extras}.`,
+    '',
+    'Manage your event and see all RSVPs:',
+    manageUrl,
     '',
     '— vite.in',
   ].join('\n');

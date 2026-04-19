@@ -3,12 +3,24 @@
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
 import type {
+  AddGuestData,
+  AddGuestErrors,
+  AddGuestResponses,
+  ClaimEventsData,
+  ClaimEventsErrors,
+  ClaimEventsResponses,
   CreateEventData,
   CreateEventErrors,
   CreateEventResponses,
   DeleteEventData,
   DeleteEventErrors,
   DeleteEventResponses,
+  DeleteMeData,
+  DeleteMeErrors,
+  DeleteMeResponses,
+  ExportMeData,
+  ExportMeErrors,
+  ExportMeResponses,
   GetEventData,
   GetEventErrors,
   GetEventManageData,
@@ -17,6 +29,21 @@ import type {
   GetEventResponses,
   GetHealthData,
   GetHealthResponses,
+  GetMeData,
+  GetMeErrors,
+  GetMeResponses,
+  GetMyEventsData,
+  GetMyEventsErrors,
+  GetMyEventsResponses,
+  ListGuestsData,
+  ListGuestsErrors,
+  ListGuestsResponses,
+  ListRsvpsData,
+  ListRsvpsErrors,
+  ListRsvpsResponses,
+  SubmitRsvpData,
+  SubmitRsvpErrors,
+  SubmitRsvpResponses,
   UpdateEventData,
   UpdateEventErrors,
   UpdateEventResponses,
@@ -128,5 +155,129 @@ export const getEventManage = <ThrowOnError extends boolean = false>(
 ) =>
   (options.client ?? client).get<GetEventManageResponses, GetEventManageErrors, ThrowOnError>({
     url: '/v1/events/{id}/manage',
+    ...options,
+  });
+
+/**
+ * List RSVPs for an event (creator only)
+ */
+export const listRsvps = <ThrowOnError extends boolean = false>(
+  options: Options<ListRsvpsData, ThrowOnError>,
+) =>
+  (options.client ?? client).get<ListRsvpsResponses, ListRsvpsErrors, ThrowOnError>({
+    url: '/v1/events/{id}/rsvps',
+    ...options,
+  });
+
+/**
+ * Submit an RSVP (public)
+ *
+ * No authentication required — anyone with the event link can RSVP.
+ * An email is optional; if provided, a confirmation is dispatched.
+ *
+ */
+export const submitRsvp = <ThrowOnError extends boolean = false>(
+  options: Options<SubmitRsvpData, ThrowOnError>,
+) =>
+  (options.client ?? client).post<SubmitRsvpResponses, SubmitRsvpErrors, ThrowOnError>({
+    url: '/v1/events/{id}/rsvps',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+/**
+ * List invited guests (creator only)
+ */
+export const listGuests = <ThrowOnError extends boolean = false>(
+  options: Options<ListGuestsData, ThrowOnError>,
+) =>
+  (options.client ?? client).get<ListGuestsResponses, ListGuestsErrors, ThrowOnError>({
+    url: '/v1/events/{id}/guests',
+    ...options,
+  });
+
+/**
+ * Add a guest to the invite list (creator only)
+ */
+export const addGuest = <ThrowOnError extends boolean = false>(
+  options: Options<AddGuestData, ThrowOnError>,
+) =>
+  (options.client ?? client).post<AddGuestResponses, AddGuestErrors, ThrowOnError>({
+    url: '/v1/events/{id}/guests',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+/**
+ * Soft-delete the authenticated user (30-day grace)
+ *
+ * Marks the user as deleted. Grace period is 30 days — during that
+ * window the account can be restored by contacting support. After the
+ * grace, a cron job hard-deletes rows. Creator-token access to the
+ * user's anonymously-created events is unaffected.
+ *
+ */
+export const deleteMe = <ThrowOnError extends boolean = false>(
+  options?: Options<DeleteMeData, ThrowOnError>,
+) =>
+  (options?.client ?? client).delete<DeleteMeResponses, DeleteMeErrors, ThrowOnError>({
+    url: '/v1/users/me',
+    ...options,
+  });
+
+/**
+ * Get the authenticated user's profile
+ */
+export const getMe = <ThrowOnError extends boolean = false>(
+  options?: Options<GetMeData, ThrowOnError>,
+) =>
+  (options?.client ?? client).get<GetMeResponses, GetMeErrors, ThrowOnError>({
+    url: '/v1/users/me',
+    ...options,
+  });
+
+/**
+ * List events owned by the authenticated user
+ */
+export const getMyEvents = <ThrowOnError extends boolean = false>(
+  options?: Options<GetMyEventsData, ThrowOnError>,
+) =>
+  (options?.client ?? client).get<GetMyEventsResponses, GetMyEventsErrors, ThrowOnError>({
+    url: '/v1/users/me/events',
+    ...options,
+  });
+
+/**
+ * GDPR data export
+ *
+ * Returns a JSON bundle of all data tied to the authenticated user.
+ */
+export const exportMe = <ThrowOnError extends boolean = false>(
+  options?: Options<ExportMeData, ThrowOnError>,
+) =>
+  (options?.client ?? client).get<ExportMeResponses, ExportMeErrors, ThrowOnError>({
+    url: '/v1/users/me/export',
+    ...options,
+  });
+
+/**
+ * Link anonymously-created events to the authenticated user
+ *
+ * Finds all non-deleted events whose `creatorEmail` matches the
+ * authenticated user's email and sets `creator_user_id` on them. Safe
+ * to call repeatedly; already-claimed events are skipped.
+ *
+ */
+export const claimEvents = <ThrowOnError extends boolean = false>(
+  options?: Options<ClaimEventsData, ThrowOnError>,
+) =>
+  (options?.client ?? client).post<ClaimEventsResponses, ClaimEventsErrors, ThrowOnError>({
+    url: '/v1/auth/claim',
     ...options,
   });

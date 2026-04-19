@@ -26,6 +26,14 @@ tags:
     description: Health checks and operational endpoints.
   - name: events
     description: Event lifecycle — create, read, update, delete.
+  - name: rsvps
+    description: RSVPs — public submission and creator-scoped listing.
+  - name: guests
+    description: Invite list — creator-managed.
+  - name: users
+    description: Authenticated user profile, event list, export, deletion.
+  - name: auth
+    description: Authentication — Better-Auth endpoints and event claim.
 
 paths:
   /v1/health:
@@ -149,6 +157,179 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
+
+  /v1/events/{id}/rsvps:
+    parameters:
+      - $ref: '#/components/parameters/EventId'
+    post:
+      operationId: submitRsvp
+      summary: Submit an RSVP (public)
+      description: |
+        No authentication required — anyone with the event link can RSVP.
+        An email is optional; if provided, a confirmation is dispatched.
+      tags: [rsvps]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RsvpInput'
+      responses:
+        '201':
+          description: RSVP recorded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rsvp'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    get:
+      operationId: listRsvps
+      summary: List RSVPs for an event (creator only)
+      tags: [rsvps]
+      parameters:
+        - $ref: '#/components/parameters/CreatorTokenHeader'
+      responses:
+        '200':
+          description: RSVP list.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items: { $ref: '#/components/schemas/Rsvp' }
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /v1/events/{id}/guests:
+    parameters:
+      - $ref: '#/components/parameters/EventId'
+      - $ref: '#/components/parameters/CreatorTokenHeader'
+    post:
+      operationId: addGuest
+      summary: Add a guest to the invite list (creator only)
+      tags: [guests]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GuestInput'
+      responses:
+        '201':
+          description: Guest added.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Guest'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    get:
+      operationId: listGuests
+      summary: List invited guests (creator only)
+      tags: [guests]
+      responses:
+        '200':
+          description: Guest list.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items: { $ref: '#/components/schemas/Guest' }
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /v1/users/me:
+    get:
+      operationId: getMe
+      summary: Get the authenticated user's profile
+      tags: [users]
+      responses:
+        '200':
+          description: Current user.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/UserProfile' }
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    delete:
+      operationId: deleteMe
+      summary: Soft-delete the authenticated user (30-day grace)
+      description: |
+        Marks the user as deleted. Grace period is 30 days — during that
+        window the account can be restored by contacting support. After the
+        grace, a cron job hard-deletes rows. Creator-token access to the
+        user's anonymously-created events is unaffected.
+      tags: [users]
+      responses:
+        '204':
+          description: Account soft-deleted.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /v1/users/me/events:
+    get:
+      operationId: getMyEvents
+      summary: List events owned by the authenticated user
+      tags: [users]
+      responses:
+        '200':
+          description: Events claimed or created while signed in.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items: { $ref: '#/components/schemas/EventPublic' }
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /v1/users/me/export:
+    get:
+      operationId: exportMe
+      summary: GDPR data export
+      description: Returns a JSON bundle of all data tied to the authenticated user.
+      tags: [users]
+      responses:
+        '200':
+          description: Data export bundle.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/UserExport' }
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /v1/auth/claim:
+    post:
+      operationId: claimEvents
+      summary: Link anonymously-created events to the authenticated user
+      description: |
+        Finds all non-deleted events whose `creatorEmail` matches the
+        authenticated user's email and sets `creator_user_id` on them. Safe
+        to call repeatedly; already-claimed events are skipped.
+      tags: [auth]
+      responses:
+        '200':
+          description: Claim summary.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ClaimResponse' }
+        '401':
+          $ref: '#/components/responses/Unauthorized'
 
 components:
   parameters:
@@ -285,6 +466,94 @@ components:
           description: |
             Returned only when the email was NOT sent (i.e. dev mode). The
             client may use it to drive UI tests. Never returned in production.
+
+    RsvpInput:
+      type: object
+      required: [name, status]
+      properties:
+        name: { type: string, minLength: 1, maxLength: 200 }
+        email: { type: [string, 'null'], format: email }
+        status: { type: string, enum: [yes, maybe, no] }
+        message: { type: [string, 'null'], maxLength: 2000 }
+        plusOnes: { type: integer, minimum: 0, maximum: 20, default: 0 }
+        guestId:
+          type: [string, 'null']
+          format: uuid
+          description: Optional link to a pre-invited guest.
+
+    Rsvp:
+      type: object
+      required: [id, eventId, name, status, plusOnes, respondedAt]
+      properties:
+        id: { type: string, format: uuid }
+        eventId: { type: string, format: uuid }
+        guestId: { type: [string, 'null'], format: uuid }
+        name: { type: string }
+        email: { type: [string, 'null'], format: email }
+        status: { type: string, enum: [yes, maybe, no] }
+        plusOnes: { type: integer }
+        message: { type: [string, 'null'] }
+        respondedAt: { type: string, format: date-time }
+
+    GuestInput:
+      type: object
+      required: [invitedVia]
+      properties:
+        name: { type: [string, 'null'], maxLength: 200 }
+        email: { type: [string, 'null'], format: email }
+        phone:
+          type: [string, 'null']
+          description: E.164 formatted phone number.
+          pattern: '^\+?[1-9]\d{1,14}$'
+        invitedVia:
+          type: string
+          enum: [link, email, sms, whatsapp, agent]
+
+    Guest:
+      type: object
+      required: [id, eventId, invitedVia, invitedAt]
+      properties:
+        id: { type: string, format: uuid }
+        eventId: { type: string, format: uuid }
+        name: { type: [string, 'null'] }
+        email: { type: [string, 'null'], format: email }
+        phone: { type: [string, 'null'] }
+        invitedVia: { type: string }
+        invitedAt: { type: string, format: date-time }
+
+    UserProfile:
+      type: object
+      required: [id, email, emailVerified, locale, timezone, createdAt]
+      properties:
+        id: { type: string, format: uuid }
+        email: { type: string, format: email }
+        emailVerified: { type: boolean }
+        name: { type: [string, 'null'] }
+        image: { type: [string, 'null'] }
+        locale: { type: string }
+        timezone: { type: string }
+        createdAt: { type: string, format: date-time }
+
+    UserExport:
+      type: object
+      required: [exportedAt, user, events, rsvps]
+      properties:
+        exportedAt: { type: string, format: date-time }
+        user: { $ref: '#/components/schemas/UserProfile' }
+        events:
+          type: array
+          items: { $ref: '#/components/schemas/EventPublic' }
+        rsvps:
+          type: array
+          items: { $ref: '#/components/schemas/Rsvp' }
+
+    ClaimResponse:
+      type: object
+      required: [claimed]
+      properties:
+        claimed:
+          type: integer
+          description: Number of events newly linked to this user.
 
     Error:
       type: object
