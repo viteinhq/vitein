@@ -553,6 +553,53 @@ export type AddGuestResponses = {
 
 export type AddGuestResponse = AddGuestResponses[keyof AddGuestResponses];
 
+export type SendReminderData = {
+  body?: never;
+  headers: {
+    /**
+     * Plaintext creator token (the value delivered by the magic-link email).
+     * The server hashes it and compares against `event_tokens.token_hash`.
+     *
+     */
+    'X-Creator-Token': string;
+  };
+  path: {
+    /**
+     * Server-generated UUIDv7 of the event.
+     */
+    id: string;
+  };
+  query?: never;
+  url: '/v1/events/{id}/reminders/send';
+};
+
+export type SendReminderErrors = {
+  /**
+   * Missing or invalid creator token.
+   */
+  401: Error;
+  /**
+   * Resource not found.
+   */
+  404: Error;
+};
+
+export type SendReminderError = SendReminderErrors[keyof SendReminderErrors];
+
+export type SendReminderResponses = {
+  /**
+   * Reminder queued.
+   */
+  202: {
+    id: string;
+    eventId: string;
+    scheduledAt: string;
+    kind: string;
+  };
+};
+
+export type SendReminderResponse = SendReminderResponses[keyof SendReminderResponses];
+
 export type DeleteMeData = {
   body?: never;
   path?: never;

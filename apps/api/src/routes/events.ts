@@ -14,12 +14,14 @@ import { sendCreatorMagicLink } from '../infra/email.js';
 import { requireCreator } from '../middleware/require-creator.js';
 import type { AppVariables, Env } from '../types/env.js';
 import { guestsRoute } from './guests.js';
+import { remindersRoute } from './reminders.js';
 import { rsvpsRoute } from './rsvps.js';
 
 export const eventsRoute = new Hono<{ Bindings: Env; Variables: AppVariables }>();
 
 eventsRoute.route('/:id/rsvps', rsvpsRoute);
 eventsRoute.route('/:id/guests', guestsRoute);
+eventsRoute.route('/:id/reminders', remindersRoute);
 
 const eventCreateSchema = z.object({
   title: z.string().min(1).max(200),

@@ -88,6 +88,22 @@ export async function sendRsvpNotification(
   });
 }
 
+export interface ReminderInput {
+  to: string;
+  eventTitle: string;
+  startsAt: Date;
+  eventUrl: string;
+}
+
+export async function sendReminder(env: Env, input: ReminderInput): Promise<SendResult> {
+  return sendEmail(env, {
+    to: input.to,
+    subject: `Reminder: ${input.eventTitle}`,
+    text: reminderBody(input),
+    logHint: { kind: 'reminder' },
+  });
+}
+
 interface SendEmailInput {
   to: string;
   subject: string;
@@ -161,6 +177,17 @@ function rsvpConfirmationBody({ eventTitle, status, eventUrl }: RsvpConfirmation
     eventUrl,
     '',
     'You can update your RSVP any time by re-submitting the form.',
+    '',
+    '— vite.in',
+  ].join('\n');
+}
+
+function reminderBody({ eventTitle, startsAt, eventUrl }: ReminderInput): string {
+  return [
+    `Reminder: "${eventTitle}" is coming up at ${startsAt.toISOString()}.`,
+    '',
+    'Event details:',
+    eventUrl,
     '',
     '— vite.in',
   ].join('\n');

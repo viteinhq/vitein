@@ -6,6 +6,19 @@ compatibility_flags = ["nodejs_compat"]
 [observability]
 enabled = true
 
+# Hourly cron picks up due reminders.
+[triggers]
+crons = ["0 * * * *"]
+
+# Rate-limiter Durable Object — one instance per derived key.
+[[durable_objects.bindings]]
+name = "RATE_LIMITER"
+class_name = "RateLimiter"
+
+[[migrations]]
+tag = "v1"
+new_classes = ["RateLimiter"]
+
 [vars]
 ENVIRONMENT = "dev"
 

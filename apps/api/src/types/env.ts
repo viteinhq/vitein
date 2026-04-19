@@ -19,11 +19,12 @@ export interface Env {
    */
   AUTH_SECRET?: string;
 
-  // Bindings added later (KV, R2, Queues, DO) go here:
+  RATE_LIMITER?: DurableObjectNamespace;
+
+  // Bindings added later (KV, R2, Queues) go here:
   // KV_CACHE: KVNamespace;
   // R2_MEDIA: R2Bucket;
   // QUEUE_EMAIL: Queue;
-  // RATE_LIMITER: DurableObjectNamespace;
 }
 
 import type { AuthContext } from '../domain/auth/context.js';

@@ -1,0 +1,6 @@
+@import 'tailwindcss';
+
+/* Design tokens — pull palette/fonts into named tokens as B.1 progresses. */
+@theme {
+  --color-vite-accent: oklch(0.7 0.19 160);
+}

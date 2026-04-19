@@ -41,6 +41,9 @@ import type {
   ListRsvpsData,
   ListRsvpsErrors,
   ListRsvpsResponses,
+  SendReminderData,
+  SendReminderErrors,
+  SendReminderResponses,
   SubmitRsvpData,
   SubmitRsvpErrors,
   SubmitRsvpResponses,
@@ -212,6 +215,22 @@ export const addGuest = <ThrowOnError extends boolean = false>(
       'Content-Type': 'application/json',
       ...options.headers,
     },
+  });
+
+/**
+ * Queue an immediate reminder (creator only)
+ *
+ * Inserts a `manual` reminder row scheduled for now. The hourly cron
+ * picks it up on its next run and dispatches the email. The endpoint
+ * returns immediately; the actual send is asynchronous.
+ *
+ */
+export const sendReminder = <ThrowOnError extends boolean = false>(
+  options: Options<SendReminderData, ThrowOnError>,
+) =>
+  (options.client ?? client).post<SendReminderResponses, SendReminderErrors, ThrowOnError>({
+    url: '/v1/events/{id}/reminders/send',
+    ...options,
   });
 
 /**

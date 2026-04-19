@@ -200,6 +200,49 @@ export const rsvps = pgTable(
   (t) => [index('rsvps_event_idx').on(t.eventId), index('rsvps_guest_idx').on(t.guestId)],
 );
 
+/**
+ * Reminder schedule. Each row is "send a reminder for this event at this
+ * time". The cron worker picks up rows where `sent_at IS NULL AND scheduled_at <= now()`,
+ * sends the email, and stamps `sent_at`.
+ */
+export const reminders = pgTable(
+  'reminders',
+  {
+    id: uuid().primaryKey().$defaultFn(genId),
+    eventId: uuid('event_id')
+      .notNull()
+      .references(() => events.id, { onDelete: 'cascade' }),
+    scheduledAt: timestamp('scheduled_at', { withTimezone: true }).notNull(),
+    sentAt: timestamp('sent_at', { withTimezone: true }),
+    kind: text().notNull().default('standard'),
+    createdAt: nowTs(),
+  },
+  (t) => [
+    index('reminders_due_idx').on(t.scheduledAt, t.sentAt),
+    index('reminders_event_idx').on(t.eventId),
+  ],
+);
+
+/**
+ * Append-only audit log. Any side-effectful action (event write, RSVP,
+ * reminder send, payment complete) gets a row. No foreign keys on
+ * `event_id` so the log survives event deletion.
+ */
+export const auditLog = pgTable(
+  'audit_log',
+  {
+    id: uuid().primaryKey().$defaultFn(genId),
+    actorType: text('actor_type').notNull(),
+    actorId: text('actor_id'),
+    eventId: uuid('event_id'),
+    action: text().notNull(),
+    metadata: jsonb().notNull().default({}),
+    ipHash: text('ip_hash'),
+    createdAt: nowTs(),
+  },
+  (t) => [index('audit_log_event_idx').on(t.eventId), index('audit_log_action_idx').on(t.action)],
+);
+
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Session = typeof sessions.$inferSelect;
@@ -216,6 +259,10 @@ export type Guest = typeof guests.$inferSelect;
 export type NewGuest = typeof guests.$inferInsert;
 export type Rsvp = typeof rsvps.$inferSelect;
 export type NewRsvp = typeof rsvps.$inferInsert;
+export type Reminder = typeof reminders.$inferSelect;
+export type NewReminder = typeof reminders.$inferInsert;
+export type AuditLog = typeof auditLog.$inferSelect;
+export type NewAuditLog = typeof auditLog.$inferInsert;
 
 export const schema = {
   users,
@@ -226,4 +273,6 @@ export const schema = {
   eventTokens,
   guests,
   rsvps,
+  reminders,
+  auditLog,
 };

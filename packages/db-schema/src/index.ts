@@ -9,6 +9,8 @@ export {
   eventTokens,
   guests,
   rsvps,
+  reminders,
+  auditLog,
   schema,
   type User,
   type NewUser,
@@ -26,4 +28,8 @@ export {
   type NewGuest,
   type Rsvp,
   type NewRsvp,
+  type Reminder,
+  type NewReminder,
+  type AuditLog,
+  type NewAuditLog,
 } from './schema.js';

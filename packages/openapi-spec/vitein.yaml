@@ -250,6 +250,36 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
 
+  /v1/events/{id}/reminders/send:
+    parameters:
+      - $ref: '#/components/parameters/EventId'
+      - $ref: '#/components/parameters/CreatorTokenHeader'
+    post:
+      operationId: sendReminder
+      summary: Queue an immediate reminder (creator only)
+      description: |
+        Inserts a `manual` reminder row scheduled for now. The hourly cron
+        picks it up on its next run and dispatches the email. The endpoint
+        returns immediately; the actual send is asynchronous.
+      tags: [events]
+      responses:
+        '202':
+          description: Reminder queued.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [id, eventId, scheduledAt, kind]
+                properties:
+                  id: { type: string, format: uuid }
+                  eventId: { type: string, format: uuid }
+                  scheduledAt: { type: string, format: date-time }
+                  kind: { type: string }
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
   /v1/users/me:
     get:
       operationId: getMe

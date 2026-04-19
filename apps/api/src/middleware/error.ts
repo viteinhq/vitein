@@ -20,7 +20,7 @@ export const errorHandler: ErrorHandler<{
           ...(err.details ? { details: err.details } : {}),
         },
       },
-      err.status as 400 | 401 | 403 | 404 | 409,
+      err.status as 400 | 401 | 403 | 404 | 409 | 429,
     );
   }
 
