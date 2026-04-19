@@ -10,13 +10,13 @@ export interface Env {
 
   // Secrets (set via `wrangler secret put ...`)
   SENTRY_DSN?: string;
+  DATABASE_URL?: string;
 
-  // Bindings added later (KV, R2, Queues, DO, DB) go here:
+  // Bindings added later (KV, R2, Queues, DO) go here:
   // KV_CACHE: KVNamespace;
   // R2_MEDIA: R2Bucket;
   // QUEUE_EMAIL: Queue;
   // RATE_LIMITER: DurableObjectNamespace;
-  // DATABASE_URL: string;
 }
 
 export type AppVariables = {

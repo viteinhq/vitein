@@ -1,0 +1,13 @@
+{
+  "extends": "@vitein/config/tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2022"],
+    "moduleResolution": "Bundler",
+    "module": "ESNext",
+    "noEmit": true,
+    "rootDir": ".",
+    "baseUrl": "."
+  },
+  "include": ["src/**/*", "drizzle.config.ts"],
+  "exclude": ["node_modules", "dist", "migrations"]
+}

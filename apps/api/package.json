@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@sentry/cloudflare": "^9.46.0",
+    "@vitein/db-schema": "workspace:*",
     "hono": "^4.6.12"
   },
   "devDependencies": {
