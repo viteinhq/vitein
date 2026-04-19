@@ -2,6 +2,9 @@ export { and, eq, isNull, lt, or, sql } from 'drizzle-orm';
 export { createDb, type Db } from './client.js';
 export {
   users,
+  sessions,
+  accounts,
+  verifications,
   events,
   eventTokens,
   guests,
@@ -9,6 +12,12 @@ export {
   schema,
   type User,
   type NewUser,
+  type Session,
+  type NewSession,
+  type Account,
+  type NewAccount,
+  type Verification,
+  type NewVerification,
   type Event,
   type NewEvent,
   type EventToken,

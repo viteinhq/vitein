@@ -2,12 +2,13 @@
 
 Each ADR is a short, dated, immutable record of an architectural decision. Format: lightweight [MADR](https://adr.github.io/madr/).
 
-| #    | Title                 | Status   | Date       |
-| ---- | --------------------- | -------- | ---------- |
-| 0001 | Stack choice          | Accepted | 2026-04-19 |
-| 0002 | CLA tooling           | Accepted | 2026-04-19 |
-| 0003 | Email provider        | Accepted | 2026-04-19 |
-| 0004 | SDK generator tooling | Accepted | 2026-04-19 |
+| #    | Title                       | Status   | Date       |
+| ---- | --------------------------- | -------- | ---------- |
+| 0001 | Stack choice                | Accepted | 2026-04-19 |
+| 0002 | CLA tooling                 | Accepted | 2026-04-19 |
+| 0003 | Email provider              | Accepted | 2026-04-19 |
+| 0004 | SDK generator tooling       | Accepted | 2026-04-19 |
+| 0005 | Better-Auth schema strategy | Accepted | 2026-04-19 |
 
 ## How to write a new ADR
 

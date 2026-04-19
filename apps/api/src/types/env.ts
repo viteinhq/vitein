@@ -13,6 +13,11 @@ export interface Env {
   DATABASE_URL?: string;
   RESEND_API_KEY?: string;
   WEB_BASE_URL?: string;
+  /**
+   * Required for Better-Auth session signing. Generate once per environment
+   * with `openssl rand -hex 32` and store via `wrangler secret put AUTH_SECRET`.
+   */
+  AUTH_SECRET?: string;
 
   // Bindings added later (KV, R2, Queues, DO) go here:
   // KV_CACHE: KVNamespace;

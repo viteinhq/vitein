@@ -11,19 +11,55 @@ export interface SendResult {
   sent: boolean;
 }
 
-export interface MagicLinkInput {
+export interface CreatorMagicLinkInput {
   to: string;
   eventTitle: string;
   manageUrl: string;
 }
 
+export interface SignInMagicLinkInput {
+  to: string;
+  url: string;
+}
+
 const FROM_ADDRESS = 'vite.in <no-reply@vite.in>';
 
-export async function sendCreatorMagicLink(env: Env, input: MagicLinkInput): Promise<SendResult> {
+export async function sendCreatorMagicLink(
+  env: Env,
+  input: CreatorMagicLinkInput,
+): Promise<SendResult> {
+  return sendEmail(env, {
+    to: input.to,
+    subject: `Manage your event: ${input.eventTitle}`,
+    text: creatorMagicLinkBody(input),
+    logHint: { eventTitle: input.eventTitle },
+  });
+}
+
+export async function sendSignInMagicLink(
+  env: Env,
+  input: SignInMagicLinkInput,
+): Promise<SendResult> {
+  return sendEmail(env, {
+    to: input.to,
+    subject: 'Your vite.in sign-in link',
+    text: signInMagicLinkBody(input),
+    logHint: { kind: 'sign-in' },
+  });
+}
+
+interface SendEmailInput {
+  to: string;
+  subject: string;
+  text: string;
+  logHint?: Record<string, string>;
+}
+
+async function sendEmail(env: Env, input: SendEmailInput): Promise<SendResult> {
   if (!env.RESEND_API_KEY) {
-    console.warn('[email] RESEND_API_KEY unset — skipping magic-link send', {
+    console.warn('[email] RESEND_API_KEY unset — skipping send', {
       to: input.to,
-      eventTitle: input.eventTitle,
+      ...(input.logHint ?? {}),
     });
     return { sent: false };
   }
@@ -37,8 +73,8 @@ export async function sendCreatorMagicLink(env: Env, input: MagicLinkInput): Pro
     body: JSON.stringify({
       from: FROM_ADDRESS,
       to: input.to,
-      subject: `Manage your event: ${input.eventTitle}`,
-      text: creatorMagicLinkBody(input),
+      subject: input.subject,
+      text: input.text,
     }),
   });
 
@@ -50,7 +86,7 @@ export async function sendCreatorMagicLink(env: Env, input: MagicLinkInput): Pro
   return { sent: true };
 }
 
-function creatorMagicLinkBody({ eventTitle, manageUrl }: MagicLinkInput): string {
+function creatorMagicLinkBody({ eventTitle, manageUrl }: CreatorMagicLinkInput): string {
   return [
     `Your event "${eventTitle}" is live on vite.in.`,
     '',
@@ -58,6 +94,17 @@ function creatorMagicLinkBody({ eventTitle, manageUrl }: MagicLinkInput): string
     manageUrl,
     '',
     'Keep this link private. Anyone with the link can manage the event.',
+    '',
+    '— vite.in',
+  ].join('\n');
+}
+
+function signInMagicLinkBody({ url }: SignInMagicLinkInput): string {
+  return [
+    'Click the link below to sign in to vite.in:',
+    url,
+    '',
+    'This link expires in 10 minutes. If you did not request it, you can ignore this email.',
     '',
     '— vite.in',
   ].join('\n');
