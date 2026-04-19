@@ -50,6 +50,7 @@ This is the phase that pays the interest on all architectural promises. Cutting 
 ### Workstreams (parallel)
 
 #### 1.1 Core API
+
 - Event CRUD (create/read/update/soft-delete)
 - Creator token generation, magic-link delivery via queued email
 - Guest list management
@@ -66,6 +67,7 @@ This is the phase that pays the interest on all architectural promises. Cutting 
 - Observability: structured logs, traces, Sentry integration
 
 #### 1.2 Web client
+
 - Landing page (SEO-optimized, multi-language)
 - Create-event flow (anonymous, no signup)
 - Event view page (for guests) with RSVP
@@ -78,6 +80,7 @@ This is the phase that pays the interest on all architectural promises. Cutting 
 - Cookie consent (regional rules)
 
 #### 1.3 iOS app
+
 - Core networking layer with generated Swift SDK
 - Keychain-backed auth storage
 - Event view screen (from deep link or URL share)
@@ -89,6 +92,7 @@ This is the phase that pays the interest on all architectural promises. Cutting 
 - Basic templates (reuse web's design tokens)
 
 #### 1.4 Android app
+
 - Core networking layer with generated Kotlin SDK
 - EncryptedSharedPreferences / Keystore auth storage
 - Event view screen (from deep link or URL share)
@@ -100,6 +104,7 @@ This is the phase that pays the interest on all architectural promises. Cutting 
 - Basic templates
 
 #### 1.5 Cutover & ops
+
 - v1 data archive (read-only export, kept for 1 year)
 - DNS cutover plan: feature-flag-gated so individual % of traffic can move to v2
 - Monitoring dashboards
@@ -133,6 +138,7 @@ This is the phase that pays the interest on all architectural promises. Cutting 
 ### Workstreams
 
 #### 2.1 MCP server
+
 - Register the MCP server as a first-party OAuth client.
 - Implement MCP protocol over HTTP + SSE (per MCP spec).
 - Tools exposed:
@@ -149,6 +155,7 @@ This is the phase that pays the interest on all architectural promises. Cutting 
 - Usage analytics per connected app
 
 #### 2.2 Core API additions
+
 - OAuth 2.1 + PKCE issuance endpoints (`/oauth/authorize`, `/oauth/token`, etc.)
 - Scope enforcement middleware
 - Webhook delivery service (for creators who want programmatic notifications)
@@ -157,6 +164,7 @@ This is the phase that pays the interest on all architectural promises. Cutting 
 - Basic team invite model (added to schema, surfaced minimally)
 
 #### 2.3 Web
+
 - OAuth consent screens
 - "Connect to AI Assistants" settings page (with per-app revocation)
 - Basic analytics (RSVP rates, event views) per event
@@ -164,11 +172,13 @@ This is the phase that pays the interest on all architectural promises. Cutting 
 - Password-protected events (wired to schema that's already there)
 
 #### 2.4 Mobile
+
 - Match web's new features (analytics, template selection)
 - Widget / home screen complication showing next event countdown
 - Apple Watch companion (Phase 2 stretch)
 
 #### 2.5 Regional payments prep
+
 - Payment provider abstraction refactored (even though only Stripe is active)
 - Stripe Tax integration for global VAT/GST handling
 
@@ -221,15 +231,15 @@ This is the phase that pays the interest on all architectural promises. Cutting 
 
 ## Risk register
 
-| Risk | Impact | Likelihood | Mitigation |
-|---|---|---|---|
-| Native mobile dev overwhelms solo capacity | High | Medium | Hire contract iOS/Android help for Phase 1 if timeline slips materially |
-| Cloudflare Workers has unforeseen limits at scale | Medium | Low | Workers limits are well-documented; fall-back path is porting to Node runtime (Fly.io / Railway) if ever needed |
-| Neon provider change / acquisition | Medium | Low | Postgres is portable; Drizzle migration files work against any Postgres |
-| OAuth / MCP complexity delays Phase 2 | Medium | Medium | Start spec work in Phase 1 closing weeks; don't gate on other work |
-| v1 users churn during cutover | Low | Low | v1 stays live until v2 exit criteria met; no forced migration |
-| AI agent abuse (spam events via LLM) | Medium | Medium | Strong rate limits from day 1 of Phase 2; review per-user abuse daily in first month |
-| Payment disputes / chargebacks at global scale | Medium | Medium | Stripe's built-in fraud signals; clear refund policy published |
+| Risk                                              | Impact | Likelihood | Mitigation                                                                                                      |
+| ------------------------------------------------- | ------ | ---------- | --------------------------------------------------------------------------------------------------------------- |
+| Native mobile dev overwhelms solo capacity        | High   | Medium     | Hire contract iOS/Android help for Phase 1 if timeline slips materially                                         |
+| Cloudflare Workers has unforeseen limits at scale | Medium | Low        | Workers limits are well-documented; fall-back path is porting to Node runtime (Fly.io / Railway) if ever needed |
+| Neon provider change / acquisition                | Medium | Low        | Postgres is portable; Drizzle migration files work against any Postgres                                         |
+| OAuth / MCP complexity delays Phase 2             | Medium | Medium     | Start spec work in Phase 1 closing weeks; don't gate on other work                                              |
+| v1 users churn during cutover                     | Low    | Low        | v1 stays live until v2 exit criteria met; no forced migration                                                   |
+| AI agent abuse (spam events via LLM)              | Medium | Medium     | Strong rate limits from day 1 of Phase 2; review per-user abuse daily in first month                            |
+| Payment disputes / chargebacks at global scale    | Medium | Medium     | Stripe's built-in fraud signals; clear refund policy published                                                  |
 
 ---
 

@@ -52,16 +52,16 @@ static/
 
 ## Routes that matter
 
-| Route | Purpose | Auth |
-|---|---|---|
-| `/` | Landing page (per-locale via URL: `/de/`, `/en/`, etc.) | none |
-| `/create` | Create event form | none (anonymous OK) |
-| `/e/[slug]` | Public event view + RSVP | none |
-| `/manage/[token]` | Creator dashboard for a single event | creator token from URL |
-| `/account/dashboard` | Multi-event dashboard | user session |
-| `/account/settings` | Profile, notifications, delete account | user session |
-| `/signin`, `/signup` | Auth flows (magic link + social) | none → session |
-| `/legal/*` | Impressum, privacy, terms | none |
+| Route                | Purpose                                                 | Auth                   |
+| -------------------- | ------------------------------------------------------- | ---------------------- |
+| `/`                  | Landing page (per-locale via URL: `/de/`, `/en/`, etc.) | none                   |
+| `/create`            | Create event form                                       | none (anonymous OK)    |
+| `/e/[slug]`          | Public event view + RSVP                                | none                   |
+| `/manage/[token]`    | Creator dashboard for a single event                    | creator token from URL |
+| `/account/dashboard` | Multi-event dashboard                                   | user session           |
+| `/account/settings`  | Profile, notifications, delete account                  | user session           |
+| `/signin`, `/signup` | Auth flows (magic link + social)                        | none → session         |
+| `/legal/*`           | Impressum, privacy, terms                               | none                   |
 
 ## Auth in the web app
 

@@ -90,19 +90,20 @@ pnpm gen:sdk                             # after changing openapi-spec
 
 Three possible authentication contexts, resolved by middleware:
 
-| Header / source | Populates `c.get('auth')` as |
-|---|---|
-| `X-Creator-Token: <token>` | `{ kind: 'creator', eventId, email }` |
-| `Authorization: Bearer <session>` | `{ kind: 'user', userId, scopes: ['*'] }` |
-| `Authorization: Bearer <oauth-access>` | `{ kind: 'oauth', userId, clientId, scopes: [...] }` *(Phase 2+)* |
-| `Authorization: Bearer <api-key>` | `{ kind: 'api_key', userId, scopes: [...] }` *(Phase 3)* |
-| none | `{ kind: 'anonymous' }` |
+| Header / source                        | Populates `c.get('auth')` as                                      |
+| -------------------------------------- | ----------------------------------------------------------------- |
+| `X-Creator-Token: <token>`             | `{ kind: 'creator', eventId, email }`                             |
+| `Authorization: Bearer <session>`      | `{ kind: 'user', userId, scopes: ['*'] }`                         |
+| `Authorization: Bearer <oauth-access>` | `{ kind: 'oauth', userId, clientId, scopes: [...] }` _(Phase 2+)_ |
+| `Authorization: Bearer <api-key>`      | `{ kind: 'api_key', userId, scopes: [...] }` _(Phase 3)_          |
+| none                                   | `{ kind: 'anonymous' }`                                           |
 
 Route handlers declare required auth via a helper (e.g. `requireCreator()`, `requireUser()`, `requireScope('events:write')`). Middleware throws with a localized error if missing.
 
 ## Rate limiting
 
 All routes pass through `rate-limit.ts`. Keys are derived from auth context:
+
 - anonymous → `ip:<hashed-ip>`
 - creator token → `creator:<event_id>`
 - user → `user:<user_id>`

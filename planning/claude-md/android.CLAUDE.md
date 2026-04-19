@@ -103,6 +103,7 @@ build.gradle.kts
 ```
 
 SDK regeneration:
+
 ```bash
 # assumes the monorepo is cloned alongside
 openapi-generator generate \

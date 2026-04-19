@@ -81,7 +81,7 @@ This repo is **AGPLv3** (except `apps/mcp` which is MIT). External contributions
 - Assume code written here is publicly visible.
 - Don't reference premium-specific logic, URLs, or credentials.
 - Don't write code that only makes sense for the `vite.in` brand (e.g. brand-specific copy, logo paths) — those belong in the premium repo or brand-assets.
-- If a design system token or component is *specific* to vite.in, flag it for premium-repo migration.
+- If a design system token or component is _specific_ to vite.in, flag it for premium-repo migration.
 
 ## Where Claude Code should look first
 

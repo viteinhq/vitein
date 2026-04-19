@@ -12,9 +12,9 @@ Shared ESLint (flat config), Prettier, and TSConfig base for all workspaces.
   "extends": "@vitein/config/tsconfig.base.json",
   "compilerOptions": {
     "rootDir": "src",
-    "outDir": "dist"
+    "outDir": "dist",
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*"],
 }
 ```
 

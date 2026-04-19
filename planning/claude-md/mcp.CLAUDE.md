@@ -29,20 +29,21 @@ Deployed as a separate Cloudflare Worker at `mcp.vite.in`. Isolation is delibera
 
 ## Exposed tools (Phase 2 launch set)
 
-| Tool | Purpose | Required scope |
-|---|---|---|
-| `list_events` | List the user's events | `events:read` |
-| `get_event` | Fetch one event by id or slug | `events:read` |
-| `create_event` | Create a new invitation | `events:write` |
-| `update_event` | Edit fields of an existing event | `events:write` |
-| `delete_event` | Soft-delete an event | `events:write` |
-| `add_guests` | Append guests to an event's invite list | `guests:write` |
-| `list_guests` | List invited guests for an event | `guests:read` |
-| `list_rsvps` | List RSVPs for an event | `rsvps:read` |
-| `send_reminders` | Trigger reminder emails | `events:write` |
-| `get_event_share_url` | Get the shareable link for an event | `events:read` |
+| Tool                  | Purpose                                 | Required scope |
+| --------------------- | --------------------------------------- | -------------- |
+| `list_events`         | List the user's events                  | `events:read`  |
+| `get_event`           | Fetch one event by id or slug           | `events:read`  |
+| `create_event`        | Create a new invitation                 | `events:write` |
+| `update_event`        | Edit fields of an existing event        | `events:write` |
+| `delete_event`        | Soft-delete an event                    | `events:write` |
+| `add_guests`          | Append guests to an event's invite list | `guests:write` |
+| `list_guests`         | List invited guests for an event        | `guests:read`  |
+| `list_rsvps`          | List RSVPs for an event                 | `rsvps:read`   |
+| `send_reminders`      | Trigger reminder emails                 | `events:write` |
+| `get_event_share_url` | Get the shareable link for an event     | `events:read`  |
 
 Every tool:
+
 - Has a clear, non-ambiguous name and description (LLMs use descriptions for tool selection).
 - Takes structured input with Zod/JSON Schema validation.
 - Returns both a human-readable summary AND structured data (for chaining).
@@ -95,7 +96,7 @@ Local testing: use Anthropic's MCP Inspector (`npx @modelcontextprotocol/inspect
 5. LLM exchanges code for access + refresh tokens at `https://api.vite.in/oauth/token`.
 6. LLM sends access token to `https://mcp.vite.in` on every tool call.
 
-The MCP server itself does NOT implement OAuth endpoints. It only *validates* tokens presented to it.
+The MCP server itself does NOT implement OAuth endpoints. It only _validates_ tokens presented to it.
 
 ## Security considerations
 

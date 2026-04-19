@@ -115,6 +115,7 @@ fastlane screenshots         # generate localized screenshots
 ```
 
 SDK regeneration:
+
 ```bash
 # assumes the monorepo is cloned alongside; adapt paths
 openapi-generator generate \

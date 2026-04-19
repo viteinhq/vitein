@@ -6,11 +6,11 @@ This folder contains the complete planning package for rebuilding vite.in as a g
 
 ## Read in this order
 
-1. **[ARCHITECTURE.md](./ARCHITECTURE.md)** — The *what* and *why*. Stack choices, data model, auth model, i18n strategy, security, and the high-level system diagram. Start here.
+1. **[ARCHITECTURE.md](./ARCHITECTURE.md)** — The _what_ and _why_. Stack choices, data model, auth model, i18n strategy, security, and the high-level system diagram. Start here.
 
-2. **[ROADMAP.md](./ROADMAP.md)** — The *when*. Three phases (Foundation → Public Launch → Agent & Scale), each with milestones and exit criteria.
+2. **[ROADMAP.md](./ROADMAP.md)** — The _when_. Three phases (Foundation → Public Launch → Agent & Scale), each with milestones and exit criteria.
 
-3. **[PROJECT_PLAN.md](./PROJECT_PLAN.md)** — The *how* for Phase 1. Concrete workstreams, ordered tasks, dependencies, and decision gates.
+3. **[PROJECT_PLAN.md](./PROJECT_PLAN.md)** — The _how_ for Phase 1. Concrete workstreams, ordered tasks, dependencies, and decision gates.
 
 4. **[claude-md/](./claude-md/)** — Five `CLAUDE.md` templates to drop into each repo/stack so Claude Code has the right context from day one:
    - `root.CLAUDE.md` — monorepo root (API, Web, MCP)
@@ -26,25 +26,25 @@ These came out of the planning conversation and are the foundation everything el
 
 ### Technical
 
-| Decision | Choice | Reason |
-|---|---|---|
-| **v1 → v2** | Rebuild, v1 stays live during transition | Clean slate, no migration drag, continued revenue |
-| **Mobile** | Native Swift (iOS) + Kotlin (Android) | Highest quality; accepted 3× effort |
-| **Backend** | Cloudflare Workers + Hono + Neon Postgres | Global edge, serverless, scale-to-zero |
-| **Global scope** | Architecturally from day 1, rolled out in phases | No surprises later, no tech debt |
-| **Core principle** | No-account-required for event creation | Viral mechanic; accounts are an upgrade path |
-| **Agent strategy** | Scenario 1 first (OAuth, user-delegated), 2 & 3 later | Simplest, highest-value use case first |
+| Decision           | Choice                                                | Reason                                            |
+| ------------------ | ----------------------------------------------------- | ------------------------------------------------- |
+| **v1 → v2**        | Rebuild, v1 stays live during transition              | Clean slate, no migration drag, continued revenue |
+| **Mobile**         | Native Swift (iOS) + Kotlin (Android)                 | Highest quality; accepted 3× effort               |
+| **Backend**        | Cloudflare Workers + Hono + Neon Postgres             | Global edge, serverless, scale-to-zero            |
+| **Global scope**   | Architecturally from day 1, rolled out in phases      | No surprises later, no tech debt                  |
+| **Core principle** | No-account-required for event creation                | Viral mechanic; accounts are an upgrade path      |
+| **Agent strategy** | Scenario 1 first (OAuth, user-delegated), 2 & 3 later | Simplest, highest-value use case first            |
 
 ### Business & strategy
 
-| Decision | Choice | Reason |
-|---|---|---|
-| **Target** | B2C first (pay-per-event), B2B in Phase 2 | Revenue today, enterprise surface later |
-| **Timeline** | No hard deadline; ship when good | Quality over speed |
-| **Domain** | Stay mono-domain on `vite.in` | Name plays on *InVite*, keep the brand equity |
-| **Pricing** | `5` in local currency (EUR / USD / CHF / GBP at launch), not FX-converted | Simple anchor, follows Apple/Netflix price-localization pattern |
-| **Legal entity** | Solo now; migrating to Estonia OÜ once registration completes | EU VAT-OSS, 0% corporate tax on retained earnings, e-Residency-native |
-| **Licensing** | Open-core: AGPLv3 for core, proprietary premium layer | Community contributions + template ecosystem; competitive moat stays closed |
+| Decision         | Choice                                                                    | Reason                                                                      |
+| ---------------- | ------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| **Target**       | B2C first (pay-per-event), B2B in Phase 2                                 | Revenue today, enterprise surface later                                     |
+| **Timeline**     | No hard deadline; ship when good                                          | Quality over speed                                                          |
+| **Domain**       | Stay mono-domain on `vite.in`                                             | Name plays on _InVite_, keep the brand equity                               |
+| **Pricing**      | `5` in local currency (EUR / USD / CHF / GBP at launch), not FX-converted | Simple anchor, follows Apple/Netflix price-localization pattern             |
+| **Legal entity** | Solo now; migrating to Estonia OÜ once registration completes             | EU VAT-OSS, 0% corporate tax on retained earnings, e-Residency-native       |
+| **Licensing**    | Open-core: AGPLv3 for core, proprietary premium layer                     | Community contributions + template ecosystem; competitive moat stays closed |
 
 ## What's intentionally deferred
 

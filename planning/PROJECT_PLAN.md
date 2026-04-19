@@ -13,6 +13,7 @@ Target: 3–5 weeks, depending on deep-focus hours available.
 ### Week 1 — Accounts, scaffolding, core decisions
 
 **0.1 Account setup (half-day)**
+
 - [ ] Cloudflare account (or upgrade existing to Workers Paid plan if anticipating > free tier)
 - [ ] Neon account, create project `vite-in-v2` with 3 branches: `main` (prod), `staging`, `dev`
 - [ ] Sentry account (free tier), create projects: `api`, `web`, `mcp`, `ios`, `android`
@@ -24,6 +25,7 @@ Target: 3–5 weeks, depending on deep-focus hours available.
 - [ ] Domain DNS: leave `vite.in` pointing to v1; configure `next.vite.in` and `api-staging.vite.in` for v2 dev
 
 **0.2 Repository + licensing setup (half-day)**
+
 - [ ] Create `github.com/vitein/vitein` (public)
 - [ ] Create `github.com/vitein/vitein-premium` (private)
 - [ ] Create `github.com/vitein/vite-in-ios` and `-android` (can stay private until launch-adjacent)
@@ -35,6 +37,7 @@ Target: 3–5 weeks, depending on deep-focus hours available.
 - [ ] Enable GitHub Discussions on public repo (don't announce publicly yet)
 
 **0.3 Monorepo bootstrap (1 day)**
+
 - [ ] `pnpm init` at root, configure workspaces
 - [ ] Install Turborepo, configure `turbo.json`
 - [ ] Shared configs package: `packages/config` with eslint, prettier, tsconfig-base
@@ -44,6 +47,7 @@ Target: 3–5 weeks, depending on deep-focus hours available.
 - [ ] Dependabot / Renovate for dependency updates
 
 **0.4 Core decisions (resolve during week 1)**
+
 - [ ] **Decision: SDK generator tooling.** Recommended: `openapi-typescript-codegen` for TS SDK; `openapi-generator-cli` for Swift and Kotlin. Test both on a toy spec before committing.
 - [ ] **Decision: Email provider strategy.** Recommended: Resend alone for Phase 1 (it works, it's cheap, deliverability is good for transactional). Revisit if deliverability issues arise in specific markets.
 - [ ] **Decision: CLA tool.** Recommended: EasyCLA (industry-standard, integrates with GitHub PR flow).
@@ -52,6 +56,7 @@ Target: 3–5 weeks, depending on deep-focus hours available.
 ### Week 2 — API skeleton
 
 **0.5 Core API app bootstrap (1–2 days)**
+
 - [ ] Create `apps/api` with Wrangler + Hono scaffold
 - [ ] Configure `wrangler.toml` with dev, staging, prod environments
 - [ ] Set up secrets via `wrangler secret put` (DATABASE_URL, STRIPE keys, RESEND_API_KEY, etc.)
@@ -60,6 +65,7 @@ Target: 3–5 weeks, depending on deep-focus hours available.
 - [ ] Deploy to `api-staging.vite.in` via `wrangler deploy`
 
 **0.6 Database scaffolding (1–2 days)**
+
 - [ ] Create `packages/db-schema` with Drizzle
 - [ ] Configure `drizzle.config.ts` for three environments
 - [ ] Write schema for **`users`, `events`, `event_tokens`, `guests`, `rsvps`** (the MVP entities)
@@ -68,6 +74,7 @@ Target: 3–5 weeks, depending on deep-focus hours available.
 - [ ] Update `/v1/health` to return `{ status: 'ok', db: 'connected' }`
 
 **0.7 OpenAPI spec + SDK generation (1 day)**
+
 - [ ] Create `packages/openapi-spec` with `vitein.yaml`
 - [ ] Define `/v1/health` and its schema in the spec
 - [ ] Set up `packages/ts-sdk` that gets regenerated from the spec (build script)
@@ -77,6 +84,7 @@ Target: 3–5 weeks, depending on deep-focus hours available.
 ### Week 3 — Web skeleton + auth foundation
 
 **0.8 SvelteKit app bootstrap (1 day)**
+
 - [ ] Create `apps/web` as SvelteKit project, targeting Cloudflare Pages adapter
 - [ ] Install Paraglide, Sentry, PostHog
 - [ ] Import and use `@vitein/ts-sdk` against the staging API
@@ -84,6 +92,7 @@ Target: 3–5 weeks, depending on deep-focus hours available.
 - [ ] Create a placeholder homepage that says "vite.in v2 — coming soon" and hits `/v1/health` to prove end-to-end
 
 **0.9 Auth foundation (2–3 days)**
+
 - [ ] Install Better-Auth in `apps/api`
 - [ ] Configure auth routes: `/v1/auth/sign-up`, `/v1/auth/sign-in`, `/v1/auth/magic-link`, etc.
 - [ ] Implement Event Creator Token model (separate from user auth — pure JWT or argon2'd opaque token, stored in `event_tokens`)
@@ -93,18 +102,21 @@ Target: 3–5 weeks, depending on deep-focus hours available.
 ### Week 4 — Observability, CI/CD polish, close-out
 
 **0.10 Observability polish (1 day)**
+
 - [ ] Structured logging (JSON) in Workers
 - [ ] Cloudflare Logpush → R2 bucket (`vitein-logs`)
 - [ ] PostHog event wrapper utility (so all clients emit events consistently)
 - [ ] Tracing: `traceparent` propagation from web → API
 
 **0.11 CI/CD full pipeline (1–2 days)**
+
 - [ ] GitHub Actions matrix: lint, typecheck, unit test, build for each app
 - [ ] Preview deployments for web PRs (Cloudflare Pages does this automatically)
 - [ ] Staging API auto-deploys from `main`; prod from tagged releases
 - [ ] Secrets management documented in `docs/ops/secrets.md`
 
 **0.12 Documentation & handoff (1 day)**
+
 - [ ] `ARCHITECTURE.md`, `ROADMAP.md`, `PROJECT_PLAN.md` copied into `docs/` of the new repo
 - [ ] Each `apps/*/CLAUDE.md` reviewed and adjusted to reality
 - [ ] `README.md` at root: one-page "what is this, how to run it"
@@ -129,6 +141,7 @@ Target: 8–12 weeks after Phase 0 exit. Work proceeds in parallel streams.
 ### Stream A — Core API features (foundation for everything else)
 
 **A.1 Event lifecycle (1 week)**
+
 - [ ] `POST /v1/events` — create event (anonymous, returns event + creator token via email)
 - [ ] `GET /v1/events/:id` — get event (public fields if link_only visibility)
 - [ ] `GET /v1/events/:id/manage` — get event (all fields, requires creator token)
@@ -138,6 +151,7 @@ Target: 8–12 weeks after Phase 0 exit. Work proceeds in parallel streams.
 - [ ] Integration tests for each endpoint (happy path + authz failures)
 
 **A.2 Guests & RSVPs (1 week)**
+
 - [ ] `POST /v1/events/:id/rsvps` — public RSVP submission
 - [ ] `GET /v1/events/:id/rsvps` — list (creator token required)
 - [ ] `POST /v1/events/:id/guests` — add to invite list (creator token)
@@ -146,6 +160,7 @@ Target: 8–12 weeks after Phase 0 exit. Work proceeds in parallel streams.
 - [ ] RSVP notification email (to the creator)
 
 **A.3 Stripe premium (1 week)**
+
 - [ ] Create Stripe `Product` "vite.in Premium Event"
 - [ ] Create `Price` objects per launch currency (EUR 5.00, USD 5.00, CHF 5.00, GBP 5.00), all linked to the product
 - [ ] Enable Stripe Tax for all relevant jurisdictions
@@ -157,18 +172,21 @@ Target: 8–12 weeks after Phase 0 exit. Work proceeds in parallel streams.
 - [ ] Integration test with Stripe test mode for each launch currency
 
 **A.4 Media upload (3–4 days)**
+
 - [ ] `POST /v1/events/:id/media/presign` — generate R2 presigned upload URL
 - [ ] Server-side validation: MIME sniff, size, dimensions
 - [ ] Cloudflare Images integration for resize + optimize
 - [ ] `DELETE /v1/events/:id/media/:mediaId`
 
 **A.5 Reminders (1 week)**
+
 - [ ] Scheduled Worker cron: every hour, check events with upcoming reminder timestamps
 - [ ] Reminder email template
 - [ ] Track sent reminders in `audit_log` to avoid double-sends
 - [ ] `POST /v1/events/:id/reminders/send` for manual trigger (creator token)
 
 **A.6 User accounts (1 week)**
+
 - [ ] Better-Auth routes wired and tested
 - [ ] `POST /v1/auth/claim` — claim anonymous events for the authenticated user based on email
 - [ ] `GET /v1/users/me` — profile
@@ -177,6 +195,7 @@ Target: 8–12 weeks after Phase 0 exit. Work proceeds in parallel streams.
 - [ ] `GET /v1/users/me/export` — GDPR data export
 
 **A.7 Polish (1 week)**
+
 - [ ] All error responses localized per `Accept-Language`
 - [ ] Rate limiting via Durable Objects enforced
 - [ ] OpenAPI spec 100% matches implementation (drift check in CI)
@@ -186,24 +205,28 @@ Target: 8–12 weeks after Phase 0 exit. Work proceeds in parallel streams.
 ### Stream B — Web client
 
 **B.1 Design system (ongoing, parallel)**
+
 - [ ] Pick fonts + color palette (carry from v1 as baseline)
 - [ ] Set up Tailwind or UnoCSS config with logical properties
 - [ ] Component library: Button, Input, Select, Card, Modal, Banner
 - [ ] Storybook for isolated component dev
 
 **B.2 Landing + marketing pages (1 week)**
+
 - [ ] Homepage (hero, features, social proof, CTA)
 - [ ] Per-language homepages (SEO)
 - [ ] About, pricing, legal (Impressum, AGB, DSGVO)
 - [ ] Blog scaffold (for SEO content later)
 
 **B.3 Create-event flow (1 week)**
+
 - [ ] Form with live preview
 - [ ] Timezone auto-detection (Intl.DateTimeFormat().resolvedOptions().timeZone) with user override
 - [ ] Optional fields (location, description, cover image)
 - [ ] Submit → show success page with magic link note ("check your email")
 
 **B.4 Event view page (1 week)**
+
 - [ ] Render event based on slug
 - [ ] RSVP form (yes/maybe/no, name, email optional, message optional, plus-ones)
 - [ ] Add-to-calendar (ICS download, also Google Calendar link)
@@ -211,6 +234,7 @@ Target: 8–12 weeks after Phase 0 exit. Work proceeds in parallel streams.
 - [ ] Password prompt if event is protected
 
 **B.5 Event management page (1 week)**
+
 - [ ] Accessed via magic-link token
 - [ ] Show RSVP list, counts, export CSV
 - [ ] Edit event details
@@ -218,6 +242,7 @@ Target: 8–12 weeks after Phase 0 exit. Work proceeds in parallel streams.
 - [ ] Upgrade to premium flow (Stripe checkout redirect)
 
 **B.6 Account dashboard (1 week, parallel to A.6)**
+
 - [ ] Sign in / sign up with magic link
 - [ ] Dashboard: list of events, sort by upcoming / past
 - [ ] Settings: locale, timezone, notifications
@@ -226,6 +251,7 @@ Target: 8–12 weeks after Phase 0 exit. Work proceeds in parallel streams.
 ### Stream C — iOS app
 
 **C.1 Bootstrap (2–3 days)**
+
 - [ ] New Xcode project, `VitenIn`, SwiftUI, iOS 16 minimum
 - [ ] `SwiftPackageManager` dependencies: generated SDK, Sentry, PostHog
 - [ ] `.gitignore`, `fastlane` config, App Store Connect app record
@@ -233,6 +259,7 @@ Target: 8–12 weeks after Phase 0 exit. Work proceeds in parallel streams.
 - [ ] Push notifications capability, APNs auth key in Apple Developer portal
 
 **C.2 Core infrastructure (1 week)**
+
 - [ ] Generated Swift SDK integration
 - [ ] `AuthStore` (Keychain-backed)
 - [ ] `APIClient` wrapper with retry, error mapping
@@ -240,6 +267,7 @@ Target: 8–12 weeks after Phase 0 exit. Work proceeds in parallel streams.
 - [ ] Design system: Color / Typography / Spacing tokens matching web
 
 **C.3 Features (2–3 weeks)**
+
 - [ ] Event view (can open from URL share / universal link)
 - [ ] RSVP flow
 - [ ] Sign in (Apple + magic link fallback)
@@ -248,6 +276,7 @@ Target: 8–12 weeks after Phase 0 exit. Work proceeds in parallel streams.
 - [ ] Settings + account deletion
 
 **C.4 Push + polish (1 week)**
+
 - [ ] APNs device token registration with backend
 - [ ] Push notification handling (foreground + background + tap)
 - [ ] Deep linking via universal links (`vite.in/e/:slug`)
@@ -261,12 +290,14 @@ Target: 8–12 weeks after Phase 0 exit. Work proceeds in parallel streams.
 Mirrors Stream C with Kotlin/Compose equivalents.
 
 **D.1 Bootstrap (2–3 days)**
+
 - [ ] New Android Studio project, Kotlin, Compose, minSdk 29
 - [ ] Gradle Kotlin DSL configured
 - [ ] Hilt or Koin for DI
 - [ ] Firebase Console: FCM server key, google-services.json
 
 **D.2 Core infrastructure (1 week)**
+
 - [ ] Generated Kotlin SDK (via openapi-generator)
 - [ ] `AuthStore` (EncryptedSharedPreferences + Keystore)
 - [ ] `ApiClient` wrapper (Ktor-based)
@@ -274,6 +305,7 @@ Mirrors Stream C with Kotlin/Compose equivalents.
 - [ ] Design system matching iOS / web
 
 **D.3 Features (2–3 weeks)**
+
 - [ ] Event view + deep link handling (App Links)
 - [ ] RSVP flow
 - [ ] Sign in (Google + magic link)
@@ -282,6 +314,7 @@ Mirrors Stream C with Kotlin/Compose equivalents.
 - [ ] Settings + account deletion
 
 **D.4 Push + polish (1 week)**
+
 - [ ] FCM token registration
 - [ ] Notification channels configured
 - [ ] Share intent integration
@@ -292,12 +325,14 @@ Mirrors Stream C with Kotlin/Compose equivalents.
 ### Stream E — Cutover & launch ops
 
 **E.1 Cutover plan (1 week, final weeks)**
+
 - [ ] Feature flag in DNS / web: route X% of new event creations to v2
 - [ ] Monitoring dashboard to compare v1 vs v2 metrics
 - [ ] v1 read-only mode preparation (existing events keep working; no new events on v1)
 - [ ] Data archive: v1 Supabase export to R2 (retention: 1 year)
 
 **E.2 Launch readiness review (2–3 days)**
+
 - [ ] Security audit checklist
 - [ ] Accessibility audit (axe-core on web, manual on mobile)
 - [ ] Performance budget check
@@ -306,6 +341,7 @@ Mirrors Stream C with Kotlin/Compose equivalents.
 - [ ] Status page live
 
 **E.3 Soft launch (1–2 weeks)**
+
 - [ ] Route 10% of new traffic to v2 for 3 days; monitor error rates
 - [ ] Ramp to 50% for 3 days
 - [ ] Ramp to 100% for 7 days on v2 exclusively
@@ -313,6 +349,7 @@ Mirrors Stream C with Kotlin/Compose equivalents.
 - [ ] Announcement blog post + mailing list
 
 **E.4 Post-launch (ongoing)**
+
 - [ ] Weekly retrospective for first 8 weeks
 - [ ] Sentry error triage daily for first 30 days
 - [ ] Quick-win backlog built from user feedback
@@ -333,7 +370,7 @@ Mirrors Stream C with Kotlin/Compose equivalents.
 ```
 Phase 0.4 (API skeleton) ─┬─> Phase 0.5 (DB) ─> Phase 0.6 (OpenAPI) ─> Phase 0.7 (Web skeleton)
                           └─> Phase 0.8 (Auth)
-                          
+
 Phase 1 Stream A ─┬─> Stream B (needs SDK, auth)
                   ├─> Stream C (needs SDK, auth)
                   └─> Stream D (needs SDK, auth)
