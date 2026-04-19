@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions & ideas
+    url: https://github.com/viteinhq/vitein/discussions
+    about: For questions, broad ideas, and general discussion, please open a Discussion.
+  - name: Security vulnerability
+    url: https://github.com/viteinhq/vitein/security/advisories/new
+    about: Report vulnerabilities privately via GitHub Security Advisories. See SECURITY.md.
