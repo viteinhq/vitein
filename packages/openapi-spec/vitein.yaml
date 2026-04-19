@@ -1,0 +1,104 @@
+openapi: 3.1.0
+info:
+  title: vite.in API
+  version: 0.1.0
+  license:
+    name: AGPL-3.0-or-later
+    url: https://www.gnu.org/licenses/agpl-3.0.html
+  description: |
+    The Core API for vite.in. One API, consumed by the web app, iOS, Android,
+    and the MCP server for LLM agents.
+
+    **This spec is the source of truth.** Every endpoint is added to this file
+    first, then implemented. The TypeScript SDK (`@vitein/ts-sdk`) is
+    regenerated from this file on every change. CI fails if they drift.
+
+servers:
+  - url: https://api-staging.vite.in
+    description: Staging (tracks main branch)
+  - url: https://api.vite.in
+    description: Production (tagged releases only)
+  - url: http://localhost:8787
+    description: Local dev (wrangler dev)
+
+tags:
+  - name: system
+    description: Health checks and operational endpoints.
+
+paths:
+  /v1/health:
+    get:
+      operationId: getHealth
+      summary: Health check
+      description: |
+        Returns service health including database connectivity. Used by CI,
+        uptime monitors, and the `/v1/health` smoke test in `apps/api`.
+      tags: [system]
+      responses:
+        '200':
+          description: Service is reachable; database status is reported in the body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+components:
+  schemas:
+    HealthResponse:
+      type: object
+      required: [status, environment, db, ts]
+      properties:
+        status:
+          type: string
+          enum: [ok]
+          description: Always `ok` while the Worker can serve requests.
+        environment:
+          type: string
+          enum: [dev, staging, production]
+          description: Which Worker environment answered.
+        db:
+          type: string
+          enum: [connected, unavailable, error]
+          description: |
+            - `connected` — `SELECT 1` succeeded.
+            - `unavailable` — `DATABASE_URL` not configured (expected in local dev without Neon).
+            - `error` — connection attempt failed.
+        ts:
+          type: string
+          format: date-time
+          description: Server's clock at the moment the response was built.
+      example:
+        status: ok
+        environment: staging
+        db: connected
+        ts: '2026-04-19T18:00:00.000Z'
+
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+              description: Stable error code; maps to a localized message client-side.
+            message:
+              type: string
+              description: Default-language (English) fallback message.
+            details:
+              type: object
+              additionalProperties: true
+
+  responses:
+    NotFound:
+      description: Route not found.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    InternalServerError:
+      description: Unexpected error; captured in Sentry.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }

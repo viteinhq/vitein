@@ -19,6 +19,9 @@ export interface Env {
   // RATE_LIMITER: DurableObjectNamespace;
 }
 
+import type { AuthContext } from '../domain/auth/context.js';
+
 export type AppVariables = {
   requestId: string;
+  auth: AuthContext;
 };

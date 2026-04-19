@@ -34,6 +34,12 @@ jobs:
       - name: Format check
         run: pnpm format:check
 
+      - name: Lint OpenAPI spec
+        run: pnpm -F @vitein/openapi-spec lint
+
+      - name: SDK drift check (spec vs generated)
+        run: pnpm gen:sdk:check
+
       - name: Lint
         run: pnpm lint
 

@@ -1,0 +1,19 @@
+{
+  "extends": "@vitein/config/tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "moduleResolution": "Bundler",
+    "module": "ESNext",
+    "noEmit": true,
+    "rootDir": ".",
+    "baseUrl": ".",
+    // Generated code from @hey-api/openapi-ts does not satisfy our strictest
+    // options. We relax these only here; downstream consumers still get strict
+    // types via the exported type surface.
+    "exactOptionalPropertyTypes": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
+  },
+  "include": ["src/**/*", "openapi-ts.config.ts"],
+  "exclude": ["node_modules", "dist"]
+}

@@ -20,7 +20,9 @@
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "gen:sdk": "pnpm -F @vitein/ts-sdk generate",
+    "gen:sdk:check": "pnpm -F @vitein/ts-sdk generate:check"
   },
   "devDependencies": {
     "prettier": "^3.3.3",

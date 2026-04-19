@@ -1,0 +1,23 @@
+{
+  "name": "@vitein/openapi-spec",
+  "version": "0.0.0",
+  "private": true,
+  "description": "vite.in API — single source of truth OpenAPI 3.1 spec",
+  "license": "AGPL-3.0-or-later",
+  "type": "module",
+  "main": "vitein.yaml",
+  "exports": {
+    ".": "./vitein.yaml"
+  },
+  "files": [
+    "vitein.yaml"
+  ],
+  "scripts": {
+    "lint": "redocly lint vitein.yaml",
+    "build": "redocly bundle vitein.yaml -o dist/vitein.bundled.yaml",
+    "preview": "redocly preview-docs vitein.yaml"
+  },
+  "devDependencies": {
+    "@redocly/cli": "^1.25.11"
+  }
+}
