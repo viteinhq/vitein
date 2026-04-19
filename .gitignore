@@ -1,0 +1,33 @@
+# macOS
+.DS_Store
+
+# Node
+node_modules/
+.pnpm-store/
+.turbo/
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Build output
+dist/
+build/
+.output/
+.svelte-kit/
+.wrangler/
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Editor
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# OS
+Thumbs.db
