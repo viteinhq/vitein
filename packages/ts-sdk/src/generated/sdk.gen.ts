@@ -2,7 +2,25 @@
 
 import type { Client, Options as Options2, TDataShape } from './client';
 import { client } from './client.gen';
-import type { GetHealthData, GetHealthResponses } from './types.gen';
+import type {
+  CreateEventData,
+  CreateEventErrors,
+  CreateEventResponses,
+  DeleteEventData,
+  DeleteEventErrors,
+  DeleteEventResponses,
+  GetEventData,
+  GetEventErrors,
+  GetEventManageData,
+  GetEventManageErrors,
+  GetEventManageResponses,
+  GetEventResponses,
+  GetHealthData,
+  GetHealthResponses,
+  UpdateEventData,
+  UpdateEventErrors,
+  UpdateEventResponses,
+} from './types.gen';
 
 export type Options<
   TData extends TDataShape = TDataShape,
@@ -34,5 +52,81 @@ export const getHealth = <ThrowOnError extends boolean = false>(
 ) =>
   (options?.client ?? client).get<GetHealthResponses, unknown, ThrowOnError>({
     url: '/v1/health',
+    ...options,
+  });
+
+/**
+ * Create an event (anonymous)
+ *
+ * Creates an event without requiring a user account. Returns the public
+ * event view plus a one-time **creator token** delivered to the
+ * creator's email as a magic link. The token in the response body is
+ * intended for client confirmation only — clients should not persist it.
+ *
+ */
+export const createEvent = <ThrowOnError extends boolean = false>(
+  options: Options<CreateEventData, ThrowOnError>,
+) =>
+  (options.client ?? client).post<CreateEventResponses, CreateEventErrors, ThrowOnError>({
+    url: '/v1/events',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+/**
+ * Soft-delete an event (creator only)
+ */
+export const deleteEvent = <ThrowOnError extends boolean = false>(
+  options: Options<DeleteEventData, ThrowOnError>,
+) =>
+  (options.client ?? client).delete<DeleteEventResponses, DeleteEventErrors, ThrowOnError>({
+    url: '/v1/events/{id}',
+    ...options,
+  });
+
+/**
+ * Get the public view of an event
+ *
+ * Returns fields safe to share publicly. Password-protected events
+ * return only minimal metadata until the password is supplied via a
+ * future endpoint.
+ *
+ */
+export const getEvent = <ThrowOnError extends boolean = false>(
+  options: Options<GetEventData, ThrowOnError>,
+) =>
+  (options.client ?? client).get<GetEventResponses, GetEventErrors, ThrowOnError>({
+    url: '/v1/events/{id}',
+    ...options,
+  });
+
+/**
+ * Update an event (creator only)
+ */
+export const updateEvent = <ThrowOnError extends boolean = false>(
+  options: Options<UpdateEventData, ThrowOnError>,
+) =>
+  (options.client ?? client).patch<UpdateEventResponses, UpdateEventErrors, ThrowOnError>({
+    url: '/v1/events/{id}',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+/**
+ * Get the creator view of an event
+ *
+ * Returns all fields including private ones (paid_features, paymentRef, etc.).
+ */
+export const getEventManage = <ThrowOnError extends boolean = false>(
+  options: Options<GetEventManageData, ThrowOnError>,
+) =>
+  (options.client ?? client).get<GetEventManageResponses, GetEventManageErrors, ThrowOnError>({
+    url: '/v1/events/{id}/manage',
     ...options,
   });

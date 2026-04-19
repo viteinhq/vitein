@@ -30,6 +30,75 @@ export type HealthResponse = {
   ts: string;
 };
 
+export type EventCreateInput = {
+  title: string;
+  description?: string | null;
+  startsAt: string;
+  endsAt?: string | null;
+  /**
+   * IANA timezone (e.g. `Europe/Zurich`).
+   */
+  timezone: string;
+  locationText?: string | null;
+  creatorEmail: string;
+  defaultLocale?: string;
+  visibility?: 'link_only' | 'public';
+};
+
+/**
+ * All fields are optional; omit a field to leave it unchanged.
+ */
+export type EventUpdateInput = {
+  title?: string;
+  description?: string | null;
+  startsAt?: string;
+  endsAt?: string | null;
+  timezone?: string;
+  locationText?: string | null;
+  defaultLocale?: string;
+  visibility?: 'link_only' | 'public';
+};
+
+export type EventPublic = {
+  id: string;
+  slug: string;
+  title: string;
+  description?: string | null;
+  startsAt: string;
+  endsAt?: string | null;
+  timezone: string;
+  locationText?: string | null;
+  visibility: 'link_only' | 'public';
+  defaultLocale?: string;
+};
+
+export type EventManage = EventPublic & {
+  creatorEmail: string;
+  creatorUserId?: string | null;
+  isPaid: boolean;
+  paidFeatures: {
+    [key: string]: unknown;
+  };
+  paymentProvider?: string | null;
+  paymentRef?: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type EventCreateResponse = {
+  event: EventPublic;
+  /**
+   * True if the magic-link email was dispatched. False in dev when RESEND_API_KEY is unset.
+   */
+  magicLinkSent: boolean;
+  /**
+   * Returned only when the email was NOT sent (i.e. dev mode). The
+   * client may use it to drive UI tests. Never returned in production.
+   *
+   */
+  creatorTokenPreview?: string | null;
+};
+
 export type Error = {
   error: {
     /**
@@ -46,6 +115,18 @@ export type Error = {
   };
 };
 
+/**
+ * Server-generated UUIDv7 of the event.
+ */
+export type EventId = string;
+
+/**
+ * Plaintext creator token (the value delivered by the magic-link email).
+ * The server hashes it and compares against `event_tokens.token_hash`.
+ *
+ */
+export type CreatorTokenHeader = string;
+
 export type GetHealthData = {
   body?: never;
   path?: never;
@@ -61,3 +142,188 @@ export type GetHealthResponses = {
 };
 
 export type GetHealthResponse = GetHealthResponses[keyof GetHealthResponses];
+
+export type CreateEventData = {
+  body: EventCreateInput;
+  path?: never;
+  query?: never;
+  url: '/v1/events';
+};
+
+export type CreateEventErrors = {
+  /**
+   * Request body or query parameters failed validation.
+   */
+  400: Error;
+};
+
+export type CreateEventError = CreateEventErrors[keyof CreateEventErrors];
+
+export type CreateEventResponses = {
+  /**
+   * Event created; magic-link email dispatched to creator.
+   */
+  201: EventCreateResponse;
+};
+
+export type CreateEventResponse = CreateEventResponses[keyof CreateEventResponses];
+
+export type DeleteEventData = {
+  body?: never;
+  headers: {
+    /**
+     * Plaintext creator token (the value delivered by the magic-link email).
+     * The server hashes it and compares against `event_tokens.token_hash`.
+     *
+     */
+    'X-Creator-Token': string;
+  };
+  path: {
+    /**
+     * Server-generated UUIDv7 of the event.
+     */
+    id: string;
+  };
+  query?: never;
+  url: '/v1/events/{id}';
+};
+
+export type DeleteEventErrors = {
+  /**
+   * Missing or invalid creator token.
+   */
+  401: Error;
+  /**
+   * Resource not found.
+   */
+  404: Error;
+};
+
+export type DeleteEventError = DeleteEventErrors[keyof DeleteEventErrors];
+
+export type DeleteEventResponses = {
+  /**
+   * Event soft-deleted.
+   */
+  204: void;
+};
+
+export type DeleteEventResponse = DeleteEventResponses[keyof DeleteEventResponses];
+
+export type GetEventData = {
+  body?: never;
+  path: {
+    /**
+     * Server-generated UUIDv7 of the event.
+     */
+    id: string;
+  };
+  query?: never;
+  url: '/v1/events/{id}';
+};
+
+export type GetEventErrors = {
+  /**
+   * Resource not found.
+   */
+  404: Error;
+};
+
+export type GetEventError = GetEventErrors[keyof GetEventErrors];
+
+export type GetEventResponses = {
+  /**
+   * Public event view.
+   */
+  200: EventPublic;
+};
+
+export type GetEventResponse = GetEventResponses[keyof GetEventResponses];
+
+export type UpdateEventData = {
+  body: EventUpdateInput;
+  headers: {
+    /**
+     * Plaintext creator token (the value delivered by the magic-link email).
+     * The server hashes it and compares against `event_tokens.token_hash`.
+     *
+     */
+    'X-Creator-Token': string;
+  };
+  path: {
+    /**
+     * Server-generated UUIDv7 of the event.
+     */
+    id: string;
+  };
+  query?: never;
+  url: '/v1/events/{id}';
+};
+
+export type UpdateEventErrors = {
+  /**
+   * Request body or query parameters failed validation.
+   */
+  400: Error;
+  /**
+   * Missing or invalid creator token.
+   */
+  401: Error;
+  /**
+   * Resource not found.
+   */
+  404: Error;
+};
+
+export type UpdateEventError = UpdateEventErrors[keyof UpdateEventErrors];
+
+export type UpdateEventResponses = {
+  /**
+   * Updated event (creator view).
+   */
+  200: EventManage;
+};
+
+export type UpdateEventResponse = UpdateEventResponses[keyof UpdateEventResponses];
+
+export type GetEventManageData = {
+  body?: never;
+  headers: {
+    /**
+     * Plaintext creator token (the value delivered by the magic-link email).
+     * The server hashes it and compares against `event_tokens.token_hash`.
+     *
+     */
+    'X-Creator-Token': string;
+  };
+  path: {
+    /**
+     * Server-generated UUIDv7 of the event.
+     */
+    id: string;
+  };
+  query?: never;
+  url: '/v1/events/{id}/manage';
+};
+
+export type GetEventManageErrors = {
+  /**
+   * Missing or invalid creator token.
+   */
+  401: Error;
+  /**
+   * Resource not found.
+   */
+  404: Error;
+};
+
+export type GetEventManageError = GetEventManageErrors[keyof GetEventManageErrors];
+
+export type GetEventManageResponses = {
+  /**
+   * Creator-scoped event view.
+   */
+  200: EventManage;
+};
+
+export type GetEventManageResponse = GetEventManageResponses[keyof GetEventManageResponses];

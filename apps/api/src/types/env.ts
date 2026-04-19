@@ -11,6 +11,8 @@ export interface Env {
   // Secrets (set via `wrangler secret put ...`)
   SENTRY_DSN?: string;
   DATABASE_URL?: string;
+  RESEND_API_KEY?: string;
+  WEB_BASE_URL?: string;
 
   // Bindings added later (KV, R2, Queues, DO) go here:
   // KV_CACHE: KVNamespace;

@@ -24,6 +24,8 @@ servers:
 tags:
   - name: system
     description: Health checks and operational endpoints.
+  - name: events
+    description: Event lifecycle — create, read, update, delete.
 
 paths:
   /v1/health:
@@ -42,7 +44,132 @@ paths:
               schema:
                 $ref: '#/components/schemas/HealthResponse'
 
+  /v1/events:
+    post:
+      operationId: createEvent
+      summary: Create an event (anonymous)
+      description: |
+        Creates an event without requiring a user account. Returns the public
+        event view plus a one-time **creator token** delivered to the
+        creator's email as a magic link. The token in the response body is
+        intended for client confirmation only — clients should not persist it.
+      tags: [events]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventCreateInput'
+      responses:
+        '201':
+          description: Event created; magic-link email dispatched to creator.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventCreateResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+
+  /v1/events/{id}:
+    parameters:
+      - $ref: '#/components/parameters/EventId'
+    get:
+      operationId: getEvent
+      summary: Get the public view of an event
+      description: |
+        Returns fields safe to share publicly. Password-protected events
+        return only minimal metadata until the password is supplied via a
+        future endpoint.
+      tags: [events]
+      responses:
+        '200':
+          description: Public event view.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventPublic'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      operationId: updateEvent
+      summary: Update an event (creator only)
+      tags: [events]
+      parameters:
+        - $ref: '#/components/parameters/CreatorTokenHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventUpdateInput'
+      responses:
+        '200':
+          description: Updated event (creator view).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventManage'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      operationId: deleteEvent
+      summary: Soft-delete an event (creator only)
+      tags: [events]
+      parameters:
+        - $ref: '#/components/parameters/CreatorTokenHeader'
+      responses:
+        '204':
+          description: Event soft-deleted.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /v1/events/{id}/manage:
+    parameters:
+      - $ref: '#/components/parameters/EventId'
+      - $ref: '#/components/parameters/CreatorTokenHeader'
+    get:
+      operationId: getEventManage
+      summary: Get the creator view of an event
+      description: Returns all fields including private ones (paid_features, paymentRef, etc.).
+      tags: [events]
+      responses:
+        '200':
+          description: Creator-scoped event view.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventManage'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
 components:
+  parameters:
+    EventId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: Server-generated UUIDv7 of the event.
+    CreatorTokenHeader:
+      name: X-Creator-Token
+      in: header
+      required: true
+      schema:
+        type: string
+      description: |
+        Plaintext creator token (the value delivered by the magic-link email).
+        The server hashes it and compares against `event_tokens.token_hash`.
+
   schemas:
     HealthResponse:
       type: object
@@ -73,6 +200,92 @@ components:
         db: connected
         ts: '2026-04-19T18:00:00.000Z'
 
+    EventCreateInput:
+      type: object
+      required: [title, startsAt, timezone, creatorEmail]
+      properties:
+        title: { type: string, minLength: 1, maxLength: 200 }
+        description: { type: [string, 'null'], maxLength: 5000 }
+        startsAt: { type: string, format: date-time }
+        endsAt: { type: [string, 'null'], format: date-time }
+        timezone:
+          type: string
+          description: IANA timezone (e.g. `Europe/Zurich`).
+          minLength: 1
+          maxLength: 64
+        locationText: { type: [string, 'null'], maxLength: 500 }
+        creatorEmail: { type: string, format: email }
+        defaultLocale:
+          type: string
+          minLength: 2
+          maxLength: 10
+          default: en
+        visibility:
+          type: string
+          enum: [link_only, public]
+          default: link_only
+
+    EventUpdateInput:
+      type: object
+      description: All fields are optional; omit a field to leave it unchanged.
+      properties:
+        title: { type: string, minLength: 1, maxLength: 200 }
+        description: { type: [string, 'null'], maxLength: 5000 }
+        startsAt: { type: string, format: date-time }
+        endsAt: { type: [string, 'null'], format: date-time }
+        timezone: { type: string, minLength: 1, maxLength: 64 }
+        locationText: { type: [string, 'null'], maxLength: 500 }
+        defaultLocale: { type: string, minLength: 2, maxLength: 10 }
+        visibility: { type: string, enum: [link_only, public] }
+
+    EventPublic:
+      type: object
+      required: [id, slug, title, startsAt, timezone, visibility]
+      properties:
+        id: { type: string, format: uuid }
+        slug: { type: string }
+        title: { type: string }
+        description: { type: [string, 'null'] }
+        startsAt: { type: string, format: date-time }
+        endsAt: { type: [string, 'null'], format: date-time }
+        timezone: { type: string }
+        locationText: { type: [string, 'null'] }
+        visibility: { type: string, enum: [link_only, public] }
+        defaultLocale: { type: string }
+
+    EventManage:
+      allOf:
+        - $ref: '#/components/schemas/EventPublic'
+        - type: object
+          required: [creatorEmail, isPaid, paidFeatures, createdAt, updatedAt]
+          properties:
+            creatorEmail: { type: string, format: email }
+            creatorUserId: { type: [string, 'null'], format: uuid }
+            isPaid: { type: boolean }
+            paidFeatures:
+              type: object
+              additionalProperties: true
+            paymentProvider: { type: [string, 'null'] }
+            paymentRef: { type: [string, 'null'] }
+            createdAt: { type: string, format: date-time }
+            updatedAt: { type: string, format: date-time }
+
+    EventCreateResponse:
+      type: object
+      required: [event, magicLinkSent]
+      properties:
+        event: { $ref: '#/components/schemas/EventPublic' }
+        magicLinkSent:
+          {
+            type: boolean,
+            description: True if the magic-link email was dispatched. False in dev when RESEND_API_KEY is unset.,
+          }
+        creatorTokenPreview:
+          type: [string, 'null']
+          description: |
+            Returned only when the email was NOT sent (i.e. dev mode). The
+            client may use it to drive UI tests. Never returned in production.
+
     Error:
       type: object
       required: [error]
@@ -93,7 +306,17 @@ components:
 
   responses:
     NotFound:
-      description: Route not found.
+      description: Resource not found.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    ValidationError:
+      description: Request body or query parameters failed validation.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Unauthorized:
+      description: Missing or invalid creator token.
       content:
         application/json:
           schema: { $ref: '#/components/schemas/Error' }

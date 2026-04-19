@@ -10,7 +10,12 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    // Drizzle's typed update()/insert() APIs and Zod's inferred shapes do not
+    // compose well with exactOptionalPropertyTypes (they produce `T | undefined`
+    // for optional fields that the ORM expects to be omitted). The rest of the
+    // strict flags are kept on.
+    "exactOptionalPropertyTypes": false
   },
   "include": ["src/**/*", "test/**/*", "vitest.config.ts"],
   "exclude": ["node_modules", "dist", ".wrangler"]
