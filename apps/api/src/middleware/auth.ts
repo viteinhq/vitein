@@ -4,6 +4,7 @@ import type { AuthContext } from '../domain/auth/context.js';
 import { hashToken } from '../domain/auth/tokens.js';
 import { createAuth } from '../infra/auth.js';
 import { db } from '../infra/db.js';
+import { rootLogger } from '../infra/logger.js';
 import type { AppVariables, Env } from '../types/env.js';
 
 /**
@@ -67,7 +68,7 @@ async function resolveUserSession(env: Env, request: Request): Promise<AuthConte
     if (!session?.user.id) return null;
     return { kind: 'user', userId: session.user.id, scopes: ['*'] };
   } catch (err) {
-    console.warn('[auth] getSession failed, treating as anonymous', err);
+    rootLogger.warn('auth_get_session_failed', { err: err as Error });
     return null;
   }
 }

@@ -30,7 +30,7 @@ export const errorHandler: ErrorHandler<{
   }
 
   Sentry.captureException(err);
-  console.error('[unhandled]', err);
+  c.var.logger?.error('unhandled_error', { err: err as Error });
   return c.json(
     {
       error: { code: 'internal_error', message: translate('internal_error', locale) },

@@ -2,6 +2,7 @@ import { findDueReminders, markReminderSent } from './domain/reminders/reminders
 import { purgeSoftDeleted } from './domain/retention/purge.js';
 import { db } from './infra/db.js';
 import { sendReminder } from './infra/email.js';
+import { createLogger, type Logger } from './infra/logger.js';
 import type { Env } from './types/env.js';
 
 /**
@@ -17,37 +18,47 @@ import type { Env } from './types/env.js';
  * skip the other.
  */
 export async function runScheduled(env: Env): Promise<void> {
+  const log = createLogger({
+    env: env.ENVIRONMENT,
+    requestId: `cron:${Date.now().toString()}`,
+  });
+
   if (!env.DATABASE_URL) {
-    console.warn('[cron] DATABASE_URL unset — skipping scheduled run');
+    log.warn('cron_skipped_database_url_unset');
     return;
   }
 
   const client = db(env);
 
   try {
-    await sendDueReminders(env, client);
+    await sendDueReminders(env, client, log);
   } catch (err) {
-    console.error('[cron] reminder job failed', err);
+    log.error('cron_reminder_job_failed', { err: err as Error });
   }
 
   try {
     const result = await purgeSoftDeleted(client);
     if (result.eventsDeleted > 0 || result.usersDeleted > 0) {
-      console.warn(
-        `[cron] purged ${String(result.eventsDeleted)} events, ${String(result.usersDeleted)} users`,
-      );
+      log.info('cron_purge_complete', {
+        events_deleted: result.eventsDeleted,
+        users_deleted: result.usersDeleted,
+      });
     }
   } catch (err) {
-    console.error('[cron] purge job failed', err);
+    log.error('cron_purge_job_failed', { err: err as Error });
   }
 }
 
-async function sendDueReminders(env: Env, client: ReturnType<typeof db>): Promise<void> {
+async function sendDueReminders(
+  env: Env,
+  client: ReturnType<typeof db>,
+  log: Logger,
+): Promise<void> {
   const due = await findDueReminders(client);
   if (due.length === 0) return;
 
   const webBase = env.WEB_BASE_URL ?? 'https://vite.in';
-  console.warn(`[cron] sending ${String(due.length)} reminders`);
+  log.info('cron_reminders_sending', { count: due.length });
 
   for (const { reminder, event } of due) {
     try {
@@ -62,7 +73,10 @@ async function sendDueReminders(env: Env, client: ReturnType<typeof db>): Promis
         kind: reminder.kind,
       });
     } catch (err) {
-      console.error('[cron] reminder send failed', { reminderId: reminder.id, err });
+      log.error('cron_reminder_send_failed', {
+        reminder_id: reminder.id,
+        err: err as Error,
+      });
     }
   }
 }

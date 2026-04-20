@@ -4,6 +4,7 @@ import { runScheduled } from './cron.js';
 import { authMiddleware } from './middleware/auth.js';
 import { errorHandler } from './middleware/error.js';
 import { rateLimit } from './middleware/rate-limit.js';
+import { requestId } from './middleware/request-id.js';
 import { authRoute } from './routes/auth.js';
 import { claimRoute } from './routes/claim.js';
 import { eventsRoute } from './routes/events.js';
@@ -16,7 +17,11 @@ export { RateLimiter } from './infra/rate-limiter.js';
 
 const app = new Hono<{ Bindings: Env; Variables: AppVariables }>();
 
-// Auth middleware runs first so every handler can read c.var.auth.
+// Tag every request with an id + per-request structured logger before
+// anything else can log.
+app.use('*', requestId);
+
+// Auth middleware runs next so every handler can read c.var.auth.
 app.use('*', authMiddleware);
 
 // Rate limiting per resolved auth context. Skipped in environments without

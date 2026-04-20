@@ -25,6 +25,9 @@ export function apiFetch(
   }
   const cookie = event.request.headers.get('cookie');
   if (cookie) headers.set('Cookie', cookie);
+  if (event.locals.requestId && !headers.has('X-Request-Id')) {
+    headers.set('X-Request-Id', event.locals.requestId);
+  }
 
   return fetch(url, { ...init, headers });
 }

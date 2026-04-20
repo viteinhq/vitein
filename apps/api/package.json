@@ -23,6 +23,7 @@
     "@vitein/i18n-messages": "workspace:*",
     "better-auth": "^1.6.5",
     "hono": "^4.6.12",
+    "uuidv7": "^1.0.2",
     "zod": "^4.0.0"
   },
   "devDependencies": {

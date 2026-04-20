@@ -4,7 +4,9 @@ declare global {
     interface Error {
       code?: string;
     }
-    // interface Locals {}
+    interface Locals {
+      requestId: string;
+    }
     // interface PageData {}
     interface Platform {
       env?: {

@@ -44,7 +44,7 @@ rsvpsRoute.post(
         status: input.status,
         eventUrl,
       }).catch((err: unknown) => {
-        console.warn('[rsvp] confirmation email failed', err);
+        c.var.logger.warn('rsvp_confirmation_email_failed', { err: err as Error });
       });
     }
 
@@ -56,7 +56,7 @@ rsvpsRoute.post(
       plusOnes: input.plusOnes ?? 0,
       manageUrl: `${webBase}/e/${event.slug}/manage`,
     }).catch((err: unknown) => {
-      console.warn('[rsvp] notification email failed', err);
+      c.var.logger.warn('rsvp_notification_email_failed', { err: err as Error });
     });
 
     return c.json(toRsvp(rsvp), 201);

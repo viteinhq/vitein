@@ -28,8 +28,10 @@ export interface Env {
 }
 
 import type { AuthContext } from '../domain/auth/context.js';
+import type { Logger } from '../infra/logger.js';
 
 export type AppVariables = {
   requestId: string;
+  logger: Logger;
   auth: AuthContext;
 };

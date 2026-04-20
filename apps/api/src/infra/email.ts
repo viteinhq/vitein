@@ -1,4 +1,5 @@
 import type { Env } from '../types/env.js';
+import { rootLogger } from './logger.js';
 
 /**
  * Thin Resend wrapper. When `RESEND_API_KEY` is unset (local dev without an
@@ -113,7 +114,7 @@ interface SendEmailInput {
 
 async function sendEmail(env: Env, input: SendEmailInput): Promise<SendResult> {
   if (!env.RESEND_API_KEY) {
-    console.warn('[email] RESEND_API_KEY unset — skipping send', {
+    rootLogger.warn('email_skipped_resend_api_key_unset', {
       to: input.to,
       ...(input.logHint ?? {}),
     });
