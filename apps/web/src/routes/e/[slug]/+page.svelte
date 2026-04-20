@@ -41,13 +41,21 @@
       <p class="whitespace-pre-line text-slate-800">{data.event.description}</p>
     {/if}
 
-    <button
-      type="button"
-      onclick={copyLink}
-      class="rounded-md border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50"
-    >
-      {copied ? 'Copied!' : 'Copy link'}
-    </button>
+    <div class="flex flex-wrap gap-2">
+      <button
+        type="button"
+        onclick={copyLink}
+        class="rounded-md border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50"
+      >
+        {copied ? 'Copied!' : 'Copy link'}
+      </button>
+      <a
+        href="/e/{data.event.slug}/event.ics"
+        class="rounded-md border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50"
+      >
+        Add to calendar
+      </a>
+    </div>
   </article>
 
   <section class="space-y-4 rounded-lg border border-slate-200 p-6">

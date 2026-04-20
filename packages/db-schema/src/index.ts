@@ -1,4 +1,4 @@
-export { and, eq, isNull, lt, or, sql } from 'drizzle-orm';
+export { and, eq, inArray, isNull, lt, or, sql } from 'drizzle-orm';
 export { createDb, type Db } from './client.js';
 export {
   users,

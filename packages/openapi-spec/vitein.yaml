@@ -102,6 +102,28 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  /v1/events/by-slug/{slug}/ics:
+    parameters:
+      - name: slug
+        in: path
+        required: true
+        schema: { type: string, minLength: 1, maxLength: 64 }
+    get:
+      operationId: getEventIcs
+      summary: Download an iCalendar file for the event
+      description: |
+        Returns a single-event iCalendar (RFC 5545) document. All timestamps
+        are UTC (`Z`-suffixed); clients apply the user's local zone on display.
+      tags: [events]
+      responses:
+        '200':
+          description: iCalendar payload.
+          content:
+            text/calendar:
+              schema: { type: string }
+        '404':
+          $ref: '#/components/responses/NotFound'
+
   /v1/events/{id}:
     parameters:
       - $ref: '#/components/parameters/EventId'
@@ -349,6 +371,29 @@ paths:
                   items:
                     type: array
                     items: { $ref: '#/components/schemas/EventPublic' }
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /v1/users/me/audit:
+    get:
+      operationId: getMyAudit
+      summary: Recent audit entries for events owned by the user
+      description: |
+        Scoped by event ownership, not by `actor_id`, so historical rows that
+        predate the user's sign-in (auto-claim) are still returned.
+      tags: [users]
+      responses:
+        '200':
+          description: Audit entries.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items: { $ref: '#/components/schemas/AuditEntry' }
         '401':
           $ref: '#/components/responses/Unauthorized'
 
@@ -608,6 +653,19 @@ components:
         claimed:
           type: integer
           description: Number of events newly linked to this user.
+
+    AuditEntry:
+      type: object
+      required: [id, action, createdAt]
+      properties:
+        id: { type: string, format: uuid }
+        action:
+          { type: string, description: 'e.g. `event.hard_delete`, `reminder.sent`, `rsvp.submit`' }
+        eventId: { type: [string, 'null'], format: uuid }
+        metadata:
+          type: object
+          additionalProperties: true
+        createdAt: { type: string, format: date-time }
 
     Error:
       type: object

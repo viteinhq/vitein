@@ -26,6 +26,9 @@ import type {
   GetEventBySlugResponses,
   GetEventData,
   GetEventErrors,
+  GetEventIcsData,
+  GetEventIcsErrors,
+  GetEventIcsResponses,
   GetEventManageData,
   GetEventManageErrors,
   GetEventManageResponses,
@@ -35,6 +38,9 @@ import type {
   GetMeData,
   GetMeErrors,
   GetMeResponses,
+  GetMyAuditData,
+  GetMyAuditErrors,
+  GetMyAuditResponses,
   GetMyEventsData,
   GetMyEventsErrors,
   GetMyEventsResponses,
@@ -122,6 +128,21 @@ export const getEventBySlug = <ThrowOnError extends boolean = false>(
 ) =>
   (options.client ?? client).get<GetEventBySlugResponses, GetEventBySlugErrors, ThrowOnError>({
     url: '/v1/events/by-slug/{slug}',
+    ...options,
+  });
+
+/**
+ * Download an iCalendar file for the event
+ *
+ * Returns a single-event iCalendar (RFC 5545) document. All timestamps
+ * are UTC (`Z`-suffixed); clients apply the user's local zone on display.
+ *
+ */
+export const getEventIcs = <ThrowOnError extends boolean = false>(
+  options: Options<GetEventIcsData, ThrowOnError>,
+) =>
+  (options.client ?? client).get<GetEventIcsResponses, GetEventIcsErrors, ThrowOnError>({
+    url: '/v1/events/by-slug/{slug}/ics',
     ...options,
   });
 
@@ -288,6 +309,21 @@ export const getMyEvents = <ThrowOnError extends boolean = false>(
 ) =>
   (options?.client ?? client).get<GetMyEventsResponses, GetMyEventsErrors, ThrowOnError>({
     url: '/v1/users/me/events',
+    ...options,
+  });
+
+/**
+ * Recent audit entries for events owned by the user
+ *
+ * Scoped by event ownership, not by `actor_id`, so historical rows that
+ * predate the user's sign-in (auto-claim) are still returned.
+ *
+ */
+export const getMyAudit = <ThrowOnError extends boolean = false>(
+  options?: Options<GetMyAuditData, ThrowOnError>,
+) =>
+  (options?.client ?? client).get<GetMyAuditResponses, GetMyAuditErrors, ThrowOnError>({
+    url: '/v1/users/me/audit',
     ...options,
   });
 

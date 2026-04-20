@@ -168,6 +168,19 @@ export type ClaimResponse = {
   claimed: number;
 };
 
+export type AuditEntry = {
+  id: string;
+  /**
+   * e.g. `event.hard_delete`, `reminder.sent`, `rsvp.submit`
+   */
+  action: string;
+  eventId?: string | null;
+  metadata?: {
+    [key: string]: unknown;
+  };
+  createdAt: string;
+};
+
 export type Error = {
   error: {
     /**
@@ -266,6 +279,33 @@ export type GetEventBySlugResponses = {
 };
 
 export type GetEventBySlugResponse = GetEventBySlugResponses[keyof GetEventBySlugResponses];
+
+export type GetEventIcsData = {
+  body?: never;
+  path: {
+    slug: string;
+  };
+  query?: never;
+  url: '/v1/events/by-slug/{slug}/ics';
+};
+
+export type GetEventIcsErrors = {
+  /**
+   * Resource not found.
+   */
+  404: Error;
+};
+
+export type GetEventIcsError = GetEventIcsErrors[keyof GetEventIcsErrors];
+
+export type GetEventIcsResponses = {
+  /**
+   * iCalendar payload.
+   */
+  200: string;
+};
+
+export type GetEventIcsResponse = GetEventIcsResponses[keyof GetEventIcsResponses];
 
 export type DeleteEventData = {
   body?: never;
@@ -706,6 +746,33 @@ export type GetMyEventsResponses = {
 };
 
 export type GetMyEventsResponse = GetMyEventsResponses[keyof GetMyEventsResponses];
+
+export type GetMyAuditData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/v1/users/me/audit';
+};
+
+export type GetMyAuditErrors = {
+  /**
+   * Missing or invalid creator token.
+   */
+  401: Error;
+};
+
+export type GetMyAuditError = GetMyAuditErrors[keyof GetMyAuditErrors];
+
+export type GetMyAuditResponses = {
+  /**
+   * Audit entries.
+   */
+  200: {
+    items: Array<AuditEntry>;
+  };
+};
+
+export type GetMyAuditResponse = GetMyAuditResponses[keyof GetMyAuditResponses];
 
 export type ExportMeData = {
   body?: never;

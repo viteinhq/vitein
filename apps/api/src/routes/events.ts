@@ -9,6 +9,7 @@ import {
   softDeleteEvent,
   updateEvent,
 } from '../domain/events/events.js';
+import { buildEventIcs } from '../domain/events/ics.js';
 import { ValidationError } from '../domain/errors.js';
 import { db } from '../infra/db.js';
 import { sendCreatorMagicLink } from '../infra/email.js';
@@ -95,6 +96,22 @@ eventsRoute.get(
     const { slug } = c.req.valid('param');
     const event = await getEventBySlug(db(c.env), slug);
     return c.json(toPublic(event));
+  },
+);
+
+eventsRoute.get(
+  '/by-slug/:slug/ics',
+  zValidator('param', z.object({ slug: z.string().min(1).max(64) }), (result) => {
+    if (!result.success) throw new ValidationError('Invalid slug', { issues: result.error.issues });
+  }),
+  async (c) => {
+    const { slug } = c.req.valid('param');
+    const event = await getEventBySlug(db(c.env), slug);
+    const webBase = c.env.WEB_BASE_URL ?? 'https://vite.in';
+    const ics = buildEventIcs(event, `${webBase}/e/${event.slug}`);
+    c.header('Content-Type', 'text/calendar; charset=utf-8');
+    c.header('Content-Disposition', `attachment; filename="${event.slug}.ics"`);
+    return c.body(ics);
   },
 );
 

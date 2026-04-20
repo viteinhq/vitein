@@ -1,4 +1,5 @@
 import { Hono } from 'hono';
+import { listAuditForUser } from '../domain/audit/audit.js';
 import { exportMe, getMe, getMyEvents, softDeleteMe } from '../domain/users/users.js';
 import { db } from '../infra/db.js';
 import { requireUser } from '../middleware/require-user.js';
@@ -35,6 +36,20 @@ usersRoute.get('/me/events', async (c) => {
       locationText: e.locationText,
       visibility: e.visibility,
       defaultLocale: e.defaultLocale,
+    })),
+  });
+});
+
+usersRoute.get('/me/audit', async (c) => {
+  if (c.var.auth.kind !== 'user') throw new Error('unreachable');
+  const rows = await listAuditForUser(db(c.env), c.var.auth.userId);
+  return c.json({
+    items: rows.map((r) => ({
+      id: r.id,
+      action: r.action,
+      eventId: r.eventId,
+      metadata: r.metadata,
+      createdAt: r.createdAt.toISOString(),
     })),
   });
 });
