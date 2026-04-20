@@ -73,6 +73,31 @@ importers:
         specifier: ^2.6.1
         version: 2.8.3
 
+  apps/mcp:
+    dependencies:
+      '@vitein/ts-sdk':
+        specifier: workspace:*
+        version: link:../../packages/ts-sdk
+      zod:
+        specifier: ^4.0.0
+        version: 4.3.6
+    devDependencies:
+      '@cloudflare/workers-types':
+        specifier: ^4.20241112.0
+        version: 4.20260418.1
+      '@vitein/config':
+        specifier: workspace:*
+        version: link:../../packages/config
+      typescript:
+        specifier: ^5.6.3
+        version: 5.9.3
+      vitest:
+        specifier: ^2.1.5
+        version: 2.1.9(@types/node@25.6.0)(lightningcss@1.32.0)
+      wrangler:
+        specifier: ^3.87.0
+        version: 3.114.17(@cloudflare/workers-types@4.20260418.1)
+
   apps/web:
     dependencies:
       '@hey-api/client-fetch':

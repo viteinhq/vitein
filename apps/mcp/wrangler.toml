@@ -1,0 +1,27 @@
+name = "vitein-mcp-dev"
+main = "src/index.ts"
+compatibility_date = "2026-04-19"
+compatibility_flags = ["nodejs_compat"]
+
+[observability]
+enabled = true
+
+[vars]
+ENVIRONMENT = "dev"
+API_BASE_URL = "http://localhost:8787"
+
+[env.staging]
+name = "vitein-mcp-staging"
+route = { pattern = "mcp-staging.vite.in/*", zone_name = "vite.in" }
+
+[env.staging.vars]
+ENVIRONMENT = "staging"
+API_BASE_URL = "https://api-staging.vite.in"
+
+[env.production]
+name = "vitein-mcp"
+route = { pattern = "mcp.vite.in/*", zone_name = "vite.in" }
+
+[env.production.vars]
+ENVIRONMENT = "production"
+API_BASE_URL = "https://api.vite.in"

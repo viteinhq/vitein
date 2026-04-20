@@ -1,0 +1,29 @@
+{
+  "name": "@vitein/mcp",
+  "version": "0.0.0",
+  "private": true,
+  "description": "vite.in MCP server — Cloudflare Worker exposing event tools to LLM agents.",
+  "license": "MIT",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "wrangler dev --port 8788",
+    "build": "tsc --noEmit",
+    "deploy:staging": "wrangler deploy --env staging",
+    "deploy:prod": "wrangler deploy --env production",
+    "lint": "eslint src test",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@vitein/ts-sdk": "workspace:*",
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241112.0",
+    "@vitein/config": "workspace:*",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.5",
+    "wrangler": "^3.87.0"
+  }
+}

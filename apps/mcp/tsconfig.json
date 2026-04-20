@@ -1,0 +1,15 @@
+{
+  "extends": "@vitein/config/tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["@cloudflare/workers-types"],
+    "lib": ["ES2022"],
+    "moduleResolution": "Bundler",
+    "module": "ESNext",
+    "noEmit": true,
+    "rootDir": ".",
+    "baseUrl": ".",
+    "exactOptionalPropertyTypes": false
+  },
+  "include": ["src/**/*", "test/**/*", "vitest.config.ts"],
+  "exclude": ["node_modules", "dist", ".wrangler"]
+}
