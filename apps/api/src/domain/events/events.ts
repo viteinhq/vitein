@@ -86,6 +86,16 @@ export async function getEventPublic(db: Db, id: string): Promise<typeof events.
   return row;
 }
 
+export async function getEventBySlug(db: Db, slug: string): Promise<typeof events.$inferSelect> {
+  const [row] = await db
+    .select()
+    .from(events)
+    .where(and(eq(events.slug, slug), isNull(events.deletedAt)))
+    .limit(1);
+  if (!row) throw new NotFoundError('event.not_found', 'Event not found');
+  return row;
+}
+
 export async function getEventForCreator(db: Db, id: string): Promise<typeof events.$inferSelect> {
   const row = await findActiveEvent(db, id);
   if (!row) throw new NotFoundError('event.not_found', 'Event not found');

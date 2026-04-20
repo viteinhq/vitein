@@ -21,6 +21,9 @@ import type {
   ExportMeData,
   ExportMeErrors,
   ExportMeResponses,
+  GetEventBySlugData,
+  GetEventBySlugErrors,
+  GetEventBySlugResponses,
   GetEventData,
   GetEventErrors,
   GetEventManageData,
@@ -104,6 +107,22 @@ export const createEvent = <ThrowOnError extends boolean = false>(
       'Content-Type': 'application/json',
       ...options.headers,
     },
+  });
+
+/**
+ * Resolve an event by its URL slug
+ *
+ * Public endpoint — no auth. Useful for web clients that route by
+ * `/e/{slug}`: they call this to resolve the event and then use the
+ * returned `id` for creator-scoped calls.
+ *
+ */
+export const getEventBySlug = <ThrowOnError extends boolean = false>(
+  options: Options<GetEventBySlugData, ThrowOnError>,
+) =>
+  (options.client ?? client).get<GetEventBySlugResponses, GetEventBySlugErrors, ThrowOnError>({
+    url: '/v1/events/by-slug/{slug}',
+    ...options,
   });
 
 /**

@@ -237,6 +237,36 @@ export type CreateEventResponses = {
 
 export type CreateEventResponse = CreateEventResponses[keyof CreateEventResponses];
 
+export type GetEventBySlugData = {
+  body?: never;
+  path: {
+    /**
+     * Event slug (random base32 by default, custom for paid events).
+     */
+    slug: string;
+  };
+  query?: never;
+  url: '/v1/events/by-slug/{slug}';
+};
+
+export type GetEventBySlugErrors = {
+  /**
+   * Resource not found.
+   */
+  404: Error;
+};
+
+export type GetEventBySlugError = GetEventBySlugErrors[keyof GetEventBySlugErrors];
+
+export type GetEventBySlugResponses = {
+  /**
+   * Public event view.
+   */
+  200: EventPublic;
+};
+
+export type GetEventBySlugResponse = GetEventBySlugResponses[keyof GetEventBySlugResponses];
+
 export type DeleteEventData = {
   body?: never;
   headers: {

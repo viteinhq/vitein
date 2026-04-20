@@ -3,6 +3,7 @@ import { Hono } from 'hono';
 import { z } from 'zod';
 import {
   createEvent,
+  getEventBySlug,
   getEventForCreator,
   getEventPublic,
   softDeleteEvent,
@@ -82,6 +83,18 @@ eventsRoute.post(
       },
       201,
     );
+  },
+);
+
+eventsRoute.get(
+  '/by-slug/:slug',
+  zValidator('param', z.object({ slug: z.string().min(1).max(64) }), (result) => {
+    if (!result.success) throw new ValidationError('Invalid slug', { issues: result.error.issues });
+  }),
+  async (c) => {
+    const { slug } = c.req.valid('param');
+    const event = await getEventBySlug(db(c.env), slug);
+    return c.json(toPublic(event));
   },
 );
 

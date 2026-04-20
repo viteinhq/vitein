@@ -1,0 +1,14 @@
+{
+  "not_found": "Nicht gefunden",
+  "unauthorized": "Nicht autorisiert",
+  "validation_error": "Eingabe ungültig",
+  "conflict": "Konflikt mit vorhandenem Zustand",
+  "internal_error": "Interner Serverfehler",
+  "rate_limited": "Zu viele Anfragen — bitte etwas langsamer",
+
+  "event.not_found": "Event nicht gefunden",
+  "event.unauthorized": "Dieser Creator-Token passt nicht zu diesem Event",
+
+  "user.not_found": "Benutzer nicht gefunden",
+  "user.unauthorized": "Bitte anmelden, um fortzufahren"
+}

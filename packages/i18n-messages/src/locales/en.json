@@ -1,0 +1,14 @@
+{
+  "not_found": "Not found",
+  "unauthorized": "Not authorised",
+  "validation_error": "Validation failed",
+  "conflict": "Conflict with existing state",
+  "internal_error": "Internal server error",
+  "rate_limited": "Too many requests — please slow down",
+
+  "event.not_found": "Event not found",
+  "event.unauthorized": "This creator token does not match the event",
+
+  "user.not_found": "User not found",
+  "user.unauthorized": "Please sign in to continue"
+}

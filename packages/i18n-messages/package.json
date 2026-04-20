@@ -1,0 +1,25 @@
+{
+  "name": "@vitein/i18n-messages",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Localised error and UI strings shared across API, web, mobile.",
+  "license": "AGPL-3.0-or-later",
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./locales/*": "./src/locales/*.json"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@vitein/config": "workspace:*",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.5"
+  }
+}

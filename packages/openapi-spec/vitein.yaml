@@ -78,6 +78,30 @@ paths:
         '400':
           $ref: '#/components/responses/ValidationError'
 
+  /v1/events/by-slug/{slug}:
+    parameters:
+      - name: slug
+        in: path
+        required: true
+        schema: { type: string, minLength: 1, maxLength: 64 }
+        description: Event slug (random base32 by default, custom for paid events).
+    get:
+      operationId: getEventBySlug
+      summary: Resolve an event by its URL slug
+      description: |
+        Public endpoint — no auth. Useful for web clients that route by
+        `/e/{slug}`: they call this to resolve the event and then use the
+        returned `id` for creator-scoped calls.
+      tags: [events]
+      responses:
+        '200':
+          description: Public event view.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/EventPublic' }
+        '404':
+          $ref: '#/components/responses/NotFound'
+
   /v1/events/{id}:
     parameters:
       - $ref: '#/components/parameters/EventId'

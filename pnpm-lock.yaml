@@ -29,6 +29,9 @@ importers:
       '@vitein/db-schema':
         specifier: workspace:*
         version: link:../../packages/db-schema
+      '@vitein/i18n-messages':
+        specifier: workspace:*
+        version: link:../../packages/i18n-messages
       better-auth:
         specifier: ^1.6.5
         version: 1.6.5(@cloudflare/workers-types@4.20260418.1)(@opentelemetry/api@1.9.1)(@sveltejs/kit@2.57.1(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@5.1.1(svelte@5.55.4(@typescript-eslint/types@8.58.2))(vite@5.4.21(@types/node@25.6.0)(lightningcss@1.32.0)))(svelte@5.55.4(@typescript-eslint/types@8.58.2))(typescript@5.9.3)(vite@5.4.21(@types/node@25.6.0)(lightningcss@1.32.0)))(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(svelte@5.55.4(@typescript-eslint/types@8.58.2))(vitest@2.1.9(@types/node@25.6.0)(lightningcss@1.32.0))
@@ -140,6 +143,18 @@ importers:
       typescript:
         specifier: ^5.6.3
         version: 5.9.3
+
+  packages/i18n-messages:
+    devDependencies:
+      '@vitein/config':
+        specifier: workspace:*
+        version: link:../config
+      typescript:
+        specifier: ^5.6.3
+        version: 5.9.3
+      vitest:
+        specifier: ^2.1.5
+        version: 2.1.9(@types/node@25.6.0)(lightningcss@1.32.0)
 
   packages/openapi-spec:
     devDependencies:
