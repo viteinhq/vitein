@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@hey-api/client-fetch": "^0.13.1",
+    "@vitein/i18n-messages": "workspace:*",
     "@vitein/ts-sdk": "workspace:*"
   },
   "devDependencies": {

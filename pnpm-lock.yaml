@@ -106,6 +106,9 @@ importers:
       '@hey-api/client-fetch':
         specifier: ^0.13.1
         version: 0.13.1(@hey-api/openapi-ts@0.96.0(typescript@5.9.3))
+      '@vitein/i18n-messages':
+        specifier: workspace:*
+        version: link:../../packages/i18n-messages
       '@vitein/ts-sdk':
         specifier: workspace:*
         version: link:../../packages/ts-sdk

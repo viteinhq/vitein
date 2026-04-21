@@ -1,0 +1,38 @@
+{
+  "nav.home": "Start",
+  "nav.create": "Event erstellen",
+  "nav.pricing": "Preise",
+  "nav.signin": "Anmelden",
+  "nav.dashboard": "Dashboard",
+
+  "footer.impressum": "Impressum",
+  "footer.privacy": "Datenschutz",
+  "footer.terms": "AGB",
+
+  "home.hero.headline": "Einladungen, neu gedacht.",
+  "home.hero.sub": "Erstelle ein Event in Sekunden — ohne Account. Gäste antworten von jedem Gerät. Kostenlos für die meisten Events, €5 für Premium-Features.",
+  "home.hero.cta_primary": "Event erstellen",
+  "home.hero.cta_secondary": "Preise ansehen",
+
+  "home.features.anonymous.title": "Kein Account nötig",
+  "home.features.anonymous.body": "Eine Einladung aus jedem Browser starten. Ein Magic-Link erlaubt dir die spätere Verwaltung.",
+  "home.features.global.title": "Global von Tag 1",
+  "home.features.global.body": "Zeitzonen, Sprachen und Währungen automatisch. Ein Klick zum Teilen.",
+  "home.features.open.title": "Open-Source-Kern",
+  "home.features.open.body": "AGPLv3. Hoste den Kern selbst oder nutze die Hosted-Version. Kein Lock-in.",
+
+  "pricing.title": "Preise",
+  "pricing.free.name": "Kostenlos",
+  "pricing.free.price": "€0",
+  "pricing.free.desc": "Alles was du für ein einfaches Event brauchst. Kein Account nötig.",
+  "pricing.free.items": "Unbegrenzte RSVPs;Magic-Link-Verwaltung;Bestätigungs-Emails;Kalender-Export",
+  "pricing.paid.name": "Premium-Event",
+  "pricing.paid.price": "€5 / $5 / CHF 5 / £5",
+  "pricing.paid.desc": "Einmalzahlung pro Event. Schaltet Extras und Feinschliff frei.",
+  "pricing.paid.items": "Eigener URL-Slug;vite.in-Branding entfernen;Cover-Bild + Galerie;Geplante Reminders;Passwortgeschützte Events",
+
+  "legal.impressum.title": "Impressum",
+  "legal.privacy.title": "Datenschutzerklärung",
+  "legal.terms.title": "AGB",
+  "legal.draft": "Entwurf — wird vor dem öffentlichen Launch finalisiert."
+}
