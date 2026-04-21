@@ -14,6 +14,6 @@ interface EventListItem {
 export const load: PageServerLoad = async (event) => {
   const res = await apiFetch(event, '/v1/users/me/events');
   if (!res.ok) return { events: [] };
-  const body = (await res.json()) as { items: EventListItem[] };
+  const body: { items: EventListItem[] } = await res.json();
   return { events: body.items };
 };

@@ -11,6 +11,8 @@ declare global {
     interface Platform {
       env?: {
         API_BASE_URL?: string;
+        SENTRY_DSN?: string;
+        PUBLIC_SENTRY_DSN?: string;
       };
     }
   }

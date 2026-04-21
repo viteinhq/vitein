@@ -1,16 +1,32 @@
-import type { Handle } from '@sveltejs/kit';
+import * as Sentry from '@sentry/sveltekit';
+import { sequence } from '@sveltejs/kit/hooks';
+import type { Handle, HandleServerError } from '@sveltejs/kit';
 
 /**
  * Server-side hook chain: stamps every response with security headers and a
- * request id, and threads that id into `event.locals` so `apiFetch` can
- * forward it to the API (for cross-service log correlation).
+ * request id, threads the id into `event.locals` so `apiFetch` can forward
+ * it to the API, and wires `@sentry/sveltekit` when `SENTRY_DSN` is bound
+ * on `platform.env`.
  *
  * CSP is intentionally skipped in `dev` — Vite injects inline modules and
  * HMR sockets that trip any reasonable policy. The production policy below
  * is tight enough to satisfy the perf + security budget in
  * `apps/web/CLAUDE.md`.
  */
-export const handle: Handle = async ({ event, resolve }) => {
+
+const sentryInitialised = { current: false };
+
+function ensureSentry(platform: App.Platform | undefined): void {
+  if (sentryInitialised.current) return;
+  const dsn = platform?.env?.SENTRY_DSN;
+  if (!dsn) return;
+  Sentry.init({ dsn, tracesSampleRate: 0.1 });
+  sentryInitialised.current = true;
+}
+
+const withHeaders: Handle = async ({ event, resolve }) => {
+  ensureSentry(event.platform);
+
   const inboundId = event.request.headers.get('x-request-id');
   const requestId = inboundId && isWellFormed(inboundId) ? inboundId : randomRequestId();
   event.locals.requestId = requestId;
@@ -30,6 +46,10 @@ export const handle: Handle = async ({ event, resolve }) => {
 
   return response;
 };
+
+export const handle: Handle = sequence(Sentry.sentryHandle(), withHeaders);
+
+export const handleError: HandleServerError = Sentry.handleErrorWithSentry();
 
 function isDev(platform: App.Platform | undefined): boolean {
   return !platform?.env?.API_BASE_URL || Boolean(process.env.NODE_ENV === 'development');

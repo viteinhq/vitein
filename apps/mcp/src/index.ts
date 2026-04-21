@@ -1,4 +1,6 @@
+import * as Sentry from '@sentry/cloudflare';
 import { dispatch, tools } from './server.js';
+import { sentryOptions } from './sentry.js';
 import type { Env } from './types.js';
 
 /**
@@ -8,12 +10,14 @@ import type { Env } from './types.js';
  *   `initialize`, `tools/list`, and `tools/call`. Full Streamable HTTP
  *   transport (sessions, SSE) lands in Phase 2.
  * - `GET /` — server info banner, useful for probes.
+ * - `GET /_debug/boom` — throws on purpose; used to verify Sentry wiring
+ *   end-to-end. Kept because incident drills need a cheap throw target.
  *
  * No per-user auth at this stage: only public, read-only tools are
  * exposed. When OAuth arrives, gate `/mcp` on a valid bearer token and
  * scope-check inside each tool.
  */
-export default {
+const handler: ExportedHandler<Env> = {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
 
@@ -26,28 +30,24 @@ export default {
       });
     }
 
+    if (request.method === 'GET' && url.pathname === '/_debug/boom') {
+      throw new Error('mcp_debug_boom — intentional Sentry canary');
+    }
+
     if (request.method === 'POST' && url.pathname === '/mcp') {
       let payload: unknown;
       try {
         payload = await request.json();
       } catch {
         return Response.json(
-          {
-            jsonrpc: '2.0',
-            id: null,
-            error: { code: -32700, message: 'Parse error' },
-          },
+          { jsonrpc: '2.0', id: null, error: { code: -32700, message: 'Parse error' } },
           { status: 400 },
         );
       }
 
       if (!isJsonRpcRequest(payload)) {
         return Response.json(
-          {
-            jsonrpc: '2.0',
-            id: null,
-            error: { code: -32600, message: 'Invalid Request' },
-          },
+          { jsonrpc: '2.0', id: null, error: { code: -32600, message: 'Invalid Request' } },
           { status: 400 },
         );
       }
@@ -58,7 +58,9 @@ export default {
 
     return new Response('Not found', { status: 404 });
   },
-} satisfies ExportedHandler<Env>;
+};
+
+export default Sentry.withSentry(sentryOptions, handler);
 
 function isJsonRpcRequest(value: unknown): value is {
   jsonrpc: '2.0';

@@ -1,6 +1,7 @@
 export interface Env {
   ENVIRONMENT: 'dev' | 'staging' | 'production';
   API_BASE_URL: string;
+  SENTRY_DSN?: string;
 }
 
 /**
