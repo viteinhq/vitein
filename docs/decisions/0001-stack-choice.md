@@ -29,7 +29,7 @@ Adopt a Cloudflare-centric, API-first stack with a pnpm/Turborepo TypeScript mon
 - **Payments:** Stripe.
 - **Email:** Resend (see ADR 0003).
 
-See @planning/ARCHITECTURE.md for the full rationale and data model.
+See @docs/ARCHITECTURE.md for the full rationale and data model.
 
 ## Alternatives considered
 
@@ -46,5 +46,5 @@ See @planning/ARCHITECTURE.md for the full rationale and data model.
 
 ## References
 
-- @planning/ARCHITECTURE.md
-- @planning/ROADMAP.md
+- @docs/ARCHITECTURE.md
+- @docs/ROADMAP.md

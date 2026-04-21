@@ -41,6 +41,45 @@
 
 This is the phase that pays the interest on all architectural promises. Cutting corners here means paying triple later. Resist the urge to build features.
 
+### Status — 2026-04-21
+
+**Phase 0 closed with the first live staging deploy.**
+
+Shipped:
+
+- `viteinhq/vitein` public repo live (AGPL-3.0), `vitein-premium` + mobile repos stubbed
+- Community files in place; CLA via `contributor-assistant/github-action` (pivot from EasyCLA — see `docs/decisions/0002-cla-tooling.md`)
+- pnpm + Turborepo monorepo with CI (lint, typecheck, test, spec-drift, SDK-drift, runtime spec-compliance)
+- CD pipeline: push to `main` auto-deploys api + mcp (Workers) + web (Pages) to staging
+- Cloudflare Workers: `api-staging.vite.in`, `mcp-staging.vite.in` (both with custom domain + TLS)
+- Cloudflare Pages: `next.vite.in` (SvelteKit on adapter-cloudflare)
+- Neon Postgres (eu-central-1) with Drizzle schema for the 10 Phase-1 tables; initial migration applied
+- Better-Auth with magic-link plugin; `users`/`sessions`/`accounts`/`verifications` aligned per `docs/decisions/0005-better-auth-schema.md`
+- OpenAPI 3.1 spec with 14 operations; `@vitein/ts-sdk` generated via `@hey-api/openapi-ts`
+- Resend wired for transactional email (magic-link, RSVP confirm/notify, reminders)
+- Rate limiting via RATE_LIMITER Durable Object (SQLite-backed)
+- Structured JSON logging with per-request UUIDv7 id propagated end-to-end (web → api)
+- i18n-messages package with EN + DE error dictionaries; `Accept-Language` routing in the error middleware
+- MCP server scaffold with 2 read-only tools (get_event_by_slug, get_event_share_url) under MIT
+- 5 ADRs recorded: stack choice, CLA, email, SDK generator, Better-Auth schema
+
+Exit criteria hit:
+
+- `curl https://api-staging.vite.in/v1/health` → 200 with `db: connected` ✓
+- `https://next.vite.in` loads, hits API, renders success ✓
+- `pnpm dev` runs web + API locally ✓
+- CI green on `main` ✓
+- CLAUDE.md in place in every app + every package ✓
+- One working deployment pipeline per app (api, mcp, web) ✓
+
+Deferred into Phase 1 or later:
+
+- Sentry DSNs (accounts created later; last exit criterion)
+- Neon branch split (`staging` vs `production`) — happens before v2 public launch
+- `apps/vitein-premium/` sidecar (ADR pending, Week-2 spike)
+- Stripe `Product` + `Price` setup (Phase 1 workstream A.3)
+- iOS/Android SDK generator choice (revisit when mobile work starts)
+
 ---
 
 ## Phase 1 — Public Launch (≈ 8–12 weeks after Phase 0)

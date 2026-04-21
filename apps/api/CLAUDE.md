@@ -109,7 +109,7 @@ All routes pass through `rate-limit.ts`. Keys are derived from auth context:
 - user → `user:<user_id>`
 - oauth → `oauth:<token_id>`
 
-Limits are in `src/middleware/rate-limit.ts`. See @planning/ARCHITECTURE.md §7.4.
+Limits are in `src/middleware/rate-limit.ts`. See @docs/ARCHITECTURE.md §7.4.
 
 ## Localization of errors
 
@@ -126,4 +126,4 @@ Errors carry a code like `event.not_found`. The error middleware maps code + `Ac
 
 - API shape: @packages/openapi-spec/vitein.yaml
 - DB schema: @packages/db-schema/src/schema.ts
-- Business decisions: @planning/ARCHITECTURE.md sections 5 (auth), 6 (data model), 7 (API design)
+- Business decisions: @docs/ARCHITECTURE.md sections 5 (auth), 6 (data model), 7 (API design)

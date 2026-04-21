@@ -113,6 +113,6 @@ pnpm -F @vitein/web test:unit       # Vitest unit tests
 
 ## Where to look for context
 
-- Design decisions: @planning/ARCHITECTURE.md §3 (stack), §8 (i18n)
+- Design decisions: @docs/ARCHITECTURE.md §3 (stack), §8 (i18n)
 - API shape: @packages/openapi-spec/vitein.yaml
 - Available SDK methods: @packages/ts-sdk/index.ts (generated, read-only)

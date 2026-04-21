@@ -59,5 +59,5 @@ The Drizzle config has no "environment" selector. The right `DATABASE_URL` for t
 
 ## See also
 
-- @planning/ARCHITECTURE.md §6 (data model) — source of truth for the design.
+- @docs/ARCHITECTURE.md §6 (data model) — source of truth for the design.
 - @packages/db-schema/src/schema.ts — the schema itself.

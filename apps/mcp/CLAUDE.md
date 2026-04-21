@@ -116,5 +116,5 @@ The MCP server itself does NOT implement OAuth endpoints. It only _validates_ to
 ## Where to look for context
 
 - MCP spec: https://modelcontextprotocol.io/docs
-- OAuth scopes and design: @planning/ARCHITECTURE.md §5.3
+- OAuth scopes and design: @docs/ARCHITECTURE.md §5.3
 - Core API endpoints available: @packages/openapi-spec/vitein.yaml

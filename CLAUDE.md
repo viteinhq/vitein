@@ -1,14 +1,12 @@
 # vite.in v2 — Monorepo
 
 > This CLAUDE.md sits at the repository root and applies to every stack in the monorepo. Each app has its own nested CLAUDE.md with stack-specific guidance.
->
-> **Note:** planning docs currently live in `./planning/`. They move to `./docs/` in Task 0.12 of the PROJECT_PLAN; update the `@planning/...` references below to `@docs/...` at that point.
 
 ## What this repo is
 
 vite.in v2 is a rebuild of a global invitation platform. The architecture is API-first: one Core API, consumed by Web, iOS, Android, and an MCP server for LLM agents. Native mobile apps live in separate repos (`vite-in-ios`, `vite-in-android`).
 
-See @planning/ARCHITECTURE.md for the full picture and @planning/ROADMAP.md for phases.
+See @docs/ARCHITECTURE.md for the full picture and @docs/ROADMAP.md for phases.
 
 ## Stack at a glance
 
@@ -72,9 +70,9 @@ pnpm db:migrate             # run Drizzle migrations (env var picks branch)
 - **No account-required flows for event creation.** Anonymous creation is the viral mechanic. Never require signup to create.
 - **No hard-coded language strings in user-facing code.** Route through `packages/i18n-messages` or the API's localized error responses.
 - **Every timestamp is UTC in storage.** The event's timezone is a separate field. Never assume server or user tz.
-- **Never hard-code prices.** Premium prices live in Stripe as `Price` objects per currency. Fetch them at runtime. See @planning/ARCHITECTURE.md §12.
+- **Never hard-code prices.** Premium prices live in Stripe as `Price` objects per currency. Fetch them at runtime. See @docs/ARCHITECTURE.md §12.
 - **No FX conversion in code.** We use fixed price anchors per currency (€5 / $5 / CHF 5 / £5 at launch), not dynamically converted values.
-- **No premium features in this (public) repository.** Premium-specific implementations live in the separate private `vitein-premium` repo. If a feature is behind a paywall, its specific implementation does not go here — only the hook/extension point does. See @planning/ARCHITECTURE.md §13.
+- **No premium features in this (public) repository.** Premium-specific implementations live in the separate private `vitein-premium` repo. If a feature is behind a paywall, its specific implementation does not go here — only the hook/extension point does. See @docs/ARCHITECTURE.md §13.
 
 ## Open-source posture
 
@@ -91,7 +89,7 @@ This repo is **AGPLv3** (except `apps/mcp` which is MIT). External contributions
 - A question about the web app: @apps/web/CLAUDE.md
 - A question about data: @packages/db-schema/CLAUDE.md (or just the schema file)
 - A question about the MCP agent integration: @apps/mcp/CLAUDE.md
-- A question about "should we do X" at the architecture level: @planning/ARCHITECTURE.md
+- A question about "should we do X" at the architecture level: @docs/ARCHITECTURE.md
 
 ## What not to do
 
