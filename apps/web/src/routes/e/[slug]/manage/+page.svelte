@@ -74,7 +74,7 @@
                 (no public URL)
               </div>
             {/if}
-            <form method="POST" action="?/deleteMedia" use:enhance>
+            <form method="POST" action="?/deleteMedia&token={data.token}" use:enhance>
               <input type="hidden" name="mediaId" value={m.id} />
               <button
                 type="submit"
@@ -90,7 +90,7 @@
 
     <form
       method="POST"
-      action="?/uploadMedia"
+      action="?/uploadMedia&token={data.token}"
       enctype="multipart/form-data"
       use:enhance
       class="mt-4 flex items-center gap-3"
@@ -148,7 +148,7 @@
       </p>
     {/if}
 
-    <form method="POST" action="?/update" use:enhance class="mt-4 space-y-3">
+    <form method="POST" action="?/update&token={data.token}" use:enhance class="mt-4 space-y-3">
       <label class="block">
         <span class="text-sm font-medium">Title</span>
         <input
@@ -216,7 +216,7 @@
       </p>
     {/if}
 
-    <form method="POST" action="?/remind" use:enhance class="mt-3">
+    <form method="POST" action="?/remind&token={data.token}" use:enhance class="mt-3">
       <button
         type="submit"
         class="rounded-md border border-slate-300 px-4 py-2 text-sm hover:bg-slate-50"
