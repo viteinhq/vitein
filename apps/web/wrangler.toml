@@ -1,0 +1,13 @@
+name = "vitein-web-staging"
+pages_build_output_dir = ".svelte-kit/cloudflare"
+compatibility_date = "2026-04-19"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+API_BASE_URL = "https://api-staging.vite.in"
+
+[env.preview.vars]
+API_BASE_URL = "https://api-staging.vite.in"
+
+[env.production.vars]
+API_BASE_URL = "https://api-staging.vite.in"
