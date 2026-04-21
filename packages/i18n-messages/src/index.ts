@@ -1,5 +1,5 @@
-import en from './locales/en.json' with { type: 'json' };
-import de from './locales/de.json' with { type: 'json' };
+import en from './locales/en.json';
+import de from './locales/de.json';
 
 export type Locale = 'en' | 'de';
 export const SUPPORTED_LOCALES: readonly Locale[] = ['en', 'de'] as const;

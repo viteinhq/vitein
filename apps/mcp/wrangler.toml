@@ -1,5 +1,6 @@
 name = "vitein-mcp-dev"
 main = "src/index.ts"
+account_id = "00c62b23eb691ac4c5fffe0b2e429a77"
 compatibility_date = "2026-04-19"
 compatibility_flags = ["nodejs_compat"]
 
@@ -12,7 +13,7 @@ API_BASE_URL = "http://localhost:8787"
 
 [env.staging]
 name = "vitein-mcp-staging"
-route = { pattern = "mcp-staging.vite.in/*", zone_name = "vite.in" }
+routes = [{ pattern = "mcp-staging.vite.in", custom_domain = true }]
 
 [env.staging.vars]
 ENVIRONMENT = "staging"
@@ -20,7 +21,7 @@ API_BASE_URL = "https://api-staging.vite.in"
 
 [env.production]
 name = "vitein-mcp"
-route = { pattern = "mcp.vite.in/*", zone_name = "vite.in" }
+routes = [{ pattern = "mcp.vite.in", custom_domain = true }]
 
 [env.production.vars]
 ENVIRONMENT = "production"

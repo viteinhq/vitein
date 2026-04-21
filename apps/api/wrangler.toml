@@ -1,5 +1,6 @@
 name = "vitein-api-dev"
 main = "src/index.ts"
+account_id = "00c62b23eb691ac4c5fffe0b2e429a77"
 compatibility_date = "2026-04-19"
 compatibility_flags = ["nodejs_compat"]
 
@@ -17,7 +18,7 @@ class_name = "RateLimiter"
 
 [[migrations]]
 tag = "v1"
-new_classes = ["RateLimiter"]
+new_sqlite_classes = ["RateLimiter"]
 
 [vars]
 ENVIRONMENT = "dev"
@@ -25,18 +26,34 @@ ENVIRONMENT = "dev"
 # Staging: deployed from main branch
 [env.staging]
 name = "vitein-api-staging"
-route = { pattern = "api-staging.vite.in/*", zone_name = "vite.in" }
+routes = [{ pattern = "api-staging.vite.in", custom_domain = true }]
 
 [env.staging.vars]
 ENVIRONMENT = "staging"
+WEB_BASE_URL = "https://next.vite.in"
+
+[[env.staging.durable_objects.bindings]]
+name = "RATE_LIMITER"
+class_name = "RateLimiter"
+
+[env.staging.triggers]
+crons = ["0 * * * *"]
 
 # Production: deployed from tagged releases
 [env.production]
 name = "vitein-api"
-route = { pattern = "api.vite.in/*", zone_name = "vite.in" }
+routes = [{ pattern = "api.vite.in", custom_domain = true }]
 
 [env.production.vars]
 ENVIRONMENT = "production"
+WEB_BASE_URL = "https://vite.in"
+
+[[env.production.durable_objects.bindings]]
+name = "RATE_LIMITER"
+class_name = "RateLimiter"
+
+[env.production.triggers]
+crons = ["0 * * * *"]
 
 # Secrets (DATABASE_URL, SENTRY_DSN, STRIPE_SECRET_KEY, RESEND_API_KEY, etc.)
 # are set per environment via:
