@@ -296,6 +296,90 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
 
+  /v1/events/{id}/media:
+    parameters:
+      - $ref: '#/components/parameters/EventId'
+    post:
+      operationId: uploadMedia
+      summary: Upload a media asset for the event (creator only)
+      description: |
+        Body is the raw image bytes. `Content-Type` should hint the MIME
+        but the server sniffs magic numbers and only trusts the sniffed
+        type. Accepted types: JPEG, PNG, WebP, GIF, AVIF. Max 10 MiB. Max
+        10 items per event.
+      tags: [events]
+      parameters:
+        - $ref: '#/components/parameters/CreatorTokenHeader'
+        - name: kind
+          in: query
+          schema: { type: string, enum: [cover, gallery], default: cover }
+      requestBody:
+        required: true
+        content:
+          image/jpeg:
+            schema: { type: string, format: binary }
+          image/png:
+            schema: { type: string, format: binary }
+          image/webp:
+            schema: { type: string, format: binary }
+          image/gif:
+            schema: { type: string, format: binary }
+          image/avif:
+            schema: { type: string, format: binary }
+      responses:
+        '201':
+          description: Media stored.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Media' }
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          description: Quota exceeded (10 media per event).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    get:
+      operationId: listMedia
+      summary: List media attached to an event (public)
+      tags: [events]
+      responses:
+        '200':
+          description: Media list.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items: { $ref: '#/components/schemas/Media' }
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /v1/events/{id}/media/{mediaId}:
+    parameters:
+      - $ref: '#/components/parameters/EventId'
+      - $ref: '#/components/parameters/CreatorTokenHeader'
+      - name: mediaId
+        in: path
+        required: true
+        schema: { type: string, format: uuid }
+    delete:
+      operationId: deleteMedia
+      summary: Delete an event media asset (creator only)
+      tags: [events]
+      responses:
+        '204':
+          description: Deleted.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
   /v1/events/{id}/reminders/send:
     parameters:
       - $ref: '#/components/parameters/EventId'
@@ -653,6 +737,24 @@ components:
         claimed:
           type: integer
           description: Number of events newly linked to this user.
+
+    Media:
+      type: object
+      required: [id, eventId, kind, mimeType, sizeBytes, position, createdAt]
+      properties:
+        id: { type: string, format: uuid }
+        eventId: { type: string, format: uuid }
+        kind: { type: string, enum: [cover, gallery] }
+        mimeType: { type: string }
+        sizeBytes: { type: integer }
+        width: { type: [integer, 'null'] }
+        height: { type: [integer, 'null'] }
+        position: { type: integer }
+        url:
+          type: [string, 'null']
+          format: uri
+          description: Public URL when `MEDIA_PUBLIC_BASE_URL` is configured; null otherwise.
+        createdAt: { type: string, format: date-time }
 
     AuditEntry:
       type: object

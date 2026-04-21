@@ -16,6 +16,9 @@ import type {
   DeleteEventErrors,
   DeleteEventResponses,
   DeleteMeData,
+  DeleteMediaData,
+  DeleteMediaErrors,
+  DeleteMediaResponses,
   DeleteMeErrors,
   DeleteMeResponses,
   ExportMeData,
@@ -47,6 +50,9 @@ import type {
   ListGuestsData,
   ListGuestsErrors,
   ListGuestsResponses,
+  ListMediaData,
+  ListMediaErrors,
+  ListMediaResponses,
   ListRsvpsData,
   ListRsvpsErrors,
   ListRsvpsResponses,
@@ -59,6 +65,9 @@ import type {
   UpdateEventData,
   UpdateEventErrors,
   UpdateEventResponses,
+  UploadMediaData,
+  UploadMediaErrors,
+  UploadMediaResponses,
 } from './types.gen';
 
 export type Options<
@@ -255,6 +264,50 @@ export const addGuest = <ThrowOnError extends boolean = false>(
       'Content-Type': 'application/json',
       ...options.headers,
     },
+  });
+
+/**
+ * List media attached to an event (public)
+ */
+export const listMedia = <ThrowOnError extends boolean = false>(
+  options: Options<ListMediaData, ThrowOnError>,
+) =>
+  (options.client ?? client).get<ListMediaResponses, ListMediaErrors, ThrowOnError>({
+    url: '/v1/events/{id}/media',
+    ...options,
+  });
+
+/**
+ * Upload a media asset for the event (creator only)
+ *
+ * Body is the raw image bytes. `Content-Type` should hint the MIME
+ * but the server sniffs magic numbers and only trusts the sniffed
+ * type. Accepted types: JPEG, PNG, WebP, GIF, AVIF. Max 10 MiB. Max
+ * 10 items per event.
+ *
+ */
+export const uploadMedia = <ThrowOnError extends boolean = false>(
+  options: Options<UploadMediaData, ThrowOnError>,
+) =>
+  (options.client ?? client).post<UploadMediaResponses, UploadMediaErrors, ThrowOnError>({
+    bodySerializer: null,
+    url: '/v1/events/{id}/media',
+    ...options,
+    headers: {
+      'Content-Type': 'image/jpeg',
+      ...options.headers,
+    },
+  });
+
+/**
+ * Delete an event media asset (creator only)
+ */
+export const deleteMedia = <ThrowOnError extends boolean = false>(
+  options: Options<DeleteMediaData, ThrowOnError>,
+) =>
+  (options.client ?? client).delete<DeleteMediaResponses, DeleteMediaErrors, ThrowOnError>({
+    url: '/v1/events/{id}/media/{mediaId}',
+    ...options,
   });
 
 /**

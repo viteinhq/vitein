@@ -62,8 +62,7 @@ export async function captureToSentry(opts: CaptureOptions): Promise<void> {
 
   const body = `${envelopeHeader}\n${itemHeader}\n${itemPayload}`;
   const url = `https://${parsed.host}/api/${parsed.projectId}/envelope/`;
-  const auth =
-    `Sentry sentry_version=7, sentry_client=vitein-web/0.0.0, sentry_key=${parsed.publicKey}`;
+  const auth = `Sentry sentry_version=7, sentry_client=vitein-web/0.0.0, sentry_key=${parsed.publicKey}`;
 
   try {
     await fetch(url, {

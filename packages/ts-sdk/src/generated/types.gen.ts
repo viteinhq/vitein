@@ -168,6 +168,22 @@ export type ClaimResponse = {
   claimed: number;
 };
 
+export type Media = {
+  id: string;
+  eventId: string;
+  kind: 'cover' | 'gallery';
+  mimeType: string;
+  sizeBytes: number;
+  width?: number | null;
+  height?: number | null;
+  position: number;
+  /**
+   * Public URL when `MEDIA_PUBLIC_BASE_URL` is configured; null otherwise.
+   */
+  url?: string | null;
+  createdAt: string;
+};
+
 export type AuditEntry = {
   id: string;
   /**
@@ -622,6 +638,129 @@ export type AddGuestResponses = {
 };
 
 export type AddGuestResponse = AddGuestResponses[keyof AddGuestResponses];
+
+export type ListMediaData = {
+  body?: never;
+  path: {
+    /**
+     * Server-generated UUIDv7 of the event.
+     */
+    id: string;
+  };
+  query?: never;
+  url: '/v1/events/{id}/media';
+};
+
+export type ListMediaErrors = {
+  /**
+   * Resource not found.
+   */
+  404: Error;
+};
+
+export type ListMediaError = ListMediaErrors[keyof ListMediaErrors];
+
+export type ListMediaResponses = {
+  /**
+   * Media list.
+   */
+  200: {
+    items: Array<Media>;
+  };
+};
+
+export type ListMediaResponse = ListMediaResponses[keyof ListMediaResponses];
+
+export type UploadMediaData = {
+  body: Blob | File;
+  headers: {
+    /**
+     * Plaintext creator token (the value delivered by the magic-link email).
+     * The server hashes it and compares against `event_tokens.token_hash`.
+     *
+     */
+    'X-Creator-Token': string;
+  };
+  path: {
+    /**
+     * Server-generated UUIDv7 of the event.
+     */
+    id: string;
+  };
+  query?: {
+    kind?: 'cover' | 'gallery';
+  };
+  url: '/v1/events/{id}/media';
+};
+
+export type UploadMediaErrors = {
+  /**
+   * Request body or query parameters failed validation.
+   */
+  400: Error;
+  /**
+   * Missing or invalid creator token.
+   */
+  401: Error;
+  /**
+   * Quota exceeded (10 media per event).
+   */
+  409: Error;
+};
+
+export type UploadMediaError = UploadMediaErrors[keyof UploadMediaErrors];
+
+export type UploadMediaResponses = {
+  /**
+   * Media stored.
+   */
+  201: Media;
+};
+
+export type UploadMediaResponse = UploadMediaResponses[keyof UploadMediaResponses];
+
+export type DeleteMediaData = {
+  body?: never;
+  headers: {
+    /**
+     * Plaintext creator token (the value delivered by the magic-link email).
+     * The server hashes it and compares against `event_tokens.token_hash`.
+     *
+     */
+    'X-Creator-Token': string;
+  };
+  path: {
+    /**
+     * Server-generated UUIDv7 of the event.
+     */
+    id: string;
+    mediaId: string;
+  };
+  query?: never;
+  url: '/v1/events/{id}/media/{mediaId}';
+};
+
+export type DeleteMediaErrors = {
+  /**
+   * Missing or invalid creator token.
+   */
+  401: Error;
+  /**
+   * Resource not found.
+   */
+  404: Error;
+};
+
+export type DeleteMediaError = DeleteMediaErrors[keyof DeleteMediaErrors];
+
+export type DeleteMediaResponses = {
+  /**
+   * Deleted.
+   */
+  204: void;
+};
+
+export type DeleteMediaResponse = DeleteMediaResponses[keyof DeleteMediaResponses];
 
 export type SendReminderData = {
   body?: never;

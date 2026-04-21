@@ -20,10 +20,12 @@ export interface Env {
   AUTH_SECRET?: string;
 
   RATE_LIMITER?: DurableObjectNamespace;
+  R2_MEDIA?: R2Bucket;
+  /** Base URL where R2 objects become publicly readable, e.g. https://media-staging.vite.in */
+  MEDIA_PUBLIC_BASE_URL?: string;
 
-  // Bindings added later (KV, R2, Queues) go here:
+  // Bindings added later (KV, Queues) go here:
   // KV_CACHE: KVNamespace;
-  // R2_MEDIA: R2Bucket;
   // QUEUE_EMAIL: Queue;
 }
 

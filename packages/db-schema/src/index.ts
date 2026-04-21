@@ -10,6 +10,7 @@ export {
   guests,
   rsvps,
   reminders,
+  eventMedia,
   auditLog,
   schema,
   type User,
@@ -30,6 +31,8 @@ export {
   type NewRsvp,
   type Reminder,
   type NewReminder,
+  type EventMedia,
+  type NewEventMedia,
   type AuditLog,
   type NewAuditLog,
 } from './schema.js';

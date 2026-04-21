@@ -224,6 +224,31 @@ export const reminders = pgTable(
 );
 
 /**
+ * Event media — cover images + gallery entries. R2 key pattern:
+ * `events/<event_id>/<media_id>.<ext>`. Deleting the event cascades; each
+ * delete is responsible for also purging the R2 object (see
+ * `apps/api/src/domain/media/media.ts`).
+ */
+export const eventMedia = pgTable(
+  'event_media',
+  {
+    id: uuid().primaryKey().$defaultFn(genId),
+    eventId: uuid('event_id')
+      .notNull()
+      .references(() => events.id, { onDelete: 'cascade' }),
+    r2Key: text('r2_key').notNull(),
+    kind: text().notNull().default('cover'),
+    mimeType: text('mime_type').notNull(),
+    sizeBytes: integer('size_bytes').notNull(),
+    width: integer(),
+    height: integer(),
+    position: integer().notNull().default(0),
+    createdAt: nowTs(),
+  },
+  (t) => [index('event_media_event_idx').on(t.eventId)],
+);
+
+/**
  * Append-only audit log. Any side-effectful action (event write, RSVP,
  * reminder send, payment complete) gets a row. No foreign keys on
  * `event_id` so the log survives event deletion.
@@ -261,6 +286,8 @@ export type Rsvp = typeof rsvps.$inferSelect;
 export type NewRsvp = typeof rsvps.$inferInsert;
 export type Reminder = typeof reminders.$inferSelect;
 export type NewReminder = typeof reminders.$inferInsert;
+export type EventMedia = typeof eventMedia.$inferSelect;
+export type NewEventMedia = typeof eventMedia.$inferInsert;
 export type AuditLog = typeof auditLog.$inferSelect;
 export type NewAuditLog = typeof auditLog.$inferInsert;
 
@@ -274,5 +301,6 @@ export const schema = {
   guests,
   rsvps,
   reminders,
+  eventMedia,
   auditLog,
 };
