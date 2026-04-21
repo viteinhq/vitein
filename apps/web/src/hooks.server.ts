@@ -1,17 +1,21 @@
+import { i18n } from '$lib/i18n';
 import { captureToSentry } from '$lib/server/sentry';
+import { sequence } from '@sveltejs/kit/hooks';
 import type { Handle, HandleServerError } from '@sveltejs/kit';
 
 /**
- * Server-side hook chain: stamps security headers and a request id on
- * every response, threads the id into `event.locals` so `apiFetch` can
- * forward it to the API, and captures uncaught server errors to Sentry
- * via a minimal envelope POST (see `$lib/server/sentry`).
+ * Server-side hook chain:
+ *  1. `i18n.handle()` — detects the locale from cookie + Accept-Language
+ *     and sets Paraglide's runtime tag for this request.
+ *  2. `withHeaders` — request id, security headers, CSP/HSTS in production.
  *
- * CSP is intentionally skipped in `dev` — Vite injects inline modules and
- * HMR sockets that trip any reasonable policy.
+ * `handleError` forwards uncaught server errors to Sentry via a minimal
+ * envelope POST (see `$lib/server/sentry`). `@sentry/sveltekit` and
+ * `@sentry/cloudflare` both have edges on the Pages runtime — this is the
+ * reliable path.
  */
 
-export const handle: Handle = async ({ event, resolve }) => {
+const withHeaders: Handle = async ({ event, resolve }) => {
   const inboundId = event.request.headers.get('x-request-id');
   const requestId = inboundId && isWellFormed(inboundId) ? inboundId : randomRequestId();
   event.locals.requestId = requestId;
@@ -31,6 +35,8 @@ export const handle: Handle = async ({ event, resolve }) => {
 
   return response;
 };
+
+export const handle: Handle = sequence(i18n.handle(), withHeaders);
 
 export const handleError: HandleServerError = async ({ error, event }) => {
   const dsn = event.platform?.env?.SENTRY_DSN;

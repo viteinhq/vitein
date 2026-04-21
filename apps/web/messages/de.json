@@ -1,0 +1,47 @@
+{
+  "$schema": "https://inlang.com/schema/inlang-message-format",
+
+  "nav_create": "Event erstellen",
+  "nav_pricing": "Preise",
+  "nav_signin": "Anmelden",
+
+  "footer_impressum": "Impressum",
+  "footer_privacy": "Datenschutz",
+  "footer_terms": "AGB",
+  "footer_switch_to_de": "Deutsch",
+  "footer_switch_to_en": "English",
+
+  "home_title": "Einladungen, neu gedacht.",
+  "home_sub": "Erstelle ein Event in Sekunden — ohne Account. Gäste antworten von jedem Gerät. Kostenlos für die meisten Events, €5 für Premium-Features.",
+  "home_cta_primary": "Event erstellen",
+  "home_cta_secondary": "Preise ansehen",
+
+  "home_features_anonymous_title": "Kein Account nötig",
+  "home_features_anonymous_body": "Eine Einladung aus jedem Browser starten. Ein Magic-Link erlaubt dir die spätere Verwaltung.",
+  "home_features_global_title": "Global von Tag 1",
+  "home_features_global_body": "Zeitzonen, Sprachen und Währungen automatisch. Ein Klick zum Teilen.",
+  "home_features_open_title": "Open-Source-Kern",
+  "home_features_open_body": "AGPLv3. Hoste den Kern selbst oder nutze die Hosted-Version. Kein Lock-in.",
+
+  "pricing_title": "Preise",
+  "pricing_free_name": "Kostenlos",
+  "pricing_free_price": "€0",
+  "pricing_free_desc": "Alles was du für ein einfaches Event brauchst. Kein Account nötig.",
+  "pricing_free_item_rsvps": "Unbegrenzte RSVPs",
+  "pricing_free_item_magic": "Magic-Link-Verwaltung",
+  "pricing_free_item_confirm": "Bestätigungs-Emails",
+  "pricing_free_item_calendar": "Kalender-Export",
+  "pricing_paid_name": "Premium-Event",
+  "pricing_paid_price": "€5 / $5 / CHF 5 / £5",
+  "pricing_paid_desc": "Einmalzahlung pro Event. Schaltet Extras und Feinschliff frei.",
+  "pricing_paid_item_slug": "Eigener URL-Slug",
+  "pricing_paid_item_brand": "vite.in-Branding entfernen",
+  "pricing_paid_item_media": "Cover-Bild + Galerie",
+  "pricing_paid_item_reminders": "Geplante Reminders",
+  "pricing_paid_item_password": "Passwortgeschützte Events",
+
+  "legal_impressum_title": "Impressum",
+  "legal_privacy_title": "Datenschutzerklärung",
+  "legal_terms_title": "AGB",
+  "legal_draft": "Entwurf — wird vor dem öffentlichen Launch finalisiert."
+}

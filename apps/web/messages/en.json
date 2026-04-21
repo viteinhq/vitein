@@ -1,0 +1,47 @@
+{
+  "$schema": "https://inlang.com/schema/inlang-message-format",
+
+  "nav_create": "Create event",
+  "nav_pricing": "Pricing",
+  "nav_signin": "Sign in",
+
+  "footer_impressum": "Impressum",
+  "footer_privacy": "Privacy",
+  "footer_terms": "Terms",
+  "footer_switch_to_de": "Deutsch",
+  "footer_switch_to_en": "English",
+
+  "home_title": "Invitations, reimagined.",
+  "home_sub": "Create an event in seconds — no account needed. Guests RSVP from any device. Free for most events, €5 for premium features.",
+  "home_cta_primary": "Create an event",
+  "home_cta_secondary": "See pricing",
+
+  "home_features_anonymous_title": "No account required",
+  "home_features_anonymous_body": "Start an invitation from any browser. A magic link lets you manage it later.",
+  "home_features_global_title": "Global from day one",
+  "home_features_global_body": "Timezones, locales, and currencies handled automatically. Shareable in a click.",
+  "home_features_open_title": "Open source core",
+  "home_features_open_body": "AGPLv3. Self-host the core, or use the hosted version. No lock-in.",
+
+  "pricing_title": "Pricing",
+  "pricing_free_name": "Free",
+  "pricing_free_price": "€0",
+  "pricing_free_desc": "Everything you need for a basic event. No account required.",
+  "pricing_free_item_rsvps": "Unlimited RSVPs",
+  "pricing_free_item_magic": "Magic-link management",
+  "pricing_free_item_confirm": "Email confirmations",
+  "pricing_free_item_calendar": "Add-to-calendar",
+  "pricing_paid_name": "Premium event",
+  "pricing_paid_price": "€5 / $5 / CHF 5 / £5",
+  "pricing_paid_desc": "Pay once per event. Unlocks polish and extras.",
+  "pricing_paid_item_slug": "Custom URL slug",
+  "pricing_paid_item_brand": "Remove vite.in branding",
+  "pricing_paid_item_media": "Cover image + gallery",
+  "pricing_paid_item_reminders": "Scheduled reminders",
+  "pricing_paid_item_password": "Password-protected events",
+
+  "legal_impressum_title": "Impressum",
+  "legal_privacy_title": "Privacy policy",
+  "legal_terms_title": "Terms of service",
+  "legal_draft": "Draft — will be finalised before public launch."
+}

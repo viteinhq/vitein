@@ -1,15 +1,15 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import { t } from '$lib/i18n';
+  import { languageTag, availableLanguageTags } from '$lib/paraglide/runtime.js';
+  import * as m from '$lib/paraglide/messages.js';
   import type { Snippet } from 'svelte';
   import type { LayoutProps } from './$types';
   import '../app.css';
 
-  let { data, children }: LayoutProps & { children: Snippet } = $props();
+  let { children }: LayoutProps & { children: Snippet } = $props();
 
-  const locale = $derived(data.locale);
   const currentPath = $derived(page.url.pathname);
-  const otherLocale = $derived(locale === 'de' ? 'en' : 'de');
+  const other = $derived(availableLanguageTags.find((l) => l !== languageTag()) ?? 'en');
 </script>
 
 <div class="flex min-h-screen flex-col">
@@ -17,9 +17,9 @@
     <div class="mx-auto flex max-w-4xl items-center justify-between">
       <a href="/" class="text-xl font-semibold tracking-tight">vite.in</a>
       <nav class="flex items-center gap-4 text-sm">
-        <a href="/create" class="hover:underline">{t('nav.create', locale)}</a>
-        <a href="/pricing" class="hover:underline">{t('nav.pricing', locale)}</a>
-        <a href="/signin" class="hover:underline">{t('nav.signin', locale)}</a>
+        <a href="/create" class="hover:underline">{m.nav_create()}</a>
+        <a href="/pricing" class="hover:underline">{m.nav_pricing()}</a>
+        <a href="/signin" class="hover:underline">{m.nav_signin()}</a>
       </nav>
     </div>
   </header>
@@ -29,18 +29,20 @@
   </main>
 
   <footer class="border-t border-slate-200 px-6 py-6 text-sm text-slate-500">
-    <div class="mx-auto flex max-w-4xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div
+      class="mx-auto flex max-w-4xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+    >
       <nav class="flex gap-4">
-        <a href="/legal/impressum" class="hover:underline">{t('footer.impressum', locale)}</a>
-        <a href="/legal/privacy" class="hover:underline">{t('footer.privacy', locale)}</a>
-        <a href="/legal/terms" class="hover:underline">{t('footer.terms', locale)}</a>
+        <a href="/legal/impressum" class="hover:underline">{m.footer_impressum()}</a>
+        <a href="/legal/privacy" class="hover:underline">{m.footer_privacy()}</a>
+        <a href="/legal/terms" class="hover:underline">{m.footer_terms()}</a>
       </nav>
       <a
-        href="/locale?set={otherLocale}&to={currentPath}"
+        href="/locale?set={other}&to={currentPath}"
         data-sveltekit-preload-data="off"
         class="text-xs text-slate-500 hover:underline"
       >
-        {locale === 'de' ? 'English' : 'Deutsch'}
+        {other === 'de' ? m.footer_switch_to_de() : m.footer_switch_to_en()}
       </a>
     </div>
   </footer>
