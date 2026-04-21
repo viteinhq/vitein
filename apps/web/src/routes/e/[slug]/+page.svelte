@@ -28,6 +28,16 @@
 
 <section class="mx-auto max-w-2xl space-y-8">
   <article class="space-y-4">
+    {#if data.cover?.url}
+      <img
+        src={data.cover.url}
+        alt=""
+        width="1200"
+        height="630"
+        class="h-56 w-full rounded-lg object-cover sm:h-72"
+      />
+    {/if}
+
     <h1 class="text-4xl font-bold tracking-tight">{data.event.title}</h1>
 
     <div class="space-y-1 text-slate-700">

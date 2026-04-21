@@ -36,6 +36,82 @@
   </header>
 
   <section class="rounded-lg border border-slate-200 p-4">
+    <h2 class="text-lg font-semibold">Media</h2>
+    <p class="mt-1 text-sm text-slate-600">Up to 10 images, 10 MiB each.</p>
+
+    {#if form?.mediaError}
+      <p class="mt-2 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+        {form.mediaError}
+      </p>
+    {/if}
+    {#if form?.mediaUploaded}
+      <p class="mt-2 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm">
+        Uploaded.
+      </p>
+    {/if}
+    {#if form?.mediaDeleted}
+      <p class="mt-2 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm">
+        Deleted.
+      </p>
+    {/if}
+
+    {#if data.media.length > 0}
+      <ul class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
+        {#each data.media as m (m.id)}
+          <li class="space-y-2">
+            {#if m.url}
+              <img
+                src={m.url}
+                alt=""
+                width="200"
+                height="200"
+                class="h-32 w-full rounded-md object-cover"
+              />
+            {:else}
+              <div
+                class="flex h-32 w-full items-center justify-center rounded-md border border-dashed border-slate-300 text-xs text-slate-400"
+              >
+                (no public URL)
+              </div>
+            {/if}
+            <form method="POST" action="?/deleteMedia" use:enhance>
+              <input type="hidden" name="mediaId" value={m.id} />
+              <button
+                type="submit"
+                class="w-full rounded-md border border-slate-300 px-2 py-1 text-xs hover:bg-slate-50"
+              >
+                Remove
+              </button>
+            </form>
+          </li>
+        {/each}
+      </ul>
+    {/if}
+
+    <form
+      method="POST"
+      action="?/uploadMedia"
+      enctype="multipart/form-data"
+      use:enhance
+      class="mt-4 flex items-center gap-3"
+    >
+      <input
+        type="file"
+        name="file"
+        accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
+        required
+        class="block w-full text-sm"
+      />
+      <button
+        type="submit"
+        class="rounded-md bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700"
+      >
+        Upload
+      </button>
+    </form>
+  </section>
+
+  <section class="rounded-lg border border-slate-200 p-4">
     <h2 class="text-lg font-semibold">RSVPs</h2>
     <p class="mt-1 text-sm text-slate-600">
       {rsvpCounts.yes} yes · {rsvpCounts.maybe} maybe · {rsvpCounts.no} no · {rsvpCounts.plusOnes} plus-ones

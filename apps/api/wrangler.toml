@@ -31,6 +31,7 @@ routes = [{ pattern = "api-staging.vite.in", custom_domain = true }]
 [env.staging.vars]
 ENVIRONMENT = "staging"
 WEB_BASE_URL = "https://next.vite.in"
+MEDIA_PUBLIC_BASE_URL = "https://pub-4c3170ac577242ecb93c48b1c189e207.r2.dev"
 
 [[env.staging.durable_objects.bindings]]
 name = "RATE_LIMITER"

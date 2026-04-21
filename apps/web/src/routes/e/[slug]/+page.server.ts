@@ -1,5 +1,5 @@
 import { error as httpError, fail } from '@sveltejs/kit';
-import { getEventBySlug, submitRsvp } from '@vitein/ts-sdk';
+import { getEventBySlug, listMedia, submitRsvp } from '@vitein/ts-sdk';
 import { configureApi } from '$lib/api';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -13,7 +13,9 @@ export const load: PageServerLoad = async ({ params, platform }) => {
   if (error || !data) {
     throw httpError(404, 'Event not found');
   }
-  return { event: data };
+  const media = await listMedia({ path: { id: data.id } });
+  const cover = media.data?.items.find((m) => m.kind === 'cover' && m.url) ?? null;
+  return { event: data, cover };
 };
 
 export const actions: Actions = {
