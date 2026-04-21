@@ -32,10 +32,12 @@ export const handle: Handle = async ({ event, resolve }) => {
   return response;
 };
 
-export const handleError: HandleServerError = ({ error, event }) => {
+export const handleError: HandleServerError = async ({ error, event }) => {
   const dsn = event.platform?.env?.SENTRY_DSN;
   if (dsn) {
-    void captureToSentry({
+    // Must await: Cloudflare Worker isolates can terminate before a
+    // fire-and-forget fetch completes, swallowing the Sentry event.
+    await captureToSentry({
       dsn,
       error,
       environment: event.platform?.env?.API_BASE_URL?.includes('api-staging')
