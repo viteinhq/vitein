@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state';
+  import { i18n } from '$lib/i18n';
   import { languageTag, availableLanguageTags } from '$lib/paraglide/runtime.js';
   import * as m from '$lib/paraglide/messages.js';
   import type { Snippet } from 'svelte';
@@ -8,8 +9,9 @@
 
   let { children }: LayoutProps & { children: Snippet } = $props();
 
-  const currentPath = $derived(page.url.pathname);
+  const canonicalPath = $derived(i18n.route(page.url.pathname));
   const other = $derived(availableLanguageTags.find((l) => l !== languageTag()) ?? 'en');
+  const switchHref = $derived(i18n.resolveRoute(canonicalPath, other));
 </script>
 
 <div class="flex min-h-screen flex-col">
@@ -38,8 +40,9 @@
         <a href="/legal/terms" class="hover:underline">{m.footer_terms()}</a>
       </nav>
       <a
-        href="/locale?set={other}&to={currentPath}"
-        data-sveltekit-preload-data="off"
+        href={switchHref}
+        hreflang={other}
+        data-sveltekit-reload
         class="text-xs text-slate-500 hover:underline"
       >
         {other === 'de' ? m.footer_switch_to_de() : m.footer_switch_to_en()}
