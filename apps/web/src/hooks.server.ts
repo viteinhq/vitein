@@ -24,7 +24,7 @@ export const handle: Handle = async ({ event, resolve }) => {
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
   response.headers.set('Permissions-Policy', 'geolocation=(), camera=(), microphone=()');
 
-  if (!isDev(event.platform)) {
+  if (!isLocalhost(event.url)) {
     response.headers.set('Content-Security-Policy', productionCsp(event.platform));
     response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
   }
@@ -51,8 +51,8 @@ export const handleError: HandleServerError = async ({ error, event }) => {
   };
 };
 
-function isDev(platform: App.Platform | undefined): boolean {
-  return !platform?.env?.API_BASE_URL || Boolean(process.env.NODE_ENV === 'development');
+function isLocalhost(url: URL): boolean {
+  return url.hostname === 'localhost' || url.hostname === '127.0.0.1';
 }
 
 function productionCsp(platform: App.Platform | undefined): string {
