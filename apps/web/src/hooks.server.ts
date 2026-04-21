@@ -1,30 +1,17 @@
-import { env } from '$env/dynamic/private';
-import * as Sentry from '@sentry/sveltekit';
-import { sequence } from '@sveltejs/kit/hooks';
+import { captureToSentry } from '$lib/server/sentry';
 import type { Handle, HandleServerError } from '@sveltejs/kit';
 
 /**
- * Server-side hook chain: initialises Sentry at module load (when `SENTRY_DSN`
- * is bound on `platform.env`), then on every request stamps security headers
- * and a request id and threads that id into `event.locals` so `apiFetch` can
- * forward it to the API.
- *
- * `$env/dynamic/private` is populated from `platform.env` by the Cloudflare
- * adapter before this module runs, so reading `SENTRY_DSN` at module scope is
- * safe.
+ * Server-side hook chain: stamps security headers and a request id on
+ * every response, threads the id into `event.locals` so `apiFetch` can
+ * forward it to the API, and captures uncaught server errors to Sentry
+ * via a minimal envelope POST (see `$lib/server/sentry`).
  *
  * CSP is intentionally skipped in `dev` — Vite injects inline modules and
  * HMR sockets that trip any reasonable policy.
  */
 
-if (env.SENTRY_DSN) {
-  Sentry.init({
-    dsn: env.SENTRY_DSN,
-    tracesSampleRate: 0.1,
-  });
-}
-
-const withHeaders: Handle = async ({ event, resolve }) => {
+export const handle: Handle = async ({ event, resolve }) => {
   const inboundId = event.request.headers.get('x-request-id');
   const requestId = inboundId && isWellFormed(inboundId) ? inboundId : randomRequestId();
   event.locals.requestId = requestId;
@@ -45,13 +32,22 @@ const withHeaders: Handle = async ({ event, resolve }) => {
   return response;
 };
 
-export const handle: Handle = env.SENTRY_DSN
-  ? sequence(Sentry.sentryHandle(), withHeaders)
-  : withHeaders;
-
-export const handleError: HandleServerError = env.SENTRY_DSN
-  ? Sentry.handleErrorWithSentry()
-  : ({ error }) => ({ message: error instanceof Error ? error.message : 'Unknown error' });
+export const handleError: HandleServerError = ({ error, event }) => {
+  const dsn = event.platform?.env?.SENTRY_DSN;
+  if (dsn) {
+    void captureToSentry({
+      dsn,
+      error,
+      environment: event.platform?.env?.API_BASE_URL?.includes('api-staging')
+        ? 'staging'
+        : 'production',
+      requestId: event.locals.requestId,
+    });
+  }
+  return {
+    message: error instanceof Error ? error.message : 'Unknown error',
+  };
+};
 
 function isDev(platform: App.Platform | undefined): boolean {
   return !platform?.env?.API_BASE_URL || Boolean(process.env.NODE_ENV === 'development');

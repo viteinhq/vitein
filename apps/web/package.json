@@ -16,7 +16,6 @@
   },
   "dependencies": {
     "@hey-api/client-fetch": "^0.13.1",
-    "@sentry/sveltekit": "^9.46.0",
     "@vitein/ts-sdk": "workspace:*"
   },
   "devDependencies": {

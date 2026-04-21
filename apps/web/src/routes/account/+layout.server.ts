@@ -16,6 +16,6 @@ export const load: LayoutServerLoad = async (event) => {
   if (!res.ok) {
     throw redirect(303, '/signin');
   }
-  const user: UserProfile = await res.json();
+  const user = (await res.json()) as unknown as UserProfile;
   return { user };
 };
