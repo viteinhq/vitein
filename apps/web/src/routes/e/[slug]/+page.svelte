@@ -20,6 +20,11 @@
   function onPlusOnesInput(e: Event) {
     const raw = Number((e.target as HTMLInputElement).value);
     plusOnesCount = Number.isFinite(raw) ? Math.max(0, Math.min(20, raw)) : 0;
+    console.log('[plus-ones] input fired, count →', plusOnesCount);
+  }
+  function debugBump() {
+    plusOnesCount = plusOnesCount + 1;
+    console.log('[plus-ones] bump, count →', plusOnesCount);
   }
 
   function formatInTz(iso: string, tz: string) {
@@ -270,6 +275,9 @@
         <p class="rounded-md bg-yellow-100 p-2 text-xs font-mono">
           DEBUG tier={String(data.event.tier)} count={plusOnesCount} slots={plusOnesSlots.length} isPlus={String(isPlusTier)}
         </p>
+        <button type="button" onclick={debugBump} class="rounded-md bg-blue-500 px-3 py-1 text-xs text-white">
+          DEBUG bump +1
+        </button>
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <label class="block sm:col-span-1">
             <span class="text-sm font-medium">{m.event_rsvp_plus_ones()}</span>
