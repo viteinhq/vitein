@@ -14,8 +14,10 @@ export const load: PageServerLoad = async ({ params, platform }) => {
     throw httpError(404, { message: 'Event not found', code: 'http_event_not_found' });
   }
   const media = await listMedia({ path: { id: data.id } });
-  const cover = media.data?.items.find((m) => m.kind === 'cover' && m.url) ?? null;
-  return { event: data, cover };
+  const items = media.data?.items ?? [];
+  const cover = items.find((m) => m.kind === 'cover' && m.url) ?? null;
+  const gallery = items.filter((m) => m.kind === 'gallery' && m.url);
+  return { event: data, cover, gallery };
 };
 
 export const actions: Actions = {
@@ -48,6 +50,6 @@ export const actions: Actions = {
       return fail(500, { rsvpError: 'rsvp_failed' });
     }
 
-    return { rsvpSuccess: true, rsvpStatus: data.status };
+    return { rsvpSuccess: true, rsvpStatus: data.status, rsvpName: name };
   },
 };

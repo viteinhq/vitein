@@ -1,5 +1,6 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
+  import { page } from '$app/state';
   import { localizeError } from '$lib/errors';
   import * as m from '$lib/paraglide/messages.js';
   import type { PageProps } from './$types';
@@ -7,20 +8,55 @@
   let { data, form }: PageProps = $props();
 
   let copied = $state(false);
+  let submitting = $state(false);
+  let resetForm = $state(false);
+
+  function formatInTz(iso: string, tz: string) {
+    return new Intl.DateTimeFormat(undefined, {
+      dateStyle: 'full',
+      timeStyle: 'short',
+      timeZone: tz,
+    }).format(new Date(iso));
+  }
+
+  const viewerTz = $derived(
+    typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'UTC',
+  );
+
+  const startsInEventTz = $derived(formatInTz(data.event.startsAt, data.event.timezone));
+  const endsInEventTz = $derived(
+    data.event.endsAt ? formatInTz(data.event.endsAt, data.event.timezone) : null,
+  );
+  const showLocalTime = $derived(viewerTz !== data.event.timezone);
+  const startsInViewerTz = $derived(showLocalTime ? formatInTz(data.event.startsAt, viewerTz) : '');
+
+  const shareUrl = $derived(page.url.href);
+
   async function copyLink() {
     if (typeof navigator === 'undefined' || !navigator.clipboard) return;
-    await navigator.clipboard.writeText(window.location.href);
+    await navigator.clipboard.writeText(shareUrl);
     copied = true;
     setTimeout(() => (copied = false), 2000);
   }
 
-  const startsAtFormatted = $derived(
-    new Intl.DateTimeFormat(undefined, {
-      dateStyle: 'full',
-      timeStyle: 'short',
-      timeZone: data.event.timezone,
-    }).format(new Date(data.event.startsAt)),
-  );
+  async function shareNative() {
+    if (typeof navigator === 'undefined' || !('share' in navigator)) {
+      await copyLink();
+      return;
+    }
+    try {
+      await navigator.share({ title: data.event.title, url: shareUrl });
+    } catch {
+      /* user cancelled */
+    }
+  }
+
+  // Show the form again after the user clicks "Change my answer".
+  function changeAnswer() {
+    resetForm = true;
+  }
+
+  const showConfirmation = $derived(form?.rsvpSuccess && !resetForm);
 </script>
 
 <svelte:head>
@@ -29,7 +65,7 @@
 </svelte:head>
 
 <section class="mx-auto max-w-2xl space-y-8">
-  <article class="space-y-4">
+  <article class="space-y-5">
     {#if data.cover?.url}
       <img
         src={data.cover.url}
@@ -40,20 +76,50 @@
       />
     {/if}
 
-    <h1 class="text-4xl font-bold tracking-tight">{data.event.title}</h1>
+    <h1 class="text-balance text-4xl font-bold tracking-tight">{data.event.title}</h1>
 
-    <div class="space-y-1 text-slate-700">
-      <p><span class="text-slate-500">{m.event_when_label()}</span> {startsAtFormatted} ({data.event.timezone})</p>
+    <dl class="space-y-3 text-slate-700">
+      <div>
+        <dt class="text-xs font-semibold uppercase tracking-wider text-slate-500">
+          {m.event_when_label()}
+        </dt>
+        <dd class="mt-1">
+          <time datetime={data.event.startsAt}>{startsInEventTz}</time>
+          {#if endsInEventTz}
+            <span class="text-slate-500">{m.event_until()}</span>
+            <time datetime={data.event.endsAt}>{endsInEventTz}</time>
+          {/if}
+          <span class="text-sm text-slate-500"> · {data.event.timezone}</span>
+        </dd>
+        {#if showLocalTime}
+          <dd class="mt-1 text-sm text-slate-500">
+            {m.event_your_local_time()} {startsInViewerTz}
+          </dd>
+        {/if}
+      </div>
+
       {#if data.event.locationText}
-        <p><span class="text-slate-500">{m.event_where_label()}</span> {data.event.locationText}</p>
+        <div>
+          <dt class="text-xs font-semibold uppercase tracking-wider text-slate-500">
+            {m.event_where_label()}
+          </dt>
+          <dd class="mt-1">{data.event.locationText}</dd>
+        </div>
       {/if}
-    </div>
+    </dl>
 
     {#if data.event.description}
       <p class="whitespace-pre-line text-slate-800">{data.event.description}</p>
     {/if}
 
     <div class="flex flex-wrap gap-2">
+      <button
+        type="button"
+        onclick={shareNative}
+        class="rounded-md border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50"
+      >
+        {m.event_share()}
+      </button>
       <button
         type="button"
         onclick={copyLink}
@@ -70,19 +136,62 @@
     </div>
   </article>
 
+  {#if data.gallery.length > 0}
+    <section class="space-y-3">
+      <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-500">
+        {m.event_gallery_heading()}
+      </h2>
+      <ul class="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        {#each data.gallery as g (g.id)}
+          {#if g.url}
+            <li>
+              <img
+                src={g.url}
+                alt=""
+                width="400"
+                height="400"
+                class="h-32 w-full rounded-md object-cover"
+              />
+            </li>
+          {/if}
+        {/each}
+      </ul>
+    </section>
+  {/if}
+
   <section class="space-y-4 rounded-lg border border-slate-200 p-6">
     <h2 class="text-xl font-semibold">{m.event_rsvp_heading()}</h2>
 
-    {#if form?.rsvpSuccess}
-      <p class="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm">
-        {#if form.rsvpStatus === 'yes'}
-          {m.event_rsvp_thanks_yes()}
-        {:else if form.rsvpStatus === 'maybe'}
-          {m.event_rsvp_thanks_maybe()}
-        {:else}
-          {m.event_rsvp_thanks_no()}
+    {#if showConfirmation}
+      <div class="space-y-3 rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3">
+        {#if form?.rsvpName}
+          <p class="font-medium">{m.event_rsvp_thanks_named({ name: form.rsvpName })}</p>
         {/if}
-      </p>
+        <p class="text-sm">
+          {#if form?.rsvpStatus === 'yes'}
+            {m.event_rsvp_thanks_yes()}
+          {:else if form?.rsvpStatus === 'maybe'}
+            {m.event_rsvp_thanks_maybe()}
+          {:else}
+            {m.event_rsvp_thanks_no()}
+          {/if}
+        </p>
+        <div class="flex flex-wrap gap-2 pt-1">
+          <a
+            href="/e/{data.event.slug}/event.ics"
+            class="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm hover:bg-slate-50"
+          >
+            {m.event_add_to_calendar()}
+          </a>
+          <button
+            type="button"
+            onclick={changeAnswer}
+            class="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm hover:bg-slate-50"
+          >
+            {m.event_rsvp_change()}
+          </button>
+        </div>
+      </div>
     {:else}
       {#if form?.rsvpError}
         <p class="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
@@ -90,7 +199,43 @@
         </p>
       {/if}
 
-      <form method="POST" action="?/rsvp" use:enhance class="space-y-3">
+      <form
+        method="POST"
+        action="?/rsvp"
+        use:enhance={() => {
+          submitting = true;
+          return async ({ update }) => {
+            await update();
+            submitting = false;
+            resetForm = false;
+          };
+        }}
+        class="space-y-4"
+      >
+        <fieldset>
+          <legend class="text-sm font-medium">{m.event_rsvp_question()}</legend>
+          <div class="mt-2 grid grid-cols-3 gap-2">
+            <label
+              class="flex cursor-pointer items-center justify-center rounded-md border border-slate-300 px-3 py-2 text-sm font-medium hover:bg-slate-50 has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50 has-[:checked]:text-emerald-900"
+            >
+              <input type="radio" name="status" value="yes" checked class="sr-only" />
+              {m.event_rsvp_yes()}
+            </label>
+            <label
+              class="flex cursor-pointer items-center justify-center rounded-md border border-slate-300 px-3 py-2 text-sm font-medium hover:bg-slate-50 has-[:checked]:border-amber-500 has-[:checked]:bg-amber-50 has-[:checked]:text-amber-900"
+            >
+              <input type="radio" name="status" value="maybe" class="sr-only" />
+              {m.event_rsvp_maybe()}
+            </label>
+            <label
+              class="flex cursor-pointer items-center justify-center rounded-md border border-slate-300 px-3 py-2 text-sm font-medium hover:bg-slate-50 has-[:checked]:border-rose-500 has-[:checked]:bg-rose-50 has-[:checked]:text-rose-900"
+            >
+              <input type="radio" name="status" value="no" class="sr-only" />
+              {m.event_rsvp_no()}
+            </label>
+          </div>
+        </fieldset>
+
         <label class="block">
           <span class="text-sm font-medium">{m.event_rsvp_name_label()}</span>
           <input
@@ -108,28 +253,22 @@
             name="email"
             class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2"
           />
+          <span class="mt-1 block text-xs text-slate-500">{m.event_rsvp_email_hint()}</span>
         </label>
 
-        <fieldset>
-          <legend class="text-sm font-medium">{m.event_rsvp_question()}</legend>
-          <div class="mt-2 flex gap-4 text-sm">
-            <label><input type="radio" name="status" value="yes" checked /> {m.event_rsvp_yes()}</label>
-            <label><input type="radio" name="status" value="maybe" /> {m.event_rsvp_maybe()}</label>
-            <label><input type="radio" name="status" value="no" /> {m.event_rsvp_no()}</label>
-          </div>
-        </fieldset>
-
-        <label class="block">
-          <span class="text-sm font-medium">{m.event_rsvp_plus_ones()}</span>
-          <input
-            type="number"
-            name="plusOnes"
-            min="0"
-            max="20"
-            value="0"
-            class="mt-1 block w-24 rounded-md border border-slate-300 px-3 py-2"
-          />
-        </label>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <label class="block sm:col-span-1">
+            <span class="text-sm font-medium">{m.event_rsvp_plus_ones()}</span>
+            <input
+              type="number"
+              name="plusOnes"
+              min="0"
+              max="20"
+              value="0"
+              class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2"
+            />
+          </label>
+        </div>
 
         <label class="block">
           <span class="text-sm font-medium">{m.event_rsvp_message_optional()}</span>
@@ -143,9 +282,10 @@
 
         <button
           type="submit"
-          class="rounded-md bg-slate-900 px-4 py-2 font-medium text-white hover:bg-slate-700"
+          disabled={submitting}
+          class="rounded-md bg-slate-900 px-4 py-2 font-medium text-white hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {m.event_rsvp_submit()}
+          {submitting ? m.event_rsvp_submitting() : m.event_rsvp_submit()}
         </button>
       </form>
     {/if}
