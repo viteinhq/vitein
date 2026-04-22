@@ -272,6 +272,10 @@ function toPublic(e: EventRow, opts: PublicOpts = { locked: false }) {
     // affordances (named plus-ones, hide branding). Null for unpaid events.
     tier: tierOf(e),
     hasPassword,
+    // `hasPassword` is static (password set or not). `locked` is dynamic:
+    // true only when the current caller has no valid view token. UIs
+    // branch the password prompt on `locked`, not `hasPassword`.
+    locked: opts.locked,
   };
 }
 

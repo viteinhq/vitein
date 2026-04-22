@@ -69,11 +69,10 @@
 
   const showConfirmation = $derived(form?.rsvpSuccess && !resetForm);
 
-  // A password-protected event returns with `hasPassword: true` and
-  // sensitive fields (description, location) nulled until a view token is
-  // presented. Rendering the prompt depends only on the server-validated
-  // flag here — the load() already retries with the cookie-stored token.
-  const isLocked = $derived(Boolean(data.event.hasPassword));
+  // `locked` is the dynamic flag: true when the event has a password AND
+  // the current caller has no valid view token. `hasPassword` stays true
+  // even after unlocking, so we branch on `locked` for the UI.
+  const isLocked = $derived(Boolean(data.event.locked));
   let pwdSubmitting = $state(false);
 </script>
 

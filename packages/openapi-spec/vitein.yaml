@@ -717,7 +717,7 @@ components:
 
     EventPublic:
       type: object
-      required: [id, slug, title, startsAt, timezone, visibility, hasPassword]
+      required: [id, slug, title, startsAt, timezone, visibility, hasPassword, locked]
       properties:
         id: { type: string, format: uuid }
         slug: { type: string }
@@ -739,10 +739,16 @@ components:
         hasPassword:
           type: boolean
           description: |
-            True when the event is password-protected. If true and the
-            caller has no valid `X-Event-View-Token`, sensitive fields
-            (`description`, `locationText`) are returned as `null` and the
-            UI should render a password prompt.
+            Static flag — true when the event has a password set,
+            independent of whether the caller has unlocked it.
+        locked:
+          type: boolean
+          description: |
+            Dynamic flag — true when the caller is currently gated
+            (password set AND no valid `X-Event-View-Token`). Sensitive
+            fields (`description`, `locationText`) are returned as
+            `null` in this state. UIs branch the password prompt on
+            `locked`, not `hasPassword`.
 
     EventManage:
       allOf:

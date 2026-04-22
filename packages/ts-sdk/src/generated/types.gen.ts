@@ -85,13 +85,20 @@ export type EventPublic = {
    */
   tier?: 'basic' | 'plus' | null;
   /**
-   * True when the event is password-protected. If true and the
-   * caller has no valid `X-Event-View-Token`, sensitive fields
-   * (`description`, `locationText`) are returned as `null` and the
-   * UI should render a password prompt.
+   * Static flag — true when the event has a password set,
+   * independent of whether the caller has unlocked it.
    *
    */
   hasPassword: boolean;
+  /**
+   * Dynamic flag — true when the caller is currently gated
+   * (password set AND no valid `X-Event-View-Token`). Sensitive
+   * fields (`description`, `locationText`) are returned as
+   * `null` in this state. UIs branch the password prompt on
+   * `locked`, not `hasPassword`.
+   *
+   */
+  locked: boolean;
 };
 
 export type EventManage = EventPublic & {
