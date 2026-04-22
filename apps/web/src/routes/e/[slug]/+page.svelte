@@ -267,6 +267,9 @@
           <span class="mt-1 block text-xs text-slate-500">{m.event_rsvp_email_hint()}</span>
         </label>
 
+        <p class="rounded-md bg-yellow-100 p-2 text-xs font-mono">
+          DEBUG tier={String(data.event.tier)} count={plusOnesCount} slots={plusOnesSlots.length} isPlus={String(isPlusTier)}
+        </p>
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <label class="block sm:col-span-1">
             <span class="text-sm font-medium">{m.event_rsvp_plus_ones()}</span>
