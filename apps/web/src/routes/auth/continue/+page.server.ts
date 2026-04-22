@@ -51,6 +51,10 @@ export const actions: Actions = {
     // The cookie is scoped to `.vite.in` so once it lands it's valid on
     // both api-staging and next. getSetCookie() returns the array form.
     const setCookies = res.headers.getSetCookie();
+    console.warn('[auth/continue] verify status', res.status, 'location', res.headers.get('location'));
+    console.warn('[auth/continue] setCookies count', setCookies.length, 'raw', JSON.stringify(setCookies));
+    const rawSetCookie = res.headers.get('set-cookie');
+    console.warn('[auth/continue] raw set-cookie header', rawSetCookie);
     for (const raw of setCookies) {
       const [nameValue, ...attrs] = raw.split(';').map((s) => s.trim());
       const eq = nameValue?.indexOf('=') ?? -1;
