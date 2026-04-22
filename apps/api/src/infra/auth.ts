@@ -2,6 +2,7 @@ import { accounts, createDb, sessions, users, verifications } from '@vitein/db-s
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { magicLink } from 'better-auth/plugins';
+import { uuidv7 } from 'uuidv7';
 import type { Env } from '../types/env.js';
 import { sendSignInMagicLink } from './email.js';
 
@@ -62,6 +63,11 @@ export function createAuth(env: Env) {
       },
     },
     advanced: {
+      // Our users.id is a pg `uuid` column — override Better-Auth's
+      // random-string generator so every row matches the column type.
+      // sessions/accounts/verifications use text ids, but passing uuidv7
+      // is still valid text, so this single setting covers every table.
+      generateId: () => uuidv7(),
       defaultCookieAttributes: {
         sameSite: 'lax',
         secure: env.ENVIRONMENT !== 'dev',
