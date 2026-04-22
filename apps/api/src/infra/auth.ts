@@ -82,8 +82,18 @@ export function createAuth(env: Env) {
     },
     plugins: [
       magicLink({
-        sendMagicLink: async ({ email, url }) => {
-          await sendSignInMagicLink(env, { to: email, url });
+        sendMagicLink: async ({ email, token, url }) => {
+          // Wrap the verify URL in a web-origin landing page. Gmail (and
+          // similar) prefetches clicked links for safety-scan — a bare GET
+          // to Better-Auth's single-use verify endpoint would be consumed
+          // by the prefetch, leaving the user's actual click with an
+          // INVALID_TOKEN. Our web page just shows a "Continue" button;
+          // the actual verification POST only fires on real user gesture.
+          const callbackURL = new URL(url).searchParams.get('callbackURL') ?? webBase;
+          const landing = new URL('/auth/continue', webBase);
+          landing.searchParams.set('t', token);
+          landing.searchParams.set('cb', callbackURL);
+          await sendSignInMagicLink(env, { to: email, url: landing.toString() });
         },
       }),
     ],
