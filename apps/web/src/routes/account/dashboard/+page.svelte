@@ -1,7 +1,8 @@
 <script lang="ts">
+  import { enhance } from '$app/forms';
   import type { PageProps } from './$types';
 
-  let { data }: PageProps = $props();
+  let { data, form }: PageProps = $props();
 
   function formatStart(iso: string, tz: string) {
     return new Intl.DateTimeFormat(undefined, {
@@ -27,9 +28,37 @@
     </a>
   </div>
 
+  {#if form && 'claimed' in form && typeof form.claimed === 'number'}
+    <p class="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm">
+      {#if form.claimed > 0}
+        Claimed {form.claimed} event{form.claimed === 1 ? '' : 's'} to your account. Reload to see them.
+      {:else}
+        No anonymously-created events matched your email.
+      {/if}
+    </p>
+  {/if}
+  {#if form && 'claimError' in form}
+    <div class="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+      <p>{form.claimError}</p>
+      {#if 'claimDetails' in form && form.claimDetails}
+        <pre class="mt-1 overflow-x-auto text-xs">{form.claimDetails}</pre>
+      {/if}
+    </div>
+  {/if}
+
+  <form method="POST" action="?/claim" use:enhance>
+    <button
+      type="submit"
+      class="rounded-md border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50"
+    >
+      Claim events created with my email
+    </button>
+  </form>
+
   {#if data.events.length === 0}
     <p class="rounded-md border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
-      No events yet. <a href="/create" class="underline">Create one</a>.
+      No events yet. <a href="/create" class="underline">Create one</a>, or claim events you
+      created anonymously with the same email.
     </p>
   {:else}
     <ul class="divide-y divide-slate-200 rounded-md border border-slate-200">
