@@ -78,6 +78,7 @@ export function createAuth(env: Env) {
     plugins: [
       magicLink({
         sendMagicLink: async ({ email, url }) => {
+          console.warn('[debug] magic-link issued', { email, url });
           await sendSignInMagicLink(env, { to: email, url });
         },
       }),
