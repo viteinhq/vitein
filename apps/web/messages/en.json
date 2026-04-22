@@ -23,6 +23,15 @@
   "home_features_open_title": "Open source core",
   "home_features_open_body": "AGPLv3. Self-host the core, or use the hosted version. No lock-in.",
 
+  "home_how_heading": "How it works",
+  "home_how_step1_title": "1. Create",
+  "home_how_step1_body": "Fill in the basics and your email. We send you a magic link to manage the event.",
+  "home_how_step2_title": "2. Share",
+  "home_how_step2_body": "Send the link any way you like — message, email, social. No app required for guests.",
+  "home_how_step3_title": "3. Track",
+  "home_how_step3_body": "Watch RSVPs roll in. Send a reminder when the date approaches.",
+  "home_oss_link": "View source on GitHub",
+
   "pricing_title": "Pricing",
   "pricing_free_name": "Free",
   "pricing_free_price": "€0",

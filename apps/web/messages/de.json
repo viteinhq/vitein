@@ -23,6 +23,15 @@
   "home_features_open_title": "Open-Source-Kern",
   "home_features_open_body": "AGPLv3. Hoste den Kern selbst oder nutze die Hosted-Version. Kein Lock-in.",
 
+  "home_how_heading": "So funktioniert's",
+  "home_how_step1_title": "1. Erstellen",
+  "home_how_step1_body": "Die Basics eintragen und deine E-Mail-Adresse. Wir senden dir einen Magic-Link zur Verwaltung.",
+  "home_how_step2_title": "2. Teilen",
+  "home_how_step2_body": "Den Link beliebig weitergeben — Messenger, E-Mail, Social. Gäste brauchen keine App.",
+  "home_how_step3_title": "3. Überblicken",
+  "home_how_step3_body": "Zusagen laufen ein. Erinnerung senden, wenn der Termin näher rückt.",
+  "home_oss_link": "Quellcode auf GitHub",
+
   "pricing_title": "Preise",
   "pricing_free_name": "Kostenlos",
   "pricing_free_price": "€0",
