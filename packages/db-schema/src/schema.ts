@@ -194,6 +194,11 @@ export const rsvps = pgTable(
     email: text(),
     status: text().notNull(),
     plusOnes: integer('plus_ones').notNull().default(0),
+    // Named plus-one details. Populated only for Plus-tier events (A.6b);
+    // Basic-tier events keep the plusOnes count and leave this empty.
+    // Shape: [{ name: string }, …]. Keep loose so we can add fields
+    // (dietary, +1 email) without a schema migration.
+    plusOnesDetails: jsonb('plus_ones_details').notNull().default([]),
     message: text(),
     respondedAt: nowTs(),
   },

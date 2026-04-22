@@ -10,6 +10,13 @@
   let copied = $state(false);
   let submitting = $state(false);
   let resetForm = $state(false);
+  let plusOnesCount = $state(0);
+  const isPlusTier = $derived(data.event.tier === 'plus');
+  const plusOnesSlots = $derived(
+    isPlusTier
+      ? Array.from({ length: Math.max(0, Math.min(20, plusOnesCount)) }, (_, i) => i)
+      : [],
+  );
 
   function formatInTz(iso: string, tz: string) {
     return new Intl.DateTimeFormat(undefined, {
@@ -264,11 +271,28 @@
               name="plusOnes"
               min="0"
               max="20"
-              value="0"
+              bind:value={plusOnesCount}
               class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2"
             />
           </label>
         </div>
+
+        {#if plusOnesSlots.length > 0}
+          <fieldset class="space-y-2 rounded-md border border-slate-200 bg-slate-50 p-3">
+            <legend class="px-1 text-sm font-medium">
+              {m.event_rsvp_plus_ones_names_label()}
+            </legend>
+            <p class="text-xs text-slate-500">{m.event_rsvp_plus_ones_names_hint()}</p>
+            {#each plusOnesSlots as i (i)}
+              <input
+                name="plusOneName"
+                maxlength="200"
+                placeholder={m.event_rsvp_plus_one_placeholder()}
+                class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+              />
+            {/each}
+          </fieldset>
+        {/if}
 
         <label class="block">
           <span class="text-sm font-medium">{m.event_rsvp_message_optional()}</span>

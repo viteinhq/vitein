@@ -279,6 +279,13 @@
           <li class="py-2 text-sm">
             <span class="font-medium">{r.name}</span>
             <span class="text-slate-500">— {r.status}{r.plusOnes ? ` (+${r.plusOnes})` : ''}</span>
+            {#if r.plusOnesDetails && r.plusOnesDetails.length > 0}
+              <ul class="mt-1 ml-4 list-disc text-xs text-slate-500">
+                {#each r.plusOnesDetails as p, i (i)}
+                  <li>{p.name}</li>
+                {/each}
+              </ul>
+            {/if}
             {#if r.message}
               <p class="mt-1 text-slate-600">{r.message}</p>
             {/if}

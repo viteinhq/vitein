@@ -11,6 +11,7 @@ import {
 } from '../domain/events/events.js';
 import { buildEventIcs } from '../domain/events/ics.js';
 import { ValidationError } from '../domain/errors.js';
+import { tierOf } from '../domain/payments/payments.js';
 import { db } from '../infra/db.js';
 import { sendCreatorMagicLink } from '../infra/email.js';
 import { requireCreator } from '../middleware/require-creator.js';
@@ -202,6 +203,9 @@ function toPublic(e: EventRow) {
     locationText: e.locationText,
     visibility: e.visibility,
     defaultLocale: e.defaultLocale,
+    // Surface the premium tier so guest-facing UIs can enable per-tier
+    // affordances (named plus-ones, hide branding). Null for unpaid events.
+    tier: tierOf(e),
   };
 }
 

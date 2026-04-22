@@ -681,6 +681,13 @@ components:
         locationText: { type: [string, 'null'] }
         visibility: { type: string, enum: [link_only, public] }
         defaultLocale: { type: string }
+        tier:
+          type: [string, 'null']
+          enum: [basic, plus, null]
+          description: |
+            Premium tier when the event is paid, otherwise `null`. Used by
+            guest-facing UIs to light up per-tier affordances (named
+            plus-ones, custom branding treatment).
 
     EventManage:
       allOf:
@@ -724,6 +731,18 @@ components:
         status: { type: string, enum: [yes, maybe, no] }
         message: { type: [string, 'null'], maxLength: 2000 }
         plusOnes: { type: integer, minimum: 0, maximum: 20, default: 0 }
+        plusOnesDetails:
+          type: array
+          maxItems: 20
+          description: |
+            Named plus-one entries. Only honoured on Plus-tier events
+            (A.6b); on Basic / unpaid events the server drops this field
+            and only stores the integer `plusOnes` count.
+          items:
+            type: object
+            required: [name]
+            properties:
+              name: { type: string, minLength: 1, maxLength: 200 }
         guestId:
           type: [string, 'null']
           format: uuid
@@ -731,7 +750,7 @@ components:
 
     Rsvp:
       type: object
-      required: [id, eventId, name, status, plusOnes, respondedAt]
+      required: [id, eventId, name, status, plusOnes, plusOnesDetails, respondedAt]
       properties:
         id: { type: string, format: uuid }
         eventId: { type: string, format: uuid }
@@ -740,6 +759,14 @@ components:
         email: { type: [string, 'null'], format: email }
         status: { type: string, enum: [yes, maybe, no] }
         plusOnes: { type: integer }
+        plusOnesDetails:
+          type: array
+          description: Named plus-one entries — empty for Basic / unpaid events.
+          items:
+            type: object
+            required: [name]
+            properties:
+              name: { type: string }
         message: { type: [string, 'null'] }
         respondedAt: { type: string, format: date-time }
 

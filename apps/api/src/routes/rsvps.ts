@@ -18,6 +18,10 @@ const rsvpInputSchema = z.object({
   status: z.enum(['yes', 'maybe', 'no']),
   message: z.string().max(2000).nullable().optional(),
   plusOnes: z.number().int().min(0).max(20).optional(),
+  plusOnesDetails: z
+    .array(z.object({ name: z.string().min(1).max(200) }))
+    .max(20)
+    .optional(),
   guestId: z.string().uuid().nullable().optional(),
 });
 
@@ -87,6 +91,9 @@ function toRsvp(r: RsvpRow) {
     email: r.email,
     status: r.status as 'yes' | 'maybe' | 'no',
     plusOnes: r.plusOnes,
+    plusOnesDetails: Array.isArray(r.plusOnesDetails)
+      ? (r.plusOnesDetails as Array<{ name: string }>)
+      : [],
     message: r.message,
     respondedAt: r.respondedAt.toISOString(),
   };

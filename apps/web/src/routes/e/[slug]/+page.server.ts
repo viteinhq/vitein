@@ -32,6 +32,16 @@ export const actions: Actions = {
     const plusOnesRaw = Number(form.get('plusOnes') ?? 0);
     const plusOnes = Number.isFinite(plusOnesRaw) ? Math.max(0, Math.min(20, plusOnesRaw)) : 0;
 
+    // Named plus-ones (Plus tier). The form sends one `plusOneName` input
+    // per +1 slot; we collect them, trim, drop empties, and clamp to the
+    // declared plusOnes count. The API drops this on Basic events.
+    const plusOnesDetails = form
+      .getAll('plusOneName')
+      .map((v) => String(v).trim())
+      .filter((v) => v.length > 0)
+      .slice(0, plusOnes)
+      .map((name) => ({ name }));
+
     if (!name) {
       return fail(400, { rsvpError: 'rsvp_name_required' });
     }
@@ -43,7 +53,7 @@ export const actions: Actions = {
 
     const { data, error } = await submitRsvp({
       path: { id: event.data.id },
-      body: { name, email, status, message, plusOnes },
+      body: { name, email, status, message, plusOnes, plusOnesDetails },
     });
 
     if (error || !data) {

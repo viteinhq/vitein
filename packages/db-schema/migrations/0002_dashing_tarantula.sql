@@ -1,0 +1,1 @@
+ALTER TABLE "rsvps" ADD COLUMN "plus_ones_details" jsonb DEFAULT '[]'::jsonb NOT NULL;

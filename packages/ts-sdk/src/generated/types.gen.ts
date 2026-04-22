@@ -70,6 +70,13 @@ export type EventPublic = {
   locationText?: string | null;
   visibility: 'link_only' | 'public';
   defaultLocale?: string;
+  /**
+   * Premium tier when the event is paid, otherwise `null`. Used by
+   * guest-facing UIs to light up per-tier affordances (named
+   * plus-ones, custom branding treatment).
+   *
+   */
+  tier?: 'basic' | 'plus' | null;
 };
 
 export type EventManage = EventPublic & {
@@ -106,6 +113,15 @@ export type RsvpInput = {
   message?: string | null;
   plusOnes?: number;
   /**
+   * Named plus-one entries. Only honoured on Plus-tier events
+   * (A.6b); on Basic / unpaid events the server drops this field
+   * and only stores the integer `plusOnes` count.
+   *
+   */
+  plusOnesDetails?: Array<{
+    name: string;
+  }>;
+  /**
    * Optional link to a pre-invited guest.
    */
   guestId?: string | null;
@@ -119,6 +135,12 @@ export type Rsvp = {
   email?: string | null;
   status: 'yes' | 'maybe' | 'no';
   plusOnes: number;
+  /**
+   * Named plus-one entries — empty for Basic / unpaid events.
+   */
+  plusOnesDetails: Array<{
+    name: string;
+  }>;
   message?: string | null;
   respondedAt: string;
 };
