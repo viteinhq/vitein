@@ -57,18 +57,21 @@ export const actions: Actions = {
       return fail(response?.status ?? 500, { pwdError: 'pwd_failed' });
     }
 
+    // Path `/` (not `/e/<slug>`) because the URL may include a Paraglide
+    // locale prefix (e.g. `/de/e/<slug>`) and a scoped cookie path
+    // wouldn't prefix-match. Cookie name already carries the slug so
+    // there's no cross-event leak.
     cookies.set(`${VIEW_TOKEN_COOKIE_PREFIX}${params.slug}`, data.token, {
-      path: `/e/${params.slug}`,
+      path: '/',
       httpOnly: true,
       sameSite: 'lax',
       secure: url.protocol === 'https:',
       maxAge: data.ttlSeconds,
     });
-    // Throw a redirect to self so the browser GETs the page fresh with
-    // the cookie attached — `use:enhance` navigates via goto() which
-    // then re-runs load() and the event renders unlocked. Returning a
-    // plain result only updates the form prop, leaving stale data.
-    throw redirect(303, `/e/${params.slug}`);
+    // Redirect to the same URL the user is on (locale prefix preserved)
+    // so `use:enhance` goto()'s and reruns load() with the cookie now
+    // attached. Returning a plain result only updates the form prop.
+    throw redirect(303, url.pathname);
   },
 
   rsvp: async ({ request, params, platform }) => {
