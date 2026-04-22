@@ -20,13 +20,31 @@ export function createAuth(env: Env) {
   if (!env.AUTH_SECRET) throw new Error('AUTH_SECRET is required for auth');
 
   const db = createDb(env.DATABASE_URL);
-  const baseURL = env.WEB_BASE_URL ?? 'https://vite.in';
+
+  // Better-Auth's endpoints live on the API worker, so baseURL has to point
+  // there — otherwise the magic-link URL is rendered against the web origin
+  // and the verify route 404s. We still trust the web origin for CSRF on
+  // proxied calls (see apps/web/src/lib/server/api.ts).
+  const apiBaseURL =
+    env.ENVIRONMENT === 'production'
+      ? 'https://api.vite.in'
+      : env.ENVIRONMENT === 'staging'
+        ? 'https://api-staging.vite.in'
+        : 'http://localhost:8787';
+  const webBase = env.WEB_BASE_URL ?? 'https://vite.in';
+
+  // Session cookie must survive the cross-subdomain hop: the user signs in
+  // on api-staging.vite.in (the magic-link URL) but lands on next.vite.in
+  // for the dashboard. Scope to the parent zone in staging + prod; leave
+  // domain undefined in dev so localhost/127.0.0.1 keeps working.
+  const cookieDomain =
+    env.ENVIRONMENT === 'dev' ? undefined : new URL(apiBaseURL).hostname.replace(/^[^.]+/, '');
 
   return betterAuth({
     secret: env.AUTH_SECRET,
-    baseURL,
+    baseURL: apiBaseURL,
     basePath: '/v1/auth',
-    trustedOrigins: [baseURL],
+    trustedOrigins: [apiBaseURL, webBase],
     database: drizzleAdapter(db, {
       provider: 'pg',
       schema: {
@@ -44,14 +62,11 @@ export function createAuth(env: Env) {
       },
     },
     advanced: {
-      cookies: {
-        session_token: {
-          attributes: {
-            sameSite: 'lax',
-            secure: env.ENVIRONMENT !== 'dev',
-            httpOnly: true,
-          },
-        },
+      defaultCookieAttributes: {
+        sameSite: 'lax',
+        secure: env.ENVIRONMENT !== 'dev',
+        httpOnly: true,
+        ...(cookieDomain ? { domain: cookieDomain } : {}),
       },
     },
     plugins: [
