@@ -10,6 +10,44 @@
   const upgraded = $derived(page.url.searchParams.get('upgraded') === '1');
   const canceled = $derived(page.url.searchParams.get('canceled') === '1');
 
+  type Currency = 'EUR' | 'USD' | 'CHF' | 'GBP';
+  let currency = $state<Currency>('EUR');
+
+  const basicPrice = $derived.by(() => {
+    switch (currency) {
+      case 'EUR':
+        return m.tier_basic_price_eur();
+      case 'USD':
+        return m.tier_basic_price_usd();
+      case 'CHF':
+        return m.tier_basic_price_chf();
+      case 'GBP':
+        return m.tier_basic_price_gbp();
+    }
+  });
+  const plusPrice = $derived.by(() => {
+    switch (currency) {
+      case 'EUR':
+        return m.tier_plus_price_eur();
+      case 'USD':
+        return m.tier_plus_price_usd();
+      case 'CHF':
+        return m.tier_plus_price_chf();
+      case 'GBP':
+        return m.tier_plus_price_gbp();
+    }
+  });
+
+  const paidTier = $derived.by<'basic' | 'plus' | null>(() => {
+    if (!data.event.isPaid) return null;
+    const pf = data.event.paidFeatures;
+    if (pf && typeof pf === 'object' && 'tier' in pf) {
+      const t = (pf as { tier?: unknown }).tier;
+      if (t === 'basic' || t === 'plus') return t;
+    }
+    return null;
+  });
+
   const startsAtForInput = $derived(toLocalInputValue(data.event.startsAt));
 
   function toLocalInputValue(iso: string): string {
@@ -65,15 +103,21 @@
 
     {#if data.event.isPaid}
       <p class="mt-3 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm">
-        {m.manage_upgrade_already_paid()}
+        {#if paidTier === 'plus'}
+          {m.manage_upgrade_already_tier_plus()}
+        {:else if paidTier === 'basic'}
+          {m.manage_upgrade_already_tier_basic()}
+        {:else}
+          {m.manage_upgrade_already_paid()}
+        {/if}
       </p>
     {:else}
-      <form method="POST" action="?/upgrade&token={data.token}" class="mt-3 flex items-end gap-3">
-        <label class="block">
-          <span class="text-xs font-medium text-slate-600">{m.manage_upgrade_currency_label()}</span>
+      <div class="mt-3 space-y-4">
+        <label class="flex items-center gap-2 text-xs font-medium text-slate-600">
+          {m.manage_upgrade_currency_label()}
           <select
-            name="currency"
-            class="mt-1 block rounded-md border border-slate-300 px-3 py-2 text-sm"
+            bind:value={currency}
+            class="rounded-md border border-slate-300 px-2 py-1 text-sm"
           >
             <option value="EUR">€ EUR</option>
             <option value="USD">$ USD</option>
@@ -81,13 +125,60 @@
             <option value="GBP">£ GBP</option>
           </select>
         </label>
-        <button
-          type="submit"
-          class="rounded-md bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700"
-        >
-          {m.manage_upgrade_submit()}
-        </button>
-      </form>
+
+        <div class="grid gap-3 sm:grid-cols-2">
+          <form
+            method="POST"
+            action="?/upgrade&token={data.token}"
+            class="space-y-3 rounded-lg border border-slate-200 p-4"
+          >
+            <input type="hidden" name="tier" value="basic" />
+            <input type="hidden" name="currency" value={currency} />
+            <div>
+              <p class="text-sm font-semibold">{m.tier_basic_name()}</p>
+              <p class="text-xs text-slate-500">{m.tier_basic_tagline()}</p>
+            </div>
+            <p class="text-2xl font-bold">{basicPrice}</p>
+            <ul class="space-y-1 text-xs text-slate-700">
+              <li>· {m.tier_basic_item_branding()}</li>
+              <li>· {m.tier_basic_item_slug()}</li>
+              <li>· {m.tier_basic_item_reminders()}</li>
+            </ul>
+            <button
+              type="submit"
+              class="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium hover:bg-slate-50"
+            >
+              {m.manage_upgrade_choose_basic()}
+            </button>
+          </form>
+
+          <form
+            method="POST"
+            action="?/upgrade&token={data.token}"
+            class="space-y-3 rounded-lg border-2 border-slate-900 p-4"
+          >
+            <input type="hidden" name="tier" value="plus" />
+            <input type="hidden" name="currency" value={currency} />
+            <div>
+              <p class="text-sm font-semibold">{m.tier_plus_name()}</p>
+              <p class="text-xs text-slate-500">{m.tier_plus_tagline()}</p>
+            </div>
+            <p class="text-2xl font-bold">{plusPrice}</p>
+            <ul class="space-y-1 text-xs text-slate-700">
+              <li>· {m.tier_plus_item_everything_basic()}</li>
+              <li>· {m.tier_plus_item_plus_ones()}</li>
+              <li>· {m.tier_plus_item_password()}</li>
+              <li>· {m.tier_plus_item_save_the_date()}</li>
+            </ul>
+            <button
+              type="submit"
+              class="w-full rounded-md bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700"
+            >
+              {m.manage_upgrade_choose_plus()}
+            </button>
+          </form>
+        </div>
+      </div>
     {/if}
   </section>
 

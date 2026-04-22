@@ -172,16 +172,35 @@ function constantTimeEqual(a: string, b: string): boolean {
   return diff === 0;
 }
 
-/** Resolve the configured Price ID for a currency. Returns null if unset. */
-export function priceIdForCurrency(env: Env, currency: 'EUR' | 'USD' | 'CHF' | 'GBP'): string | null {
+export type Tier = 'basic' | 'plus';
+export type Currency = 'EUR' | 'USD' | 'CHF' | 'GBP';
+
+/**
+ * Resolve the configured Price ID for a (tier, currency) pair. Returns null
+ * when unset so the caller can distinguish "Stripe not configured for this
+ * market" from "API error" and surface the right error code.
+ */
+export function priceIdFor(env: Env, tier: Tier, currency: Currency): string | null {
+  if (tier === 'basic') {
+    switch (currency) {
+      case 'EUR':
+        return env.STRIPE_PRICE_BASIC_EUR ?? null;
+      case 'USD':
+        return env.STRIPE_PRICE_BASIC_USD ?? null;
+      case 'CHF':
+        return env.STRIPE_PRICE_BASIC_CHF ?? null;
+      case 'GBP':
+        return env.STRIPE_PRICE_BASIC_GBP ?? null;
+    }
+  }
   switch (currency) {
     case 'EUR':
-      return env.STRIPE_PRICE_EUR ?? null;
+      return env.STRIPE_PRICE_PLUS_EUR ?? null;
     case 'USD':
-      return env.STRIPE_PRICE_USD ?? null;
+      return env.STRIPE_PRICE_PLUS_USD ?? null;
     case 'CHF':
-      return env.STRIPE_PRICE_CHF ?? null;
+      return env.STRIPE_PRICE_PLUS_CHF ?? null;
     case 'GBP':
-      return env.STRIPE_PRICE_GBP ?? null;
+      return env.STRIPE_PRICE_PLUS_GBP ?? null;
   }
 }

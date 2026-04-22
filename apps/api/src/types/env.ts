@@ -24,14 +24,18 @@ export interface Env {
   /** Base URL where R2 objects become publicly readable, e.g. https://media-staging.vite.in */
   MEDIA_PUBLIC_BASE_URL?: string;
 
-  // Stripe (Phase 1 premium upgrade)
+  // Stripe (Phase 1 premium upgrade — two tiers × four currencies = 8 Price IDs)
   STRIPE_SECRET_KEY?: string;
   STRIPE_WEBHOOK_SECRET?: string;
-  /** Stripe Price IDs per currency; one maps to each `Price` object on the premium Product. */
-  STRIPE_PRICE_EUR?: string;
-  STRIPE_PRICE_USD?: string;
-  STRIPE_PRICE_CHF?: string;
-  STRIPE_PRICE_GBP?: string;
+  /** Stripe Price IDs per tier per currency. One maps to each `Price` on the tier's Product. */
+  STRIPE_PRICE_BASIC_EUR?: string;
+  STRIPE_PRICE_BASIC_USD?: string;
+  STRIPE_PRICE_BASIC_CHF?: string;
+  STRIPE_PRICE_BASIC_GBP?: string;
+  STRIPE_PRICE_PLUS_EUR?: string;
+  STRIPE_PRICE_PLUS_USD?: string;
+  STRIPE_PRICE_PLUS_CHF?: string;
+  STRIPE_PRICE_PLUS_GBP?: string;
 
   // Bindings added later (KV, Queues) go here:
   // KV_CACHE: KVNamespace;

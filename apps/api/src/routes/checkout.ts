@@ -6,7 +6,7 @@ import { ConflictError, DomainError, ValidationError } from '../domain/errors.js
 import { db } from '../infra/db.js';
 import {
   createCheckoutSession,
-  priceIdForCurrency,
+  priceIdFor,
   StripeApiError,
   StripeNotConfiguredError,
 } from '../infra/stripe.js';
@@ -16,15 +16,16 @@ import type { AppVariables, Env } from '../types/env.js';
 export const checkoutRoute = new Hono<{ Bindings: Env; Variables: AppVariables }>();
 
 const checkoutInputSchema = z.object({
+  tier: z.enum(['basic', 'plus']),
   currency: z.enum(['EUR', 'USD', 'CHF', 'GBP']).optional(),
 });
 
 const idSchema = z.object({ id: z.string().uuid() });
 
 /**
- * Creator-authed. Creates a Stripe Checkout Session for the current event
- * and returns its hosted URL. The client redirects the creator to that URL;
- * the event is only marked paid when the webhook fires.
+ * Creator-authed. Creates a Stripe Checkout Session for the requested tier
+ * and currency, and returns its hosted URL. The webhook is the source of
+ * truth for marking the event paid; this endpoint only starts the flow.
  */
 checkoutRoute.post(
   '/',
@@ -39,27 +40,27 @@ checkoutRoute.post(
   }),
   async (c) => {
     const { id } = c.req.valid('param');
-    const { currency = 'EUR' } = c.req.valid('json');
+    const { tier, currency = 'EUR' } = c.req.valid('json');
 
     const event = await getEventForCreator(db(c.env), id);
     if (event.isPaid) {
       throw new ConflictError('event.already_paid', 'Event is already premium');
     }
 
-    const priceId = priceIdForCurrency(c.env, currency);
+    const priceId = priceIdFor(c.env, tier, currency);
     if (!priceId) {
       throw new DomainError(
         'stripe.price_not_configured',
-        `No Stripe Price configured for ${currency}`,
+        `No Stripe Price configured for tier=${tier} currency=${currency}`,
         503,
       );
     }
 
     const webBase = c.env.WEB_BASE_URL ?? 'https://vite.in';
     // Creator auth rides on the X-Creator-Token header; we need the plain
-    // token back on the return URLs so the /manage page can re-authenticate
-    // the creator after the Stripe round-trip. We read it from the header
-    // that the middleware already validated.
+    // token back on the return URLs so /manage can re-authenticate the
+    // creator after the Stripe round-trip. Read it from the header that
+    // the middleware already validated.
     const creatorToken = c.req.header('X-Creator-Token') ?? '';
     const returnBase = `${webBase}/e/${event.slug}/manage?token=${encodeURIComponent(creatorToken)}`;
 
@@ -69,7 +70,9 @@ checkoutRoute.post(
         successUrl: `${returnBase}&upgraded=1`,
         cancelUrl: `${returnBase}&canceled=1`,
         clientReferenceId: event.id,
-        metadata: { event_id: event.id, event_slug: event.slug },
+        // tier travels on the Session so the webhook can persist it even if
+        // `line_items` isn't expanded on the checkout.session.completed event.
+        metadata: { event_id: event.id, event_slug: event.slug, tier, currency },
         customerEmail: event.creatorEmail,
       });
       return c.json({ url: session.url });

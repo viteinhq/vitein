@@ -316,13 +316,15 @@ export const deleteMedia = <ThrowOnError extends boolean = false>(
 /**
  * Start a Stripe Checkout Session to upgrade to premium (creator only)
  *
- * Creates a Stripe hosted Checkout Session for the event and returns
- * its public URL. The client redirects the creator there; the event
- * is marked `isPaid` only when Stripe delivers the
- * `checkout.session.completed` webhook to `/v1/webhooks/stripe`.
+ * Creates a Stripe hosted Checkout Session for the requested tier and
+ * currency and returns its public URL. The client redirects the
+ * creator there; the event is marked `isPaid` only when Stripe
+ * delivers `checkout.session.completed` to `/v1/webhooks/stripe`.
  *
- * The currency defaults to `EUR`. All launch currencies are fixed
- * anchors, not FX-converted — see ARCHITECTURE §12.
+ * Tiers: **basic** (no_branding, custom_slug, reminders) vs **plus**
+ * (adds plus_ones, password_protected, save_the_date). Currency
+ * defaults to `EUR`. All launch currencies are fixed anchors, not
+ * FX-converted — see ARCHITECTURE §12.
  *
  */
 export const createCheckout = <ThrowOnError extends boolean = false>(

@@ -763,7 +763,11 @@ export type DeleteMediaResponses = {
 export type DeleteMediaResponse = DeleteMediaResponses[keyof DeleteMediaResponses];
 
 export type CreateCheckoutData = {
-  body?: {
+  body: {
+    /**
+     * Premium tier to bill for.
+     */
+    tier: 'basic' | 'plus';
     /**
      * Currency anchor to bill in. Maps to a configured Stripe Price.
      */
@@ -789,6 +793,10 @@ export type CreateCheckoutData = {
 
 export type CreateCheckoutErrors = {
   /**
+   * Request body or query parameters failed validation.
+   */
+  400: Error;
+  /**
    * Missing or invalid creator token.
    */
   401: Error;
@@ -801,7 +809,7 @@ export type CreateCheckoutErrors = {
    */
   409: Error;
   /**
-   * Stripe is not configured for this environment.
+   * Stripe is not configured for this (tier, currency) pair.
    */
   503: Error;
 };

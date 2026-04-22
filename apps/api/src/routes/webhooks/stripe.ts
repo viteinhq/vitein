@@ -69,11 +69,23 @@ stripeWebhookRoute.post('/', async (c) => {
     return c.json({ received: true, handled: false });
   }
 
+  const tierRaw = session.metadata?.['tier'];
+  const tier = tierRaw === 'basic' || tierRaw === 'plus' ? tierRaw : null;
+  if (!tier) {
+    logger.warn('stripe_webhook_missing_tier', {
+      stripeEventId: evt.id,
+      sessionId: session.id,
+      metadata: session.metadata,
+    });
+    return c.json({ received: true, handled: false });
+  }
+
   await markEventPaid(db(c.env), {
     eventId,
+    tier,
     paymentRef: session.id,
     metadata: { stripeEventId: evt.id },
   });
 
-  return c.json({ received: true, handled: true });
+  return c.json({ received: true, handled: true, tier });
 });

@@ -153,6 +153,8 @@ export const actions: Actions = {
     if (bySlug.error || !bySlug.data) return fail(404, { upgradeError: 'manage_event_not_found' });
 
     const form = await request.formData();
+    const tierRaw = String(form.get('tier') ?? 'basic').toLowerCase();
+    const tier: 'basic' | 'plus' = tierRaw === 'plus' ? 'plus' : 'basic';
     const currencyRaw = String(form.get('currency') ?? 'EUR').toUpperCase();
     const currency = (['EUR', 'USD', 'CHF', 'GBP'] as const).includes(
       currencyRaw as 'EUR' | 'USD' | 'CHF' | 'GBP',
@@ -163,7 +165,7 @@ export const actions: Actions = {
     const { data, error, response } = await createCheckout({
       path: { id: bySlug.data.id },
       headers: { 'X-Creator-Token': token },
-      body: { currency },
+      body: { tier, currency },
     });
 
     if (error || !data) {

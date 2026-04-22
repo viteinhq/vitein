@@ -388,21 +388,28 @@ paths:
       operationId: createCheckout
       summary: Start a Stripe Checkout Session to upgrade to premium (creator only)
       description: |
-        Creates a Stripe hosted Checkout Session for the event and returns
-        its public URL. The client redirects the creator there; the event
-        is marked `isPaid` only when Stripe delivers the
-        `checkout.session.completed` webhook to `/v1/webhooks/stripe`.
+        Creates a Stripe hosted Checkout Session for the requested tier and
+        currency and returns its public URL. The client redirects the
+        creator there; the event is marked `isPaid` only when Stripe
+        delivers `checkout.session.completed` to `/v1/webhooks/stripe`.
 
-        The currency defaults to `EUR`. All launch currencies are fixed
-        anchors, not FX-converted — see ARCHITECTURE §12.
+        Tiers: **basic** (no_branding, custom_slug, reminders) vs **plus**
+        (adds plus_ones, password_protected, save_the_date). Currency
+        defaults to `EUR`. All launch currencies are fixed anchors, not
+        FX-converted — see ARCHITECTURE §12.
       tags: [events]
       requestBody:
-        required: false
+        required: true
         content:
           application/json:
             schema:
               type: object
+              required: [tier]
               properties:
+                tier:
+                  type: string
+                  enum: [basic, plus]
+                  description: Premium tier to bill for.
                 currency:
                   type: string
                   enum: [EUR, USD, CHF, GBP]
@@ -421,6 +428,8 @@ paths:
                     type: string
                     format: uri
                     description: Stripe-hosted Checkout Session URL.
+        '400':
+          $ref: '#/components/responses/ValidationError'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '404':
@@ -431,7 +440,7 @@ paths:
             application/json:
               schema: { $ref: '#/components/schemas/Error' }
         '503':
-          description: Stripe is not configured for this environment.
+          description: Stripe is not configured for this (tier, currency) pair.
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Error' }
