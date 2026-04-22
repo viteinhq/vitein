@@ -1,5 +1,6 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
+  import * as m from '$lib/paraglide/messages.js';
   import type { PageProps } from './$types';
 
   let { data, form }: PageProps = $props();
@@ -14,26 +15,28 @@
 </script>
 
 <svelte:head>
-  <title>Dashboard — vite.in</title>
+  <title>{m.account_nav_dashboard()} — vite.in</title>
 </svelte:head>
 
 <section class="space-y-4">
   <div class="flex items-center justify-between">
-    <h1 class="text-2xl font-semibold tracking-tight">Your events</h1>
+    <h1 class="text-2xl font-semibold tracking-tight">{m.dashboard_title()}</h1>
     <a
       href="/create"
       class="rounded-md bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700"
     >
-      New event
+      {m.dashboard_new_event()}
     </a>
   </div>
 
   {#if form && 'claimed' in form && typeof form.claimed === 'number'}
     <p class="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm">
-      {#if form.claimed > 0}
-        Claimed {form.claimed} event{form.claimed === 1 ? '' : 's'} to your account. Reload to see them.
+      {#if form.claimed === 1}
+        {m.dashboard_claim_one()}
+      {:else if form.claimed > 1}
+        {m.dashboard_claim_many({ count: form.claimed })}
       {:else}
-        No anonymously-created events matched your email.
+        {m.dashboard_claim_none()}
       {/if}
     </p>
   {/if}
@@ -51,14 +54,13 @@
       type="submit"
       class="rounded-md border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50"
     >
-      Claim events created with my email
+      {m.dashboard_claim_submit()}
     </button>
   </form>
 
   {#if data.events.length === 0}
     <p class="rounded-md border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
-      No events yet. <a href="/create" class="underline">Create one</a>, or claim events you
-      created anonymously with the same email.
+      {m.dashboard_empty_line()} <a href="/create" class="underline">{m.dashboard_empty_create()}</a>{m.dashboard_empty_or_claim()}
     </p>
   {:else}
     <ul class="divide-y divide-slate-200 rounded-md border border-slate-200">

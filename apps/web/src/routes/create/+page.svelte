@@ -1,5 +1,6 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
+  import * as m from '$lib/paraglide/messages.js';
   import type { PageProps } from './$types';
 
   let { form }: PageProps = $props();
@@ -10,25 +11,23 @@
 </script>
 
 <svelte:head>
-  <title>Create an event — vite.in</title>
+  <title>{m.create_title()} — vite.in</title>
 </svelte:head>
 
 <section class="mx-auto max-w-xl space-y-6">
-  <h1 class="text-3xl font-bold tracking-tight">Create an event</h1>
+  <h1 class="text-3xl font-bold tracking-tight">{m.create_title()}</h1>
 
   {#if form?.success}
     <div class="rounded-lg border border-emerald-200 bg-emerald-50 p-4">
-      <p class="font-medium">Event created.</p>
+      <p class="font-medium">{m.create_success_heading()}</p>
       <p class="mt-1 text-sm">
-        Public link: <a class="underline" href="/e/{form.slug}">/e/{form.slug}</a>
+        {m.create_success_public_link()} <a class="underline" href="/e/{form.slug}">/e/{form.slug}</a>
       </p>
       {#if form.magicLinkSent}
-        <p class="mt-2 text-sm">
-          A magic link to manage this event has been sent to your email.
-        </p>
+        <p class="mt-2 text-sm">{m.create_success_magic_sent()}</p>
       {:else if form.creatorTokenPreview}
         <p class="mt-2 text-sm">
-          Email delivery is disabled in this environment. Manage link:
+          {m.create_success_dev_mode()}
           <a class="underline" href="/e/{form.slug}/manage?token={form.creatorTokenPreview}">
             /e/{form.slug}/manage
           </a>
@@ -44,7 +43,7 @@
       {/if}
 
       <label class="block">
-        <span class="text-sm font-medium">Title</span>
+        <span class="text-sm font-medium">{m.create_field_title()}</span>
         <input
           name="title"
           required
@@ -55,7 +54,7 @@
       </label>
 
       <label class="block">
-        <span class="text-sm font-medium">Description</span>
+        <span class="text-sm font-medium">{m.create_field_description()}</span>
         <textarea
           name="description"
           maxlength="5000"
@@ -67,7 +66,7 @@
 
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <label class="block">
-          <span class="text-sm font-medium">Starts at</span>
+          <span class="text-sm font-medium">{m.create_field_starts_at()}</span>
           <input
             type="datetime-local"
             name="startsAt"
@@ -78,7 +77,7 @@
         </label>
 
         <label class="block">
-          <span class="text-sm font-medium">Timezone</span>
+          <span class="text-sm font-medium">{m.create_field_timezone()}</span>
           <input
             name="timezone"
             required
@@ -89,7 +88,7 @@
       </div>
 
       <label class="block">
-        <span class="text-sm font-medium">Location (optional)</span>
+        <span class="text-sm font-medium">{m.create_field_location_optional()}</span>
         <input
           name="locationText"
           maxlength="500"
@@ -99,7 +98,7 @@
       </label>
 
       <label class="block">
-        <span class="text-sm font-medium">Your email</span>
+        <span class="text-sm font-medium">{m.create_field_email()}</span>
         <input
           type="email"
           name="creatorEmail"
@@ -107,16 +106,14 @@
           value={form?.values?.creatorEmail ?? ''}
           class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2"
         />
-        <span class="mt-1 block text-xs text-slate-500">
-          We'll send the management magic link here. No account needed.
-        </span>
+        <span class="mt-1 block text-xs text-slate-500">{m.create_field_email_hint()}</span>
       </label>
 
       <button
         type="submit"
         class="rounded-md bg-slate-900 px-4 py-2 font-medium text-white hover:bg-slate-700"
       >
-        Create event
+        {m.create_submit()}
       </button>
     </form>
   {/if}

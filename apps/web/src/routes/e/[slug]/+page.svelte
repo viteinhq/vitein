@@ -1,5 +1,6 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
+  import * as m from '$lib/paraglide/messages.js';
   import type { PageProps } from './$types';
 
   let { data, form }: PageProps = $props();
@@ -41,9 +42,9 @@
     <h1 class="text-4xl font-bold tracking-tight">{data.event.title}</h1>
 
     <div class="space-y-1 text-slate-700">
-      <p><span class="text-slate-500">When:</span> {startsAtFormatted} ({data.event.timezone})</p>
+      <p><span class="text-slate-500">{m.event_when_label()}</span> {startsAtFormatted} ({data.event.timezone})</p>
       {#if data.event.locationText}
-        <p><span class="text-slate-500">Where:</span> {data.event.locationText}</p>
+        <p><span class="text-slate-500">{m.event_where_label()}</span> {data.event.locationText}</p>
       {/if}
     </div>
 
@@ -57,23 +58,29 @@
         onclick={copyLink}
         class="rounded-md border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50"
       >
-        {copied ? 'Copied!' : 'Copy link'}
+        {copied ? m.event_copied() : m.event_copy_link()}
       </button>
       <a
         href="/e/{data.event.slug}/event.ics"
         class="rounded-md border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50"
       >
-        Add to calendar
+        {m.event_add_to_calendar()}
       </a>
     </div>
   </article>
 
   <section class="space-y-4 rounded-lg border border-slate-200 p-6">
-    <h2 class="text-xl font-semibold">Your RSVP</h2>
+    <h2 class="text-xl font-semibold">{m.event_rsvp_heading()}</h2>
 
     {#if form?.rsvpSuccess}
       <p class="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm">
-        Thanks! Your RSVP was recorded as <strong>{form.rsvpStatus}</strong>.
+        {#if form.rsvpStatus === 'yes'}
+          {m.event_rsvp_thanks_yes()}
+        {:else if form.rsvpStatus === 'maybe'}
+          {m.event_rsvp_thanks_maybe()}
+        {:else}
+          {m.event_rsvp_thanks_no()}
+        {/if}
       </p>
     {:else}
       {#if form?.rsvpError}
@@ -84,7 +91,7 @@
 
       <form method="POST" action="?/rsvp" use:enhance class="space-y-3">
         <label class="block">
-          <span class="text-sm font-medium">Name</span>
+          <span class="text-sm font-medium">{m.event_rsvp_name_label()}</span>
           <input
             name="name"
             required
@@ -94,7 +101,7 @@
         </label>
 
         <label class="block">
-          <span class="text-sm font-medium">Email (optional)</span>
+          <span class="text-sm font-medium">{m.event_rsvp_email_optional()}</span>
           <input
             type="email"
             name="email"
@@ -103,16 +110,16 @@
         </label>
 
         <fieldset>
-          <legend class="text-sm font-medium">Are you coming?</legend>
+          <legend class="text-sm font-medium">{m.event_rsvp_question()}</legend>
           <div class="mt-2 flex gap-4 text-sm">
-            <label><input type="radio" name="status" value="yes" checked /> Yes</label>
-            <label><input type="radio" name="status" value="maybe" /> Maybe</label>
-            <label><input type="radio" name="status" value="no" /> No</label>
+            <label><input type="radio" name="status" value="yes" checked /> {m.event_rsvp_yes()}</label>
+            <label><input type="radio" name="status" value="maybe" /> {m.event_rsvp_maybe()}</label>
+            <label><input type="radio" name="status" value="no" /> {m.event_rsvp_no()}</label>
           </div>
         </fieldset>
 
         <label class="block">
-          <span class="text-sm font-medium">Plus ones</span>
+          <span class="text-sm font-medium">{m.event_rsvp_plus_ones()}</span>
           <input
             type="number"
             name="plusOnes"
@@ -124,7 +131,7 @@
         </label>
 
         <label class="block">
-          <span class="text-sm font-medium">Message (optional)</span>
+          <span class="text-sm font-medium">{m.event_rsvp_message_optional()}</span>
           <textarea
             name="message"
             rows="2"
@@ -137,7 +144,7 @@
           type="submit"
           class="rounded-md bg-slate-900 px-4 py-2 font-medium text-white hover:bg-slate-700"
         >
-          Submit RSVP
+          {m.event_rsvp_submit()}
         </button>
       </form>
     {/if}
