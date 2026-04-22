@@ -63,6 +63,11 @@ function isLocalhost(url: URL): boolean {
 
 function productionCsp(platform: App.Platform | undefined): string {
   const apiOrigin = new URL(platform?.env?.API_BASE_URL ?? 'https://api.vite.in').origin;
+  // `script-src` and `style-src` are intentionally handled by SvelteKit's
+  // CSP integration (see svelte.config.js `kit.csp`), which emits a
+  // <meta http-equiv="content-security-policy"> tag with per-page hashes
+  // for the inline hydration bootstrap. Declaring them here would
+  // intersect with the meta CSP and block hashed scripts.
   return [
     "default-src 'self'",
     "base-uri 'self'",
@@ -70,8 +75,6 @@ function productionCsp(platform: App.Platform | undefined): string {
     "frame-ancestors 'none'",
     "img-src 'self' https: data:",
     "font-src 'self' data:",
-    "style-src 'self' 'unsafe-inline'",
-    "script-src 'self'",
     `connect-src 'self' ${apiOrigin}`,
     'upgrade-insecure-requests',
   ].join('; ');
