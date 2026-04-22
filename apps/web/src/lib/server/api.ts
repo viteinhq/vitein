@@ -28,6 +28,11 @@ export function apiFetch(
   if (event.locals.requestId && !headers.has('X-Request-Id')) {
     headers.set('X-Request-Id', event.locals.requestId);
   }
+  // Better-Auth checks Origin against trustedOrigins — server-side fetch
+  // doesn't set this automatically, so we forward the web origin.
+  if (!headers.has('Origin')) {
+    headers.set('Origin', event.url.origin);
+  }
 
   return fetch(url, { ...init, headers });
 }

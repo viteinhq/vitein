@@ -9,6 +9,10 @@ import type { RequestHandler } from './$types';
  * either way.
  */
 export const POST: RequestHandler = async (event) => {
-  await apiFetch(event, '/v1/auth/sign-out', { method: 'POST' }).catch(() => undefined);
+  const origin = new URL(event.request.url).origin;
+  await apiFetch(event, '/v1/auth/sign-out', {
+    method: 'POST',
+    headers: { Origin: origin },
+  }).catch(() => undefined);
   throw redirect(303, '/signin');
 };

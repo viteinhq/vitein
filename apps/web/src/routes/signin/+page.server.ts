@@ -13,7 +13,13 @@ export const actions: Actions = {
     const webBase = new URL(event.request.url).origin;
     const res = await apiFetch(event, '/v1/auth/sign-in/magic-link', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        // Better-Auth checks Origin against `trustedOrigins`. Server-side
+        // fetch doesn't set this automatically; forward the web origin so
+        // the request is treated as first-party.
+        Origin: webBase,
+      },
       body: JSON.stringify({
         email,
         callbackURL: `${webBase}/account/dashboard`,
