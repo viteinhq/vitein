@@ -19,7 +19,7 @@ export const actions: Actions = {
 
     if (!title || !startsAt || !creatorEmail) {
       return fail(400, {
-        error: 'Please fill in title, start date, and your email.',
+        error: 'create_missing_fields',
         values: { title, description, startsAt, timezone, locationText, creatorEmail },
       });
     }
@@ -37,7 +37,7 @@ export const actions: Actions = {
 
     if (error || !data) {
       return fail(500, {
-        error: 'Could not create the event. Please try again.',
+        error: 'create_failed',
         values: { title, description, startsAt, timezone, locationText, creatorEmail },
       });
     }

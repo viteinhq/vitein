@@ -1,5 +1,6 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
+  import { localizeError } from '$lib/errors';
   import * as m from '$lib/paraglide/messages.js';
   import type { PageProps } from './$types';
 
@@ -85,7 +86,7 @@
     {:else}
       {#if form?.rsvpError}
         <p class="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-          {form.rsvpError}
+          {localizeError(form.rsvpError)}
         </p>
       {/if}
 

@@ -50,10 +50,10 @@ export const actions: Actions = {
   update: async ({ request, params, url, platform }) => {
     configureApi(resolveBaseUrl(platform));
     const token = url.searchParams.get('token');
-    if (!token) return fail(401, { updateError: 'Missing token.' });
+    if (!token) return fail(401, { updateError: 'manage_missing_token' });
 
     const bySlug = await getEventBySlug({ path: { slug: params.slug } });
-    if (bySlug.error || !bySlug.data) return fail(404, { updateError: 'Event not found.' });
+    if (bySlug.error || !bySlug.data) return fail(404, { updateError: 'manage_event_not_found' });
 
     const form = await request.formData();
     const body: Record<string, unknown> = {};
@@ -68,7 +68,7 @@ export const actions: Actions = {
     if (locationText) body.locationText = locationText;
 
     if (Object.keys(body).length === 0) {
-      return fail(400, { updateError: 'No changes to save.' });
+      return fail(400, { updateError: 'manage_no_changes' });
     }
 
     const { error } = await updateEvent({
@@ -77,39 +77,39 @@ export const actions: Actions = {
       body,
     });
 
-    if (error) return fail(500, { updateError: 'Could not save changes.' });
+    if (error) return fail(500, { updateError: 'manage_save_failed' });
     return { updateSuccess: true };
   },
 
   remind: async ({ params, url, platform }) => {
     configureApi(resolveBaseUrl(platform));
     const token = url.searchParams.get('token');
-    if (!token) return fail(401, { reminderError: 'Missing token.' });
+    if (!token) return fail(401, { reminderError: 'manage_missing_token' });
 
     const bySlug = await getEventBySlug({ path: { slug: params.slug } });
-    if (bySlug.error || !bySlug.data) return fail(404, { reminderError: 'Event not found.' });
+    if (bySlug.error || !bySlug.data) return fail(404, { reminderError: 'manage_event_not_found' });
 
     const { error } = await sendReminder({
       path: { id: bySlug.data.id },
       headers: { 'X-Creator-Token': token },
     });
 
-    if (error) return fail(500, { reminderError: 'Could not queue reminder.' });
+    if (error) return fail(500, { reminderError: 'manage_reminder_failed' });
     return { reminderQueued: true };
   },
 
   uploadMedia: async ({ request, params, url, platform }) => {
     const apiBase = resolveBaseUrl(platform);
     const token = url.searchParams.get('token');
-    if (!token) return fail(401, { mediaError: 'Missing token.' });
+    if (!token) return fail(401, { mediaError: 'manage_missing_token' });
 
     const form = await request.formData();
     const file = form.get('file');
     if (!(file instanceof File) || file.size === 0) {
-      return fail(400, { mediaError: 'Please pick an image.' });
+      return fail(400, { mediaError: 'manage_pick_image' });
     }
     if (file.size > 10 * 1024 * 1024) {
-      return fail(400, { mediaError: 'Image must be at most 10 MiB.' });
+      return fail(400, { mediaError: 'manage_image_too_large' });
     }
 
     // Look up event id via slug. We don't hit the SDK here because the
@@ -117,7 +117,7 @@ export const actions: Actions = {
     // bodies for uploadMedia.
     configureApi(apiBase);
     const bySlug = await getEventBySlug({ path: { slug: params.slug } });
-    if (bySlug.error || !bySlug.data) return fail(404, { mediaError: 'Event not found.' });
+    if (bySlug.error || !bySlug.data) return fail(404, { mediaError: 'manage_event_not_found' });
 
     const res = await fetch(`${apiBase}/v1/events/${bySlug.data.id}/media?kind=cover`, {
       method: 'POST',
@@ -131,7 +131,9 @@ export const actions: Actions = {
     if (!res.ok) {
       const detail = await res.text().catch(() => '');
       return fail(res.status, {
-        mediaError: `Upload failed (${String(res.status)}): ${detail.slice(0, 200)}`,
+        mediaError: 'manage_upload_http',
+        mediaStatus: res.status,
+        mediaDetails: detail.slice(0, 200),
       });
     }
 
@@ -141,20 +143,20 @@ export const actions: Actions = {
   deleteMedia: async ({ request, params, url, platform }) => {
     configureApi(resolveBaseUrl(platform));
     const token = url.searchParams.get('token');
-    if (!token) return fail(401, { mediaError: 'Missing token.' });
+    if (!token) return fail(401, { mediaError: 'manage_missing_token' });
 
     const form = await request.formData();
     const mediaId = String(form.get('mediaId') ?? '');
-    if (!mediaId) return fail(400, { mediaError: 'Missing mediaId.' });
+    if (!mediaId) return fail(400, { mediaError: 'manage_missing_media_id' });
 
     const bySlug = await getEventBySlug({ path: { slug: params.slug } });
-    if (bySlug.error || !bySlug.data) return fail(404, { mediaError: 'Event not found.' });
+    if (bySlug.error || !bySlug.data) return fail(404, { mediaError: 'manage_event_not_found' });
 
     const { error } = await deleteMedia({
       path: { id: bySlug.data.id, mediaId },
       headers: { 'X-Creator-Token': token },
     });
-    if (error) return fail(500, { mediaError: 'Could not delete media.' });
+    if (error) return fail(500, { mediaError: 'manage_delete_failed' });
     return { mediaDeleted: true };
   },
 };

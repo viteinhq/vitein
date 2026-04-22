@@ -1,5 +1,6 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
+  import { localizeError } from '$lib/errors';
   import * as m from '$lib/paraglide/messages.js';
   import type { PageProps } from './$types';
 
@@ -42,7 +43,11 @@
   {/if}
   {#if form && 'claimError' in form}
     <div class="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-      <p>{form.claimError}</p>
+      <p>
+        {localizeError(form.claimError, {
+          status: 'claimStatus' in form ? form.claimStatus : undefined,
+        })}
+      </p>
       {#if 'claimDetails' in form && form.claimDetails}
         <pre class="mt-1 overflow-x-auto text-xs">{form.claimDetails}</pre>
       {/if}

@@ -31,12 +31,12 @@ export const actions: Actions = {
     const plusOnes = Number.isFinite(plusOnesRaw) ? Math.max(0, Math.min(20, plusOnesRaw)) : 0;
 
     if (!name) {
-      return fail(400, { rsvpError: 'Please enter your name.' });
+      return fail(400, { rsvpError: 'rsvp_name_required' });
     }
 
     const event = await getEventBySlug({ path: { slug: params.slug } });
     if (event.error || !event.data) {
-      return fail(404, { rsvpError: 'Event not found.' });
+      return fail(404, { rsvpError: 'rsvp_event_not_found' });
     }
 
     const { data, error } = await submitRsvp({
@@ -45,7 +45,7 @@ export const actions: Actions = {
     });
 
     if (error || !data) {
-      return fail(500, { rsvpError: 'Could not record your RSVP. Please try again.' });
+      return fail(500, { rsvpError: 'rsvp_failed' });
     }
 
     return { rsvpSuccess: true, rsvpStatus: data.status };

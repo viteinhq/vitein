@@ -1,5 +1,6 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
+  import { localizeError } from '$lib/errors';
   import * as m from '$lib/paraglide/messages.js';
   import type { PageProps } from './$types';
 
@@ -38,7 +39,7 @@
     <form method="POST" use:enhance class="space-y-4">
       {#if form?.error}
         <p class="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-          {form.error}
+          {localizeError(form.error)}
         </p>
       {/if}
 

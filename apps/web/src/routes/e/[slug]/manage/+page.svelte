@@ -1,5 +1,6 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
+  import { localizeError } from '$lib/errors';
   import * as m from '$lib/paraglide/messages.js';
   import type { PageProps } from './$types';
 
@@ -42,7 +43,9 @@
 
     {#if form?.mediaError}
       <p class="mt-2 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-        {form.mediaError}
+        {localizeError(form.mediaError, {
+          status: 'mediaStatus' in form ? form.mediaStatus : undefined,
+        })}
       </p>
     {/if}
     {#if form?.mediaUploaded}
@@ -150,7 +153,7 @@
     {/if}
     {#if form?.updateError}
       <p class="mt-2 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-        {form.updateError}
+        {localizeError(form.updateError)}
       </p>
     {/if}
 
@@ -216,7 +219,7 @@
     {/if}
     {#if form?.reminderError}
       <p class="mt-2 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-        {form.reminderError}
+        {localizeError(form.reminderError)}
       </p>
     {/if}
 

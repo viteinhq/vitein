@@ -129,5 +129,25 @@
   "manage_reminder_heading": "Send reminder",
   "manage_reminder_body": "Queues an email reminder to the creator address. Sent by the next cron run.",
   "manage_reminder_queued": "Reminder queued.",
-  "manage_reminder_submit": "Queue reminder now"
+  "manage_reminder_submit": "Queue reminder now",
+
+  "err_unknown": "Something went wrong. Please try again.",
+  "err_create_missing_fields": "Please fill in title, start date, and your email.",
+  "err_create_failed": "Could not create the event. Please try again.",
+  "err_signin_email_required": "Please enter your email.",
+  "err_signin_magic_link_http": "Could not send the magic link (HTTP {status}).",
+  "err_rsvp_name_required": "Please enter your name.",
+  "err_rsvp_event_not_found": "Event not found.",
+  "err_rsvp_failed": "Could not record your RSVP. Please try again.",
+  "err_claim_http": "Could not claim events (HTTP {status}).",
+  "err_manage_missing_token": "Missing token.",
+  "err_manage_event_not_found": "Event not found.",
+  "err_manage_no_changes": "No changes to save.",
+  "err_manage_save_failed": "Could not save changes.",
+  "err_manage_reminder_failed": "Could not queue reminder.",
+  "err_manage_pick_image": "Please pick an image.",
+  "err_manage_image_too_large": "Image must be at most 10 MiB.",
+  "err_manage_missing_media_id": "Missing mediaId.",
+  "err_manage_delete_failed": "Could not delete media.",
+  "err_manage_upload_http": "Upload failed (HTTP {status})."
 }

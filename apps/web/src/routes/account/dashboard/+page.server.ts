@@ -29,7 +29,8 @@ export const actions: Actions = {
     if (!res.ok) {
       const body = await res.text().catch(() => '');
       return fail(res.status, {
-        claimError: `Could not claim events (HTTP ${String(res.status)}).`,
+        claimError: 'claim_http',
+        claimStatus: res.status,
         claimDetails: body.slice(0, 300),
       });
     }

@@ -7,7 +7,7 @@ export const actions: Actions = {
     const form = await event.request.formData();
     const email = String(form.get('email') ?? '').trim();
     if (!email) {
-      return fail(400, { error: 'Please enter your email.' });
+      return fail(400, { error: 'signin_email_required' });
     }
 
     const webBase = new URL(event.request.url).origin;
@@ -34,7 +34,8 @@ export const actions: Actions = {
         apiBase: resolveBaseUrl(event),
       });
       return fail(res.status, {
-        error: `Could not send the magic link (HTTP ${String(res.status)}).`,
+        error: 'signin_magic_link_http',
+        status: res.status,
         details: body.slice(0, 300),
       });
     }

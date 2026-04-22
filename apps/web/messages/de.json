@@ -129,5 +129,25 @@
   "manage_reminder_heading": "Erinnerung senden",
   "manage_reminder_body": "Stellt eine Erinnerungs-E-Mail an die Ersteller-Adresse in die Warteschlange. Wird vom nächsten Cron-Lauf versendet.",
   "manage_reminder_queued": "Erinnerung in Warteschlange.",
-  "manage_reminder_submit": "Jetzt in Warteschlange stellen"
+  "manage_reminder_submit": "Jetzt in Warteschlange stellen",
+
+  "err_unknown": "Etwas ist schiefgelaufen. Bitte erneut versuchen.",
+  "err_create_missing_fields": "Bitte Titel, Startdatum und E-Mail ausfüllen.",
+  "err_create_failed": "Event konnte nicht erstellt werden. Bitte erneut versuchen.",
+  "err_signin_email_required": "Bitte E-Mail-Adresse eingeben.",
+  "err_signin_magic_link_http": "Magic-Link konnte nicht gesendet werden (HTTP {status}).",
+  "err_rsvp_name_required": "Bitte Namen eingeben.",
+  "err_rsvp_event_not_found": "Event nicht gefunden.",
+  "err_rsvp_failed": "Zusage konnte nicht gespeichert werden. Bitte erneut versuchen.",
+  "err_claim_http": "Events konnten nicht zugewiesen werden (HTTP {status}).",
+  "err_manage_missing_token": "Token fehlt.",
+  "err_manage_event_not_found": "Event nicht gefunden.",
+  "err_manage_no_changes": "Keine Änderungen zu speichern.",
+  "err_manage_save_failed": "Änderungen konnten nicht gespeichert werden.",
+  "err_manage_reminder_failed": "Erinnerung konnte nicht in die Warteschlange gestellt werden.",
+  "err_manage_pick_image": "Bitte ein Bild auswählen.",
+  "err_manage_image_too_large": "Bild darf maximal 10 MiB gross sein.",
+  "err_manage_missing_media_id": "Media-ID fehlt.",
+  "err_manage_delete_failed": "Medium konnte nicht gelöscht werden.",
+  "err_manage_upload_http": "Upload fehlgeschlagen (HTTP {status})."
 }
