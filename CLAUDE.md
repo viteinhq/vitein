@@ -70,8 +70,9 @@ pnpm db:migrate             # run Drizzle migrations (env var picks branch)
 - **No account-required flows for event creation.** Anonymous creation is the viral mechanic. Never require signup to create.
 - **No hard-coded language strings in user-facing code.** Route through `packages/i18n-messages` or the API's localized error responses.
 - **Every timestamp is UTC in storage.** The event's timezone is a separate field. Never assume server or user tz.
-- **Never hard-code prices.** Premium prices live in Stripe as `Price` objects per currency. Fetch them at runtime. See @docs/ARCHITECTURE.md §12.
-- **No FX conversion in code.** We use fixed price anchors per currency (€5 / $5 / CHF 5 / £5 at launch), not dynamically converted values.
+- **Never hard-code prices.** Premium prices live in Stripe as `Price` objects per tier × currency. Fetch them at runtime. Two tiers at launch: Basic (`5` units) and Plus (`9` units). See @docs/ARCHITECTURE.md §12.
+- **No FX conversion in code.** We use fixed price anchors per currency (Basic €5/$5/CHF 5/£4, Plus €9/$9/CHF 9/£7 at Phase 1 launch), not dynamically converted values.
+- **Feature-gate by tier, not by payment.** Code checks `events.paid_features.tier === 'plus'`, not `events.is_paid === true`. This makes the tier structure explicit and future-proof for Pro (Phase 2).
 - **No premium features in this (public) repository.** Premium-specific implementations live in the separate private `vitein-premium` repo. If a feature is behind a paywall, its specific implementation does not go here — only the hook/extension point does. See @docs/ARCHITECTURE.md §13.
 
 ## Open-source posture

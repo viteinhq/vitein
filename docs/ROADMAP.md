@@ -41,45 +41,6 @@
 
 This is the phase that pays the interest on all architectural promises. Cutting corners here means paying triple later. Resist the urge to build features.
 
-### Status — 2026-04-21
-
-**Phase 0 closed with the first live staging deploy.**
-
-Shipped:
-
-- `viteinhq/vitein` public repo live (AGPL-3.0), `vitein-premium` + mobile repos stubbed
-- Community files in place; CLA via `contributor-assistant/github-action` (pivot from EasyCLA — see `docs/decisions/0002-cla-tooling.md`)
-- pnpm + Turborepo monorepo with CI (lint, typecheck, test, spec-drift, SDK-drift, runtime spec-compliance)
-- CD pipeline: push to `main` auto-deploys api + mcp (Workers) + web (Pages) to staging
-- Cloudflare Workers: `api-staging.vite.in`, `mcp-staging.vite.in` (both with custom domain + TLS)
-- Cloudflare Pages: `next.vite.in` (SvelteKit on adapter-cloudflare)
-- Neon Postgres (eu-central-1) with Drizzle schema for the 10 Phase-1 tables; initial migration applied
-- Better-Auth with magic-link plugin; `users`/`sessions`/`accounts`/`verifications` aligned per `docs/decisions/0005-better-auth-schema.md`
-- OpenAPI 3.1 spec with 14 operations; `@vitein/ts-sdk` generated via `@hey-api/openapi-ts`
-- Resend wired for transactional email (magic-link, RSVP confirm/notify, reminders)
-- Rate limiting via RATE_LIMITER Durable Object (SQLite-backed)
-- Structured JSON logging with per-request UUIDv7 id propagated end-to-end (web → api)
-- i18n-messages package with EN + DE error dictionaries; `Accept-Language` routing in the error middleware
-- MCP server scaffold with 2 read-only tools (get_event_by_slug, get_event_share_url) under MIT
-- 5 ADRs recorded: stack choice, CLA, email, SDK generator, Better-Auth schema
-
-Exit criteria hit:
-
-- `curl https://api-staging.vite.in/v1/health` → 200 with `db: connected` ✓
-- `https://next.vite.in` loads, hits API, renders success ✓
-- `pnpm dev` runs web + API locally ✓
-- CI green on `main` ✓
-- CLAUDE.md in place in every app + every package ✓
-- One working deployment pipeline per app (api, mcp, web) ✓
-
-Deferred into Phase 1 or later:
-
-- Sentry DSNs (accounts created later; last exit criterion)
-- Neon branch split (`staging` vs `production`) — happens before v2 public launch
-- `apps/vitein-premium/` sidecar (ADR pending, Week-2 spike)
-- Stripe `Product` + `Price` setup (Phase 1 workstream A.3)
-- iOS/Android SDK generator choice (revisit when mobile work starts)
-
 ---
 
 ## Phase 1 — Public Launch (≈ 8–12 weeks after Phase 0)
@@ -167,10 +128,38 @@ Deferred into Phase 1 or later:
 - Multi-language invitation content (the UI is multi-lang; a single invitation is single-lang in v1).
 - Video media.
 - Advanced analytics dashboard (basic RSVP counts only).
+- Pro pricing tier (Phase 2 — we launch with Basic + Plus only).
+- Purchasing-Power-Pricing for any market beyond the four launch currencies (that's Phase 1.5 for India, Phase 2 for broader rollout).
 
 ---
 
-## Phase 2 — Agents & B2B foundation (≈ 8–16 weeks after Phase 1)
+## Phase 1.5 — India PPP (~4 weeks after Phase 1 exit)
+
+**Goal:** Add India as the first Purchasing-Power-Pricing market. Validate PPP mechanics on one market before committing to a broader rollout.
+
+### Deliverables
+
+- Stripe INR price objects for Basic (₹149) and Plus (₹299).
+- Stripe Tax configured for India with GST handling.
+- Geo-detection updates: Indian IPs see INR by default.
+- Billing-address-based charge override verified (the mechanism that limits arbitrage).
+- DPDPA (India's data protection law) consent handling added.
+- 4 weeks of operational data on Indian conversion rates.
+
+### Exit criteria
+
+- Indian conversion rate at least 2× the pre-PPP baseline (if no uplift, PPP-for-India is re-examined, not auto-extended).
+- No significant arbitrage abuse (< 5% of EU traffic using INR pricing via VPN).
+- GST compliance process documented and working.
+- Go/no-go decision for Phase 2 broader PPP rollout committed in writing.
+
+### Why this is its own phase, not a feature in Phase 1
+
+Phase 1 is about getting v2 out the door. Phase 1.5 is about learning. Mixing them would either delay Phase 1 launch or rush PPP decisions without real data. Treating PPP-for-India as a small separate phase with its own exit criteria keeps both clean.
+
+---
+
+## Phase 2 — Agents & B2B foundation (≈ 8–16 weeks after Phase 1.5)
 
 **Goal:** The platform opens its APIs. LLM users can delegate invitation tasks to Claude/ChatGPT. B2B use cases become possible (even if not heavily marketed yet).
 

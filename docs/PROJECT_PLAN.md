@@ -161,15 +161,18 @@ Target: 8–12 weeks after Phase 0 exit. Work proceeds in parallel streams.
 
 **A.3 Stripe premium (1 week)**
 
-- [ ] Create Stripe `Product` "vite.in Premium Event"
-- [ ] Create `Price` objects per launch currency (EUR 5.00, USD 5.00, CHF 5.00, GBP 5.00), all linked to the product
-- [ ] Enable Stripe Tax for all relevant jurisdictions
-- [ ] Locale-based currency selection logic (auto-detect from user's locale; show currency picker as override)
-- [ ] `POST /v1/events/:id/checkout` — create Stripe checkout session with the correct price ID
+- [ ] Create two Stripe `Products`: `vite.in Event — Basic` and `vite.in Event — Plus`
+- [ ] Create `Price` objects per launch currency per tier: 8 total
+  - Basic: EUR 5, USD 5, CHF 5, GBP 4
+  - Plus: EUR 9, USD 9, CHF 9, GBP 7
+- [ ] Enable Stripe Tax for EU, US, UK, CH jurisdictions
+- [ ] Enable Stripe Customer Location Detection (billing address → currency)
+- [ ] Locale-based currency suggestion logic (browser IP → suggested currency; user can override)
+- [ ] `POST /v1/events/:id/checkout` — create Stripe checkout session with correct tier × currency price ID
 - [ ] `POST /v1/webhooks/stripe` — handle `checkout.session.completed` with signature verification and idempotency
-- [ ] On successful payment, set `is_paid=true` and unlock requested `paid_features`
-- [ ] Custom slug validation + uniqueness check
-- [ ] Integration test with Stripe test mode for each launch currency
+- [ ] On successful payment, set `is_paid=true` and populate `paid_features` with `{ tier: 'basic' | 'plus', bundle_version: 1 }`
+- [ ] Custom slug validation + uniqueness check (Basic + Plus both unlock this)
+- [ ] Integration test with Stripe test mode for each tier × currency combination
 
 **A.4 Media upload (3–4 days)**
 
@@ -193,6 +196,14 @@ Target: 8–12 weeks after Phase 0 exit. Work proceeds in parallel streams.
 - [ ] `GET /v1/users/me/events` — dashboard listing
 - [ ] `DELETE /v1/users/me` — account deletion with 30-day grace
 - [ ] `GET /v1/users/me/export` — GDPR data export
+
+**A.6b Plus-tier features (1 week)**
+
+- [ ] **Plus-Ones management**: schema `rsvps.plus_ones_count` + `rsvps.plus_ones_details jsonb`; RSVP API accepts per-guest plus-one details; list endpoint returns them
+- [ ] **Password protection**: use `events.password_hash` (already in schema); `POST /v1/events/:id/verify-password` returns short-lived view token; public event endpoint requires it when password is set
+- [ ] **Save-the-Date**: schema addition `event_announcements` (event_id, stage='save_the_date'|'invitation', sent_at, template_id); two-stage email flow; creator chooses which stage to send; reuse reminder infrastructure
+- [ ] Feature-gate all three behind `events.paid_features.tier === 'plus'`
+- [ ] Integration tests per feature; verify Basic-tier events cannot access Plus endpoints
 
 **A.7 Polish (1 week)**
 
@@ -365,6 +376,48 @@ Mirrors Stream C with Kotlin/Compose equivalents.
 
 ---
 
+## Phase 1.5 — India PPP (~4 weeks post-launch)
+
+A focused mini-phase. One job: add India as a fully supported market at purchasing-power-parity pricing. Executes only once Phase 1 exit criteria are green.
+
+**1.5.1 Market validation (1 week, before building)**
+
+- [ ] Check Phase 1 traffic data: what % of visitors come from India? What's the bounce rate at €5?
+- [ ] Check Stripe acceptance rates from Indian IPs on the launch currencies — is the signal consistent with the hypothesis?
+- [ ] If traffic is < 2% from India OR conversion is already reasonable: postpone Phase 1.5, re-evaluate at Phase 2.
+
+**1.5.2 Stripe + Tax setup (2 days)**
+
+- [ ] Add 2 INR `Price` objects (Basic ₹149, Plus ₹299)
+- [ ] Enable Stripe Tax for India; verify GST handling
+- [ ] Monitor for the ₹20 Lakh annual turnover threshold (triggers mandatory GST registration)
+
+**1.5.3 Geo-detection (1 day)**
+
+- [ ] Extend currency suggestion logic: Indian IP → INR suggested by default
+- [ ] Billing-address-based charge override tested (the arbitrage-limit mechanism)
+
+**1.5.4 Content + legal (1 week)**
+
+- [ ] Hindi localization of UI (optional — English is widely accepted in Indian SaaS; decide based on bounce-rate signal)
+- [ ] DPDPA (India's Digital Personal Data Protection Act) consent check added to cookie-consent banner
+- [ ] Terms of Service reviewed for India-specific clauses (dispute resolution jurisdiction, etc.)
+
+**1.5.5 Launch + monitor (ongoing)**
+
+- [ ] Announce new pricing to Indian visitors via geo-targeted banner
+- [ ] Track: Indian conversion rate vs. other markets, average order value, refund rate
+- [ ] 4 weeks of data → decision point for Phase 2 broader PPP rollout
+
+### Phase 1.5 exit criteria
+
+- [ ] Indian conversion rate at least 2× the pre-PPP baseline
+- [ ] No significant arbitrage abuse detected (< 5% of EU traffic using INR pricing via VPN)
+- [ ] GST compliance process documented and working
+- [ ] Go/no-go decision for Phase 2 broader PPP committed in writing
+
+---
+
 ## Dependencies map
 
 ```
@@ -378,6 +431,9 @@ Phase 1 Stream A ─┬─> Stream B (needs SDK, auth)
 Streams B/C/D can run in parallel once A.1–A.3 is done.
 
 Stream E depends on all others being past 90% complete.
+
+Phase 1.5 depends on Phase 1 exit + 4 weeks of traffic data.
+Phase 2 depends on Phase 1.5 decision (may skip PPP-broad-rollout if 1.5 reveals weak signal).
 ```
 
 ---

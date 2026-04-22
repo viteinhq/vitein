@@ -37,14 +37,16 @@ These came out of the planning conversation and are the foundation everything el
 
 ### Business & strategy
 
-| Decision         | Choice                                                                    | Reason                                                                      |
-| ---------------- | ------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| **Target**       | B2C first (pay-per-event), B2B in Phase 2                                 | Revenue today, enterprise surface later                                     |
-| **Timeline**     | No hard deadline; ship when good                                          | Quality over speed                                                          |
-| **Domain**       | Stay mono-domain on `vite.in`                                             | Name plays on _InVite_, keep the brand equity                               |
-| **Pricing**      | `5` in local currency (EUR / USD / CHF / GBP at launch), not FX-converted | Simple anchor, follows Apple/Netflix price-localization pattern             |
-| **Legal entity** | Solo now; migrating to Estonia OÜ once registration completes             | EU VAT-OSS, 0% corporate tax on retained earnings, e-Residency-native       |
-| **Licensing**    | Open-core: AGPLv3 for core, proprietary premium layer                     | Community contributions + template ecosystem; competitive moat stays closed |
+| Decision           | Choice                                                                                    | Reason                                                                              |
+| ------------------ | ----------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| **Target**         | B2C first (pay-per-event), B2B in Phase 2                                                 | Revenue today, enterprise surface later                                             |
+| **Timeline**       | No hard deadline; ship when good                                                          | Quality over speed                                                                  |
+| **Domain**         | Stay mono-domain on `vite.in`                                                             | Name plays on _InVite_, keep the brand equity                                       |
+| **Pricing**        | Two tiers — Basic `5` / Plus `9` in local currency. One-time per event, no subscriptions. | Basic = impulse buy; Plus = formal events with plus-ones / password / save-the-date |
+| **Launch markets** | EUR, USD, CHF, GBP at launch (4 currencies × 2 tiers = 8 Stripe Prices)                   | Mature Stripe, no PPP needed, solo-founder-compatible complexity                    |
+| **PPP**            | India (INR) ~4 weeks post-launch (Phase 1.5); broader rollout in Phase 2 based on traffic | `.in` TLD earns India priority; rest driven by real data, not speculation           |
+| **Legal entity**   | Solo now; migrating to Estonia OÜ once registration completes                             | EU VAT-OSS, 0% corporate tax on retained earnings, e-Residency-native               |
+| **Licensing**      | Open-core: AGPLv3 for core, proprietary premium layer                                     | Community contributions + template ecosystem; competitive moat stays closed         |
 
 ## What's intentionally deferred
 

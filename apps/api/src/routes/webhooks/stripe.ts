@@ -16,7 +16,10 @@ stripeWebhookRoute.post('/', async (c) => {
   const secret = c.env.STRIPE_WEBHOOK_SECRET;
   if (!secret) {
     logger.warn('stripe_webhook_secret_unset');
-    return c.json({ error: { code: 'stripe_not_configured', message: 'Webhook secret not set' } }, 503);
+    return c.json(
+      { error: { code: 'stripe_not_configured', message: 'Webhook secret not set' } },
+      503,
+    );
   }
 
   const signature = c.req.header('stripe-signature');
@@ -65,7 +68,10 @@ stripeWebhookRoute.post('/', async (c) => {
 
   const eventId = session.client_reference_id ?? session.metadata?.['event_id'];
   if (!eventId) {
-    logger.warn('stripe_webhook_missing_event_id', { stripeEventId: evt.id, sessionId: session.id });
+    logger.warn('stripe_webhook_missing_event_id', {
+      stripeEventId: evt.id,
+      sessionId: session.id,
+    });
     return c.json({ received: true, handled: false });
   }
 

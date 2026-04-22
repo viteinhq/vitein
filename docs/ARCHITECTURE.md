@@ -554,59 +554,111 @@ To keep the project focused, these are deliberately out of scope:
 
 ## 12. Pricing & billing
 
-### 12.1 The "5-unit" pricing model
+### 12.1 Product structure — two tiers, one-time payment per event
 
-We use fixed, locale-equivalent pricing — not FX conversion. This is the Apple/Netflix/Spotify pattern: `$5` in the US is `€5` in the Eurozone, not `$5.43`. Benefits: simple mental anchor, no FX fee exposure, stable P&L per market.
+vite.in uses a **tiered, pay-per-event** model — no subscriptions. Events are emotional, singular moments; a subscription would feel wrong. Instead, each event has an optional premium upgrade with a natural tier split.
 
-**Phase 1 launch currencies:**
+**Basic — "5" units** (Phase 1 from launch)
+The core premium bundle: no vite.in branding, custom slug (`vite.in/annas-30ter`), reminder emails to guests. This is the high-conversion impulse purchase — the majority of paid events will sit here.
 
-| Currency | Premium price | Notes               |
-| -------- | ------------- | ------------------- |
-| EUR      | €5            | Home market         |
-| USD      | $5            | US / LATAM fallback |
-| CHF      | CHF 5         | Kim's local market  |
-| GBP      | £5            | UK                  |
+**Plus — "9" units** (Phase 1 from launch)
+Upsell tier for formal / higher-stakes events (weddings, corporate, large parties). Includes everything in Basic plus:
 
-**Phase 2 additions (subject to market data):**
+- Plus-Ones management (guests can bring +1 with named details)
+- Password protection (for events that aren't meant to be public)
+- Save-the-Date (separate announcement wave before the full invitation)
 
-| Currency | Premium price | Notes                                                          |
-| -------- | ------------- | -------------------------------------------------------------- |
-| JPY      | ¥500          | No-decimal currency; ¥500 is the natural anchor, not ¥720 (FX) |
-| INR      | ₹500          | Or ₹499 for the mental price-tick                              |
-| BRL      | R$25          | Higher-number markets where "5" reads as unserious             |
-| AUD      | A$8           | Stronger currency; a deliberate premium                        |
-| CAD      | C$7           | Similar logic                                                  |
-| SGD      | S$7           |                                                                |
-| MXN      | MX$99         |                                                                |
+**Pro — "19" units** (Phase 2, not at launch)
+Reserved for Phase 2. Likely features: event bundles / annual passes for frequent hosts, team access (for couples planning together), custom guest questions (menu, allergies), analytics, CSV export. Phase 2 decision — not locked yet.
 
-The table is deliberately short. Adding a currency isn't a code change, but it is a business decision (local VAT/tax, fraud exposure, support capacity). Stripe supports 135+ currencies technically — we adopt them deliberately.
+### 12.2 Pricing model — fixed anchors, not FX conversion
 
-### 12.2 Stripe setup
+We use fixed price anchors per currency, not dynamic FX conversion. This is the Apple/Netflix/Spotify pattern: `$5` in the US is `€5` in the Eurozone, not `$5.43`. Benefits: simple mental anchor, no FX fee exposure, stable P&L per market, no price jitter.
 
-- **One Stripe `Product`** called "vite.in Premium Event" (or similar).
-- **One `Price` per currency**, all linked to that product.
-- At checkout, we select the price matching the user's detected locale. User can override (dropdown in checkout UI).
-- Stripe handles the currency display; we never do FX math in code.
-- `payment_intent` stores the currency; our `events.paid_features` doesn't care about currency.
+### 12.3 Phase 1 launch — four currencies
 
-### 12.3 Tax handling
+Launch with the four largest Stripe-mature markets where `5` is a natural, non-absurd price point:
 
-- **Stripe Tax** enabled from day 1. Calculates VAT/GST/sales-tax per transaction based on buyer location.
-- Tax is added on top of the displayed price (EU-compliant: B2C prices can be tax-inclusive; we choose tax-exclusive display for clarity across markets).
-- For EU buyers: we use **VAT One-Stop-Shop (OSS)** via the Estonia OÜ once registered.
-- For UK buyers: separate VAT registration threshold applies.
-- For US buyers: Stripe Tax handles state-level sales tax where applicable.
+| Currency | Basic | Plus | Notes                                |
+| -------- | ----- | ---- | ------------------------------------ |
+| EUR      | €5    | €9   | Home market                          |
+| USD      | $5    | $9   | US + LATAM fallback                  |
+| CHF      | 5     | 9    | Swiss market (Kim's base)            |
+| GBP      | £4    | £7   | UK (rounded down for GBP psychology) |
 
-### 12.4 Pricing changes / experiments
+Why these four: mature Stripe support, no aggressive Purchasing-Power-Pricing needed (all four are in the ~100% PPP bracket), minimal legal/tax complexity for a solo founder pre-OÜ, fast launch.
 
-- The core API never hard-codes prices. Prices are fetched from Stripe at request time (with caching).
-- A/B tests on pricing go through a feature flag on the checkout-initiation endpoint — never via different Stripe price IDs leaking into the client.
-- Phase 2 may introduce pricing tiers (a "Plus" at 10 units, a "Pro" at 20) — the data model already supports it via `paid_features` jsonb.
+### 12.4 Phase 1.5 — India PPP (4 weeks post-launch)
 
-### 12.5 Refunds & disputes
+India is the sole Phase 1.5 addition, added approximately 4 weeks after Phase 1 launch. Rationale:
 
-- Clear refund policy published: no questions asked within 14 days of purchase, as long as the event hasn't been sent (measurable via `reminders_sent_at`).
-- Chargebacks are reviewed weekly in the first 6 months post-launch; Stripe's fraud signals inform automated blocks.
+- The `.in` TLD organically attracts Indian traffic; `5 EUR` would convert at near-zero rate.
+- India is where the _.in_-story actually starts to pay off.
+- Only one market to test PPP mechanics before committing to more.
+
+| Currency | Basic | Plus |
+| -------- | ----- | ---- |
+| INR      | ₹149  | ₹299 |
+
+### 12.5 Phase 2 — broad PPP rollout
+
+Once Phase 1.5 validates the PPP mechanics and we have real traffic data on which markets matter, we extend to additional markets. The table below is **planning-level**, not committed — actual adoption depends on traffic signals:
+
+| Currency | Basic     | Plus      | PPP vs EU                             |
+| -------- | --------- | --------- | ------------------------------------- |
+| BRL      | R$15      | R$29      | ~55%                                  |
+| MXN      | MX$49     | MX$99     | ~55%                                  |
+| JPY      | ¥500      | ¥980      | ~95%                                  |
+| TRY      | ₺49       | ₺99       | ~20%                                  |
+| ARS      | ARS 2.000 | ARS 3.900 | ~30%                                  |
+| AUD      | A$8       | A$14      | Stronger currency, deliberate premium |
+| CAD      | C$7       | C$13      | Similar logic                         |
+| SGD      | S$7       | S$13      |                                       |
+
+### 12.6 Geo-detection & arbitrage handling
+
+**Price-shown logic:**
+
+- Browser IP → geolocate → suggest matching currency/tier
+- User can manually override via checkout currency dropdown
+- **Billing address (not IP) determines the actual charged price** — Stripe's Customer Location Detection handles this
+
+**Arbitrage posture:** _Soft geo-enforcement_. We accept that some users in high-income markets will use Indian prices via VPN. Estimated loss: 5–15% of upper-tier revenue. Trade-off is deliberate — the conversion uplift in emerging markets outweighs it, and the alternative (hard geo-verification requiring matching IP + card country) damages legitimate travelers and expats.
+
+### 12.7 Stripe configuration
+
+**Product structure:**
+
+- **One Stripe `Product` per tier**: `vite.in Event — Basic`, `vite.in Event — Plus`.
+- **One `Price` object per currency, per tier**, all linked to their tier's product.
+- Phase 1: 4 currencies × 2 tiers = 8 Price objects.
+- Phase 1.5: +2 (INR × 2 tiers) = 10 total.
+- Phase 2 broad rollout: potentially 20+ total.
+
+**Runtime behavior:**
+
+- API never hard-codes prices. Prices are fetched from Stripe at checkout initiation, cached with a short TTL.
+- The `events.paid_features` jsonb stores which tier was purchased (`{ tier: 'plus', bundle_version: 1 }`), decoupling feature flags from payment specifics.
+- A/B tests on pricing route through feature flags on the checkout-initiation endpoint, never via different price IDs leaking to the client.
+
+### 12.8 Tax handling
+
+- **Stripe Tax** enabled from day 1 across all launch markets.
+- EU buyers: VAT One-Stop-Shop (OSS) via the Estonia OÜ once registered (pre-OÜ, Kim's individual VAT status applies per Swiss residency rules).
+- UK buyers: separate VAT registration threshold monitored via Stripe Tax.
+- US buyers: Stripe Tax handles state-level sales tax automatically.
+- Indian buyers (Phase 1.5+): GST handling via Stripe Tax; registration threshold monitored (~₹20 Lakh annual turnover triggers mandatory GST registration).
+- Tax is displayed **exclusive** of the listed price (consistent across markets; local law-permitted in all launch markets).
+
+### 12.9 Refunds & disputes
+
+- **Refund policy:** no questions asked within 14 days of purchase, as long as no reminders have been sent to guests (`reminders_sent_at IS NULL`). Published clearly on the checkout page.
+- **Chargebacks** reviewed weekly for the first 6 months post-launch; Stripe's fraud signals inform automated blocks for repeat offenders.
+- **Currency of refund** matches currency of purchase — we do not refund in different currency.
+
+### 12.10 Migration path for v1 customers
+
+Not a concern — v1 is being archived, v2 launches fresh. Any v1 customer with unfulfilled value (edge case) gets a free Plus event on v2 via a one-time coupon.
 
 ---
 

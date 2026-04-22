@@ -18,8 +18,7 @@ export const actions: Actions = {
     const locationText = String(form.get('locationText') ?? '').trim();
     const creatorEmail = String(form.get('creatorEmail') ?? '').trim();
     const visibilityRaw = String(form.get('visibility') ?? 'link_only');
-    const visibility: 'link_only' | 'public' =
-      visibilityRaw === 'public' ? 'public' : 'link_only';
+    const visibility: 'link_only' | 'public' = visibilityRaw === 'public' ? 'public' : 'link_only';
 
     const values = {
       title,

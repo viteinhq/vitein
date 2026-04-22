@@ -22,7 +22,10 @@ export const load: PageServerLoad = async ({ params, url, platform }) => {
 
   const token = url.searchParams.get('token');
   if (!token)
-    throw httpError(401, { message: 'Creator token required', code: 'http_creator_token_required' });
+    throw httpError(401, {
+      message: 'Creator token required',
+      code: 'http_creator_token_required',
+    });
 
   const bySlug = await getEventBySlug({ path: { slug: params.slug } });
   if (bySlug.error || !bySlug.data)

@@ -136,11 +136,7 @@ export async function verifyWebhookSignature(
     false,
     ['sign'],
   );
-  const sigBuf = await crypto.subtle.sign(
-    'HMAC',
-    key,
-    new TextEncoder().encode(signedPayload),
-  );
+  const sigBuf = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(signedPayload));
   const expected = bufferToHex(sigBuf);
 
   const ok = providedSigs.some((s) => constantTimeEqual(s, expected));
