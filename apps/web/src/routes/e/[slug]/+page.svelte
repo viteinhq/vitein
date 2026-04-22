@@ -17,6 +17,10 @@
       ? Array.from({ length: Math.max(0, Math.min(20, plusOnesCount)) }, (_, i) => i)
       : [],
   );
+  function onPlusOnesInput(e: Event) {
+    const raw = Number((e.target as HTMLInputElement).value);
+    plusOnesCount = Number.isFinite(raw) ? Math.max(0, Math.min(20, raw)) : 0;
+  }
 
   function formatInTz(iso: string, tz: string) {
     return new Intl.DateTimeFormat(undefined, {
@@ -271,7 +275,8 @@
               name="plusOnes"
               min="0"
               max="20"
-              bind:value={plusOnesCount}
+              value={plusOnesCount}
+              oninput={onPlusOnesInput}
               class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2"
             />
           </label>
