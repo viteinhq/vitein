@@ -22,15 +22,16 @@ export const actions: Actions = {
 
     if (!res.ok) {
       const body = await res.text().catch(() => '');
+      console.warn('[signin] magic-link upstream failed', {
+        status: res.status,
+        body: body.slice(0, 500),
+        apiBase: resolveBaseUrl(event),
+      });
       return fail(res.status, {
-        error: 'Could not send the magic link. Please try again.',
-        details: body.slice(0, 200),
+        error: `Could not send the magic link (HTTP ${String(res.status)}).`,
+        details: body.slice(0, 300),
       });
     }
-
-    // Surface that we reached the API for visibility; keep original for debugging
-    const _apiBase = resolveBaseUrl(event);
-    void _apiBase;
 
     throw redirect(303, '/signin/check-email');
   },

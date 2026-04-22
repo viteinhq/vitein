@@ -16,9 +16,12 @@
   </p>
 
   {#if form?.error}
-    <p class="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-      {form.error}
-    </p>
+    <div class="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+      <p>{form.error}</p>
+      {#if form.details}
+        <pre class="mt-2 overflow-x-auto text-xs">{form.details}</pre>
+      {/if}
+    </div>
   {/if}
 
   <form method="POST" use:enhance class="space-y-3">
