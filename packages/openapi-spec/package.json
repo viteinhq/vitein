@@ -18,6 +18,6 @@
     "preview": "redocly preview-docs vitein.yaml"
   },
   "devDependencies": {
-    "@redocly/cli": "^1.25.11"
+    "@redocly/cli": "^2.29.1"
   }
 }
