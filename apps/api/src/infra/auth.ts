@@ -64,9 +64,14 @@ export function createAuth(env: Env) {
     },
     advanced: {
       // Our users.id is a pg `uuid` column — override Better-Auth's
-      // random-string generator so every row matches the column type.
-      // sessions/accounts/verifications use text ids, but passing uuidv7
-      // is still valid text, so this single setting covers every table.
+      // random-string generator at the DB-adapter layer (the top-level
+      // `advanced.generateId` is a different code path and wasn't being
+      // consulted before the insert). sessions/accounts/verifications use
+      // text ids but uuidv7 is still valid text, so one override covers
+      // every table.
+      database: {
+        generateId: () => uuidv7(),
+      },
       generateId: () => uuidv7(),
       defaultCookieAttributes: {
         sameSite: 'lax',
