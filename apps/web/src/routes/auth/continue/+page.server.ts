@@ -51,17 +51,16 @@ export const actions: Actions = {
     // The cookie is scoped to `.vite.in` so once it lands it's valid on
     // both api-staging and next. getSetCookie() returns the array form.
     const setCookies = res.headers.getSetCookie();
-    console.warn('[auth/continue] verify status', res.status, 'location', res.headers.get('location'));
-    console.warn('[auth/continue] setCookies count', setCookies.length, 'raw', JSON.stringify(setCookies));
-    const rawSetCookie = res.headers.get('set-cookie');
-    console.warn('[auth/continue] raw set-cookie header', rawSetCookie);
     for (const raw of setCookies) {
       const [nameValue, ...attrs] = raw.split(';').map((s) => s.trim());
       const eq = nameValue?.indexOf('=') ?? -1;
       if (eq < 0 || !nameValue) continue;
       const name = nameValue.slice(0, eq);
       const value = nameValue.slice(eq + 1);
-      const opts: CookieOpts = { path: '/' };
+      // The upstream value is already URL-encoded (Better-Auth encodes the
+      // base64url token). SvelteKit's default `encode` would re-encode `%`
+      // → `%25`, producing a double-encoded cookie the API can't read back.
+      const opts: CookieOpts = { path: '/', encode: (v) => v };
       for (const attr of attrs) {
         const [k, v] = attr.split('=').map((s) => s.trim());
         const key = (k ?? '').toLowerCase();
