@@ -9,6 +9,9 @@ import type {
   ClaimEventsData,
   ClaimEventsErrors,
   ClaimEventsResponses,
+  CreateCheckoutData,
+  CreateCheckoutErrors,
+  CreateCheckoutResponses,
   CreateEventData,
   CreateEventErrors,
   CreateEventResponses,
@@ -308,6 +311,30 @@ export const deleteMedia = <ThrowOnError extends boolean = false>(
   (options.client ?? client).delete<DeleteMediaResponses, DeleteMediaErrors, ThrowOnError>({
     url: '/v1/events/{id}/media/{mediaId}',
     ...options,
+  });
+
+/**
+ * Start a Stripe Checkout Session to upgrade to premium (creator only)
+ *
+ * Creates a Stripe hosted Checkout Session for the event and returns
+ * its public URL. The client redirects the creator there; the event
+ * is marked `isPaid` only when Stripe delivers the
+ * `checkout.session.completed` webhook to `/v1/webhooks/stripe`.
+ *
+ * The currency defaults to `EUR`. All launch currencies are fixed
+ * anchors, not FX-converted — see ARCHITECTURE §12.
+ *
+ */
+export const createCheckout = <ThrowOnError extends boolean = false>(
+  options: Options<CreateCheckoutData, ThrowOnError>,
+) =>
+  (options.client ?? client).post<CreateCheckoutResponses, CreateCheckoutErrors, ThrowOnError>({
+    url: '/v1/events/{id}/checkout',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
   });
 
 /**

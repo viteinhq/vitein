@@ -10,6 +10,7 @@ import { claimRoute } from './routes/claim.js';
 import { eventsRoute } from './routes/events.js';
 import { healthRoute } from './routes/health.js';
 import { usersRoute } from './routes/users.js';
+import { stripeWebhookRoute } from './routes/webhooks/stripe.js';
 import { sentryOptions } from './infra/sentry.js';
 import type { AppVariables, Env } from './types/env.js';
 
@@ -36,6 +37,7 @@ app.route('/v1/auth', authRoute);
 app.route('/v1/health', healthRoute);
 app.route('/v1/events', eventsRoute);
 app.route('/v1/users', usersRoute);
+app.route('/v1/webhooks/stripe', stripeWebhookRoute);
 
 // Intentional throw for Sentry-wiring verification. Cheap and useful.
 app.get('/_debug/boom', () => {

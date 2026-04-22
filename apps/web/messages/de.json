@@ -164,6 +164,13 @@
   "manage_reminder_body": "Stellt eine Erinnerungs-E-Mail an die Ersteller-Adresse in die Warteschlange. Wird vom nächsten Cron-Lauf versendet.",
   "manage_reminder_queued": "Erinnerung in Warteschlange.",
   "manage_reminder_submit": "Jetzt in Warteschlange stellen",
+  "manage_upgrade_heading": "Auf Premium upgraden",
+  "manage_upgrade_body": "Einmalzahlung schaltet einen eigenen URL-Slug, kein vite.in-Branding, ein Cover-Bild, Erinnerungen und Passwortschutz frei.",
+  "manage_upgrade_currency_label": "Währung",
+  "manage_upgrade_submit": "Weiter zur Kasse",
+  "manage_upgrade_already_paid": "Dieses Event ist Premium. Alle Extras sind freigeschaltet.",
+  "manage_upgrade_success": "Zahlung empfangen. Premium-Features sind aktiv.",
+  "manage_upgrade_canceled": "Kasse abgebrochen. Es wurde nichts abgebucht.",
 
   "err_unknown": "Etwas ist schiefgelaufen. Bitte erneut versuchen.",
   "err_create_missing_fields": "Bitte Titel, Startdatum und E-Mail ausfüllen.",
@@ -184,6 +191,7 @@
   "err_manage_missing_media_id": "Media-ID fehlt.",
   "err_manage_delete_failed": "Medium konnte nicht gelöscht werden.",
   "err_manage_upload_http": "Upload fehlgeschlagen (HTTP {status}).",
+  "err_upgrade_http": "Kasse konnte nicht gestartet werden (HTTP {status}).",
 
   "err_page_title": "Etwas ist schiefgelaufen",
   "err_page_back_home": "Zurück zur Startseite",

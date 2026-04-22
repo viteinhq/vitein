@@ -762,6 +762,66 @@ export type DeleteMediaResponses = {
 
 export type DeleteMediaResponse = DeleteMediaResponses[keyof DeleteMediaResponses];
 
+export type CreateCheckoutData = {
+  body?: {
+    /**
+     * Currency anchor to bill in. Maps to a configured Stripe Price.
+     */
+    currency?: 'EUR' | 'USD' | 'CHF' | 'GBP';
+  };
+  headers: {
+    /**
+     * Plaintext creator token (the value delivered by the magic-link email).
+     * The server hashes it and compares against `event_tokens.token_hash`.
+     *
+     */
+    'X-Creator-Token': string;
+  };
+  path: {
+    /**
+     * Server-generated UUIDv7 of the event.
+     */
+    id: string;
+  };
+  query?: never;
+  url: '/v1/events/{id}/checkout';
+};
+
+export type CreateCheckoutErrors = {
+  /**
+   * Missing or invalid creator token.
+   */
+  401: Error;
+  /**
+   * Resource not found.
+   */
+  404: Error;
+  /**
+   * Event is already marked as paid.
+   */
+  409: Error;
+  /**
+   * Stripe is not configured for this environment.
+   */
+  503: Error;
+};
+
+export type CreateCheckoutError = CreateCheckoutErrors[keyof CreateCheckoutErrors];
+
+export type CreateCheckoutResponses = {
+  /**
+   * Checkout session URL.
+   */
+  200: {
+    /**
+     * Stripe-hosted Checkout Session URL.
+     */
+    url: string;
+  };
+};
+
+export type CreateCheckoutResponse = CreateCheckoutResponses[keyof CreateCheckoutResponses];
+
 export type SendReminderData = {
   body?: never;
   headers: {

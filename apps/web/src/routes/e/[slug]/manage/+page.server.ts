@@ -1,5 +1,6 @@
-import { error as httpError, fail } from '@sveltejs/kit';
+import { error as httpError, fail, redirect } from '@sveltejs/kit';
 import {
+  createCheckout,
   deleteMedia,
   getEventBySlug,
   getEventManage,
@@ -141,6 +142,38 @@ export const actions: Actions = {
     }
 
     return { mediaUploaded: true };
+  },
+
+  upgrade: async ({ request, params, url, platform }) => {
+    configureApi(resolveBaseUrl(platform));
+    const token = url.searchParams.get('token');
+    if (!token) return fail(401, { upgradeError: 'manage_missing_token' });
+
+    const bySlug = await getEventBySlug({ path: { slug: params.slug } });
+    if (bySlug.error || !bySlug.data) return fail(404, { upgradeError: 'manage_event_not_found' });
+
+    const form = await request.formData();
+    const currencyRaw = String(form.get('currency') ?? 'EUR').toUpperCase();
+    const currency = (['EUR', 'USD', 'CHF', 'GBP'] as const).includes(
+      currencyRaw as 'EUR' | 'USD' | 'CHF' | 'GBP',
+    )
+      ? (currencyRaw as 'EUR' | 'USD' | 'CHF' | 'GBP')
+      : 'EUR';
+
+    const { data, error, response } = await createCheckout({
+      path: { id: bySlug.data.id },
+      headers: { 'X-Creator-Token': token },
+      body: { currency },
+    });
+
+    if (error || !data) {
+      return fail(response?.status ?? 500, {
+        upgradeError: 'upgrade_http',
+        upgradeStatus: response?.status,
+      });
+    }
+
+    throw redirect(303, data.url);
   },
 
   deleteMedia: async ({ request, params, url, platform }) => {

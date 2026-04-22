@@ -380,6 +380,62 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  /v1/events/{id}/checkout:
+    parameters:
+      - $ref: '#/components/parameters/EventId'
+      - $ref: '#/components/parameters/CreatorTokenHeader'
+    post:
+      operationId: createCheckout
+      summary: Start a Stripe Checkout Session to upgrade to premium (creator only)
+      description: |
+        Creates a Stripe hosted Checkout Session for the event and returns
+        its public URL. The client redirects the creator there; the event
+        is marked `isPaid` only when Stripe delivers the
+        `checkout.session.completed` webhook to `/v1/webhooks/stripe`.
+
+        The currency defaults to `EUR`. All launch currencies are fixed
+        anchors, not FX-converted — see ARCHITECTURE §12.
+      tags: [events]
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                currency:
+                  type: string
+                  enum: [EUR, USD, CHF, GBP]
+                  default: EUR
+                  description: Currency anchor to bill in. Maps to a configured Stripe Price.
+      responses:
+        '200':
+          description: Checkout session URL.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [url]
+                properties:
+                  url:
+                    type: string
+                    format: uri
+                    description: Stripe-hosted Checkout Session URL.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Event is already marked as paid.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '503':
+          description: Stripe is not configured for this environment.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
   /v1/events/{id}/reminders/send:
     parameters:
       - $ref: '#/components/parameters/EventId'

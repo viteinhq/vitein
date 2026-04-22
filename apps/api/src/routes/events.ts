@@ -15,6 +15,7 @@ import { db } from '../infra/db.js';
 import { sendCreatorMagicLink } from '../infra/email.js';
 import { requireCreator } from '../middleware/require-creator.js';
 import type { AppVariables, Env } from '../types/env.js';
+import { checkoutRoute } from './checkout.js';
 import { guestsRoute } from './guests.js';
 import { mediaRoute } from './media.js';
 import { remindersRoute } from './reminders.js';
@@ -26,6 +27,7 @@ eventsRoute.route('/:id/rsvps', rsvpsRoute);
 eventsRoute.route('/:id/guests', guestsRoute);
 eventsRoute.route('/:id/reminders', remindersRoute);
 eventsRoute.route('/:id/media', mediaRoute);
+eventsRoute.route('/:id/checkout', checkoutRoute);
 
 const eventCreateSchema = z.object({
   title: z.string().min(1).max(200),

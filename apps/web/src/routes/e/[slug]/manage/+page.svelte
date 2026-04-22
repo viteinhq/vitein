@@ -1,10 +1,14 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
+  import { page } from '$app/state';
   import { localizeError } from '$lib/errors';
   import * as m from '$lib/paraglide/messages.js';
   import type { PageProps } from './$types';
 
   let { data, form }: PageProps = $props();
+
+  const upgraded = $derived(page.url.searchParams.get('upgraded') === '1');
+  const canceled = $derived(page.url.searchParams.get('canceled') === '1');
 
   const startsAtForInput = $derived(toLocalInputValue(data.event.startsAt));
 
@@ -36,6 +40,56 @@
       {m.manage_public_link()} <a class="underline" href="/e/{data.event.slug}">/e/{data.event.slug}</a>
     </p>
   </header>
+
+  <section class="rounded-lg border border-slate-200 p-4">
+    <h2 class="text-lg font-semibold">{m.manage_upgrade_heading()}</h2>
+    <p class="mt-1 text-sm text-slate-600">{m.manage_upgrade_body()}</p>
+
+    {#if upgraded}
+      <p class="mt-2 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm">
+        {m.manage_upgrade_success()}
+      </p>
+    {/if}
+    {#if canceled}
+      <p class="mt-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm">
+        {m.manage_upgrade_canceled()}
+      </p>
+    {/if}
+    {#if form?.upgradeError}
+      <p class="mt-2 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+        {localizeError(form.upgradeError, {
+          status: 'upgradeStatus' in form ? form.upgradeStatus : undefined,
+        })}
+      </p>
+    {/if}
+
+    {#if data.event.isPaid}
+      <p class="mt-3 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm">
+        {m.manage_upgrade_already_paid()}
+      </p>
+    {:else}
+      <form method="POST" action="?/upgrade&token={data.token}" class="mt-3 flex items-end gap-3">
+        <label class="block">
+          <span class="text-xs font-medium text-slate-600">{m.manage_upgrade_currency_label()}</span>
+          <select
+            name="currency"
+            class="mt-1 block rounded-md border border-slate-300 px-3 py-2 text-sm"
+          >
+            <option value="EUR">€ EUR</option>
+            <option value="USD">$ USD</option>
+            <option value="CHF">CHF</option>
+            <option value="GBP">£ GBP</option>
+          </select>
+        </label>
+        <button
+          type="submit"
+          class="rounded-md bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700"
+        >
+          {m.manage_upgrade_submit()}
+        </button>
+      </form>
+    {/if}
+  </section>
 
   <section class="rounded-lg border border-slate-200 p-4">
     <h2 class="text-lg font-semibold">{m.manage_media_heading()}</h2>

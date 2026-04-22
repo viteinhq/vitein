@@ -164,6 +164,13 @@
   "manage_reminder_body": "Queues an email reminder to the creator address. Sent by the next cron run.",
   "manage_reminder_queued": "Reminder queued.",
   "manage_reminder_submit": "Queue reminder now",
+  "manage_upgrade_heading": "Upgrade to premium",
+  "manage_upgrade_body": "One-time payment unlocks a custom slug, no vite.in branding, a cover image, reminders, and password protection.",
+  "manage_upgrade_currency_label": "Currency",
+  "manage_upgrade_submit": "Continue to checkout",
+  "manage_upgrade_already_paid": "This event is premium. All extras are unlocked.",
+  "manage_upgrade_success": "Payment received. Premium features are now active.",
+  "manage_upgrade_canceled": "Checkout canceled. No charge was made.",
 
   "err_unknown": "Something went wrong. Please try again.",
   "err_create_missing_fields": "Please fill in title, start date, and your email.",
@@ -184,6 +191,7 @@
   "err_manage_missing_media_id": "Missing mediaId.",
   "err_manage_delete_failed": "Could not delete media.",
   "err_manage_upload_http": "Upload failed (HTTP {status}).",
+  "err_upgrade_http": "Could not start checkout (HTTP {status}).",
 
   "err_page_title": "Something went wrong",
   "err_page_back_home": "Back to home",
