@@ -18,7 +18,7 @@
   {#if form?.error}
     <div class="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
       <p>{form.error}</p>
-      {#if form.details}
+      {#if 'details' in form && form.details}
         <pre class="mt-2 overflow-x-auto text-xs">{form.details}</pre>
       {/if}
     </div>
