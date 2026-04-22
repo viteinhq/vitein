@@ -1,4 +1,4 @@
-import { error as httpError, fail } from '@sveltejs/kit';
+import { error as httpError, fail, redirect } from '@sveltejs/kit';
 import { getEventBySlug, listMedia, submitRsvp, verifyEventPassword } from '@vitein/ts-sdk';
 import { configureApi } from '$lib/api';
 import type { Actions, PageServerLoad } from './$types';
@@ -64,7 +64,11 @@ export const actions: Actions = {
       secure: url.protocol === 'https:',
       maxAge: data.ttlSeconds,
     });
-    return { pwdUnlocked: true };
+    // Throw a redirect to self so the browser GETs the page fresh with
+    // the cookie attached — `use:enhance` navigates via goto() which
+    // then re-runs load() and the event renders unlocked. Returning a
+    // plain result only updates the form prop, leaving stale data.
+    throw redirect(303, `/e/${params.slug}`);
   },
 
   rsvp: async ({ request, params, platform }) => {
