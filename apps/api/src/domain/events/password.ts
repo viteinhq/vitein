@@ -7,12 +7,14 @@
  * Storage format (self-describing so the iteration count can evolve):
  *   `pbkdf2-sha256$<iterations>$<base64url salt>$<base64url hash>`
  *
- * Iterations: 200k is a middle-ground for Cloudflare Workers CPU budget
- * (50ms default). OWASP recommends 600k+ for SHA-256 but that risks
- * exceeding the Worker limit on older hardware.
+ * Iterations: 100k is the hard cap on Cloudflare Workers' Web Crypto
+ * implementation (runtime rejects anything above with NotSupportedError).
+ * OWASP 2023 guidance is 600k+ for SHA-256 — accepted debt for the Workers
+ * runtime. Event passwords are medium-entropy low-stakes secrets; the
+ * random 16-byte salt + SHA-256 still defeats rainbow tables.
  */
 
-const ITERATIONS = 200_000;
+const ITERATIONS = 100_000;
 const SALT_BYTES = 16;
 const HASH_BITS = 256;
 
