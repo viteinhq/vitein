@@ -149,5 +149,12 @@
   "err_manage_image_too_large": "Bild darf maximal 10 MiB gross sein.",
   "err_manage_missing_media_id": "Media-ID fehlt.",
   "err_manage_delete_failed": "Medium konnte nicht gelöscht werden.",
-  "err_manage_upload_http": "Upload fehlgeschlagen (HTTP {status})."
+  "err_manage_upload_http": "Upload fehlgeschlagen (HTTP {status}).",
+
+  "err_page_title": "Etwas ist schiefgelaufen",
+  "err_page_back_home": "Zurück zur Startseite",
+  "err_http_event_not_found": "Dieses Event existiert nicht oder wurde entfernt.",
+  "err_http_creator_token_required": "Diese Seite benötigt einen gültigen Verwaltungs-Link. Schau in die E-Mail, die wir dir gesendet haben.",
+  "err_http_creator_token_invalid": "Dein Verwaltungs-Link ist nicht mehr gültig. Fordere auf der Wiederherstellungsseite einen neuen an.",
+  "err_http_missing_token_or_callback": "Dieser Anmelde-Link ist unvollständig. Bitte fordere einen neuen an."
 }

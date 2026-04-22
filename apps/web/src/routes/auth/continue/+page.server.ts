@@ -21,7 +21,11 @@ type CookieOpts = Parameters<Cookies['set']>[2];
 function requireParams(url: URL): { token: string; callbackURL: string } {
   const token = url.searchParams.get('t');
   const cb = url.searchParams.get('cb');
-  if (!token || !cb) throw httpError(400, 'Missing token or callback');
+  if (!token || !cb)
+    throw httpError(400, {
+      message: 'Missing token or callback',
+      code: 'http_missing_token_or_callback',
+    });
   return { token, callbackURL: cb };
 }
 

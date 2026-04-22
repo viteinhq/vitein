@@ -149,5 +149,12 @@
   "err_manage_image_too_large": "Image must be at most 10 MiB.",
   "err_manage_missing_media_id": "Missing mediaId.",
   "err_manage_delete_failed": "Could not delete media.",
-  "err_manage_upload_http": "Upload failed (HTTP {status})."
+  "err_manage_upload_http": "Upload failed (HTTP {status}).",
+
+  "err_page_title": "Something went wrong",
+  "err_page_back_home": "Back to home",
+  "err_http_event_not_found": "This event doesn't exist or has been removed.",
+  "err_http_creator_token_required": "This page needs a valid management link. Check the email we sent you.",
+  "err_http_creator_token_invalid": "Your management link is no longer valid. Request a new one from the recovery page.",
+  "err_http_missing_token_or_callback": "This sign-in link is incomplete. Please request a new one."
 }

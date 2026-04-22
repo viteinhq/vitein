@@ -20,10 +20,12 @@ export const load: PageServerLoad = async ({ params, url, platform }) => {
   configureApi(resolveBaseUrl(platform));
 
   const token = url.searchParams.get('token');
-  if (!token) throw httpError(401, 'Creator token required');
+  if (!token)
+    throw httpError(401, { message: 'Creator token required', code: 'http_creator_token_required' });
 
   const bySlug = await getEventBySlug({ path: { slug: params.slug } });
-  if (bySlug.error || !bySlug.data) throw httpError(404, 'Event not found');
+  if (bySlug.error || !bySlug.data)
+    throw httpError(404, { message: 'Event not found', code: 'http_event_not_found' });
 
   const eventId = bySlug.data.id;
   const headers = { 'X-Creator-Token': token };
@@ -35,7 +37,8 @@ export const load: PageServerLoad = async ({ params, url, platform }) => {
     listMedia({ path: { id: eventId } }),
   ]);
 
-  if (manage.error || !manage.data) throw httpError(401, 'Creator token invalid');
+  if (manage.error || !manage.data)
+    throw httpError(401, { message: 'Creator token invalid', code: 'http_creator_token_invalid' });
 
   return {
     token,

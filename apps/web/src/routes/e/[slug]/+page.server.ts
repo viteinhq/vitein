@@ -11,7 +11,7 @@ export const load: PageServerLoad = async ({ params, platform }) => {
   configureApi(resolveBaseUrl(platform));
   const { data, error } = await getEventBySlug({ path: { slug: params.slug } });
   if (error || !data) {
-    throw httpError(404, 'Event not found');
+    throw httpError(404, { message: 'Event not found', code: 'http_event_not_found' });
   }
   const media = await listMedia({ path: { id: data.id } });
   const cover = media.data?.items.find((m) => m.kind === 'cover' && m.url) ?? null;

@@ -50,6 +50,14 @@ export function localizeError(code: unknown, params?: { status?: unknown }): str
       return m.err_manage_delete_failed();
     case 'manage_upload_http':
       return m.err_manage_upload_http({ status: statusStr });
+    case 'http_event_not_found':
+      return m.err_http_event_not_found();
+    case 'http_creator_token_required':
+      return m.err_http_creator_token_required();
+    case 'http_creator_token_invalid':
+      return m.err_http_creator_token_invalid();
+    case 'http_missing_token_or_callback':
+      return m.err_http_missing_token_or_callback();
     default:
       return m.err_unknown();
   }
