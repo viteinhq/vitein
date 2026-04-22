@@ -68,6 +68,13 @@
   }
 
   const showConfirmation = $derived(form?.rsvpSuccess && !resetForm);
+
+  // A password-protected event returns with `hasPassword: true` and
+  // sensitive fields (description, location) nulled until a view token is
+  // presented. Rendering the prompt depends only on the server-validated
+  // flag here — the load() already retries with the cookie-stored token.
+  const isLocked = $derived(Boolean(data.event.hasPassword));
+  let pwdSubmitting = $state(false);
 </script>
 
 <svelte:head>
@@ -76,6 +83,49 @@
 </svelte:head>
 
 <section class="mx-auto max-w-2xl space-y-8">
+  {#if isLocked}
+    <section class="space-y-4 rounded-lg border border-slate-200 p-6">
+      <h1 class="text-2xl font-semibold tracking-tight">{m.event_locked_heading()}</h1>
+      <p class="text-sm text-slate-600">{m.event_locked_body()}</p>
+
+      {#if form && 'pwdError' in form && form.pwdError}
+        <p class="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+          {localizeError(form.pwdError)}
+        </p>
+      {/if}
+
+      <form
+        method="POST"
+        action="?/verifyPassword"
+        use:enhance={() => {
+          pwdSubmitting = true;
+          return async ({ update }) => {
+            await update();
+            pwdSubmitting = false;
+          };
+        }}
+        class="space-y-3"
+      >
+        <label class="block">
+          <span class="text-sm font-medium">{m.event_locked_password_label()}</span>
+          <input
+            type="password"
+            name="password"
+            required
+            autocomplete="current-password"
+            class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2"
+          />
+        </label>
+        <button
+          type="submit"
+          disabled={pwdSubmitting}
+          class="rounded-md bg-slate-900 px-4 py-2 font-medium text-white hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {pwdSubmitting ? m.event_locked_submitting() : m.event_locked_submit()}
+        </button>
+      </form>
+    </section>
+  {:else}
   <article class="space-y-5">
     {#if data.cover?.url}
       <img
@@ -319,4 +369,5 @@
       </form>
     {/if}
   </section>
+  {/if}
 </section>

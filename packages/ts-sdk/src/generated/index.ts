@@ -25,6 +25,7 @@ export {
   submitRsvp,
   updateEvent,
   uploadMedia,
+  verifyEventPassword,
 } from './sdk.gen';
 export type {
   AddGuestData,
@@ -159,4 +160,9 @@ export type {
   UploadMediaResponses,
   UserExport,
   UserProfile,
+  VerifyEventPasswordData,
+  VerifyEventPasswordError,
+  VerifyEventPasswordErrors,
+  VerifyEventPasswordResponse,
+  VerifyEventPasswordResponses,
 } from './types.gen';

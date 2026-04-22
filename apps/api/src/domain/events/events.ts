@@ -1,6 +1,7 @@
 import { and, eq, events, eventTokens, isNull, type Db } from '@vitein/db-schema';
 import { hashToken, issueCreatorToken } from '../auth/tokens.js';
-import { NotFoundError } from '../errors.js';
+import { NotFoundError, ValidationError } from '../errors.js';
+import { hashPassword } from './password.js';
 import { generateSlug } from './slug.js';
 
 export interface EventCreateInput {
@@ -24,6 +25,11 @@ export interface EventUpdateInput {
   locationText?: string | null | undefined;
   defaultLocale?: string | undefined;
   visibility?: 'link_only' | 'public' | undefined;
+  /**
+   * A.6b.2 password protection. `string` = set/replace, `null` = clear,
+   * `undefined` = leave as-is. Tier gating is enforced by the route.
+   */
+  password?: string | null | undefined;
 }
 
 export interface CreatedEvent {
@@ -110,6 +116,15 @@ export async function updateEvent(
   const existing = await findActiveEvent(db, id);
   if (!existing) throw new NotFoundError('event.not_found', 'Event not found');
 
+  let passwordHash: string | null | undefined;
+  if (input.password === null) {
+    passwordHash = null;
+  } else if (typeof input.password === 'string') {
+    if (input.password.length < 4)
+      throw new ValidationError('Password must be at least 4 characters');
+    passwordHash = await hashPassword(input.password);
+  }
+
   const patch = pruneUndefined({
     title: input.title,
     description: input.description,
@@ -119,6 +134,7 @@ export async function updateEvent(
     locationText: input.locationText,
     defaultLocale: input.defaultLocale,
     visibility: input.visibility,
+    passwordHash,
     updatedAt: new Date(),
   });
 

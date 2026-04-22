@@ -380,6 +380,46 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  /v1/events/{id}/verify-password:
+    parameters:
+      - $ref: '#/components/parameters/EventId'
+    post:
+      operationId: verifyEventPassword
+      summary: Exchange a password for a short-lived view token (public)
+      description: |
+        Public endpoint. Accepts the event password; if it matches, issues a
+        24-hour view token bound to this event. The caller forwards the
+        token on subsequent public reads via the `X-Event-View-Token`
+        header, and the API returns the full event shape instead of the
+        locked one. Wrong password → 401 `event.password_invalid`. Event
+        without a password → 401 `event.no_password`.
+      tags: [events]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [password]
+              properties:
+                password: { type: string, minLength: 1, maxLength: 200 }
+      responses:
+        '200':
+          description: View token issued.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [token, expiresAt, ttlSeconds]
+                properties:
+                  token: { type: string, description: Opaque view token (carry on `X-Event-View-Token`). }
+                  expiresAt: { type: string, format: date-time }
+                  ttlSeconds: { type: integer }
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
   /v1/events/{id}/checkout:
     parameters:
       - $ref: '#/components/parameters/EventId'
@@ -666,10 +706,18 @@ components:
         locationText: { type: [string, 'null'], maxLength: 500 }
         defaultLocale: { type: string, minLength: 2, maxLength: 10 }
         visibility: { type: string, enum: [link_only, public] }
+        password:
+          type: [string, 'null']
+          minLength: 4
+          maxLength: 200
+          description: |
+            A.6b.2 password protection. `null` clears; a string sets/replaces.
+            Setting requires the event to be on the Plus tier — the server
+            returns 403 `event.feature_gated` otherwise.
 
     EventPublic:
       type: object
-      required: [id, slug, title, startsAt, timezone, visibility]
+      required: [id, slug, title, startsAt, timezone, visibility, hasPassword]
       properties:
         id: { type: string, format: uuid }
         slug: { type: string }
@@ -688,6 +736,13 @@ components:
             Premium tier when the event is paid, otherwise `null`. Used by
             guest-facing UIs to light up per-tier affordances (named
             plus-ones, custom branding treatment).
+        hasPassword:
+          type: boolean
+          description: |
+            True when the event is password-protected. If true and the
+            caller has no valid `X-Event-View-Token`, sensitive fields
+            (`description`, `locationText`) are returned as `null` and the
+            UI should render a password prompt.
 
     EventManage:
       allOf:

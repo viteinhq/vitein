@@ -57,6 +57,13 @@ export type EventUpdateInput = {
   locationText?: string | null;
   defaultLocale?: string;
   visibility?: 'link_only' | 'public';
+  /**
+   * A.6b.2 password protection. `null` clears; a string sets/replaces.
+   * Setting requires the event to be on the Plus tier — the server
+   * returns 403 `event.feature_gated` otherwise.
+   *
+   */
+  password?: string | null;
 };
 
 export type EventPublic = {
@@ -77,6 +84,14 @@ export type EventPublic = {
    *
    */
   tier?: 'basic' | 'plus' | null;
+  /**
+   * True when the event is password-protected. If true and the
+   * caller has no valid `X-Event-View-Token`, sensitive fields
+   * (`description`, `locationText`) are returned as `null` and the
+   * UI should render a password prompt.
+   *
+   */
+  hasPassword: boolean;
 };
 
 export type EventManage = EventPublic & {
@@ -783,6 +798,50 @@ export type DeleteMediaResponses = {
 };
 
 export type DeleteMediaResponse = DeleteMediaResponses[keyof DeleteMediaResponses];
+
+export type VerifyEventPasswordData = {
+  body: {
+    password: string;
+  };
+  path: {
+    /**
+     * Server-generated UUIDv7 of the event.
+     */
+    id: string;
+  };
+  query?: never;
+  url: '/v1/events/{id}/verify-password';
+};
+
+export type VerifyEventPasswordErrors = {
+  /**
+   * Missing or invalid creator token.
+   */
+  401: Error;
+  /**
+   * Resource not found.
+   */
+  404: Error;
+};
+
+export type VerifyEventPasswordError = VerifyEventPasswordErrors[keyof VerifyEventPasswordErrors];
+
+export type VerifyEventPasswordResponses = {
+  /**
+   * View token issued.
+   */
+  200: {
+    /**
+     * Opaque view token (carry on `X-Event-View-Token`).
+     */
+    token: string;
+    expiresAt: string;
+    ttlSeconds: number;
+  };
+};
+
+export type VerifyEventPasswordResponse =
+  VerifyEventPasswordResponses[keyof VerifyEventPasswordResponses];
 
 export type CreateCheckoutData = {
   body: {

@@ -1,6 +1,8 @@
 import { zValidator } from '@hono/zod-validator';
 import { Hono } from 'hono';
 import { z } from 'zod';
+import { getEventPublic } from '../domain/events/events.js';
+import { isViewTokenValid } from '../domain/events/view-tokens.js';
 import { deleteMedia, listMedia, publicUrlFor, uploadMedia } from '../domain/media/media.js';
 import { ValidationError } from '../domain/errors.js';
 import { db } from '../infra/db.js';
@@ -56,6 +58,16 @@ mediaRoute.get(
   }),
   async (c) => {
     const { id } = c.req.valid('param');
+    // A password-protected event shouldn't leak its cover image before the
+    // guest has unlocked it. We hide the media list (empty items) rather
+    // than 401'ing so the event-view page can still call this safely.
+    const event = await getEventPublic(db(c.env), id);
+    if (event.passwordHash) {
+      const token = c.req.header('X-Event-View-Token');
+      if (!token || !(await isViewTokenValid(db(c.env), event.id, token))) {
+        return c.json({ items: [] });
+      }
+    }
     const rows = await listMedia(db(c.env), id);
     return c.json({ items: rows.map((r) => toMedia(r, c.env)) });
   },

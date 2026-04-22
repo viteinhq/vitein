@@ -71,6 +71,9 @@ import type {
   UploadMediaData,
   UploadMediaErrors,
   UploadMediaResponses,
+  VerifyEventPasswordData,
+  VerifyEventPasswordErrors,
+  VerifyEventPasswordResponses,
 } from './types.gen';
 
 export type Options<
@@ -311,6 +314,33 @@ export const deleteMedia = <ThrowOnError extends boolean = false>(
   (options.client ?? client).delete<DeleteMediaResponses, DeleteMediaErrors, ThrowOnError>({
     url: '/v1/events/{id}/media/{mediaId}',
     ...options,
+  });
+
+/**
+ * Exchange a password for a short-lived view token (public)
+ *
+ * Public endpoint. Accepts the event password; if it matches, issues a
+ * 24-hour view token bound to this event. The caller forwards the
+ * token on subsequent public reads via the `X-Event-View-Token`
+ * header, and the API returns the full event shape instead of the
+ * locked one. Wrong password → 401 `event.password_invalid`. Event
+ * without a password → 401 `event.no_password`.
+ *
+ */
+export const verifyEventPassword = <ThrowOnError extends boolean = false>(
+  options: Options<VerifyEventPasswordData, ThrowOnError>,
+) =>
+  (options.client ?? client).post<
+    VerifyEventPasswordResponses,
+    VerifyEventPasswordErrors,
+    ThrowOnError
+  >({
+    url: '/v1/events/{id}/verify-password',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
   });
 
 /**

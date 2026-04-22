@@ -147,6 +147,38 @@ export const actions: Actions = {
     return { mediaUploaded: true };
   },
 
+  setPassword: async ({ request, params, url, platform }) => {
+    configureApi(resolveBaseUrl(platform));
+    const token = url.searchParams.get('token');
+    if (!token) return fail(401, { passwordError: 'manage_missing_token' });
+
+    const bySlug = await getEventBySlug({ path: { slug: params.slug } });
+    if (bySlug.error || !bySlug.data)
+      return fail(404, { passwordError: 'manage_event_not_found' });
+
+    const form = await request.formData();
+    const clear = form.get('clear') === '1';
+    const raw = String(form.get('password') ?? '');
+
+    if (!clear && raw.length < 4) {
+      return fail(400, { passwordError: 'manage_password_too_short' });
+    }
+
+    const { error, response } = await updateEvent({
+      path: { id: bySlug.data.id },
+      headers: { 'X-Creator-Token': token },
+      body: { password: clear ? null : raw },
+    });
+
+    if (error) {
+      if (response?.status === 403)
+        return fail(403, { passwordError: 'manage_password_plus_required' });
+      return fail(response?.status ?? 500, { passwordError: 'manage_password_failed' });
+    }
+
+    return clear ? { passwordCleared: true } : { passwordSet: true };
+  },
+
   upgrade: async ({ request, params, url, platform }) => {
     configureApi(resolveBaseUrl(platform));
     const token = url.searchParams.get('token');

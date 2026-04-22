@@ -60,6 +60,20 @@ export function localizeError(code: unknown, params?: { status?: unknown }): str
       return m.err_http_creator_token_invalid();
     case 'http_missing_token_or_callback':
       return m.err_http_missing_token_or_callback();
+    case 'pwd_required':
+      return m.err_pwd_required();
+    case 'pwd_invalid':
+      return m.err_pwd_invalid();
+    case 'pwd_event_not_found':
+      return m.err_pwd_event_not_found();
+    case 'pwd_failed':
+      return m.err_pwd_failed();
+    case 'manage_password_too_short':
+      return m.err_manage_password_too_short();
+    case 'manage_password_plus_required':
+      return m.err_manage_password_plus_required();
+    case 'manage_password_failed':
+      return m.err_manage_password_failed();
     default:
       return m.err_unknown();
   }

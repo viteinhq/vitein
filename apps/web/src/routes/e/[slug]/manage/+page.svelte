@@ -361,6 +361,77 @@
   </section>
 
   <section class="rounded-lg border border-slate-200 p-4">
+    <h2 class="text-lg font-semibold">{m.manage_password_heading()}</h2>
+    <p class="mt-1 text-sm text-slate-600">
+      {data.event.hasPassword
+        ? m.manage_password_body_locked()
+        : m.manage_password_body_unlocked()}
+    </p>
+
+    {#if paidTier !== 'plus'}
+      <p class="mt-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm">
+        {m.manage_password_plus_required()}
+      </p>
+    {:else}
+      {#if form?.passwordSet}
+        <p class="mt-2 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm">
+          {m.manage_password_set_ok()}
+        </p>
+      {/if}
+      {#if form?.passwordCleared}
+        <p class="mt-2 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm">
+          {m.manage_password_cleared_ok()}
+        </p>
+      {/if}
+      {#if form?.passwordError}
+        <p class="mt-2 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+          {localizeError(form.passwordError)}
+        </p>
+      {/if}
+
+      <form
+        method="POST"
+        action="?/setPassword&token={data.token}"
+        use:enhance
+        class="mt-3 flex flex-wrap gap-2"
+      >
+        <input
+          type="password"
+          name="password"
+          minlength="4"
+          maxlength="200"
+          autocomplete="new-password"
+          placeholder={m.manage_password_placeholder()}
+          class="flex-1 rounded-md border border-slate-300 px-3 py-2 text-sm"
+        />
+        <button
+          type="submit"
+          class="rounded-md bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700"
+        >
+          {data.event.hasPassword ? m.manage_password_update() : m.manage_password_set()}
+        </button>
+      </form>
+
+      {#if data.event.hasPassword}
+        <form
+          method="POST"
+          action="?/setPassword&token={data.token}"
+          use:enhance
+          class="mt-2"
+        >
+          <input type="hidden" name="clear" value="1" />
+          <button
+            type="submit"
+            class="rounded-md border border-slate-300 px-3 py-1.5 text-xs hover:bg-slate-50"
+          >
+            {m.manage_password_clear()}
+          </button>
+        </form>
+      {/if}
+    {/if}
+  </section>
+
+  <section class="rounded-lg border border-slate-200 p-4">
     <h2 class="text-lg font-semibold">{m.manage_reminder_heading()}</h2>
     <p class="mt-1 text-sm text-slate-600">{m.manage_reminder_body()}</p>
 
