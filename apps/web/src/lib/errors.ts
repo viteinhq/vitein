@@ -74,6 +74,16 @@ export function localizeError(code: unknown, params?: { status?: unknown }): str
       return m.err_manage_password_plus_required();
     case 'manage_password_failed':
       return m.err_manage_password_failed();
+    case 'announcement_plus_required':
+      return m.err_announcement_plus_required();
+    case 'announcement_already_sent':
+      return m.err_announcement_already_sent();
+    case 'announcement_no_guests':
+      return m.err_announcement_no_guests();
+    case 'announcement_too_many':
+      return m.err_announcement_too_many({ max: String(params?.status ?? '100') });
+    case 'announcement_http':
+      return m.err_announcement_http({ status: statusStr });
     default:
       return m.err_unknown();
   }

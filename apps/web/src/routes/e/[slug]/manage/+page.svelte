@@ -361,6 +361,68 @@
   </section>
 
   <section class="rounded-lg border border-slate-200 p-4">
+    <h2 class="text-lg font-semibold">{m.manage_announcements_heading()}</h2>
+    <p class="mt-1 text-sm text-slate-600">{m.manage_announcements_body()}</p>
+
+    {#if form?.announceError}
+      <p class="mt-2 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+        {localizeError(form.announceError, {
+          status: 'announceStatus' in form ? form.announceStatus : undefined,
+        })}
+      </p>
+    {/if}
+
+    {#each data.announcements as ann (ann.id)}
+      {#if ann.sentAt}
+        <p class="mt-2 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm">
+          {#if ann.stage === 'save_the_date'}
+            {m.manage_announcements_save_the_date_sent({
+              date: new Date(ann.sentAt).toLocaleDateString(),
+              count: String(ann.recipientCount),
+            })}
+          {:else}
+            {m.manage_announcements_invitation_sent({
+              date: new Date(ann.sentAt).toLocaleDateString(),
+              count: String(ann.recipientCount),
+            })}
+          {/if}
+        </p>
+      {/if}
+    {/each}
+
+    {#if paidTier !== 'plus'}
+      <p class="mt-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-slate-600">
+        {m.manage_announcements_plus_hint()}
+      </p>
+    {/if}
+
+    <div class="mt-3 flex flex-wrap gap-2">
+      {#if paidTier === 'plus' && !data.announcements.some((a) => a.stage === 'save_the_date' && a.sentAt)}
+        <form method="POST" action="?/announce&token={data.token}" use:enhance>
+          <input type="hidden" name="stage" value="save_the_date" />
+          <button
+            type="submit"
+            class="rounded-md border-2 border-slate-900 px-3 py-1.5 text-sm font-medium hover:bg-slate-50"
+          >
+            {m.manage_announcements_save_the_date()}
+          </button>
+        </form>
+      {/if}
+      {#if data.event.isPaid && !data.announcements.some((a) => a.stage === 'invitation' && a.sentAt)}
+        <form method="POST" action="?/announce&token={data.token}" use:enhance>
+          <input type="hidden" name="stage" value="invitation" />
+          <button
+            type="submit"
+            class="rounded-md bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700"
+          >
+            {m.manage_announcements_invitation()}
+          </button>
+        </form>
+      {/if}
+    </div>
+  </section>
+
+  <section class="rounded-lg border border-slate-200 p-4">
     <h2 class="text-lg font-semibold">{m.manage_password_heading()}</h2>
     <p class="mt-1 text-sm text-slate-600">
       {data.event.hasPassword

@@ -96,12 +96,36 @@ export interface ReminderInput {
   eventUrl: string;
 }
 
+export interface AnnouncementInput {
+  to: string;
+  eventTitle: string;
+  startsAt: Date;
+  eventUrl: string;
+  stage: 'save_the_date' | 'invitation';
+}
+
 export async function sendReminder(env: Env, input: ReminderInput): Promise<SendResult> {
   return sendEmail(env, {
     to: input.to,
     subject: `Reminder: ${input.eventTitle}`,
     text: reminderBody(input),
     logHint: { kind: 'reminder' },
+  });
+}
+
+export async function sendAnnouncement(
+  env: Env,
+  input: AnnouncementInput,
+): Promise<SendResult> {
+  const subject =
+    input.stage === 'save_the_date'
+      ? `Save the date — ${input.eventTitle}`
+      : `You're invited: ${input.eventTitle}`;
+  return sendEmail(env, {
+    to: input.to,
+    subject,
+    text: announcementBody(input),
+    logHint: { kind: 'announcement', stage: input.stage },
   });
 }
 
@@ -188,6 +212,28 @@ function reminderBody({ eventTitle, startsAt, eventUrl }: ReminderInput): string
     `Reminder: "${eventTitle}" is coming up at ${startsAt.toISOString()}.`,
     '',
     'Event details:',
+    eventUrl,
+    '',
+    '— vite.in',
+  ].join('\n');
+}
+
+function announcementBody({ eventTitle, startsAt, eventUrl, stage }: AnnouncementInput): string {
+  if (stage === 'save_the_date') {
+    return [
+      `Save the date: "${eventTitle}" — ${startsAt.toISOString()}.`,
+      '',
+      'The full invitation with location and details will follow. For now, please hold the date in your calendar.',
+      '',
+      eventUrl,
+      '',
+      '— vite.in',
+    ].join('\n');
+  }
+  return [
+    `You're invited to "${eventTitle}" on ${startsAt.toISOString()}.`,
+    '',
+    'Details and RSVP:',
     eventUrl,
     '',
     '— vite.in',

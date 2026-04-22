@@ -50,6 +50,9 @@ import type {
   GetMyEventsData,
   GetMyEventsErrors,
   GetMyEventsResponses,
+  ListAnnouncementsData,
+  ListAnnouncementsErrors,
+  ListAnnouncementsResponses,
   ListGuestsData,
   ListGuestsErrors,
   ListGuestsResponses,
@@ -59,6 +62,9 @@ import type {
   ListRsvpsData,
   ListRsvpsErrors,
   ListRsvpsResponses,
+  SendAnnouncementData,
+  SendAnnouncementErrors,
+  SendAnnouncementResponses,
   SendReminderData,
   SendReminderErrors,
   SendReminderResponses,
@@ -362,6 +368,42 @@ export const createCheckout = <ThrowOnError extends boolean = false>(
 ) =>
   (options.client ?? client).post<CreateCheckoutResponses, CreateCheckoutErrors, ThrowOnError>({
     url: '/v1/events/{id}/checkout',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+/**
+ * List announcement sends for an event (creator only)
+ */
+export const listAnnouncements = <ThrowOnError extends boolean = false>(
+  options: Options<ListAnnouncementsData, ThrowOnError>,
+) =>
+  (options.client ?? client).get<ListAnnouncementsResponses, ListAnnouncementsErrors, ThrowOnError>(
+    { url: '/v1/events/{id}/announcements', ...options },
+  );
+
+/**
+ * Send an announcement wave to the guest list (creator only)
+ *
+ * Sends one email per guest with a populated email address for the
+ * requested stage. A given stage can only be sent once per event
+ * (unique constraint on event_id + stage); re-sending returns 409.
+ *
+ * Save-the-Date (`save_the_date`) is a Plus-tier feature — returns
+ * 403 `event.feature_gated` on Basic/unpaid events. Invitation is
+ * available on any paid tier.
+ *
+ * MVP limit: 100 recipients per send. Larger guest lists return 413.
+ *
+ */
+export const sendAnnouncement = <ThrowOnError extends boolean = false>(
+  options: Options<SendAnnouncementData, ThrowOnError>,
+) =>
+  (options.client ?? client).post<SendAnnouncementResponses, SendAnnouncementErrors, ThrowOnError>({
+    url: '/v1/events/{id}/announcements',
     ...options,
     headers: {
       'Content-Type': 'application/json',

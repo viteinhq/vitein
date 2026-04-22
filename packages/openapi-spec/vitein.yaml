@@ -485,6 +485,89 @@ paths:
             application/json:
               schema: { $ref: '#/components/schemas/Error' }
 
+  /v1/events/{id}/announcements:
+    parameters:
+      - $ref: '#/components/parameters/EventId'
+      - $ref: '#/components/parameters/CreatorTokenHeader'
+    get:
+      operationId: listAnnouncements
+      summary: List announcement sends for an event (creator only)
+      tags: [events]
+      responses:
+        '200':
+          description: Announcement list.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items: { $ref: '#/components/schemas/Announcement' }
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      operationId: sendAnnouncement
+      summary: Send an announcement wave to the guest list (creator only)
+      description: |
+        Sends one email per guest with a populated email address for the
+        requested stage. A given stage can only be sent once per event
+        (unique constraint on event_id + stage); re-sending returns 409.
+
+        Save-the-Date (`save_the_date`) is a Plus-tier feature — returns
+        403 `event.feature_gated` on Basic/unpaid events. Invitation is
+        available on any paid tier.
+
+        MVP limit: 100 recipients per send. Larger guest lists return 413.
+      tags: [events]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [stage]
+              properties:
+                stage:
+                  type: string
+                  enum: [save_the_date, invitation]
+      responses:
+        '202':
+          description: Announcement sent.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [id, eventId, stage, recipientCount, sent, failed, sentAt]
+                properties:
+                  id: { type: string, format: uuid }
+                  eventId: { type: string, format: uuid }
+                  stage: { type: string, enum: [save_the_date, invitation] }
+                  recipientCount: { type: integer }
+                  sent: { type: integer }
+                  failed: { type: integer }
+                  sentAt: { type: string, format: date-time }
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Feature gated on a higher tier.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '409':
+          description: An announcement for this stage already exists.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '413':
+          description: Recipient list exceeds the synchronous-send cap.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
   /v1/events/{id}/reminders/send:
     parameters:
       - $ref: '#/components/parameters/EventId'
@@ -907,6 +990,17 @@ components:
           type: [string, 'null']
           format: uri
           description: Public URL when `MEDIA_PUBLIC_BASE_URL` is configured; null otherwise.
+        createdAt: { type: string, format: date-time }
+
+    Announcement:
+      type: object
+      required: [id, eventId, stage, recipientCount, createdAt]
+      properties:
+        id: { type: string, format: uuid }
+        eventId: { type: string, format: uuid }
+        stage: { type: string, enum: [save_the_date, invitation] }
+        sentAt: { type: [string, 'null'], format: date-time }
+        recipientCount: { type: integer }
         createdAt: { type: string, format: date-time }
 
     AuditEntry:

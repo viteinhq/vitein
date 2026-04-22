@@ -58,4 +58,12 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm -F @vitein/web build
-      - run: pnpm -F @vitein/web exec wrangler pages deploy .svelte-kit/cloudflare --project-name=vitein-web-staging --branch=main
+      # Cloudflare Pages rejects commit messages whose body contains some
+      # shell-metachar sequences as "invalid UTF-8" (e.g. `$<…>`). Pass an
+      # ASCII-only subject from the SHA so the deploy always accepts.
+      - run: |
+          pnpm -F @vitein/web exec wrangler pages deploy .svelte-kit/cloudflare \
+            --project-name=vitein-web-staging \
+            --branch=main \
+            --commit-message="deploy ${{ github.sha }}" \
+            --commit-hash="${{ github.sha }}"

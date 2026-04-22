@@ -4,9 +4,11 @@ import {
   deleteMedia,
   getEventBySlug,
   getEventManage,
+  listAnnouncements,
   listGuests,
   listMedia,
   listRsvps,
+  sendAnnouncement,
   sendReminder,
   updateEvent,
 } from '@vitein/ts-sdk';
@@ -34,11 +36,12 @@ export const load: PageServerLoad = async ({ params, url, platform }) => {
   const eventId = bySlug.data.id;
   const headers = { 'X-Creator-Token': token };
 
-  const [manage, rsvps, guests, media] = await Promise.all([
+  const [manage, rsvps, guests, media, announcements] = await Promise.all([
     getEventManage({ path: { id: eventId }, headers }),
     listRsvps({ path: { id: eventId }, headers }),
     listGuests({ path: { id: eventId }, headers }),
     listMedia({ path: { id: eventId } }),
+    listAnnouncements({ path: { id: eventId }, headers }),
   ]);
 
   if (manage.error || !manage.data)
@@ -50,6 +53,7 @@ export const load: PageServerLoad = async ({ params, url, platform }) => {
     rsvps: rsvps.data?.items ?? [],
     guests: guests.data?.items ?? [],
     media: media.data?.items ?? [],
+    announcements: announcements.data?.items ?? [],
   };
 };
 
@@ -145,6 +149,46 @@ export const actions: Actions = {
     }
 
     return { mediaUploaded: true };
+  },
+
+  announce: async ({ request, params, url, platform }) => {
+    configureApi(resolveBaseUrl(platform));
+    const token = url.searchParams.get('token');
+    if (!token) return fail(401, { announceError: 'manage_missing_token' });
+
+    const bySlug = await getEventBySlug({ path: { slug: params.slug } });
+    if (bySlug.error || !bySlug.data)
+      return fail(404, { announceError: 'manage_event_not_found' });
+
+    const form = await request.formData();
+    const stageRaw = String(form.get('stage') ?? '');
+    const stage: 'save_the_date' | 'invitation' =
+      stageRaw === 'save_the_date' ? 'save_the_date' : 'invitation';
+
+    const { data, error, response } = await sendAnnouncement({
+      path: { id: bySlug.data.id },
+      headers: { 'X-Creator-Token': token },
+      body: { stage },
+    });
+
+    if (error || !data) {
+      const status = response?.status;
+      if (status === 403)
+        return fail(403, { announceError: 'announcement_plus_required', announceStage: stage });
+      if (status === 409)
+        return fail(409, { announceError: 'announcement_already_sent', announceStage: stage });
+      if (status === 400)
+        return fail(400, { announceError: 'announcement_no_guests', announceStage: stage });
+      if (status === 413)
+        return fail(413, { announceError: 'announcement_too_many', announceStage: stage });
+      return fail(status ?? 500, {
+        announceError: 'announcement_http',
+        announceStatus: status,
+        announceStage: stage,
+      });
+    }
+
+    return { announceSent: true, announceStage: stage };
   },
 
   setPassword: async ({ request, params, url, platform }) => {

@@ -11,6 +11,7 @@ export {
   rsvps,
   reminders,
   eventMedia,
+  eventAnnouncements,
   auditLog,
   schema,
   type User,
@@ -33,6 +34,8 @@ export {
   type NewReminder,
   type EventMedia,
   type NewEventMedia,
+  type EventAnnouncement,
+  type NewEventAnnouncement,
   type AuditLog,
   type NewAuditLog,
 } from './schema.js';

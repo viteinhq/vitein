@@ -228,6 +228,15 @@ export type Media = {
   createdAt: string;
 };
 
+export type Announcement = {
+  id: string;
+  eventId: string;
+  stage: 'save_the_date' | 'invitation';
+  sentAt?: string | null;
+  recipientCount: number;
+  createdAt: string;
+};
+
 export type AuditEntry = {
   id: string;
   /**
@@ -917,6 +926,111 @@ export type CreateCheckoutResponses = {
 };
 
 export type CreateCheckoutResponse = CreateCheckoutResponses[keyof CreateCheckoutResponses];
+
+export type ListAnnouncementsData = {
+  body?: never;
+  headers: {
+    /**
+     * Plaintext creator token (the value delivered by the magic-link email).
+     * The server hashes it and compares against `event_tokens.token_hash`.
+     *
+     */
+    'X-Creator-Token': string;
+  };
+  path: {
+    /**
+     * Server-generated UUIDv7 of the event.
+     */
+    id: string;
+  };
+  query?: never;
+  url: '/v1/events/{id}/announcements';
+};
+
+export type ListAnnouncementsErrors = {
+  /**
+   * Missing or invalid creator token.
+   */
+  401: Error;
+};
+
+export type ListAnnouncementsError = ListAnnouncementsErrors[keyof ListAnnouncementsErrors];
+
+export type ListAnnouncementsResponses = {
+  /**
+   * Announcement list.
+   */
+  200: {
+    items: Array<Announcement>;
+  };
+};
+
+export type ListAnnouncementsResponse =
+  ListAnnouncementsResponses[keyof ListAnnouncementsResponses];
+
+export type SendAnnouncementData = {
+  body: {
+    stage: 'save_the_date' | 'invitation';
+  };
+  headers: {
+    /**
+     * Plaintext creator token (the value delivered by the magic-link email).
+     * The server hashes it and compares against `event_tokens.token_hash`.
+     *
+     */
+    'X-Creator-Token': string;
+  };
+  path: {
+    /**
+     * Server-generated UUIDv7 of the event.
+     */
+    id: string;
+  };
+  query?: never;
+  url: '/v1/events/{id}/announcements';
+};
+
+export type SendAnnouncementErrors = {
+  /**
+   * Request body or query parameters failed validation.
+   */
+  400: Error;
+  /**
+   * Missing or invalid creator token.
+   */
+  401: Error;
+  /**
+   * Feature gated on a higher tier.
+   */
+  403: Error;
+  /**
+   * An announcement for this stage already exists.
+   */
+  409: Error;
+  /**
+   * Recipient list exceeds the synchronous-send cap.
+   */
+  413: Error;
+};
+
+export type SendAnnouncementError = SendAnnouncementErrors[keyof SendAnnouncementErrors];
+
+export type SendAnnouncementResponses = {
+  /**
+   * Announcement sent.
+   */
+  202: {
+    id: string;
+    eventId: string;
+    stage: 'save_the_date' | 'invitation';
+    recipientCount: number;
+    sent: number;
+    failed: number;
+    sentAt: string;
+  };
+};
+
+export type SendAnnouncementResponse = SendAnnouncementResponses[keyof SendAnnouncementResponses];
 
 export type SendReminderData = {
   body?: never;

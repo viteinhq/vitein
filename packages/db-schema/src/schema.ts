@@ -229,6 +229,31 @@ export const reminders = pgTable(
 );
 
 /**
+ * Event announcements (A.6b.3). Each row represents a single bulk email
+ * wave to the event's guest list at a specific stage. The unique index on
+ * (event_id, stage) enforces "one Save-the-Date, one Invitation" per event;
+ * re-sending requires deleting the row first (admin path — not exposed).
+ */
+export const eventAnnouncements = pgTable(
+  'event_announcements',
+  {
+    id: uuid().primaryKey().$defaultFn(genId),
+    eventId: uuid('event_id')
+      .notNull()
+      .references(() => events.id, { onDelete: 'cascade' }),
+    stage: text().notNull(), // 'save_the_date' | 'invitation'
+    templateId: text('template_id'),
+    sentAt: timestamp('sent_at', { withTimezone: true }),
+    recipientCount: integer('recipient_count').notNull().default(0),
+    createdAt: nowTs(),
+  },
+  (t) => [
+    uniqueIndex('event_announcements_event_stage_idx').on(t.eventId, t.stage),
+    index('event_announcements_event_idx').on(t.eventId),
+  ],
+);
+
+/**
  * Event media — cover images + gallery entries. R2 key pattern:
  * `events/<event_id>/<media_id>.<ext>`. Deleting the event cascades; each
  * delete is responsible for also purging the R2 object (see
@@ -293,6 +318,8 @@ export type Reminder = typeof reminders.$inferSelect;
 export type NewReminder = typeof reminders.$inferInsert;
 export type EventMedia = typeof eventMedia.$inferSelect;
 export type NewEventMedia = typeof eventMedia.$inferInsert;
+export type EventAnnouncement = typeof eventAnnouncements.$inferSelect;
+export type NewEventAnnouncement = typeof eventAnnouncements.$inferInsert;
 export type AuditLog = typeof auditLog.$inferSelect;
 export type NewAuditLog = typeof auditLog.$inferInsert;
 
@@ -307,5 +334,6 @@ export const schema = {
   rsvps,
   reminders,
   eventMedia,
+  eventAnnouncements,
   auditLog,
 };
