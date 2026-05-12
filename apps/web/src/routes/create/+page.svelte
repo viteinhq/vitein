@@ -9,6 +9,7 @@
 
   let submitting = $state(false);
   let copied = $state(false);
+  let shareInput = $state<HTMLInputElement | null>(null);
 
   const defaultTimezone = $derived(
     typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'UTC',
@@ -32,11 +33,24 @@
 
   const shareUrl = $derived(form?.success ? `${page.url.origin}/e/${form.slug}` : '');
 
+  function selectShareUrl() {
+    shareInput?.select();
+  }
+
   async function copyShare() {
-    if (typeof navigator === 'undefined' || !navigator.clipboard || !shareUrl) return;
-    await navigator.clipboard.writeText(shareUrl);
-    copied = true;
-    setTimeout(() => (copied = false), 2000);
+    if (!shareUrl) return;
+    try {
+      if (navigator?.clipboard?.writeText) {
+        await navigator.clipboard.writeText(shareUrl);
+      } else {
+        shareInput?.select();
+        document.execCommand('copy');
+      }
+      copied = true;
+      setTimeout(() => (copied = false), 2000);
+    } catch {
+      shareInput?.select();
+    }
   }
 </script>
 
@@ -58,10 +72,10 @@
         <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
           <input
             readonly
+            bind:this={shareInput}
             value={shareUrl}
             class="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 font-mono text-sm text-slate-800"
-            onclick={(e: MouseEvent & { currentTarget: HTMLInputElement }) =>
-              e.currentTarget.select()}
+            onclick={selectShareUrl}
           />
           <button
             type="button"
@@ -76,6 +90,7 @@
       <div class="flex flex-wrap gap-2 text-sm">
         <a
           href="/e/{form.slug}"
+          data-sveltekit-reload
           class="rounded-md border border-slate-300 bg-white px-3 py-1.5 hover:bg-slate-50"
         >
           {m.create_success_open()}
