@@ -1,11 +1,35 @@
 import en from './locales/en.json';
 import de from './locales/de.json';
+import fr from './locales/fr.json';
+import es from './locales/es.json';
+import it from './locales/it.json';
+import pt from './locales/pt.json';
+import nl from './locales/nl.json';
+import pl from './locales/pl.json';
 
-export type Locale = 'en' | 'de';
-export const SUPPORTED_LOCALES: readonly Locale[] = ['en', 'de'] as const;
+export type Locale = 'en' | 'de' | 'fr' | 'es' | 'it' | 'pt' | 'nl' | 'pl';
+export const SUPPORTED_LOCALES: readonly Locale[] = [
+  'en',
+  'de',
+  'fr',
+  'es',
+  'it',
+  'pt',
+  'nl',
+  'pl',
+] as const;
 export const DEFAULT_LOCALE: Locale = 'en';
 
-const dictionaries: Record<Locale, Record<string, string>> = { en, de };
+const dictionaries: Record<Locale, Record<string, string>> = {
+  en,
+  de,
+  fr,
+  es,
+  it,
+  pt,
+  nl,
+  pl,
+};
 
 /**
  * Look up a message by error code for the given locale. Falls back to the

@@ -1,0 +1,28 @@
+{
+  "not_found": "Non trovato",
+  "unauthorized": "Non autorizzato",
+  "validation_error": "Validazione fallita",
+  "conflict": "Conflitto con lo stato esistente",
+  "internal_error": "Errore interno del server",
+  "rate_limited": "Troppe richieste — per favore rallenta",
+
+  "event.not_found": "Evento non trovato",
+  "event.unauthorized": "Questo token di creatore non corrisponde all'evento",
+  "event.no_password": "L'evento non è protetto da password",
+  "event.password_invalid": "Password errata",
+  "event.feature_gated": "Questa funzionalità richiede il piano Plus",
+  "event.already_paid": "L'evento è già premium",
+
+  "user.not_found": "Utente non trovato",
+  "user.unauthorized": "Accedi per continuare",
+
+  "media.not_found": "Media non trovato",
+  "media.quota_exceeded": "Limite di media raggiunto per questo evento",
+
+  "announcement.too_many_recipients": "La lista degli invitati supera il limite di invio sincrono",
+  "announcement.already_sent": "Un annuncio per questa fase è già stato inviato",
+
+  "stripe.not_configured": "Stripe non è configurato per questo ambiente",
+  "stripe.price_not_configured": "Stripe non è configurato per questo livello e valuta",
+  "stripe.api_error": "Stripe ha rifiutato la richiesta"
+}
