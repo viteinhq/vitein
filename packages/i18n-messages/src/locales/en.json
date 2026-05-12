@@ -8,7 +8,21 @@
 
   "event.not_found": "Event not found",
   "event.unauthorized": "This creator token does not match the event",
+  "event.no_password": "Event is not password-protected",
+  "event.password_invalid": "Wrong password",
+  "event.feature_gated": "This feature requires the Plus tier",
+  "event.already_paid": "Event is already premium",
 
   "user.not_found": "User not found",
-  "user.unauthorized": "Please sign in to continue"
+  "user.unauthorized": "Please sign in to continue",
+
+  "media.not_found": "Media not found",
+  "media.quota_exceeded": "Media limit reached for this event",
+
+  "announcement.too_many_recipients": "Guest list exceeds the synchronous-send cap",
+  "announcement.already_sent": "An announcement for this stage has already been sent",
+
+  "stripe.not_configured": "Stripe is not configured for this environment",
+  "stripe.price_not_configured": "Stripe is not configured for this tier and currency",
+  "stripe.api_error": "Stripe rejected the request"
 }

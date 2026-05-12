@@ -8,16 +8,15 @@ interface BucketDecision {
 }
 
 /**
- * Default rate limits per minute, per-bucket. The bucket is derived from
- * the resolved auth context — anonymous traffic gets the lowest budget,
- * users the highest. These numbers are first-pass; tune after Phase 1
- * load tests.
+ * Per-minute budgets, split read vs write. Numbers mirror ARCHITECTURE §7.4 —
+ * tune after Phase 1 load tests. OAuth and api_key actors arrive in P2/P3;
+ * their buckets are added when those auth kinds exist.
  */
 const LIMITS = {
-  anonymous: 60,
-  creator: 300,
-  user: 600,
-};
+  anonymous: { read: 100, write: 20 },
+  creator: { read: 300, write: 60 },
+  user: { read: 600, write: 120 },
+} as const;
 
 export const rateLimit = createMiddleware<{
   Bindings: Env;
@@ -48,18 +47,20 @@ export const rateLimit = createMiddleware<{
 
 function bucketFor(c: {
   var: { auth: AppVariables['auth'] };
-  req: { raw: Request };
+  req: { raw: Request; method: string };
 }): BucketDecision {
+  const isWrite = c.req.method !== 'GET' && c.req.method !== 'HEAD';
+  const op: 'read' | 'write' = isWrite ? 'write' : 'read';
   const auth = c.var.auth;
   switch (auth.kind) {
     case 'creator':
-      return { key: `creator:${auth.eventId}`, limit: LIMITS.creator };
+      return { key: `creator:${auth.eventId}:${op}`, limit: LIMITS.creator[op] };
     case 'user':
-      return { key: `user:${auth.userId}`, limit: LIMITS.user };
+      return { key: `user:${auth.userId}:${op}`, limit: LIMITS.user[op] };
     case 'anonymous':
     default: {
       const ip = c.req.raw.headers.get('cf-connecting-ip') ?? 'unknown';
-      return { key: `ip:${ip}`, limit: LIMITS.anonymous };
+      return { key: `ip:${ip}:${op}`, limit: LIMITS.anonymous[op] };
     }
   }
 }

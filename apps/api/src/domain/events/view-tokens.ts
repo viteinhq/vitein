@@ -33,11 +33,7 @@ export async function issueViewToken(db: Db, eventId: string): Promise<IssuedVie
   return { token, expiresAt };
 }
 
-export async function isViewTokenValid(
-  db: Db,
-  eventId: string,
-  token: string,
-): Promise<boolean> {
+export async function isViewTokenValid(db: Db, eventId: string, token: string): Promise<boolean> {
   const hash = await hashToken(token);
   const [row] = await db
     .select({

@@ -60,7 +60,8 @@
             readonly
             value={shareUrl}
             class="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 font-mono text-sm text-slate-800"
-            onclick={(e) => (e.currentTarget as HTMLInputElement).select()}
+            onclick={(e: MouseEvent & { currentTarget: HTMLInputElement }) =>
+              e.currentTarget.select()}
           />
           <button
             type="button"

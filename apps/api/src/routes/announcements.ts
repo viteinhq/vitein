@@ -58,7 +58,8 @@ announcementsRoute.post(
   }),
   requireCreator('id'),
   zValidator('json', postSchema, (r) => {
-    if (!r.success) throw new ValidationError('Invalid announcement body', { issues: r.error.issues });
+    if (!r.success)
+      throw new ValidationError('Invalid announcement body', { issues: r.error.issues });
   }),
   async (c) => {
     const { id } = c.req.valid('param');
@@ -69,11 +70,7 @@ announcementsRoute.post(
     if (stage === 'save_the_date') {
       const tier = tierOf(event);
       if (!tier || !tierIncludes(tier, 'save_the_date')) {
-        throw new DomainError(
-          'event.feature_gated',
-          'Save-the-Date is a Plus-tier feature',
-          403,
-        );
+        throw new DomainError('event.feature_gated', 'Save-the-Date is a Plus-tier feature', 403);
       }
     }
 
