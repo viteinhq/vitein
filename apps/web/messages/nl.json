@@ -1,28 +1,21 @@
 {
   "$schema": "https://inlang.com/schema/inlang-message-format",
-
   "nav_create": "Evenement maken",
   "nav_pricing": "Tarieven",
   "nav_signin": "Inloggen",
-
   "footer_impressum": "Colofon",
   "footer_privacy": "Privacy",
   "footer_terms": "Voorwaarden",
-  "footer_switch_to_de": "Deutsch",
-  "footer_switch_to_en": "English",
-
   "home_title": "Uitnodigingen, opnieuw bedacht.",
   "home_sub": "Maak in seconden een evenement aan — geen account nodig. Gasten reageren vanaf elk apparaat. Gratis voor de meeste evenementen, € 5 voor premium-functies.",
   "home_cta_primary": "Evenement maken",
   "home_cta_secondary": "Bekijk de tarieven",
-
   "home_features_anonymous_title": "Geen account nodig",
   "home_features_anonymous_body": "Begin een uitnodiging vanuit elke browser. Met een magische link beheer je het later.",
   "home_features_global_title": "Vanaf dag één wereldwijd",
   "home_features_global_body": "Tijdzones, talen en valuta worden automatisch geregeld. In één klik te delen.",
   "home_features_open_title": "Open-source kern",
   "home_features_open_body": "AGPLv3. Host de kern zelf of gebruik de gehoste versie. Geen lock-in.",
-
   "home_how_heading": "Zo werkt het",
   "home_how_step1_title": "1. Maken",
   "home_how_step1_body": "Vul het belangrijkste in en je e-mailadres. We sturen je een magische link om het evenement te beheren.",
@@ -31,7 +24,6 @@
   "home_how_step3_title": "3. Volgen",
   "home_how_step3_body": "Kijk hoe reacties binnenkomen. Stuur een herinnering als de datum nadert.",
   "home_oss_link": "Bekijk de broncode op GitHub",
-
   "pricing_title": "Tarieven",
   "pricing_free_name": "Gratis",
   "pricing_free_price": "€ 0",
@@ -48,27 +40,22 @@
   "pricing_paid_item_media": "Omslagfoto en galerij",
   "pricing_paid_item_reminders": "Geplande herinneringen",
   "pricing_paid_item_password": "Met wachtwoord beveiligde evenementen",
-
   "legal_impressum_title": "Colofon",
   "legal_privacy_title": "Privacybeleid",
   "legal_terms_title": "Servicevoorwaarden",
   "legal_draft": "Concept — wordt vóór de publieke lancering afgerond.",
-
   "signin_title": "Inloggen",
   "signin_blurb": "Geef je e-mailadres op en we sturen je een eenmalige magische link. Geen wachtwoord nodig.",
   "signin_email_label": "E-mail",
   "signin_submit": "Magische link sturen",
-
   "signin_check_title": "Controleer je e-mail",
   "signin_check_body": "We hebben je een magische link gestuurd om in te loggen. Klik erop vanaf hetzelfde apparaat en je komt terug op je dashboard.",
   "signin_check_wrong_email": "Verkeerd e-mailadres?",
   "signin_check_try_again": "Opnieuw proberen",
-
   "auth_continue_title": "Bijna klaar.",
   "auth_continue_body": "Nog één klik om het inloggen op vite.in af te ronden.",
   "auth_continue_submit": "Doorgaan",
   "auth_continue_note": "Deze extra klik voorkomt dat link-scanners (zoals die van Gmail) per ongeluk je eenmalige inloglink gebruiken voordat jij erop klikt.",
-
   "create_title": "Een evenement maken",
   "create_subtitle": "Geen account nodig. Je gasten krijgen een link, jij krijgt een magische link per e-mail.",
   "create_section_basics": "De basis",
@@ -99,11 +86,9 @@
   "create_success_copied": "Gekopieerd!",
   "create_success_magic_sent": "Er is een magische link naar je e-mail gestuurd om dit evenement te beheren.",
   "create_success_dev_mode": "Verzending van e-mail is uitgeschakeld in deze omgeving. Beheer-link:",
-
   "account_signed_in_as": "Ingelogd als",
   "account_nav_dashboard": "Dashboard",
   "account_signout": "Uitloggen",
-
   "dashboard_title": "Jouw evenementen",
   "dashboard_new_event": "Nieuw evenement",
   "dashboard_claim_one": "1 evenement gekoppeld aan je account. Herlaad om het te zien.",
@@ -113,13 +98,11 @@
   "dashboard_empty_line": "Nog geen evenementen.",
   "dashboard_empty_create": "Maak er een",
   "dashboard_empty_or_claim": ", of koppel evenementen die je anoniem met hetzelfde e-mailadres hebt aangemaakt.",
-
   "event_locked_heading": "Dit evenement is privé",
   "event_locked_body": "Voer het wachtwoord in dat je hebt gekregen om de details te zien.",
   "event_locked_password_label": "Wachtwoord",
   "event_locked_submit": "Ontgrendelen",
   "event_locked_submitting": "Controleren…",
-
   "event_when_label": "Wanneer",
   "event_where_label": "Waar",
   "event_until": "tot",
@@ -149,7 +132,6 @@
   "event_rsvp_message_optional": "Bericht (optioneel)",
   "event_rsvp_submit": "Reactie versturen",
   "event_rsvp_submitting": "Bezig met versturen…",
-
   "manage_label": "Beheer van",
   "manage_public_link": "Openbare link:",
   "manage_media_heading": "Media",
@@ -181,7 +163,6 @@
   "manage_announcements_invitation_sent": "Uitnodiging verzonden op {date} naar {count} gasten.",
   "manage_announcements_plus_hint": "Save-the-Date vereist het Plus-abonnement. Uitnodiging werkt op Basic en Plus.",
   "manage_announcements_working": "Bezig met versturen…",
-
   "manage_password_heading": "Wachtwoordbeveiliging",
   "manage_password_body_locked": "Voor dit evenement is een wachtwoord nodig om het te bekijken.",
   "manage_password_body_unlocked": "Stel een wachtwoord in en gasten moeten het invoeren voordat ze de details kunnen zien.",
@@ -192,7 +173,6 @@
   "manage_password_set_ok": "Wachtwoord ingesteld.",
   "manage_password_cleared_ok": "Wachtwoord verwijderd.",
   "manage_password_plus_required": "Wachtwoordbeveiliging is een Plus-functie. Schakel over naar Plus om dit in te schakelen.",
-
   "manage_upgrade_heading": "Upgrade naar premium",
   "manage_upgrade_body": "Eenmalige betaling per evenement. Kies een pakket en een valuta.",
   "manage_upgrade_currency_label": "Valuta",
@@ -203,7 +183,6 @@
   "manage_upgrade_already_tier_plus": "Dit evenement heeft het Plus-pakket. Alle extra's zijn ontgrendeld.",
   "manage_upgrade_success": "Betaling ontvangen. Premium-functies zijn nu actief.",
   "manage_upgrade_canceled": "Betaling geannuleerd. Er is niets in rekening gebracht.",
-
   "tier_basic_name": "Basic",
   "tier_basic_tagline": "De essentie met hoge conversie.",
   "tier_basic_price_eur": "€ 5",
@@ -213,7 +192,6 @@
   "tier_basic_item_branding": "Geen vite.in-merk",
   "tier_basic_item_slug": "Aangepaste URL",
   "tier_basic_item_reminders": "Herinneringsmails naar gasten",
-
   "tier_plus_name": "Plus",
   "tier_plus_tagline": "Voor bruiloften, formele evenementen en alles wat ertoe doet.",
   "tier_plus_price_eur": "€ 9",
@@ -224,7 +202,6 @@
   "tier_plus_item_plus_ones": "Beheer van introducés",
   "tier_plus_item_password": "Met wachtwoord beveiligde evenementen",
   "tier_plus_item_save_the_date": "Save-the-Date-aankondigingen",
-
   "err_unknown": "Er ging iets mis. Probeer het opnieuw.",
   "err_create_missing_fields": "Vul titel, startdatum en je e-mail in.",
   "err_create_failed": "Het evenement kon niet worden aangemaakt. Probeer het opnieuw.",
@@ -257,7 +234,6 @@
   "err_announcement_no_guests": "Voeg gasten met een e-mailadres toe voordat je verstuurt.",
   "err_announcement_too_many": "Gastenlijst overschrijdt de MVP-limiet van {max} ontvangers.",
   "err_announcement_http": "Verzenden mislukt (HTTP {status}).",
-
   "err_page_title": "Er ging iets mis",
   "err_page_back_home": "Terug naar home",
   "err_http_event_not_found": "Dit evenement bestaat niet of is verwijderd.",
