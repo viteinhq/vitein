@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import en from './locales/en.json';
+import de from './locales/de.json';
 import { negotiateLocale, translate } from './index.js';
 
 describe('translate', () => {
@@ -33,5 +35,17 @@ describe('negotiateLocale', () => {
 
   it('falls back to default for unsupported languages', () => {
     expect(negotiateLocale('fr-FR,it;q=0.5')).toBe('en');
+  });
+});
+
+describe('locale dictionaries', () => {
+  it('de.json covers every key in en.json', () => {
+    const missing = Object.keys(en).filter((key) => !(key in de));
+    expect(missing).toEqual([]);
+  });
+
+  it('de.json has no extra keys absent from en.json', () => {
+    const extra = Object.keys(de).filter((key) => !(key in en));
+    expect(extra).toEqual([]);
   });
 });
