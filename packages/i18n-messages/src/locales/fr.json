@@ -1,0 +1,28 @@
+{
+  "not_found": "Introuvable",
+  "unauthorized": "Non autorisé",
+  "validation_error": "Validation échouée",
+  "conflict": "Conflit avec l'état existant",
+  "internal_error": "Erreur interne du serveur",
+  "rate_limited": "Trop de requêtes — veuillez ralentir",
+
+  "event.not_found": "Événement introuvable",
+  "event.unauthorized": "Ce jeton de créateur ne correspond pas à l'événement",
+  "event.no_password": "L'événement n'est pas protégé par mot de passe",
+  "event.password_invalid": "Mot de passe incorrect",
+  "event.feature_gated": "Cette fonctionnalité nécessite l'offre Plus",
+  "event.already_paid": "L'événement est déjà premium",
+
+  "user.not_found": "Utilisateur introuvable",
+  "user.unauthorized": "Veuillez vous connecter pour continuer",
+
+  "media.not_found": "Média introuvable",
+  "media.quota_exceeded": "Limite de médias atteinte pour cet événement",
+
+  "announcement.too_many_recipients": "La liste d'invités dépasse la limite d'envoi synchrone",
+  "announcement.already_sent": "Une annonce pour cette étape a déjà été envoyée",
+
+  "stripe.not_configured": "Stripe n'est pas configuré pour cet environnement",
+  "stripe.price_not_configured": "Stripe n'est pas configuré pour ce niveau et cette devise",
+  "stripe.api_error": "Stripe a refusé la requête"
+}
