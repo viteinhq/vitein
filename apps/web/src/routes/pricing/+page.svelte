@@ -14,7 +14,7 @@
       <h2 class="text-xl font-semibold">{m.pricing_free_name()}</h2>
       <p class="text-2xl font-bold">{m.pricing_free_price()}</p>
       <p class="text-sm text-slate-600">{m.pricing_free_desc()}</p>
-      <ul class="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-700">
+      <ul class="mt-2 list-disc space-y-1 ps-5 text-sm text-slate-700">
         <li>{m.pricing_free_item_rsvps()}</li>
         <li>{m.pricing_free_item_magic()}</li>
         <li>{m.pricing_free_item_confirm()}</li>
@@ -26,7 +26,7 @@
       <h2 class="text-xl font-semibold">{m.pricing_paid_name()}</h2>
       <p class="text-2xl font-bold">{m.pricing_paid_price()}</p>
       <p class="text-sm text-slate-600">{m.pricing_paid_desc()}</p>
-      <ul class="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-700">
+      <ul class="mt-2 list-disc space-y-1 ps-5 text-sm text-slate-700">
         <li>{m.pricing_paid_item_slug()}</li>
         <li>{m.pricing_paid_item_brand()}</li>
         <li>{m.pricing_paid_item_media()}</li>

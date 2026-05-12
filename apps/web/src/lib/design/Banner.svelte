@@ -7,6 +7,10 @@
    * dismissible-by-context — banners should disappear on the next page
    * action, not stick around. For sticky page-state, use Card with a
    * tone instead.
+   *
+   * Rendered as `<div role="alert|status">` so callers can drop in
+   * additional block content (e.g. a `<pre>` with error details) without
+   * tripping HTML5's "no block elements inside <p>" rule.
    */
   type Tone = 'info' | 'success' | 'warn' | 'error';
 
@@ -26,6 +30,9 @@
   };
 </script>
 
-<p role={tone === 'error' ? 'alert' : 'status'} class="rounded-md border px-3 py-2 text-sm {tones[tone]} {classes}">
+<div
+  role={tone === 'error' ? 'alert' : 'status'}
+  class="rounded-md border px-3 py-2 text-sm {tones[tone]} {classes}"
+>
   {@render children()}
-</p>
+</div>
