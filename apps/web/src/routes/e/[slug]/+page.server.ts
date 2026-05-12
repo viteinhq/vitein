@@ -13,9 +13,7 @@ export const load: PageServerLoad = async ({ params, platform, cookies }) => {
   configureApi(resolveBaseUrl(platform));
 
   const viewToken = cookies.get(`${VIEW_TOKEN_COOKIE_PREFIX}${params.slug}`);
-  const viewHeaders: Record<string, string> = viewToken
-    ? { 'X-Event-View-Token': viewToken }
-    : {};
+  const viewHeaders: Record<string, string> = viewToken ? { 'X-Event-View-Token': viewToken } : {};
 
   const { data, error } = await getEventBySlug({
     path: { slug: params.slug },

@@ -113,10 +113,7 @@ export async function sendReminder(env: Env, input: ReminderInput): Promise<Send
   });
 }
 
-export async function sendAnnouncement(
-  env: Env,
-  input: AnnouncementInput,
-): Promise<SendResult> {
+export async function sendAnnouncement(env: Env, input: AnnouncementInput): Promise<SendResult> {
   const subject =
     input.stage === 'save_the_date'
       ? `Save the date — ${input.eventTitle}`

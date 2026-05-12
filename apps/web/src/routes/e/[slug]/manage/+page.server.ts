@@ -157,8 +157,7 @@ export const actions: Actions = {
     if (!token) return fail(401, { announceError: 'manage_missing_token' });
 
     const bySlug = await getEventBySlug({ path: { slug: params.slug } });
-    if (bySlug.error || !bySlug.data)
-      return fail(404, { announceError: 'manage_event_not_found' });
+    if (bySlug.error || !bySlug.data) return fail(404, { announceError: 'manage_event_not_found' });
 
     const form = await request.formData();
     const stageRaw = String(form.get('stage') ?? '');
@@ -197,8 +196,7 @@ export const actions: Actions = {
     if (!token) return fail(401, { passwordError: 'manage_missing_token' });
 
     const bySlug = await getEventBySlug({ path: { slug: params.slug } });
-    if (bySlug.error || !bySlug.data)
-      return fail(404, { passwordError: 'manage_event_not_found' });
+    if (bySlug.error || !bySlug.data) return fail(404, { passwordError: 'manage_event_not_found' });
 
     const form = await request.formData();
     const clear = form.get('clear') === '1';
