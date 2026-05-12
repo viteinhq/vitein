@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Banner } from '$lib/design';
   import * as m from '$lib/paraglide/messages.js';
 </script>
 
@@ -6,7 +7,5 @@
 
 <section class="mx-auto max-w-2xl space-y-4">
   <h1 class="text-3xl font-bold tracking-tight">{m.legal_terms_title()}</h1>
-  <p class="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
-    {m.legal_draft()}
-  </p>
+  <Banner tone="warn">{m.legal_draft()}</Banner>
 </section>

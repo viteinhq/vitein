@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state';
+  import { Button } from '$lib/design';
   import { localizeError } from '$lib/errors';
   import * as m from '$lib/paraglide/messages.js';
 
@@ -19,10 +20,5 @@
   {#if message}
     <p class="text-slate-600">{message}</p>
   {/if}
-  <a
-    href="/"
-    class="inline-block rounded-md border border-slate-300 px-4 py-2 text-sm hover:bg-slate-50"
-  >
-    {m.err_page_back_home()}
-  </a>
+  <Button href="/" variant="secondary">{m.err_page_back_home()}</Button>
 </section>

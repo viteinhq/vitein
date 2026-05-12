@@ -1,6 +1,7 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
   import { page } from '$app/state';
+  import { Banner, Button, Card, TextField } from '$lib/design';
   import { localizeError } from '$lib/errors';
   import * as m from '$lib/paraglide/messages.js';
   import type { PageProps } from './$types';
@@ -60,54 +61,53 @@
 
 <section class="mx-auto max-w-xl space-y-8">
   {#if form?.success}
-    <div class="space-y-4 rounded-lg border border-emerald-200 bg-emerald-50 p-5">
-      <h1 class="text-2xl font-semibold tracking-tight">{m.create_success_heading()}</h1>
+    <Card tone="success">
+      <div class="space-y-4">
+        <h1 class="text-2xl font-semibold tracking-tight">{m.create_success_heading()}</h1>
 
-      {#if form.title}
-        <p class="text-sm font-medium text-slate-700">{form.title}</p>
-      {/if}
+        {#if form.title}
+          <p class="text-sm font-medium text-slate-700">{form.title}</p>
+        {/if}
 
-      <div class="space-y-2">
-        <p class="text-xs font-medium text-slate-600">{m.create_success_share_label()}</p>
-        <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
-          <input
-            readonly
-            bind:this={shareInput}
-            value={shareUrl}
-            class="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 font-mono text-sm text-slate-800"
-            onclick={selectShareUrl}
-          />
-          <button
-            type="button"
-            onclick={copyShare}
-            class="shrink-0 rounded-md bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700"
-          >
-            {copied ? m.create_success_copied() : m.create_success_copy()}
-          </button>
+        <div class="space-y-2">
+          <p class="text-xs font-medium text-slate-600">{m.create_success_share_label()}</p>
+          <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <input
+              readonly
+              bind:this={shareInput}
+              value={shareUrl}
+              class="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 font-mono text-sm text-slate-800"
+              onclick={selectShareUrl}
+            />
+            <Button onclick={copyShare} class="shrink-0">
+              {copied ? m.create_success_copied() : m.create_success_copy()}
+            </Button>
+          </div>
         </div>
-      </div>
 
-      <div class="flex flex-wrap gap-2 text-sm">
-        <a
-          href="/e/{form.slug}"
-          data-sveltekit-reload
-          class="rounded-md border border-slate-300 bg-white px-3 py-1.5 hover:bg-slate-50"
-        >
-          {m.create_success_open()}
-        </a>
-      </div>
+        <div class="flex flex-wrap gap-2">
+          <Button
+            href="/e/{form.slug}"
+            variant="secondary"
+            size="sm"
+            data-sveltekit-reload
+          >
+            {m.create_success_open()}
+          </Button>
+        </div>
 
-      {#if form.magicLinkSent}
-        <p class="text-sm text-slate-700">{m.create_success_magic_sent()}</p>
-      {:else if form.creatorTokenPreview}
-        <p class="text-sm text-slate-700">
-          {m.create_success_dev_mode()}
-          <a class="underline" href="/e/{form.slug}/manage?token={form.creatorTokenPreview}">
-            /e/{form.slug}/manage
-          </a>
-        </p>
-      {/if}
-    </div>
+        {#if form.magicLinkSent}
+          <p class="text-sm text-slate-700">{m.create_success_magic_sent()}</p>
+        {:else if form.creatorTokenPreview}
+          <p class="text-sm text-slate-700">
+            {m.create_success_dev_mode()}
+            <a class="underline" href="/e/{form.slug}/manage?token={form.creatorTokenPreview}">
+              /e/{form.slug}/manage
+            </a>
+          </p>
+        {/if}
+      </div>
+    </Card>
   {:else}
     <header class="space-y-2">
       <h1 class="text-3xl font-bold tracking-tight">{m.create_title()}</h1>
@@ -132,9 +132,7 @@
       class="space-y-8"
     >
       {#if form?.error}
-        <p class="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-          {localizeError(form.error)}
-        </p>
+        <Banner tone="error">{localizeError(form.error)}</Banner>
       {/if}
 
       <fieldset class="space-y-4">
@@ -142,16 +140,13 @@
           {m.create_section_basics()}
         </legend>
 
-        <label class="block">
-          <span class="text-sm font-medium">{m.create_field_title()}</span>
-          <input
-            name="title"
-            required
-            maxlength="200"
-            value={form?.values?.title ?? ''}
-            class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2"
-          />
-        </label>
+        <TextField
+          name="title"
+          required
+          maxlength={200}
+          value={form?.values?.title ?? ''}
+          label={m.create_field_title()}
+        />
 
         <label class="block">
           <span class="text-sm font-medium">{m.create_field_description()}</span>
@@ -172,40 +167,30 @@
         </legend>
 
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <label class="block">
-            <span class="text-sm font-medium">{m.create_field_starts_at()}</span>
-            <input
-              type="datetime-local"
-              name="startsAt"
-              required
-              value={form?.values?.startsAt ?? ''}
-              class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2"
-            />
-          </label>
-
-          <label class="block">
-            <span class="text-sm font-medium">{m.create_field_ends_at_optional()}</span>
-            <input
-              type="datetime-local"
-              name="endsAt"
-              value={form?.values?.endsAt ?? ''}
-              class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2"
-            />
-          </label>
+          <TextField
+            type="datetime-local"
+            name="startsAt"
+            required
+            value={form?.values?.startsAt ?? ''}
+            label={m.create_field_starts_at()}
+          />
+          <TextField
+            type="datetime-local"
+            name="endsAt"
+            value={form?.values?.endsAt ?? ''}
+            label={m.create_field_ends_at_optional()}
+          />
         </div>
 
-        <label class="block">
-          <span class="text-sm font-medium">{m.create_field_timezone()}</span>
-          <input
-            name="timezone"
-            list="tz-list"
-            required
-            autocomplete="off"
-            value={form?.values?.timezone ?? defaultTimezone}
-            class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2"
-          />
-          <span class="mt-1 block text-xs text-slate-500">{m.create_field_timezone_hint()}</span>
-        </label>
+        <TextField
+          name="timezone"
+          list="tz-list"
+          required
+          autocomplete="off"
+          value={form?.values?.timezone ?? defaultTimezone}
+          label={m.create_field_timezone()}
+          hint={m.create_field_timezone_hint()}
+        />
       </fieldset>
 
       <fieldset class="space-y-4">
@@ -213,15 +198,12 @@
           {m.create_section_where()}
         </legend>
 
-        <label class="block">
-          <span class="text-sm font-medium">{m.create_field_location_optional()}</span>
-          <input
-            name="locationText"
-            maxlength="500"
-            value={form?.values?.locationText ?? ''}
-            class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2"
-          />
-        </label>
+        <TextField
+          name="locationText"
+          maxlength={500}
+          value={form?.values?.locationText ?? ''}
+          label={m.create_field_location_optional()}
+        />
       </fieldset>
 
       <fieldset class="space-y-3">
@@ -229,7 +211,9 @@
           {m.create_section_visibility()}
         </legend>
 
-        <label class="flex items-start gap-3 rounded-md border border-slate-200 p-3 hover:bg-slate-50">
+        <label
+          class="flex items-start gap-3 rounded-md border border-slate-200 p-3 hover:bg-slate-50"
+        >
           <input
             type="radio"
             name="visibility"
@@ -245,7 +229,9 @@
           </span>
         </label>
 
-        <label class="flex items-start gap-3 rounded-md border border-slate-200 p-3 hover:bg-slate-50">
+        <label
+          class="flex items-start gap-3 rounded-md border border-slate-200 p-3 hover:bg-slate-50"
+        >
           <input
             type="radio"
             name="visibility"
@@ -265,26 +251,19 @@
           {m.create_section_contact()}
         </legend>
 
-        <label class="block">
-          <span class="text-sm font-medium">{m.create_field_email()}</span>
-          <input
-            type="email"
-            name="creatorEmail"
-            required
-            value={form?.values?.creatorEmail ?? ''}
-            class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2"
-          />
-          <span class="mt-1 block text-xs text-slate-500">{m.create_field_email_hint()}</span>
-        </label>
+        <TextField
+          type="email"
+          name="creatorEmail"
+          required
+          value={form?.values?.creatorEmail ?? ''}
+          label={m.create_field_email()}
+          hint={m.create_field_email_hint()}
+        />
       </fieldset>
 
-      <button
-        type="submit"
-        disabled={submitting}
-        class="rounded-md bg-slate-900 px-4 py-2 font-medium text-white hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
-      >
+      <Button type="submit" disabled={submitting}>
         {submitting ? m.create_submitting() : m.create_submit()}
-      </button>
+      </Button>
     </form>
   {/if}
 </section>

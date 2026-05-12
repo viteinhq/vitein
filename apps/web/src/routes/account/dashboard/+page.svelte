@@ -1,5 +1,6 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
+  import { Banner, Button, Card } from '$lib/design';
   import { localizeError } from '$lib/errors';
   import * as m from '$lib/paraglide/messages.js';
   import type { PageProps } from './$types';
@@ -22,16 +23,11 @@
 <section class="space-y-4">
   <div class="flex items-center justify-between">
     <h1 class="text-2xl font-semibold tracking-tight">{m.dashboard_title()}</h1>
-    <a
-      href="/create"
-      class="rounded-md bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700"
-    >
-      {m.dashboard_new_event()}
-    </a>
+    <Button href="/create" size="sm">{m.dashboard_new_event()}</Button>
   </div>
 
   {#if form && 'claimed' in form && typeof form.claimed === 'number'}
-    <p class="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm">
+    <Banner tone="success">
       {#if form.claimed === 1}
         {m.dashboard_claim_one()}
       {:else if form.claimed > 1}
@@ -39,10 +35,10 @@
       {:else}
         {m.dashboard_claim_none()}
       {/if}
-    </p>
+    </Banner>
   {/if}
   {#if form && 'claimError' in form}
-    <div class="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+    <Banner tone="error">
       <p>
         {localizeError(form.claimError, {
           status: 'claimStatus' in form ? form.claimStatus : undefined,
@@ -51,22 +47,20 @@
       {#if 'claimDetails' in form && form.claimDetails}
         <pre class="mt-1 overflow-x-auto text-xs">{form.claimDetails}</pre>
       {/if}
-    </div>
+    </Banner>
   {/if}
 
   <form method="POST" action="?/claim" use:enhance>
-    <button
-      type="submit"
-      class="rounded-md border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50"
-    >
-      {m.dashboard_claim_submit()}
-    </button>
+    <Button type="submit" variant="secondary" size="sm">{m.dashboard_claim_submit()}</Button>
   </form>
 
   {#if data.events.length === 0}
-    <p class="rounded-md border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">
-      {m.dashboard_empty_line()} <a href="/create" class="underline">{m.dashboard_empty_create()}</a>{m.dashboard_empty_or_claim()}
-    </p>
+    <Card class="!bg-slate-50">
+      <p class="text-sm text-slate-600">
+        {m.dashboard_empty_line()}
+        <a href="/create" class="underline">{m.dashboard_empty_create()}</a>{m.dashboard_empty_or_claim()}
+      </p>
+    </Card>
   {:else}
     <ul class="divide-y divide-slate-200 rounded-md border border-slate-200">
       {#each data.events as ev (ev.id)}
