@@ -158,6 +158,47 @@ events with Worker logs and the `audit_log` table.
 
 ---
 
+## Sentry alerts that must exist
+
+Sentry's alert rules are configured in the dashboard, not in code.
+The list below is the source of truth for what should be configured;
+re-create from scratch if it ever drifts. All rules route to the same
+notification target (Kim's email by default; switch to a Slack
+webhook once the workspace is set up).
+
+| Alert name                  | Project      | Trigger                                                           | Routing            |
+| --------------------------- | ------------ | ----------------------------------------------------------------- | ------------------ |
+| API — 5xx rate spike        | `vitein-api` | Issue count > 5 in 5 min, level=error                             | Kim, immediate     |
+| API — latency p95           | `vitein-api` | Transaction p95 > 1 s sustained over 10 min                       | Kim, low-priority  |
+| API — DB unreachable        | `vitein-api` | `db_ping_failed` event fires (custom)                             | Kim, immediate     |
+| MCP — tool-call failures    | `vitein-mcp` | Issue count > 3 in 5 min                                          | Kim, immediate     |
+| Web — hydration failures    | `vitein-web` | Issue tag `level:fatal`, > 5 events in 10 min                     | Kim, low-priority  |
+| Web — JS error rate         | `vitein-web` | Any new issue affecting > 1% of sessions                          | Kim, low-priority  |
+| Cron — silent reminder pass | `vitein-api` | Use the Uptime Kuma push-monitor instead (see uptime-monitors.md) | (configured there) |
+
+### Acceptance criteria for the alerts
+
+- Every alert listed has a Slack/email destination that is verified to
+  arrive within 1 minute of a test trigger.
+- Each alert's grouping is set to "issue", not "event", so a single
+  incident produces one notification, not hundreds.
+- The DB-unreachable alert specifically watches for events tagged
+  `tag:db_unreachable` — needs `Sentry.setTag('db_unreachable', true)`
+  to be emitted from `infra/db.ts` when a query fails to reach Neon.
+  Implementation pending — file the issue when wiring.
+
+### What to do when an alert fires
+
+1. Open the Sentry issue, copy the `request_id` from the breadcrumbs.
+2. Grep Worker logs (`wrangler tail`) for the same id to see the full
+   request lifecycle.
+3. Run the relevant playbook from the section above (Neon outage,
+   Worker rollback, etc.).
+4. After resolution, file an incident write-up under
+   `docs/ops/incidents/`.
+
+---
+
 ## Deploys
 
 | Surface     | Trigger                            | How to run manually                  |
