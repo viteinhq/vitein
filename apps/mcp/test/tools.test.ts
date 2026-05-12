@@ -94,7 +94,12 @@ describe('get_event_ics', () => {
 
 describe('create_event', () => {
   it('rejects missing required fields', async () => {
-    const res = await createEventTool.handler(env, { title: 'x' });
+    // Deliberately pass a partial input — the handler's safeParse should
+    // catch the missing required fields. Cast through unknown so tsc
+    // doesn't refuse the deliberate mismatch.
+    const res = await createEventTool.handler(env, {
+      title: 'x',
+    } as unknown as Parameters<typeof createEventTool.handler>[1]);
     expect(res.isError).toBe(true);
   });
 
