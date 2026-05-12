@@ -4,7 +4,11 @@ import { z } from 'zod';
 import { ValidationError } from '../domain/errors.js';
 import { listRsvps, submitRsvp } from '../domain/rsvps/rsvps.js';
 import { db } from '../infra/db.js';
-import { sendRsvpConfirmation, sendRsvpNotification } from '../infra/email.js';
+import {
+  localeFromAcceptLanguage,
+  sendRsvpConfirmation,
+  sendRsvpNotification,
+} from '../infra/email.js';
 import { requireCreator } from '../middleware/require-creator.js';
 import type { AppVariables, Env } from '../types/env.js';
 
@@ -41,25 +45,39 @@ rsvpsRoute.post(
     const webBase = c.env.WEB_BASE_URL ?? 'https://vite.in';
     const eventUrl = `${webBase}/e/${event.slug}`;
 
+    // Guest-bound mail: the submitter's Accept-Language is the best
+    // signal for which locale to send the confirmation in.
+    const guestLocale = localeFromAcceptLanguage(c.req.header('accept-language'));
+    // Creator-bound mail: stays in the event's authoring locale.
+    const creatorLocale = localeFromAcceptLanguage(event.defaultLocale);
+
     if (input.email) {
-      await sendRsvpConfirmation(c.env, {
-        to: input.email,
-        eventTitle: event.title,
-        status: input.status,
-        eventUrl,
-      }).catch((err: unknown) => {
+      await sendRsvpConfirmation(
+        c.env,
+        {
+          to: input.email,
+          eventTitle: event.title,
+          status: input.status,
+          eventUrl,
+        },
+        guestLocale,
+      ).catch((err: unknown) => {
         c.var.logger.warn('rsvp_confirmation_email_failed', { err: err as Error });
       });
     }
 
-    await sendRsvpNotification(c.env, {
-      to: event.creatorEmail,
-      eventTitle: event.title,
-      guestName: input.name,
-      status: input.status,
-      plusOnes: input.plusOnes ?? 0,
-      manageUrl: `${webBase}/e/${event.slug}/manage`,
-    }).catch((err: unknown) => {
+    await sendRsvpNotification(
+      c.env,
+      {
+        to: event.creatorEmail,
+        eventTitle: event.title,
+        guestName: input.name,
+        status: input.status,
+        plusOnes: input.plusOnes ?? 0,
+        manageUrl: `${webBase}/e/${event.slug}/manage`,
+      },
+      creatorLocale,
+    ).catch((err: unknown) => {
       c.var.logger.warn('rsvp_notification_email_failed', { err: err as Error });
     });
 

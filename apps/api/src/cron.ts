@@ -1,7 +1,7 @@
 import { findDueReminders, markReminderSent } from './domain/reminders/reminders.js';
 import { purgeSoftDeleted } from './domain/retention/purge.js';
 import { db } from './infra/db.js';
-import { sendReminder } from './infra/email.js';
+import { localeFromAcceptLanguage, sendReminder } from './infra/email.js';
 import { createLogger, type Logger } from './infra/logger.js';
 import type { Env } from './types/env.js';
 
@@ -62,12 +62,16 @@ async function sendDueReminders(
 
   for (const { reminder, event } of due) {
     try {
-      const result = await sendReminder(env, {
-        to: event.creatorEmail,
-        eventTitle: event.title,
-        startsAt: event.startsAt,
-        eventUrl: `${webBase}/e/${event.slug}`,
-      });
+      const result = await sendReminder(
+        env,
+        {
+          to: event.creatorEmail,
+          eventTitle: event.title,
+          startsAt: event.startsAt,
+          eventUrl: `${webBase}/e/${event.slug}`,
+        },
+        localeFromAcceptLanguage(event.defaultLocale),
+      );
       await markReminderSent(client, reminder.id, event.id, {
         sent: result.sent,
         kind: reminder.kind,
