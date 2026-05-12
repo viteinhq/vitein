@@ -29,6 +29,10 @@ export default [
     rules: {
       '@typescript-eslint/only-throw-error': 'off',
       '@typescript-eslint/no-base-to-string': 'off',
+      // We deploy from the root of vite.in (no base path), so wrapping every
+      // href in resolve() would just be noise. Re-enable if a sub-path deploy
+      // is ever on the table — most likely Phase 3 white-label.
+      'svelte/no-navigation-without-resolve': 'off',
     },
   },
   {
