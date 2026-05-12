@@ -746,11 +746,24 @@ components:
           type: string
           format: date-time
           description: Server's clock at the moment the response was built.
+        buildSha:
+          type: [string, 'null']
+          description: |
+            Short git SHA of the commit deployed to this environment, or
+            `null` when running locally without `BUILD_SHA` set. Injected
+            at deploy time via `wrangler --var BUILD_SHA:<sha>`.
+        buildStamp:
+          type: [string, 'null']
+          description: |
+            ISO-8601 UTC timestamp recorded when the deploy ran (minute
+            precision). `null` outside a deploy environment.
       example:
         status: ok
         environment: staging
         db: connected
         ts: '2026-04-19T18:00:00.000Z'
+        buildSha: a1b2c3d
+        buildStamp: '2026-05-12T09:35Z'
 
     EventCreateInput:
       type: object

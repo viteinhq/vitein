@@ -28,6 +28,19 @@ export type HealthResponse = {
    * Server's clock at the moment the response was built.
    */
   ts: string;
+  /**
+   * Short git SHA of the commit deployed to this environment, or
+   * `null` when running locally without `BUILD_SHA` set. Injected
+   * at deploy time via `wrangler --var BUILD_SHA:<sha>`.
+   *
+   */
+  buildSha?: string | null;
+  /**
+   * ISO-8601 UTC timestamp recorded when the deploy ran (minute
+   * precision). `null` outside a deploy environment.
+   *
+   */
+  buildStamp?: string | null;
 };
 
 export type EventCreateInput = {

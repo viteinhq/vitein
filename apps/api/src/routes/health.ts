@@ -14,6 +14,8 @@ healthRoute.get('/', async (c) => {
     environment: c.env.ENVIRONMENT,
     db: dbStatus,
     ts: new Date().toISOString(),
+    buildSha: c.env.BUILD_SHA ?? null,
+    buildStamp: c.env.BUILD_STAMP ?? null,
   });
 });
 
