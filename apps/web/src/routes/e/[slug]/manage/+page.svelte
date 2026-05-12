@@ -1,6 +1,7 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
   import { page } from '$app/state';
+  import { Banner, Button, TextField } from '$lib/design';
   import { localizeError } from '$lib/errors';
   import * as m from '$lib/paraglide/messages.js';
   import type { PageProps } from './$types';
@@ -75,34 +76,31 @@
     <p class="text-sm text-slate-500">{m.manage_label()}</p>
     <h1 class="text-3xl font-bold tracking-tight">{data.event.title}</h1>
     <p class="text-sm text-slate-500">
-      {m.manage_public_link()} <a class="underline" href="/e/{data.event.slug}">/e/{data.event.slug}</a>
+      {m.manage_public_link()}
+      <a class="underline" href="/e/{data.event.slug}">/e/{data.event.slug}</a>
     </p>
   </header>
 
-  <section class="rounded-lg border border-slate-200 p-4">
+  <section class="space-y-2 rounded-lg border border-slate-200 p-4">
     <h2 class="text-lg font-semibold">{m.manage_upgrade_heading()}</h2>
-    <p class="mt-1 text-sm text-slate-600">{m.manage_upgrade_body()}</p>
+    <p class="text-sm text-slate-600">{m.manage_upgrade_body()}</p>
 
     {#if upgraded}
-      <p class="mt-2 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm">
-        {m.manage_upgrade_success()}
-      </p>
+      <Banner tone="success">{m.manage_upgrade_success()}</Banner>
     {/if}
     {#if canceled}
-      <p class="mt-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm">
-        {m.manage_upgrade_canceled()}
-      </p>
+      <Banner tone="warn">{m.manage_upgrade_canceled()}</Banner>
     {/if}
     {#if form?.upgradeError}
-      <p class="mt-2 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+      <Banner tone="error">
         {localizeError(form.upgradeError, {
           status: 'upgradeStatus' in form ? form.upgradeStatus : undefined,
         })}
-      </p>
+      </Banner>
     {/if}
 
     {#if data.event.isPaid}
-      <p class="mt-3 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm">
+      <Banner tone="success">
         {#if paidTier === 'plus'}
           {m.manage_upgrade_already_tier_plus()}
         {:else if paidTier === 'basic'}
@@ -110,9 +108,9 @@
         {:else}
           {m.manage_upgrade_already_paid()}
         {/if}
-      </p>
+      </Banner>
     {:else}
-      <div class="mt-3 space-y-4">
+      <div class="space-y-4 pt-2">
         <label class="flex items-center gap-2 text-xs font-medium text-slate-600">
           {m.manage_upgrade_currency_label()}
           <select
@@ -144,12 +142,9 @@
               <li>· {m.tier_basic_item_slug()}</li>
               <li>· {m.tier_basic_item_reminders()}</li>
             </ul>
-            <button
-              type="submit"
-              class="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium hover:bg-slate-50"
-            >
+            <Button type="submit" variant="secondary" class="w-full">
               {m.manage_upgrade_choose_basic()}
-            </button>
+            </Button>
           </form>
 
           <form
@@ -170,42 +165,33 @@
               <li>· {m.tier_plus_item_password()}</li>
               <li>· {m.tier_plus_item_save_the_date()}</li>
             </ul>
-            <button
-              type="submit"
-              class="w-full rounded-md bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700"
-            >
-              {m.manage_upgrade_choose_plus()}
-            </button>
+            <Button type="submit" class="w-full">{m.manage_upgrade_choose_plus()}</Button>
           </form>
         </div>
       </div>
     {/if}
   </section>
 
-  <section class="rounded-lg border border-slate-200 p-4">
+  <section class="space-y-2 rounded-lg border border-slate-200 p-4">
     <h2 class="text-lg font-semibold">{m.manage_media_heading()}</h2>
-    <p class="mt-1 text-sm text-slate-600">{m.manage_media_hint()}</p>
+    <p class="text-sm text-slate-600">{m.manage_media_hint()}</p>
 
     {#if form?.mediaError}
-      <p class="mt-2 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+      <Banner tone="error">
         {localizeError(form.mediaError, {
           status: 'mediaStatus' in form ? form.mediaStatus : undefined,
         })}
-      </p>
+      </Banner>
     {/if}
     {#if form?.mediaUploaded}
-      <p class="mt-2 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm">
-        {m.manage_media_uploaded()}
-      </p>
+      <Banner tone="success">{m.manage_media_uploaded()}</Banner>
     {/if}
     {#if form?.mediaDeleted}
-      <p class="mt-2 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm">
-        {m.manage_media_deleted()}
-      </p>
+      <Banner tone="success">{m.manage_media_deleted()}</Banner>
     {/if}
 
     {#if data.media.length > 0}
-      <ul class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
+      <ul class="grid grid-cols-2 gap-3 pt-2 sm:grid-cols-3">
         {#each data.media as mediaItem (mediaItem.id)}
           <li class="space-y-2">
             {#if mediaItem.url}
@@ -225,12 +211,9 @@
             {/if}
             <form method="POST" action="?/deleteMedia&token={data.token}" use:enhance>
               <input type="hidden" name="mediaId" value={mediaItem.id} />
-              <button
-                type="submit"
-                class="w-full rounded-md border border-slate-300 px-2 py-1 text-xs hover:bg-slate-50"
-              >
+              <Button type="submit" variant="secondary" size="sm" class="w-full">
                 {m.manage_media_remove()}
-              </button>
+              </Button>
             </form>
           </li>
         {/each}
@@ -242,7 +225,7 @@
       action="?/uploadMedia&token={data.token}"
       enctype="multipart/form-data"
       use:enhance
-      class="mt-4 flex items-center gap-3"
+      class="flex items-center gap-3 pt-3"
     >
       <input
         type="file"
@@ -251,18 +234,13 @@
         required
         class="block w-full text-sm"
       />
-      <button
-        type="submit"
-        class="rounded-md bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700"
-      >
-        {m.manage_media_upload()}
-      </button>
+      <Button type="submit" size="sm">{m.manage_media_upload()}</Button>
     </form>
   </section>
 
-  <section class="rounded-lg border border-slate-200 p-4">
+  <section class="space-y-2 rounded-lg border border-slate-200 p-4">
     <h2 class="text-lg font-semibold">{m.manage_rsvps_heading()}</h2>
-    <p class="mt-1 text-sm text-slate-600">
+    <p class="text-sm text-slate-600">
       {m.manage_rsvps_summary({
         yes: rsvpCounts.yes,
         maybe: rsvpCounts.maybe,
@@ -272,15 +250,15 @@
     </p>
 
     {#if data.rsvps.length === 0}
-      <p class="mt-3 text-sm text-slate-500">{m.manage_rsvps_empty()}</p>
+      <p class="pt-1 text-sm text-slate-500">{m.manage_rsvps_empty()}</p>
     {:else}
-      <ul class="mt-3 divide-y divide-slate-200">
+      <ul class="divide-y divide-slate-200 pt-2">
         {#each data.rsvps as r (r.id)}
           <li class="py-2 text-sm">
             <span class="font-medium">{r.name}</span>
             <span class="text-slate-500">— {r.status}{r.plusOnes ? ` (+${r.plusOnes})` : ''}</span>
             {#if r.plusOnesDetails && r.plusOnesDetails.length > 0}
-              <ul class="mt-1 ml-4 list-disc text-xs text-slate-500">
+              <ul class="mt-1 ms-4 list-disc text-xs text-slate-500">
                 {#each r.plusOnesDetails as p, i (i)}
                   <li>{p.name}</li>
                 {/each}
@@ -295,30 +273,23 @@
     {/if}
   </section>
 
-  <section class="rounded-lg border border-slate-200 p-4">
+  <section class="space-y-2 rounded-lg border border-slate-200 p-4">
     <h2 class="text-lg font-semibold">{m.manage_edit_heading()}</h2>
 
     {#if form?.updateSuccess}
-      <p class="mt-2 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm">
-        {m.manage_edit_saved()}
-      </p>
+      <Banner tone="success">{m.manage_edit_saved()}</Banner>
     {/if}
     {#if form?.updateError}
-      <p class="mt-2 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-        {localizeError(form.updateError)}
-      </p>
+      <Banner tone="error">{localizeError(form.updateError)}</Banner>
     {/if}
 
-    <form method="POST" action="?/update&token={data.token}" use:enhance class="mt-4 space-y-3">
-      <label class="block">
-        <span class="text-sm font-medium">{m.manage_edit_title_label()}</span>
-        <input
-          name="title"
-          value={data.event.title}
-          maxlength="200"
-          class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2"
-        />
-      </label>
+    <form method="POST" action="?/update&token={data.token}" use:enhance class="space-y-3 pt-2">
+      <TextField
+        name="title"
+        value={data.event.title}
+        maxlength={200}
+        label={m.manage_edit_title_label()}
+      />
 
       <label class="block">
         <span class="text-sm font-medium">{m.manage_edit_description_label()}</span>
@@ -331,50 +302,39 @@
         >
       </label>
 
-      <label class="block">
-        <span class="text-sm font-medium">{m.manage_edit_starts_at_label()}</span>
-        <input
-          type="datetime-local"
-          name="startsAt"
-          value={startsAtForInput}
-          class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2"
-        />
-      </label>
+      <TextField
+        type="datetime-local"
+        name="startsAt"
+        value={startsAtForInput}
+        label={m.manage_edit_starts_at_label()}
+      />
 
-      <label class="block">
-        <span class="text-sm font-medium">{m.manage_edit_location_label()}</span>
-        <input
-          name="locationText"
-          value={data.event.locationText ?? ''}
-          maxlength="500"
-          class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2"
-        />
-      </label>
+      <TextField
+        name="locationText"
+        value={data.event.locationText ?? ''}
+        maxlength={500}
+        label={m.manage_edit_location_label()}
+      />
 
-      <button
-        type="submit"
-        class="rounded-md bg-slate-900 px-4 py-2 font-medium text-white hover:bg-slate-700"
-      >
-        {m.manage_edit_submit()}
-      </button>
+      <Button type="submit">{m.manage_edit_submit()}</Button>
     </form>
   </section>
 
-  <section class="rounded-lg border border-slate-200 p-4">
+  <section class="space-y-2 rounded-lg border border-slate-200 p-4">
     <h2 class="text-lg font-semibold">{m.manage_announcements_heading()}</h2>
-    <p class="mt-1 text-sm text-slate-600">{m.manage_announcements_body()}</p>
+    <p class="text-sm text-slate-600">{m.manage_announcements_body()}</p>
 
     {#if form?.announceError}
-      <p class="mt-2 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+      <Banner tone="error">
         {localizeError(form.announceError, {
           status: 'announceStatus' in form ? form.announceStatus : undefined,
         })}
-      </p>
+      </Banner>
     {/if}
 
     {#each data.announcements as ann (ann.id)}
       {#if ann.sentAt}
-        <p class="mt-2 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm">
+        <Banner tone="success">
           {#if ann.stage === 'save_the_date'}
             {m.manage_announcements_save_the_date_sent({
               date: new Date(ann.sentAt).toLocaleDateString(),
@@ -386,76 +346,58 @@
               count: String(ann.recipientCount),
             })}
           {/if}
-        </p>
+        </Banner>
       {/if}
     {/each}
 
     {#if paidTier !== 'plus'}
-      <p class="mt-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-slate-600">
-        {m.manage_announcements_plus_hint()}
-      </p>
+      <Banner tone="warn">{m.manage_announcements_plus_hint()}</Banner>
     {/if}
 
-    <div class="mt-3 flex flex-wrap gap-2">
+    <div class="flex flex-wrap gap-2 pt-2">
       {#if paidTier === 'plus' && !data.announcements.some((a) => a.stage === 'save_the_date' && a.sentAt)}
         <form method="POST" action="?/announce&token={data.token}" use:enhance>
           <input type="hidden" name="stage" value="save_the_date" />
-          <button
-            type="submit"
-            class="rounded-md border-2 border-slate-900 px-3 py-1.5 text-sm font-medium hover:bg-slate-50"
-          >
+          <Button type="submit" variant="secondary" size="sm" class="!border-2 !border-slate-900">
             {m.manage_announcements_save_the_date()}
-          </button>
+          </Button>
         </form>
       {/if}
       {#if data.event.isPaid && !data.announcements.some((a) => a.stage === 'invitation' && a.sentAt)}
         <form method="POST" action="?/announce&token={data.token}" use:enhance>
           <input type="hidden" name="stage" value="invitation" />
-          <button
-            type="submit"
-            class="rounded-md bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700"
-          >
-            {m.manage_announcements_invitation()}
-          </button>
+          <Button type="submit" size="sm">{m.manage_announcements_invitation()}</Button>
         </form>
       {/if}
     </div>
   </section>
 
-  <section class="rounded-lg border border-slate-200 p-4">
+  <section class="space-y-2 rounded-lg border border-slate-200 p-4">
     <h2 class="text-lg font-semibold">{m.manage_password_heading()}</h2>
-    <p class="mt-1 text-sm text-slate-600">
+    <p class="text-sm text-slate-600">
       {data.event.hasPassword
         ? m.manage_password_body_locked()
         : m.manage_password_body_unlocked()}
     </p>
 
     {#if paidTier !== 'plus'}
-      <p class="mt-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm">
-        {m.manage_password_plus_required()}
-      </p>
+      <Banner tone="warn">{m.manage_password_plus_required()}</Banner>
     {:else}
       {#if form?.passwordSet}
-        <p class="mt-2 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm">
-          {m.manage_password_set_ok()}
-        </p>
+        <Banner tone="success">{m.manage_password_set_ok()}</Banner>
       {/if}
       {#if form?.passwordCleared}
-        <p class="mt-2 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm">
-          {m.manage_password_cleared_ok()}
-        </p>
+        <Banner tone="success">{m.manage_password_cleared_ok()}</Banner>
       {/if}
       {#if form?.passwordError}
-        <p class="mt-2 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-          {localizeError(form.passwordError)}
-        </p>
+        <Banner tone="error">{localizeError(form.passwordError)}</Banner>
       {/if}
 
       <form
         method="POST"
         action="?/setPassword&token={data.token}"
         use:enhance
-        class="mt-3 flex flex-wrap gap-2"
+        class="flex flex-wrap gap-2 pt-2"
       >
         <input
           type="password"
@@ -466,55 +408,35 @@
           placeholder={m.manage_password_placeholder()}
           class="flex-1 rounded-md border border-slate-300 px-3 py-2 text-sm"
         />
-        <button
-          type="submit"
-          class="rounded-md bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700"
-        >
+        <Button type="submit" size="sm">
           {data.event.hasPassword ? m.manage_password_update() : m.manage_password_set()}
-        </button>
+        </Button>
       </form>
 
       {#if data.event.hasPassword}
-        <form
-          method="POST"
-          action="?/setPassword&token={data.token}"
-          use:enhance
-          class="mt-2"
-        >
+        <form method="POST" action="?/setPassword&token={data.token}" use:enhance class="pt-2">
           <input type="hidden" name="clear" value="1" />
-          <button
-            type="submit"
-            class="rounded-md border border-slate-300 px-3 py-1.5 text-xs hover:bg-slate-50"
-          >
+          <Button type="submit" variant="secondary" size="sm">
             {m.manage_password_clear()}
-          </button>
+          </Button>
         </form>
       {/if}
     {/if}
   </section>
 
-  <section class="rounded-lg border border-slate-200 p-4">
+  <section class="space-y-2 rounded-lg border border-slate-200 p-4">
     <h2 class="text-lg font-semibold">{m.manage_reminder_heading()}</h2>
-    <p class="mt-1 text-sm text-slate-600">{m.manage_reminder_body()}</p>
+    <p class="text-sm text-slate-600">{m.manage_reminder_body()}</p>
 
     {#if form?.reminderQueued}
-      <p class="mt-2 rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm">
-        {m.manage_reminder_queued()}
-      </p>
+      <Banner tone="success">{m.manage_reminder_queued()}</Banner>
     {/if}
     {#if form?.reminderError}
-      <p class="mt-2 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-        {localizeError(form.reminderError)}
-      </p>
+      <Banner tone="error">{localizeError(form.reminderError)}</Banner>
     {/if}
 
-    <form method="POST" action="?/remind&token={data.token}" use:enhance class="mt-3">
-      <button
-        type="submit"
-        class="rounded-md border border-slate-300 px-4 py-2 text-sm hover:bg-slate-50"
-      >
-        {m.manage_reminder_submit()}
-      </button>
+    <form method="POST" action="?/remind&token={data.token}" use:enhance class="pt-2">
+      <Button type="submit" variant="secondary" size="sm">{m.manage_reminder_submit()}</Button>
     </form>
   </section>
 </section>
