@@ -1,0 +1,18 @@
+/**
+ * Design-system entry point.
+ *
+ * Components surface via this barrel so call sites read
+ * `import { Button, Card } from '$lib/design'` rather than
+ * importing each `.svelte` file individually. Keep this list curated —
+ * the design system intentionally has fewer primitives than the surface
+ * might suggest.
+ *
+ * To preview every component live, run `pnpm -F @vitein/web dev` and
+ * open `/_design`.
+ */
+
+export { default as Button } from './Button.svelte';
+export { default as Banner } from './Banner.svelte';
+export { default as Card } from './Card.svelte';
+export { default as LanguageSwitcher } from './LanguageSwitcher.svelte';
+export { default as TextField } from './TextField.svelte';
