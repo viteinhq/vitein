@@ -16,7 +16,7 @@ import type { AppVariables, Env } from './types/env.js';
 
 export { RateLimiter } from './infra/rate-limiter.js';
 
-const app = new Hono<{ Bindings: Env; Variables: AppVariables }>();
+export const app = new Hono<{ Bindings: Env; Variables: AppVariables }>();
 
 // Tag every request with an id + per-request structured logger before
 // anything else can log.

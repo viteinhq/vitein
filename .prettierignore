@@ -9,3 +9,10 @@ pnpm-lock.yaml
 **/generated/**
 packages/ts-sdk/src/generated
 signatures
+# Drizzle-kit emits migrations + meta snapshots; never reformat them by hand —
+# the tool re-emits them on the next schema change.
+packages/db-schema/migrations
+# OpenAPI spec is the canonical source of truth; YAML formatting is preserved.
+packages/openapi-spec/vitein.yaml
+# Paraglide compiles message catalogs into apps/web/src/lib/paraglide on every build.
+apps/web/src/lib/paraglide

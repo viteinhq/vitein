@@ -4,20 +4,32 @@
  *
  * Usage:
  *   node scripts/loadtest.mjs <url> [--rps 100] [--duration 30]
+ *                                   [--method GET] [--body '{"x":1}']
+ *                                   [--header 'X-Foo: bar' ...]
  *
  * Reports count, errors, and p50/p95/p99 latencies. Targets from
  * PROJECT_PLAN §A.7:  p95 < 150ms on reads, < 400ms on writes at 100 RPS.
+ *
+ * For a full Phase-1-exit run, see scripts/loadtest-suite.sh — it sequences
+ * the canonical read and write scenarios against staging.
  */
 
 const args = process.argv.slice(2);
 const url = args[0];
 if (!url) {
-  console.error('usage: node scripts/loadtest.mjs <url> [--rps 100] [--duration 30]');
+  console.error(
+    'usage: node scripts/loadtest.mjs <url> [--rps 100] [--duration 30]\n' +
+      '                                       [--method GET] [--body JSON]\n' +
+      '                                       [--header "Name: value" ...]',
+  );
   process.exit(2);
 }
 
 const rps = readFlag('--rps', 100);
 const durationSec = readFlag('--duration', 30);
+const method = readString('--method', 'GET');
+const body = readString('--body', '');
+const headers = readHeaders('--header');
 const totalRequests = rps * durationSec;
 const intervalMs = 1000 / rps;
 
@@ -60,7 +72,14 @@ await new Promise((resolve) => {
   async function fire() {
     const t0 = performance.now();
     try {
-      const res = await fetch(url, { method: 'GET' });
+      const init = { method, headers: { ...headers } };
+      if (body) {
+        init.body = body;
+        if (!init.headers['content-type']) {
+          init.headers['content-type'] = 'application/json';
+        }
+      }
+      const res = await fetch(url, init);
       const latency = performance.now() - t0;
       latencies.push(latency);
       statusCounts.set(res.status, (statusCounts.get(res.status) ?? 0) + 1);
@@ -96,4 +115,23 @@ function readFlag(name, fallback) {
   const i = args.indexOf(name);
   if (i < 0) return fallback;
   return Number(args[i + 1] ?? fallback);
+}
+
+function readString(name, fallback) {
+  const i = args.indexOf(name);
+  if (i < 0) return fallback;
+  return args[i + 1] ?? fallback;
+}
+
+function readHeaders(name) {
+  const out = {};
+  for (let i = 0; i < args.length; i += 1) {
+    if (args[i] !== name) continue;
+    const raw = args[i + 1];
+    if (!raw) continue;
+    const colon = raw.indexOf(':');
+    if (colon < 0) continue;
+    out[raw.slice(0, colon).trim().toLowerCase()] = raw.slice(colon + 1).trim();
+  }
+  return out;
 }

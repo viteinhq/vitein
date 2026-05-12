@@ -73,9 +73,7 @@ export async function prepareAnnouncement(
     .select({ email: guests.email })
     .from(guests)
     .where(eq(guests.eventId, eventId));
-  const recipients = guestRows
-    .map((g) => g.email?.trim() ?? '')
-    .filter((e) => e.length > 0);
+  const recipients = guestRows.map((g) => g.email?.trim() ?? '').filter((e) => e.length > 0);
 
   if (recipients.length === 0) {
     throw new ValidationError('No guests with email addresses on the invite list');

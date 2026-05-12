@@ -11,7 +11,11 @@ import {
 } from '../domain/events/events.js';
 import { buildEventIcs } from '../domain/events/ics.js';
 import { verifyPassword } from '../domain/events/password.js';
-import { issueViewToken, isViewTokenValid, VIEW_TOKEN_TTL_SECONDS } from '../domain/events/view-tokens.js';
+import {
+  issueViewToken,
+  isViewTokenValid,
+  VIEW_TOKEN_TTL_SECONDS,
+} from '../domain/events/view-tokens.js';
 import { DomainError, UnauthorizedError, ValidationError } from '../domain/errors.js';
 import { tierIncludes, tierOf } from '../domain/payments/payments.js';
 import { db } from '../infra/db.js';
