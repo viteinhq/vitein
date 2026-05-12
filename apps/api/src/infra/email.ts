@@ -6,6 +6,21 @@ import { rootLogger } from './logger.js';
  * account), this is a no-op that logs the intended send and reports
  * `sent: false`. That keeps `/v1/events` working end-to-end without external
  * accounts, so UI and integration tests can drive the flow in dev.
+ *
+ * TODO (i18n): every subject + body in this file is hard-coded English.
+ * The web app supports 8 locales as of 2026-05-12 but emails still go out
+ * monolingually. Plan (deferred until web translations are reviewed —
+ * see docs/ops/i18n-review.md):
+ *   1. Add `locale?: Locale` to every input interface; propagate from
+ *      the calling route (event.default_locale for creator + announcement
+ *      flows; auth-user-locale for sign-in; RSVP submitter's
+ *      Accept-Language for confirmation).
+ *   2. Externalise each body to a per-locale template file (or a thin
+ *      template-key + dictionary lookup like packages/i18n-messages).
+ *   3. Default-locale fallback chain matches @vitein/i18n-messages:
+ *      requested → en → first-key.
+ *   4. Keep this wrapper agnostic of templating engine; subjects and
+ *      bodies become plain strings by the time sendEmail() is called.
  */
 
 export interface SendResult {
