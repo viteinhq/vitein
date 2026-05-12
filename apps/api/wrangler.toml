@@ -52,6 +52,7 @@ routes = [{ pattern = "api.vite.in", custom_domain = true }]
 [env.production.vars]
 ENVIRONMENT = "production"
 WEB_BASE_URL = "https://vite.in"
+MEDIA_PUBLIC_BASE_URL = "https://media.vite.in"
 
 [[env.production.durable_objects.bindings]]
 name = "RATE_LIMITER"

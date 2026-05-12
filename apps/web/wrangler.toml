@@ -10,4 +10,4 @@ API_BASE_URL = "https://api-staging.vite.in"
 API_BASE_URL = "https://api-staging.vite.in"
 
 [env.production.vars]
-API_BASE_URL = "https://api-staging.vite.in"
+API_BASE_URL = "https://api.vite.in"
