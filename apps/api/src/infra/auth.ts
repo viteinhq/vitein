@@ -93,7 +93,11 @@ export function createAuth(env: Env) {
           const landing = new URL('/auth/continue', webBase);
           landing.searchParams.set('t', token);
           landing.searchParams.set('cb', callbackURL);
-          await sendSignInMagicLink(env, { to: email, url: landing.toString() });
+          // Locale is unknown at this point — there's no session yet and
+          // Better-Auth's plugin doesn't surface the originating request.
+          // English fallback is acceptable on first-touch; a future pass
+          // can plumb Accept-Language through createAuth().
+          await sendSignInMagicLink(env, { to: email, url: landing.toString() }, undefined);
         },
       }),
     ],

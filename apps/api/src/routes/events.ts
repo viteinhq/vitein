@@ -19,7 +19,7 @@ import {
 import { DomainError, UnauthorizedError, ValidationError } from '../domain/errors.js';
 import { tierIncludes, tierOf } from '../domain/payments/payments.js';
 import { db } from '../infra/db.js';
-import { sendCreatorMagicLink } from '../infra/email.js';
+import { localeFromAcceptLanguage, sendCreatorMagicLink } from '../infra/email.js';
 import { requireCreator } from '../middleware/require-creator.js';
 import type { AppVariables, Env } from '../types/env.js';
 import { announcementsRoute } from './announcements.js';
@@ -85,11 +85,15 @@ eventsRoute.post(
     });
 
     const manageUrl = `${c.env.WEB_BASE_URL ?? 'https://vite.in'}/e/${event.slug}/manage?token=${creatorToken}`;
-    const { sent } = await sendCreatorMagicLink(c.env, {
-      to: event.creatorEmail,
-      eventTitle: event.title,
-      manageUrl,
-    });
+    const { sent } = await sendCreatorMagicLink(
+      c.env,
+      {
+        to: event.creatorEmail,
+        eventTitle: event.title,
+        manageUrl,
+      },
+      localeFromAcceptLanguage(event.defaultLocale),
+    );
 
     return c.json(
       {

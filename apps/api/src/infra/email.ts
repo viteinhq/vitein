@@ -1,3 +1,13 @@
+import { negotiateLocale, type Locale } from '@vitein/i18n-messages';
+import { templatesFor } from './email-templates.js';
+import type {
+  AnnouncementInput,
+  CreatorMagicLinkInput,
+  ReminderInput,
+  RsvpConfirmationInput,
+  RsvpNotificationInput,
+  SignInMagicLinkInput,
+} from './email-types.js';
 import type { Env } from '../types/env.js';
 import { rootLogger } from './logger.js';
 
@@ -7,51 +17,23 @@ import { rootLogger } from './logger.js';
  * `sent: false`. That keeps `/v1/events` working end-to-end without external
  * accounts, so UI and integration tests can drive the flow in dev.
  *
- * TODO (i18n): every subject + body in this file is hard-coded English.
- * The web app supports 8 locales as of 2026-05-12 but emails still go out
- * monolingually. Plan (deferred until web translations are reviewed —
- * see docs/ops/i18n-review.md):
- *   1. Add `locale?: Locale` to every input interface; propagate from
- *      the calling route (event.default_locale for creator + announcement
- *      flows; auth-user-locale for sign-in; RSVP submitter's
- *      Accept-Language for confirmation).
- *   2. Externalise each body to a per-locale template file (or a thin
- *      template-key + dictionary lookup like packages/i18n-messages).
- *   3. Default-locale fallback chain matches @vitein/i18n-messages:
- *      requested → en → first-key.
- *   4. Keep this wrapper agnostic of templating engine; subjects and
- *      bodies become plain strings by the time sendEmail() is called.
+ * Locale plumbing: every send function takes a `locale: Locale | undefined`
+ * and looks up the matching template bundle in `email-templates.ts`. Caller
+ * decides which signal feeds it — event.default_locale for creator-bound
+ * mail, Accept-Language for guest-bound, etc.
  */
+
+export type {
+  CreatorMagicLinkInput,
+  SignInMagicLinkInput,
+  RsvpConfirmationInput,
+  RsvpNotificationInput,
+  ReminderInput,
+  AnnouncementInput,
+};
 
 export interface SendResult {
   sent: boolean;
-}
-
-export interface CreatorMagicLinkInput {
-  to: string;
-  eventTitle: string;
-  manageUrl: string;
-}
-
-export interface SignInMagicLinkInput {
-  to: string;
-  url: string;
-}
-
-export interface RsvpConfirmationInput {
-  to: string;
-  eventTitle: string;
-  status: 'yes' | 'maybe' | 'no';
-  eventUrl: string;
-}
-
-export interface RsvpNotificationInput {
-  to: string;
-  eventTitle: string;
-  guestName: string;
-  status: 'yes' | 'maybe' | 'no';
-  plusOnes: number;
-  manageUrl: string;
 }
 
 const FROM_ADDRESS = 'vite.in <no-reply@vite.in>';
@@ -59,86 +41,93 @@ const FROM_ADDRESS = 'vite.in <no-reply@vite.in>';
 export async function sendCreatorMagicLink(
   env: Env,
   input: CreatorMagicLinkInput,
+  locale: Locale | undefined,
 ): Promise<SendResult> {
+  const t = templatesFor(locale).creatorMagicLink;
   return sendEmail(env, {
     to: input.to,
-    subject: `Manage your event: ${input.eventTitle}`,
-    text: creatorMagicLinkBody(input),
-    logHint: { eventTitle: input.eventTitle },
+    subject: t.subject(input),
+    text: t.body(input),
+    logHint: { eventTitle: input.eventTitle, locale: locale ?? 'fallback' },
   });
 }
 
 export async function sendSignInMagicLink(
   env: Env,
   input: SignInMagicLinkInput,
+  locale: Locale | undefined,
 ): Promise<SendResult> {
+  const t = templatesFor(locale).signInMagicLink;
   return sendEmail(env, {
     to: input.to,
-    subject: 'Your vite.in sign-in link',
-    text: signInMagicLinkBody(input),
-    logHint: { kind: 'sign-in' },
+    subject: t.subject(input),
+    text: t.body(input),
+    logHint: { kind: 'sign-in', locale: locale ?? 'fallback' },
   });
 }
 
 export async function sendRsvpConfirmation(
   env: Env,
   input: RsvpConfirmationInput,
+  locale: Locale | undefined,
 ): Promise<SendResult> {
+  const t = templatesFor(locale).rsvpConfirmation;
   return sendEmail(env, {
     to: input.to,
-    subject: `RSVP recorded: ${input.eventTitle}`,
-    text: rsvpConfirmationBody(input),
-    logHint: { kind: 'rsvp-confirmation' },
+    subject: t.subject(input),
+    text: t.body(input),
+    logHint: { kind: 'rsvp-confirmation', locale: locale ?? 'fallback' },
   });
 }
 
 export async function sendRsvpNotification(
   env: Env,
   input: RsvpNotificationInput,
+  locale: Locale | undefined,
 ): Promise<SendResult> {
+  const t = templatesFor(locale).rsvpNotification;
   return sendEmail(env, {
     to: input.to,
-    subject: `New RSVP for ${input.eventTitle}`,
-    text: rsvpNotificationBody(input),
-    logHint: { kind: 'rsvp-notification' },
+    subject: t.subject(input),
+    text: t.body(input),
+    logHint: { kind: 'rsvp-notification', locale: locale ?? 'fallback' },
   });
 }
 
-export interface ReminderInput {
-  to: string;
-  eventTitle: string;
-  startsAt: Date;
-  eventUrl: string;
-}
-
-export interface AnnouncementInput {
-  to: string;
-  eventTitle: string;
-  startsAt: Date;
-  eventUrl: string;
-  stage: 'save_the_date' | 'invitation';
-}
-
-export async function sendReminder(env: Env, input: ReminderInput): Promise<SendResult> {
+export async function sendReminder(
+  env: Env,
+  input: ReminderInput,
+  locale: Locale | undefined,
+): Promise<SendResult> {
+  const t = templatesFor(locale).reminder;
   return sendEmail(env, {
     to: input.to,
-    subject: `Reminder: ${input.eventTitle}`,
-    text: reminderBody(input),
-    logHint: { kind: 'reminder' },
+    subject: t.subject(input),
+    text: t.body(input),
+    logHint: { kind: 'reminder', locale: locale ?? 'fallback' },
   });
 }
 
-export async function sendAnnouncement(env: Env, input: AnnouncementInput): Promise<SendResult> {
-  const subject =
-    input.stage === 'save_the_date'
-      ? `Save the date — ${input.eventTitle}`
-      : `You're invited: ${input.eventTitle}`;
+export async function sendAnnouncement(
+  env: Env,
+  input: AnnouncementInput,
+  locale: Locale | undefined,
+): Promise<SendResult> {
+  const t = templatesFor(locale).announcement;
   return sendEmail(env, {
     to: input.to,
-    subject,
-    text: announcementBody(input),
-    logHint: { kind: 'announcement', stage: input.stage },
+    subject: t.subject(input),
+    text: t.body(input),
+    logHint: { kind: 'announcement', stage: input.stage, locale: locale ?? 'fallback' },
   });
+}
+
+/**
+ * Helper: callers that have an `Accept-Language` header (sign-in,
+ * RSVP confirmation) can derive a supported locale from it.
+ */
+export function localeFromAcceptLanguage(header: string | null | undefined): Locale {
+  return negotiateLocale(header);
 }
 
 interface SendEmailInput {
@@ -177,95 +166,4 @@ async function sendEmail(env: Env, input: SendEmailInput): Promise<SendResult> {
   }
 
   return { sent: true };
-}
-
-function creatorMagicLinkBody({ eventTitle, manageUrl }: CreatorMagicLinkInput): string {
-  return [
-    `Your event "${eventTitle}" is live on vite.in.`,
-    '',
-    'Use the link below to manage it — view RSVPs, edit details, send reminders:',
-    manageUrl,
-    '',
-    'Keep this link private. Anyone with the link can manage the event.',
-    '',
-    '— vite.in',
-  ].join('\n');
-}
-
-function signInMagicLinkBody({ url }: SignInMagicLinkInput): string {
-  return [
-    'Click the link below to sign in to vite.in:',
-    url,
-    '',
-    'This link expires in 10 minutes. If you did not request it, you can ignore this email.',
-    '',
-    '— vite.in',
-  ].join('\n');
-}
-
-function rsvpConfirmationBody({ eventTitle, status, eventUrl }: RsvpConfirmationInput): string {
-  const verb =
-    status === 'yes' ? 'going to' : status === 'maybe' ? 'tentatively attending' : 'declining';
-  return [
-    `Thanks — we recorded your RSVP for "${eventTitle}".`,
-    `You are ${verb} this event.`,
-    '',
-    'Event details:',
-    eventUrl,
-    '',
-    'You can update your RSVP any time by re-submitting the form.',
-    '',
-    '— vite.in',
-  ].join('\n');
-}
-
-function reminderBody({ eventTitle, startsAt, eventUrl }: ReminderInput): string {
-  return [
-    `Reminder: "${eventTitle}" is coming up at ${startsAt.toISOString()}.`,
-    '',
-    'Event details:',
-    eventUrl,
-    '',
-    '— vite.in',
-  ].join('\n');
-}
-
-function announcementBody({ eventTitle, startsAt, eventUrl, stage }: AnnouncementInput): string {
-  if (stage === 'save_the_date') {
-    return [
-      `Save the date: "${eventTitle}" — ${startsAt.toISOString()}.`,
-      '',
-      'The full invitation with location and details will follow. For now, please hold the date in your calendar.',
-      '',
-      eventUrl,
-      '',
-      '— vite.in',
-    ].join('\n');
-  }
-  return [
-    `You're invited to "${eventTitle}" on ${startsAt.toISOString()}.`,
-    '',
-    'Details and RSVP:',
-    eventUrl,
-    '',
-    '— vite.in',
-  ].join('\n');
-}
-
-function rsvpNotificationBody({
-  eventTitle,
-  guestName,
-  status,
-  plusOnes,
-  manageUrl,
-}: RsvpNotificationInput): string {
-  const extras = plusOnes > 0 ? ` (+${String(plusOnes)})` : '';
-  return [
-    `New RSVP on "${eventTitle}": ${guestName} — ${status}${extras}.`,
-    '',
-    'Manage your event and see all RSVPs:',
-    manageUrl,
-    '',
-    '— vite.in',
-  ].join('\n');
 }

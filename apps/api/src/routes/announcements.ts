@@ -10,7 +10,7 @@ import {
 import { DomainError, ValidationError } from '../domain/errors.js';
 import { tierIncludes, tierOf } from '../domain/payments/payments.js';
 import { db } from '../infra/db.js';
-import { sendAnnouncement } from '../infra/email.js';
+import { localeFromAcceptLanguage, sendAnnouncement } from '../infra/email.js';
 import { requireCreator } from '../middleware/require-creator.js';
 import type { AppVariables, Env } from '../types/env.js';
 
@@ -77,17 +77,23 @@ announcementsRoute.post(
     const webBase = c.env.WEB_BASE_URL ?? 'https://vite.in';
     const eventUrl = `${webBase}/e/${event.slug}`;
 
+    const eventLocale = localeFromAcceptLanguage(event.defaultLocale);
+
     let sentOk = 0;
     let failed = 0;
     for (const to of recipients) {
       try {
-        const result = await sendAnnouncement(c.env, {
-          to,
-          eventTitle: event.title,
-          startsAt: event.startsAt,
-          eventUrl,
-          stage: stage as AnnouncementStage,
-        });
+        const result = await sendAnnouncement(
+          c.env,
+          {
+            to,
+            eventTitle: event.title,
+            startsAt: event.startsAt,
+            eventUrl,
+            stage: stage as AnnouncementStage,
+          },
+          eventLocale,
+        );
         if (result.sent) sentOk += 1;
       } catch (err) {
         failed += 1;
