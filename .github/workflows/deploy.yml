@@ -29,7 +29,13 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm -F @vitein/api exec wrangler deploy --env staging
+      - name: Compute build stamp
+        id: stamp
+        run: echo "stamp=$(date -u +%Y-%m-%dT%H:%MZ)" >> "$GITHUB_OUTPUT"
+      - run: |
+          pnpm -F @vitein/api exec wrangler deploy --env staging \
+            --var BUILD_SHA:${{ github.sha }} \
+            --var BUILD_STAMP:${{ steps.stamp.outputs.stamp }}
 
   deploy-mcp:
     name: MCP → staging

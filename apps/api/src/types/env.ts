@@ -7,6 +7,10 @@
 export interface Env {
   // Vars (wrangler.toml [vars] / [env.*.vars])
   ENVIRONMENT: 'dev' | 'staging' | 'production';
+  /** Short git SHA of the deployed commit, injected by CI via `--var BUILD_SHA:...`. */
+  BUILD_SHA?: string;
+  /** ISO-minute UTC timestamp recorded at deploy time. */
+  BUILD_STAMP?: string;
 
   // Secrets (set via `wrangler secret put ...`)
   SENTRY_DSN?: string;
