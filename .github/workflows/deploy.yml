@@ -11,6 +11,7 @@ concurrency:
 
 permissions:
   contents: read
+  issues: write
 
 env:
   CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -73,3 +74,79 @@ jobs:
             --branch=main \
             --commit-message="deploy ${{ github.sha }}" \
             --commit-hash="${{ github.sha }}"
+
+  # Opens a GitHub Issue when any of the deploy jobs above failed. This is
+  # the safety net against the silent-failure scenario from 2026-05-12 where
+  # two consecutive deploys broke on a Node-version mismatch and nobody
+  # noticed for hours. Re-uses one open issue per commit to avoid noise.
+  notify-failure:
+    name: Open issue on deploy failure
+    needs: [deploy-api, deploy-mcp, deploy-web]
+    if: failure()
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/github-script@v8
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const sha = context.sha;
+            const shortSha = sha.slice(0, 7);
+            const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
+
+            // Ensure the label exists (idempotent).
+            try {
+              await github.rest.issues.getLabel({ owner, repo, name: 'deploy-failure' });
+            } catch (err) {
+              if (err.status === 404) {
+                await github.rest.issues.createLabel({
+                  owner,
+                  repo,
+                  name: 'deploy-failure',
+                  color: 'd93f0b',
+                  description: 'Automated alert: a deploy.yml job failed.',
+                });
+              } else {
+                throw err;
+              }
+            }
+
+            const title = `Deploy failed: ${shortSha}`;
+            const body = [
+              `Deploy workflow run **failed** for commit \`${sha}\`.`,
+              ``,
+              `**Run:** ${runUrl}`,
+              `**Triggered by:** \`${context.eventName}\` on \`${context.ref}\``,
+              ``,
+              `Open the run linked above to see which of \`deploy-api\`, \`deploy-mcp\`, \`deploy-web\` turned red.`,
+              ``,
+              `Staging may be running stale code until the next successful deploy. See \`docs/ops/runbook.md\` → Worker rollback.`,
+            ].join('\n');
+
+            // De-dupe: if an open issue already exists for this SHA, comment
+            // on it instead of opening a duplicate.
+            const existing = await github.rest.issues.listForRepo({
+              owner,
+              repo,
+              state: 'open',
+              labels: 'deploy-failure',
+              per_page: 50,
+            });
+            const dup = existing.data.find((i) => i.title === title);
+
+            if (dup) {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: dup.number,
+                body: `Another deploy attempt failed on the same commit: ${runUrl}`,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner,
+                repo,
+                title,
+                body,
+                labels: ['deploy-failure'],
+              });
+            }
