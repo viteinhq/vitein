@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { version } from '$app/environment';
   import { page } from '$app/state';
   import { i18n } from '$lib/i18n';
   import { languageTag, availableLanguageTags } from '$lib/paraglide/runtime.js';
@@ -47,6 +48,13 @@
       >
         {other === 'de' ? m.footer_switch_to_de() : m.footer_switch_to_en()}
       </a>
+    </div>
+    <div
+      class="mx-auto mt-4 max-w-4xl font-mono text-[10px] text-slate-400"
+      aria-hidden="true"
+      title="build"
+    >
+      {version}
     </div>
   </footer>
 </div>
