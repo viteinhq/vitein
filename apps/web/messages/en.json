@@ -1,28 +1,21 @@
 {
   "$schema": "https://inlang.com/schema/inlang-message-format",
-
   "nav_create": "Create event",
   "nav_pricing": "Pricing",
   "nav_signin": "Sign in",
-
   "footer_impressum": "Impressum",
   "footer_privacy": "Privacy",
   "footer_terms": "Terms",
-  "footer_switch_to_de": "Deutsch",
-  "footer_switch_to_en": "English",
-
   "home_title": "Invitations, reimagined.",
   "home_sub": "Create an event in seconds — no account needed. Guests RSVP from any device. Free for most events, €5 for premium features.",
   "home_cta_primary": "Create an event",
   "home_cta_secondary": "See pricing",
-
   "home_features_anonymous_title": "No account required",
   "home_features_anonymous_body": "Start an invitation from any browser. A magic link lets you manage it later.",
   "home_features_global_title": "Global from day one",
   "home_features_global_body": "Timezones, locales, and currencies handled automatically. Shareable in a click.",
   "home_features_open_title": "Open source core",
   "home_features_open_body": "AGPLv3. Self-host the core, or use the hosted version. No lock-in.",
-
   "home_how_heading": "How it works",
   "home_how_step1_title": "1. Create",
   "home_how_step1_body": "Fill in the basics and your email. We send you a magic link to manage the event.",
@@ -31,7 +24,6 @@
   "home_how_step3_title": "3. Track",
   "home_how_step3_body": "Watch RSVPs roll in. Send a reminder when the date approaches.",
   "home_oss_link": "View source on GitHub",
-
   "pricing_title": "Pricing",
   "pricing_free_name": "Free",
   "pricing_free_price": "€0",
@@ -48,27 +40,22 @@
   "pricing_paid_item_media": "Cover image + gallery",
   "pricing_paid_item_reminders": "Scheduled reminders",
   "pricing_paid_item_password": "Password-protected events",
-
   "legal_impressum_title": "Impressum",
   "legal_privacy_title": "Privacy policy",
   "legal_terms_title": "Terms of service",
   "legal_draft": "Draft — will be finalised before public launch.",
-
   "signin_title": "Sign in",
   "signin_blurb": "Enter your email and we'll send you a one-time magic link. No password needed.",
   "signin_email_label": "Email",
   "signin_submit": "Send magic link",
-
   "signin_check_title": "Check your email",
   "signin_check_body": "We sent a magic link to sign you in. Click it from the same device and you'll be dropped back into your dashboard.",
   "signin_check_wrong_email": "Wrong email?",
   "signin_check_try_again": "Try again",
-
   "auth_continue_title": "Almost there.",
   "auth_continue_body": "One more tap to finish signing in to vite.in.",
   "auth_continue_submit": "Continue",
   "auth_continue_note": "This extra tap exists so that link-safety scanners (like Gmail's) can't accidentally consume your single-use sign-in link before you click it.",
-
   "create_title": "Create an event",
   "create_subtitle": "No account needed. Your guests get a link, you get a magic link by email.",
   "create_section_basics": "The basics",
@@ -99,11 +86,9 @@
   "create_success_copied": "Copied!",
   "create_success_magic_sent": "A magic link to manage this event has been sent to your email.",
   "create_success_dev_mode": "Email delivery is disabled in this environment. Manage link:",
-
   "account_signed_in_as": "Signed in as",
   "account_nav_dashboard": "Dashboard",
   "account_signout": "Sign out",
-
   "dashboard_title": "Your events",
   "dashboard_new_event": "New event",
   "dashboard_claim_one": "Claimed 1 event to your account. Reload to see it.",
@@ -113,13 +98,11 @@
   "dashboard_empty_line": "No events yet.",
   "dashboard_empty_create": "Create one",
   "dashboard_empty_or_claim": ", or claim events you created anonymously with the same email.",
-
   "event_locked_heading": "This event is private",
   "event_locked_body": "Enter the password you were given to see the details.",
   "event_locked_password_label": "Password",
   "event_locked_submit": "Unlock",
   "event_locked_submitting": "Checking…",
-
   "event_when_label": "When",
   "event_where_label": "Where",
   "event_until": "until",
@@ -149,7 +132,6 @@
   "event_rsvp_message_optional": "Message (optional)",
   "event_rsvp_submit": "Submit RSVP",
   "event_rsvp_submitting": "Submitting…",
-
   "manage_label": "Managing",
   "manage_public_link": "Public link:",
   "manage_media_heading": "Media",
@@ -181,7 +163,6 @@
   "manage_announcements_invitation_sent": "Invitation sent on {date} to {count} guests.",
   "manage_announcements_plus_hint": "Save-the-Date requires the Plus tier. Invitation works on Basic and Plus.",
   "manage_announcements_working": "Sending…",
-
   "manage_password_heading": "Password protection",
   "manage_password_body_locked": "This event requires a password to view.",
   "manage_password_body_unlocked": "Set a password and guests will have to enter it before they can see the event details.",
@@ -192,7 +173,6 @@
   "manage_password_set_ok": "Password set.",
   "manage_password_cleared_ok": "Password removed.",
   "manage_password_plus_required": "Password protection is a Plus-tier feature. Upgrade to Plus to enable it.",
-
   "manage_upgrade_heading": "Upgrade to premium",
   "manage_upgrade_body": "One-time payment per event. Pick a tier and a currency.",
   "manage_upgrade_currency_label": "Currency",
@@ -203,7 +183,6 @@
   "manage_upgrade_already_tier_plus": "This event is on the Plus tier. All extras are unlocked.",
   "manage_upgrade_success": "Payment received. Premium features are now active.",
   "manage_upgrade_canceled": "Checkout canceled. No charge was made.",
-
   "tier_basic_name": "Basic",
   "tier_basic_tagline": "The high-conversion essentials.",
   "tier_basic_price_eur": "€5",
@@ -213,7 +192,6 @@
   "tier_basic_item_branding": "No vite.in branding",
   "tier_basic_item_slug": "Custom URL slug",
   "tier_basic_item_reminders": "Reminder emails to guests",
-
   "tier_plus_name": "Plus",
   "tier_plus_tagline": "For weddings, formal events, and everything that matters.",
   "tier_plus_price_eur": "€9",
@@ -224,7 +202,6 @@
   "tier_plus_item_plus_ones": "Plus-Ones management",
   "tier_plus_item_password": "Password-protected events",
   "tier_plus_item_save_the_date": "Save-the-Date announcements",
-
   "err_unknown": "Something went wrong. Please try again.",
   "err_create_missing_fields": "Please fill in title, start date, and your email.",
   "err_create_failed": "Could not create the event. Please try again.",
@@ -257,7 +234,6 @@
   "err_announcement_no_guests": "Add guests with email addresses before sending.",
   "err_announcement_too_many": "Guest list exceeds the {max}-recipient MVP cap.",
   "err_announcement_http": "Send failed (HTTP {status}).",
-
   "err_page_title": "Something went wrong",
   "err_page_back_home": "Back to home",
   "err_http_event_not_found": "This event doesn't exist or has been removed.",

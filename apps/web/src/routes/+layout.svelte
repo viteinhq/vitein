@@ -1,18 +1,12 @@
 <script lang="ts">
   import { version } from '$app/environment';
-  import { page } from '$app/state';
-  import { i18n } from '$lib/i18n';
-  import { languageTag, availableLanguageTags } from '$lib/paraglide/runtime.js';
+  import LanguageSwitcher from '$lib/design/LanguageSwitcher.svelte';
   import * as m from '$lib/paraglide/messages.js';
   import type { Snippet } from 'svelte';
   import type { LayoutProps } from './$types';
   import '../app.css';
 
   let { children }: LayoutProps & { children: Snippet } = $props();
-
-  const canonicalPath = $derived(i18n.route(page.url.pathname));
-  const other = $derived(availableLanguageTags.find((l) => l !== languageTag()) ?? 'en');
-  const switchHref = $derived(i18n.resolveRoute(canonicalPath, other));
 </script>
 
 <div class="flex min-h-screen flex-col">
@@ -40,14 +34,7 @@
         <a href="/legal/privacy" class="hover:underline">{m.footer_privacy()}</a>
         <a href="/legal/terms" class="hover:underline">{m.footer_terms()}</a>
       </nav>
-      <a
-        href={switchHref}
-        hreflang={other}
-        data-sveltekit-reload
-        class="text-xs text-slate-500 hover:underline"
-      >
-        {other === 'de' ? m.footer_switch_to_de() : m.footer_switch_to_en()}
-      </a>
+      <LanguageSwitcher />
     </div>
     <div
       class="mx-auto mt-4 max-w-4xl font-mono text-[10px] text-slate-400"

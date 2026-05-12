@@ -1,28 +1,21 @@
 {
   "$schema": "https://inlang.com/schema/inlang-message-format",
-
   "nav_create": "Crear evento",
   "nav_pricing": "Precios",
   "nav_signin": "Iniciar sesión",
-
   "footer_impressum": "Aviso legal",
   "footer_privacy": "Privacidad",
   "footer_terms": "Términos",
-  "footer_switch_to_de": "Deutsch",
-  "footer_switch_to_en": "English",
-
   "home_title": "Invitaciones, reinventadas.",
   "home_sub": "Crea un evento en segundos — sin cuenta. Los invitados confirman desde cualquier dispositivo. Gratis para la mayoría de los eventos, 5 € por las funciones premium.",
   "home_cta_primary": "Crear un evento",
   "home_cta_secondary": "Ver precios",
-
   "home_features_anonymous_title": "Sin cuenta requerida",
   "home_features_anonymous_body": "Inicia una invitación desde cualquier navegador. Un enlace mágico te permite gestionarla después.",
   "home_features_global_title": "Global desde el primer día",
   "home_features_global_body": "Zonas horarias, idiomas y monedas gestionados automáticamente. Compartible con un clic.",
   "home_features_open_title": "Núcleo de código abierto",
   "home_features_open_body": "AGPLv3. Aloja tú mismo el núcleo o usa la versión hospedada. Sin bloqueo.",
-
   "home_how_heading": "Cómo funciona",
   "home_how_step1_title": "1. Crear",
   "home_how_step1_body": "Rellena lo básico y tu correo. Te enviamos un enlace mágico para gestionar el evento.",
@@ -31,7 +24,6 @@
   "home_how_step3_title": "3. Seguir",
   "home_how_step3_body": "Mira llegar las confirmaciones. Envía un recordatorio cuando se acerque la fecha.",
   "home_oss_link": "Ver el código en GitHub",
-
   "pricing_title": "Precios",
   "pricing_free_name": "Gratis",
   "pricing_free_price": "0 €",
@@ -48,27 +40,22 @@
   "pricing_paid_item_media": "Imagen de portada y galería",
   "pricing_paid_item_reminders": "Recordatorios programados",
   "pricing_paid_item_password": "Eventos protegidos por contraseña",
-
   "legal_impressum_title": "Aviso legal",
   "legal_privacy_title": "Política de privacidad",
   "legal_terms_title": "Condiciones de servicio",
   "legal_draft": "Borrador — se finalizará antes del lanzamiento público.",
-
   "signin_title": "Iniciar sesión",
   "signin_blurb": "Introduce tu correo y te enviaremos un enlace mágico de un solo uso. Sin contraseña.",
   "signin_email_label": "Correo electrónico",
   "signin_submit": "Enviar enlace mágico",
-
   "signin_check_title": "Revisa tu correo",
   "signin_check_body": "Te enviamos un enlace mágico para iniciar sesión. Haz clic desde el mismo dispositivo y volverás a tu panel.",
   "signin_check_wrong_email": "¿Correo incorrecto?",
   "signin_check_try_again": "Volver a intentarlo",
-
   "auth_continue_title": "Ya casi.",
   "auth_continue_body": "Un toque más para terminar de iniciar sesión en vite.in.",
   "auth_continue_submit": "Continuar",
   "auth_continue_note": "Este toque extra evita que los escáneres de enlaces (como el de Gmail) consuman accidentalmente tu enlace de inicio de sesión de un solo uso antes de que hagas clic.",
-
   "create_title": "Crear un evento",
   "create_subtitle": "Sin cuenta. Tus invitados reciben un enlace, tú recibes un enlace mágico por correo.",
   "create_section_basics": "Lo básico",
@@ -99,11 +86,9 @@
   "create_success_copied": "¡Copiado!",
   "create_success_magic_sent": "Te hemos enviado un enlace mágico por correo para gestionar este evento.",
   "create_success_dev_mode": "El envío de correos está deshabilitado en este entorno. Enlace de gestión:",
-
   "account_signed_in_as": "Sesión iniciada como",
   "account_nav_dashboard": "Panel",
   "account_signout": "Cerrar sesión",
-
   "dashboard_title": "Tus eventos",
   "dashboard_new_event": "Nuevo evento",
   "dashboard_claim_one": "1 evento vinculado a tu cuenta. Recarga para verlo.",
@@ -113,13 +98,11 @@
   "dashboard_empty_line": "Aún no hay eventos.",
   "dashboard_empty_create": "Crea uno",
   "dashboard_empty_or_claim": ", o vincula eventos que hayas creado anónimamente con el mismo correo.",
-
   "event_locked_heading": "Este evento es privado",
   "event_locked_body": "Introduce la contraseña que recibiste para ver los detalles.",
   "event_locked_password_label": "Contraseña",
   "event_locked_submit": "Desbloquear",
   "event_locked_submitting": "Comprobando…",
-
   "event_when_label": "Cuándo",
   "event_where_label": "Dónde",
   "event_until": "hasta",
@@ -149,7 +132,6 @@
   "event_rsvp_message_optional": "Mensaje (opcional)",
   "event_rsvp_submit": "Enviar respuesta",
   "event_rsvp_submitting": "Enviando…",
-
   "manage_label": "Gestionando",
   "manage_public_link": "Enlace público:",
   "manage_media_heading": "Medios",
@@ -181,7 +163,6 @@
   "manage_announcements_invitation_sent": "Invitación enviada el {date} a {count} invitados.",
   "manage_announcements_plus_hint": "Save-the-Date requiere el plan Plus. La invitación funciona en Basic y Plus.",
   "manage_announcements_working": "Enviando…",
-
   "manage_password_heading": "Protección con contraseña",
   "manage_password_body_locked": "Este evento requiere una contraseña para verse.",
   "manage_password_body_unlocked": "Establece una contraseña y los invitados tendrán que escribirla antes de ver los detalles del evento.",
@@ -192,7 +173,6 @@
   "manage_password_set_ok": "Contraseña establecida.",
   "manage_password_cleared_ok": "Contraseña eliminada.",
   "manage_password_plus_required": "La protección con contraseña es una función Plus. Cambia a Plus para activarla.",
-
   "manage_upgrade_heading": "Pasar a premium",
   "manage_upgrade_body": "Pago único por evento. Elige un plan y una moneda.",
   "manage_upgrade_currency_label": "Moneda",
@@ -203,7 +183,6 @@
   "manage_upgrade_already_tier_plus": "Este evento está en el plan Plus. Todos los extras están desbloqueados.",
   "manage_upgrade_success": "Pago recibido. Las funciones premium ya están activas.",
   "manage_upgrade_canceled": "Pago cancelado. No se ha realizado ningún cargo.",
-
   "tier_basic_name": "Basic",
   "tier_basic_tagline": "Lo esencial con alta conversión.",
   "tier_basic_price_eur": "5 €",
@@ -213,7 +192,6 @@
   "tier_basic_item_branding": "Sin marca vite.in",
   "tier_basic_item_slug": "URL personalizada",
   "tier_basic_item_reminders": "Correos de recordatorio a los invitados",
-
   "tier_plus_name": "Plus",
   "tier_plus_tagline": "Para bodas, eventos formales y todo lo que importa.",
   "tier_plus_price_eur": "9 €",
@@ -224,7 +202,6 @@
   "tier_plus_item_plus_ones": "Gestión de acompañantes",
   "tier_plus_item_password": "Eventos protegidos por contraseña",
   "tier_plus_item_save_the_date": "Anuncios Save-the-Date",
-
   "err_unknown": "Algo salió mal. Inténtalo de nuevo.",
   "err_create_missing_fields": "Rellena título, fecha de inicio y tu correo.",
   "err_create_failed": "No se pudo crear el evento. Inténtalo de nuevo.",
@@ -257,7 +234,6 @@
   "err_announcement_no_guests": "Añade invitados con correo antes de enviar.",
   "err_announcement_too_many": "La lista de invitados supera el límite MVP de {max} destinatarios.",
   "err_announcement_http": "Envío fallido (HTTP {status}).",
-
   "err_page_title": "Algo salió mal",
   "err_page_back_home": "Volver al inicio",
   "err_http_event_not_found": "Este evento no existe o ha sido eliminado.",
