@@ -78,7 +78,7 @@ export async function createCheckoutSession(
     throw new StripeApiError(res.status, await res.text().catch(() => ''));
   }
 
-  const data = (await res.json()) as { id: string; url: string };
+  const data: { id: string; url: string } = await res.json();
   return { id: data.id, url: data.url };
 }
 
