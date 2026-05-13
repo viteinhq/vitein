@@ -51,6 +51,19 @@ export const actions: Actions = {
       },
     });
 
+    // TEMP DIAGNOSTIC — surfaces upstream result + cookie forwarding in
+    // Cloudflare Pages logs. Remove once the magic-link bounce is
+    // root-caused.
+    console.warn('[auth/continue] upstream verify', {
+      status: res.status,
+      location: res.headers.get('location'),
+      setCookieCount: res.headers.getSetCookie().length,
+      setCookieNames: res.headers
+        .getSetCookie()
+        .map((s) => s.split(';')[0]?.split('=')[0] ?? '')
+        .filter(Boolean),
+    });
+
     // Forward Set-Cookie headers from the API response to the browser.
     // The cookie is scoped to `.vite.in` so once it lands it's valid on
     // both api-staging and next. getSetCookie() returns the array form.
@@ -81,6 +94,7 @@ export const actions: Actions = {
     }
 
     const location = res.headers.get('location') ?? callbackURL;
+    console.warn('[auth/continue] redirecting', { to: location });
     throw redirect(303, location);
   },
 };
