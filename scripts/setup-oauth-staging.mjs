@@ -11,7 +11,7 @@
  * the script wires that up automatically.)
  *
  * The script is idempotent in places that matter:
- *   - pnpm db:migrate is no-op on already-applied migrations.
+ *   - pnpm -F @vitein/db-schema db:migrate is no-op on already-applied migrations.
  *   - wrangler secret put overwrites.
  * Re-registering the MCP OAuth client would create a duplicate row —
  * the script skips that step if existing secrets are detected on the
@@ -162,8 +162,10 @@ async function step1ApplyMigration() {
     process.exit(1);
   }
 
-  console.log('Running pnpm db:migrate …');
-  run('pnpm', ['db:migrate'], { env: { ...process.env, DATABASE_URL: dbUrl } });
+  console.log('Running pnpm -F @vitein/db-schema db:migrate …');
+  run('pnpm', ['-F', '@vitein/db-schema', 'db:migrate'], {
+    env: { ...process.env, DATABASE_URL: dbUrl },
+  });
   ok('Migration applied.');
 
   // Keep the URL around for the verify call.
