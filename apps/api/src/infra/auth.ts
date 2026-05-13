@@ -1,7 +1,18 @@
-import { accounts, createDb, sessions, users, verifications } from '@vitein/db-schema';
+import { oauthProvider } from '@better-auth/oauth-provider';
+import {
+  accounts,
+  createDb,
+  oauthAccessTokens,
+  oauthClients,
+  oauthConsents,
+  oauthRefreshTokens,
+  sessions,
+  users,
+  verifications,
+} from '@vitein/db-schema';
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
-import { magicLink } from 'better-auth/plugins';
+import { jwt, magicLink } from 'better-auth/plugins';
 import { uuidv7 } from 'uuidv7';
 import type { Env } from '../types/env.js';
 import { sendSignInMagicLink } from './email.js';
@@ -53,6 +64,12 @@ export function createAuth(env: Env) {
         session: sessions,
         account: accounts,
         verification: verifications,
+        // OAuth 2.1 Provider plugin tables — mapping follows the plugin's
+        // expected entity names (singular camelCase).
+        oauthClient: oauthClients,
+        oauthAccessToken: oauthAccessTokens,
+        oauthRefreshToken: oauthRefreshTokens,
+        oauthConsent: oauthConsents,
       },
     }),
     emailAndPassword: { enabled: false },
@@ -99,6 +116,38 @@ export function createAuth(env: Env) {
           // can plumb Accept-Language through createAuth().
           await sendSignInMagicLink(env, { to: email, url: landing.toString() }, undefined);
         },
+      }),
+      // JWT plugin issues signed access tokens that the MCP server (and
+      // any other resource server) can verify locally without a round
+      // trip to /oauth/introspect. Required by the OAuth Provider plugin
+      // for JWT-mode access tokens.
+      jwt(),
+      // OAuth 2.1 Provider — turns this Better-Auth instance into an
+      // identity provider for third-party MCP clients (Phase 2).
+      // PKCE is required by default; the plugin enforces it for every
+      // authorization code flow.
+      oauthProvider({
+        loginPage: `${webBase}/signin`,
+        consentPage: `${webBase}/oauth/consent`,
+        // Phase-1.5 scope list. Add more (templates:read etc.) as the
+        // corresponding endpoints land.
+        scopes: [
+          'openid',
+          'profile',
+          'email',
+          'offline_access',
+          'events:read',
+          'events:write',
+          'guests:read',
+          'guests:write',
+          'rsvps:read',
+          'rsvps:write',
+        ],
+        // Seconds, per the plugin's input type. 1h access, 60d refresh
+        // matches ARCHITECTURE §5.3.
+        accessTokenExpiresIn: 60 * 60,
+        refreshTokenExpiresIn: 60 * 60 * 24 * 60,
+        validAudiences: [apiBaseURL],
       }),
     ],
   });

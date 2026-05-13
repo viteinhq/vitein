@@ -29,6 +29,13 @@
       "when": 1776884405288,
       "tag": "0003_spooky_maria_hill",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1778661463337,
+      "tag": "0004_soft_vanisher",
+      "breakpoints": true
     }
   ]
 }

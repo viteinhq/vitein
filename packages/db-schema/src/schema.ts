@@ -279,6 +279,110 @@ export const eventMedia = pgTable(
 );
 
 /**
+ * OAuth 2.1 Provider tables (Phase 2). Better-Auth's `@better-auth/oauth-provider`
+ * plugin populates these. Field names are camelCase to match the plugin's
+ * Drizzle adapter; column names are snake_case to match the rest of the
+ * schema. PKCE is required by default per OAuth 2.1.
+ */
+export const oauthClients = pgTable('oauth_clients', {
+  id: text().primaryKey(),
+  clientId: text('client_id').notNull().unique(),
+  clientSecret: text('client_secret'),
+  disabled: boolean(),
+  skipConsent: boolean('skip_consent'),
+  enableEndSession: boolean('enable_end_session'),
+  subjectType: text('subject_type'),
+  scopes: jsonb().$type<string[]>(),
+  userId: uuid('user_id').references(() => users.id, { onDelete: 'set null' }),
+  referenceId: text('reference_id'),
+  createdAt: nowTs(),
+  updatedAt: nowTs(),
+  name: text(),
+  uri: text(),
+  icon: text(),
+  contacts: jsonb().$type<string[]>(),
+  tos: text(),
+  policy: text(),
+  softwareId: text('software_id'),
+  softwareVersion: text('software_version'),
+  softwareStatement: text('software_statement'),
+  redirectUris: jsonb('redirect_uris').$type<string[]>().notNull(),
+  postLogoutRedirectUris: jsonb('post_logout_redirect_uris').$type<string[]>(),
+  tokenEndpointAuthMethod: text('token_endpoint_auth_method'),
+  grantTypes: jsonb('grant_types').$type<string[]>(),
+  responseTypes: jsonb('response_types').$type<string[]>(),
+  public: boolean(),
+  type: text(),
+  requirePKCE: boolean('require_pkce'),
+  metadata: jsonb(),
+});
+
+export const oauthAccessTokens = pgTable(
+  'oauth_access_tokens',
+  {
+    id: text().primaryKey(),
+    token: text().notNull(),
+    clientId: text('client_id')
+      .notNull()
+      .references(() => oauthClients.clientId, { onDelete: 'cascade' }),
+    sessionId: text('session_id').references(() => sessions.id, { onDelete: 'set null' }),
+    refreshId: text('refresh_id'),
+    userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }),
+    referenceId: text('reference_id'),
+    scopes: jsonb().$type<string[]>().notNull(),
+    createdAt: nowTs(),
+    expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+  },
+  (t) => [
+    uniqueIndex('oauth_access_tokens_token_idx').on(t.token),
+    index('oauth_access_tokens_user_idx').on(t.userId),
+  ],
+);
+
+export const oauthRefreshTokens = pgTable(
+  'oauth_refresh_tokens',
+  {
+    id: text().primaryKey(),
+    token: text().notNull(),
+    clientId: text('client_id')
+      .notNull()
+      .references(() => oauthClients.clientId, { onDelete: 'cascade' }),
+    sessionId: text('session_id').references(() => sessions.id, { onDelete: 'set null' }),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    referenceId: text('reference_id'),
+    scopes: jsonb().$type<string[]>().notNull(),
+    revoked: timestamp({ withTimezone: true }),
+    authTime: timestamp('auth_time', { withTimezone: true }),
+    createdAt: nowTs(),
+    expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+  },
+  (t) => [
+    uniqueIndex('oauth_refresh_tokens_token_idx').on(t.token),
+    index('oauth_refresh_tokens_user_idx').on(t.userId),
+  ],
+);
+
+export const oauthConsents = pgTable(
+  'oauth_consents',
+  {
+    id: text().primaryKey(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    clientId: text('client_id')
+      .notNull()
+      .references(() => oauthClients.clientId, { onDelete: 'cascade' }),
+    referenceId: text('reference_id'),
+    scopes: jsonb().$type<string[]>().notNull(),
+    createdAt: nowTs(),
+    updatedAt: nowTs(),
+  },
+  (t) => [uniqueIndex('oauth_consents_user_client_idx').on(t.userId, t.clientId)],
+);
+
+/**
  * Append-only audit log. Any side-effectful action (event write, RSVP,
  * reminder send, payment complete) gets a row. No foreign keys on
  * `event_id` so the log survives event deletion.
@@ -322,6 +426,14 @@ export type EventAnnouncement = typeof eventAnnouncements.$inferSelect;
 export type NewEventAnnouncement = typeof eventAnnouncements.$inferInsert;
 export type AuditLog = typeof auditLog.$inferSelect;
 export type NewAuditLog = typeof auditLog.$inferInsert;
+export type OauthClient = typeof oauthClients.$inferSelect;
+export type NewOauthClient = typeof oauthClients.$inferInsert;
+export type OauthAccessToken = typeof oauthAccessTokens.$inferSelect;
+export type NewOauthAccessToken = typeof oauthAccessTokens.$inferInsert;
+export type OauthRefreshToken = typeof oauthRefreshTokens.$inferSelect;
+export type NewOauthRefreshToken = typeof oauthRefreshTokens.$inferInsert;
+export type OauthConsent = typeof oauthConsents.$inferSelect;
+export type NewOauthConsent = typeof oauthConsents.$inferInsert;
 
 export const schema = {
   users,
@@ -336,4 +448,8 @@ export const schema = {
   eventMedia,
   eventAnnouncements,
   auditLog,
+  oauthClients,
+  oauthAccessTokens,
+  oauthRefreshTokens,
+  oauthConsents,
 };
