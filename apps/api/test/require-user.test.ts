@@ -47,4 +47,14 @@ describe('requireUser', () => {
     const body: { ok: boolean } = await res.json();
     expect(body.ok).toBe(true);
   });
+
+  it('passes through for OAuth token (scope-checked per endpoint)', async () => {
+    const res = await buildApp({
+      kind: 'oauth',
+      userId: '00000000-0000-0000-0000-000000000004',
+      clientId: 'mcp_first_party',
+      scopes: ['events:read'],
+    }).request('/protected');
+    expect(res.status).toBe(200);
+  });
 });

@@ -13,9 +13,11 @@ import type { Env } from './types.js';
  * - `GET /_debug/boom` — throws on purpose; used to verify Sentry wiring
  *   end-to-end. Kept because incident drills need a cheap throw target.
  *
- * No per-user auth at this stage: only public, read-only tools are
- * exposed. When OAuth arrives, gate `/mcp` on a valid bearer token and
- * scope-check inside each tool.
+ * Auth: the worker itself doesn't verify bearer tokens — it forwards
+ * them to the Core API verbatim. The API runs `verifyAccessToken` and
+ * makes the final allow/deny decision. This keeps the MCP worker
+ * stateless and means JWT-key rotation only has to happen in one place.
+ * For OAuth-gated tools, see `server.ts` `requiresAuth` handling.
  */
 const handler: ExportedHandler<Env> = {
   async fetch(request: Request, env: Env): Promise<Response> {
@@ -52,7 +54,8 @@ const handler: ExportedHandler<Env> = {
         );
       }
 
-      const response = await dispatch(env, payload);
+      const bearer = extractBearer(request.headers.get('authorization'));
+      const response = await dispatch(env, payload, { bearer });
       return Response.json(response);
     }
 
@@ -61,6 +64,12 @@ const handler: ExportedHandler<Env> = {
 };
 
 export default Sentry.withSentry(sentryOptions, handler);
+
+function extractBearer(header: string | null): string | null {
+  if (!header) return null;
+  const match = /^Bearer (.+)$/i.exec(header.trim());
+  return match?.[1] ?? null;
+}
 
 function isJsonRpcRequest(value: unknown): value is {
   jsonrpc: '2.0';
