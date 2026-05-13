@@ -72,7 +72,7 @@ pnpm -F @vitein/api deploy:staging       # wrangler deploy to staging
 pnpm -F @vitein/api deploy:prod          # wrangler deploy to prod (requires tag)
 pnpm -F @vitein/api test                 # vitest
 pnpm -F @vitein/api test:integration     # hits a Neon ephemeral branch
-pnpm db:migrate                          # from repo root, targets current DATABASE_URL
+pnpm -F @vitein/db-schema db:migrate     # from repo root, targets current DATABASE_URL
 pnpm gen:sdk                             # after changing openapi-spec
 ```
 

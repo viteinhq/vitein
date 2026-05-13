@@ -59,7 +59,7 @@ pnpm typecheck              # typecheck everywhere
 pnpm lint                   # lint everywhere
 pnpm test                   # test everywhere
 pnpm gen:sdk                # regenerate packages/ts-sdk from openapi-spec
-pnpm db:migrate             # run Drizzle migrations (env var picks branch)
+pnpm -F @vitein/db-schema db:migrate    # run Drizzle migrations (env var picks branch)
 ```
 
 ## Non-negotiables

@@ -40,7 +40,7 @@ The OAuth tables are added in
 `packages/db-schema/migrations/0004_soft_vanisher.sql`:
 
 ```bash
-DATABASE_URL='<staging|prod connection string>' pnpm db:migrate
+DATABASE_URL='<staging|prod connection string>' pnpm -F @vitein/db-schema db:migrate
 ```
 
 Verify the tables exist:
