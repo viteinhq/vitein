@@ -1,5 +1,6 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
+  import { Button } from '$lib/design';
   import * as m from '$lib/paraglide/messages.js';
   import type { Snippet } from 'svelte';
   import type { LayoutProps } from './$types';
@@ -16,12 +17,9 @@
     <nav class="flex items-center gap-3 text-sm">
       <a href="/account/dashboard" class="underline">{m.account_nav_dashboard()}</a>
       <form method="POST" action="/account/signout" use:enhance>
-        <button
-          type="submit"
-          class="rounded-md border border-slate-300 px-3 py-1 text-sm hover:bg-slate-50"
-        >
+        <Button type="submit" variant="secondary" size="sm">
           {m.account_signout()}
-        </button>
+        </Button>
       </form>
     </nav>
   </header>
