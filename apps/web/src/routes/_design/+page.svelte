@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Banner, Button, Card, TextField } from '$lib/design';
+  import { Banner, Button, Card, Heading, Text, TextField } from '$lib/design';
 
   let fieldValue = $state('');
 </script>
@@ -11,15 +11,29 @@
 
 <section class="mx-auto max-w-3xl space-y-12">
   <header class="space-y-2">
-    <h1 class="text-3xl font-bold tracking-tight">Design system</h1>
-    <p class="text-sm text-slate-600">
+    <Heading>Design system</Heading>
+    <Text tone="muted" size="sm">
       Live preview of every primitive exported from <code>$lib/design</code>. Add a new component
       here when you add one to the barrel — otherwise the catalog drifts.
-    </p>
+    </Text>
   </header>
 
   <section class="space-y-4">
-    <h2 class="text-xl font-semibold">Button</h2>
+    <Heading level="section">Heading</Heading>
+    <Heading level="page">Page heading (h1)</Heading>
+    <Heading level="section">Section heading (h2)</Heading>
+    <Heading level="subsection">Subsection heading (h3)</Heading>
+  </section>
+
+  <section class="space-y-4">
+    <Heading level="section">Text</Heading>
+    <Text>Default paragraph (slate-700).</Text>
+    <Text tone="muted">Muted paragraph (slate-600).</Text>
+    <Text tone="subtle" size="sm">Subtle small caption (slate-500).</Text>
+  </section>
+
+  <section class="space-y-4">
+    <Heading level="section">Button</Heading>
     <div class="flex flex-wrap gap-3">
       <Button>Primary</Button>
       <Button variant="secondary">Secondary</Button>
@@ -32,7 +46,7 @@
   </section>
 
   <section class="space-y-4">
-    <h2 class="text-xl font-semibold">Card</h2>
+    <Heading level="section">Card</Heading>
     <div class="grid gap-3 sm:grid-cols-2">
       <Card>
         <p class="text-sm">Default card. Hairline border, white background.</p>
@@ -50,7 +64,7 @@
   </section>
 
   <section class="space-y-4">
-    <h2 class="text-xl font-semibold">Banner</h2>
+    <Heading level="section">Banner</Heading>
     <Banner>Info banner — neutral message.</Banner>
     <Banner tone="success">Success — saved, queued, completed.</Banner>
     <Banner tone="warn">Warn — partial success, soft failure.</Banner>
@@ -58,7 +72,7 @@
   </section>
 
   <section class="space-y-4">
-    <h2 class="text-xl font-semibold">TextField</h2>
+    <Heading level="section">TextField</Heading>
     <div class="grid gap-4 sm:grid-cols-2">
       <TextField bind:value={fieldValue} label="Title" placeholder="My event" />
       <TextField label="With hint" hint="Optional helper text below the input." />
@@ -68,7 +82,7 @@
   </section>
 
   <section class="space-y-4">
-    <h2 class="text-xl font-semibold">Tokens</h2>
+    <Heading level="section">Tokens</Heading>
     <p class="text-sm text-slate-600">
       Colors come from Tailwind's slate / emerald / amber / red / sky scales. Logical-property
       spacing classes (<code>ps-*</code>, <code>pe-*</code>) are preferred over physical (<code

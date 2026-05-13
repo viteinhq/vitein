@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Heading, Text } from '$lib/design';
   import * as m from '$lib/paraglide/messages.js';
 </script>
 
@@ -7,9 +8,9 @@
 </svelte:head>
 
 <section class="mx-auto max-w-md space-y-4 text-center">
-  <h1 class="text-3xl font-bold tracking-tight">{m.signin_check_title()}</h1>
-  <p class="text-slate-600">{m.signin_check_body()}</p>
-  <p class="text-sm text-slate-500">
+  <Heading>{m.signin_check_title()}</Heading>
+  <Text tone="muted">{m.signin_check_body()}</Text>
+  <Text tone="subtle" size="sm">
     {m.signin_check_wrong_email()} <a href="/signin" class="underline">{m.signin_check_try_again()}</a>.
-  </p>
+  </Text>
 </section>
