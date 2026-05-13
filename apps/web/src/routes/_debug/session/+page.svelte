@@ -32,12 +32,24 @@
   </div>
 
   <div class="space-y-2 rounded-md border border-slate-200 p-4">
-    <p class="text-sm font-medium">/v1/users/me result</p>
+    <p class="text-sm font-medium">/v1/users/me result (our middleware)</p>
     <p class="text-xs text-slate-600">
       HTTP status: <code>{data.meStatus ?? 'error'}</code>
     </p>
     <pre class="overflow-x-auto rounded bg-slate-50 p-2 text-xs">{JSON.stringify(
         data.meBody,
+        null,
+        2,
+      )}</pre>
+  </div>
+
+  <div class="space-y-2 rounded-md border border-slate-200 p-4">
+    <p class="text-sm font-medium">/v1/auth/get-session result (Better-Auth direct)</p>
+    <p class="text-xs text-slate-600">
+      HTTP status: <code>{data.sessionStatus ?? 'error'}</code>
+    </p>
+    <pre class="overflow-x-auto rounded bg-slate-50 p-2 text-xs">{JSON.stringify(
+        data.sessionBody,
         null,
         2,
       )}</pre>
