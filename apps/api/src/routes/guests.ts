@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { addGuest, listGuests } from '../domain/guests/guests.js';
 import { ValidationError } from '../domain/errors.js';
 import { db } from '../infra/db.js';
-import { requireCreator } from '../middleware/require-creator.js';
+import { requireEventOwnership } from '../middleware/require-event-ownership.js';
 import type { AppVariables, Env } from '../types/env.js';
 
 export const guestsRoute = new Hono<{ Bindings: Env; Variables: AppVariables }>();
@@ -27,7 +27,7 @@ guestsRoute.post(
   zValidator('param', idParamSchema, (r) => {
     if (!r.success) throw new ValidationError('Invalid event id', { issues: r.error.issues });
   }),
-  requireCreator('id'),
+  requireEventOwnership('id', { scope: 'guests:write' }),
   zValidator('json', guestInputSchema, (r) => {
     if (!r.success) throw new ValidationError('Invalid guest body', { issues: r.error.issues });
   }),
@@ -44,7 +44,7 @@ guestsRoute.get(
   zValidator('param', idParamSchema, (r) => {
     if (!r.success) throw new ValidationError('Invalid event id', { issues: r.error.issues });
   }),
-  requireCreator('id'),
+  requireEventOwnership('id', { scope: 'guests:read' }),
   async (c) => {
     const { id } = c.req.valid('param');
     const items = await listGuests(db(c.env), id);

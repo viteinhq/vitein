@@ -9,7 +9,7 @@ import {
   sendRsvpConfirmation,
   sendRsvpNotification,
 } from '../infra/email.js';
-import { requireCreator } from '../middleware/require-creator.js';
+import { requireEventOwnership } from '../middleware/require-event-ownership.js';
 import type { AppVariables, Env } from '../types/env.js';
 
 export const rsvpsRoute = new Hono<{ Bindings: Env; Variables: AppVariables }>();
@@ -90,7 +90,7 @@ rsvpsRoute.get(
   zValidator('param', idParamSchema, (r) => {
     if (!r.success) throw new ValidationError('Invalid event id', { issues: r.error.issues });
   }),
-  requireCreator('id'),
+  requireEventOwnership('id', { scope: 'rsvps:read' }),
   async (c) => {
     const { id } = c.req.valid('param');
     const items = await listRsvps(db(c.env), id);
