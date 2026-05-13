@@ -21,6 +21,7 @@ import { tierIncludes, tierOf } from '../domain/payments/payments.js';
 import { db } from '../infra/db.js';
 import { localeFromAcceptLanguage, sendCreatorMagicLink } from '../infra/email.js';
 import { requireCreator } from '../middleware/require-creator.js';
+import { requireEventOwnership } from '../middleware/require-event-ownership.js';
 import type { AppVariables, Env } from '../types/env.js';
 import { announcementsRoute } from './announcements.js';
 import { checkoutRoute } from './checkout.js';
@@ -175,7 +176,7 @@ eventsRoute.patch(
     if (!result.success)
       throw new ValidationError('Invalid event id', { issues: result.error.issues });
   }),
-  requireCreator('id'),
+  requireEventOwnership('id', { scope: 'events:write' }),
   zValidator('json', eventUpdateSchema, (result) => {
     if (!result.success)
       throw new ValidationError('Invalid update body', { issues: result.error.issues });
@@ -251,7 +252,7 @@ eventsRoute.delete(
     if (!result.success)
       throw new ValidationError('Invalid event id', { issues: result.error.issues });
   }),
-  requireCreator('id'),
+  requireEventOwnership('id', { scope: 'events:write' }),
   async (c) => {
     const { id } = c.req.valid('param');
     await softDeleteEvent(db(c.env), id);
