@@ -17,11 +17,12 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@better-auth/oauth-provider": "^1.6.11",
     "@hono/zod-validator": "^0.7.6",
     "@sentry/cloudflare": "^10.52.0",
     "@vitein/db-schema": "workspace:*",
     "@vitein/i18n-messages": "workspace:*",
-    "better-auth": "^1.6.10",
+    "better-auth": "^1.6.11",
     "hono": "^4.12.18",
     "uuidv7": "^1.0.2",
     "zod": "^4.0.0"
