@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Banner, Button, Card, Heading, Text, TextField } from '$lib/design';
+  import { Banner, Button, Card, Heading, Section, Text, TextField } from '$lib/design';
 
   let fieldValue = $state('');
 </script>
@@ -21,8 +21,9 @@
   <section class="space-y-4">
     <Heading level="section">Heading</Heading>
     <Heading level="page">Page heading (h1)</Heading>
-    <Heading level="section">Section heading (h2)</Heading>
-    <Heading level="subsection">Subsection heading (h3)</Heading>
+    <Heading level="section">Section heading (h2, text-xl)</Heading>
+    <Heading level="panel">Panel heading (h2, text-lg)</Heading>
+    <Heading level="subsection">Subsection heading (h3, text-base)</Heading>
   </section>
 
   <section class="space-y-4">
@@ -43,6 +44,22 @@
       <Button size="sm" variant="danger">Danger sm</Button>
       <Button disabled>Disabled</Button>
     </div>
+  </section>
+
+  <section class="space-y-4">
+    <Heading level="section">Section</Heading>
+    <Text tone="muted" size="sm">
+      Tighter sibling of <code>Card</code>. Compose a heading inside with
+      <code>Heading level="panel"</code>.
+    </Text>
+    <Section>
+      <Heading level="panel">Example panel</Heading>
+      <Text tone="muted" size="sm">
+        Borrowed from the manage page: section heading on top, supporting copy
+        below, actions stacked beneath via <code>space-y-2</code>.
+      </Text>
+      <Button size="sm">Action</Button>
+    </Section>
   </section>
 
   <section class="space-y-4">
