@@ -1,7 +1,9 @@
 import { Hono } from 'hono';
+import type { AuthContext } from '../domain/auth/context.js';
 import { listAuditForUser } from '../domain/audit/audit.js';
 import { exportMe, getMe, getMyEvents, softDeleteMe } from '../domain/users/users.js';
 import { db } from '../infra/db.js';
+import { requireScope } from '../middleware/require-scope.js';
 import { requireUser } from '../middleware/require-user.js';
 import type { AppVariables, Env } from '../types/env.js';
 
@@ -9,21 +11,29 @@ export const usersRoute = new Hono<{ Bindings: Env; Variables: AppVariables }>()
 
 usersRoute.use('*', requireUser);
 
+/**
+ * Both `kind: 'user'` (session) and `kind: 'oauth'` (bearer) carry a
+ * `userId`. This narrows the union so the route handlers stay terse.
+ */
+function userIdFromAuth(auth: AuthContext): string {
+  if (auth.kind !== 'user' && auth.kind !== 'oauth') {
+    throw new Error('unreachable — requireUser should have rejected');
+  }
+  return auth.userId;
+}
+
 usersRoute.get('/me', async (c) => {
-  if (c.var.auth.kind !== 'user') throw new Error('unreachable');
-  const user = await getMe(db(c.env), c.var.auth.userId);
+  const user = await getMe(db(c.env), userIdFromAuth(c.var.auth));
   return c.json(toProfile(user));
 });
 
 usersRoute.delete('/me', async (c) => {
-  if (c.var.auth.kind !== 'user') throw new Error('unreachable');
-  await softDeleteMe(db(c.env), c.var.auth.userId);
+  await softDeleteMe(db(c.env), userIdFromAuth(c.var.auth));
   return c.body(null, 204);
 });
 
-usersRoute.get('/me/events', async (c) => {
-  if (c.var.auth.kind !== 'user') throw new Error('unreachable');
-  const rows = await getMyEvents(db(c.env), c.var.auth.userId);
+usersRoute.get('/me/events', requireScope('events:read'), async (c) => {
+  const rows = await getMyEvents(db(c.env), userIdFromAuth(c.var.auth));
   return c.json({
     items: rows.map((e) => ({
       id: e.id,
@@ -41,8 +51,7 @@ usersRoute.get('/me/events', async (c) => {
 });
 
 usersRoute.get('/me/audit', async (c) => {
-  if (c.var.auth.kind !== 'user') throw new Error('unreachable');
-  const rows = await listAuditForUser(db(c.env), c.var.auth.userId);
+  const rows = await listAuditForUser(db(c.env), userIdFromAuth(c.var.auth));
   return c.json({
     items: rows.map((r) => ({
       id: r.id,
@@ -55,8 +64,7 @@ usersRoute.get('/me/audit', async (c) => {
 });
 
 usersRoute.get('/me/export', async (c) => {
-  if (c.var.auth.kind !== 'user') throw new Error('unreachable');
-  const bundle = await exportMe(db(c.env), c.var.auth.userId);
+  const bundle = await exportMe(db(c.env), userIdFromAuth(c.var.auth));
   return c.json({
     exportedAt: bundle.exportedAt.toISOString(),
     user: toProfile(bundle.user),
