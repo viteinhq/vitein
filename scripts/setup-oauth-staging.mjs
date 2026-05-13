@@ -173,31 +173,54 @@ async function step1ApplyMigration() {
 }
 
 async function step2VerifyTables(dbUrl) {
-  header(2, 'Verify the oauth_* tables exist');
-  note(
-    `Querying ${API_BASE_URL} for the OAuth discovery document — the\nplugin only serves it once the schema is in place.`,
-  );
+  header(2, 'Verify the OAuth plugin is reachable');
+  note(`Probing ${API_BASE_URL} for two signals that the schema + plugin are live.`);
 
-  // The well-known endpoint is a more reliable indicator than a raw DB
-  // query: it requires the plugin to fully initialise, which depends on
-  // the schema. Saves us importing the Neon driver here.
+  // We have two independent signals:
+  //   1. The OAuth 2.1 / RFC 8414 discovery doc at
+  //      `/v1/auth/.well-known/oauth-authorization-server`. This is the
+  //      ideal long-term check (MCP clients use it for discovery too).
+  //      We have to wire it manually because Better-Auth tags the
+  //      plugin route as SERVER_ONLY.
+  //   2. The authorize endpoint: a GET with no params returns 400 when
+  //      the plugin is wired (param validation), 500 if the schema is
+  //      missing (DB error), 404 if the route doesn't exist. So 400
+  //      means "tables exist and the plugin is wired."
+  //
+  // Either signal is enough to proceed.
   let attempts = 0;
   while (true) {
     attempts += 1;
     try {
-      const res = await fetch(`${API_BASE_URL}/v1/auth/.well-known/oauth-authorization-server`, {
-        headers: { Accept: 'application/json' },
-      });
-      if (!res.ok) throw new Error(`HTTP ${String(res.status)}`);
-      const body = await res.json();
-      if (!body.issuer || !body.authorization_endpoint || !body.token_endpoint) {
-        throw new Error('discovery doc missing required fields');
+      const discoverRes = await fetch(
+        `${API_BASE_URL}/v1/auth/.well-known/oauth-authorization-server`,
+        { headers: { Accept: 'application/json' } },
+      );
+      if (discoverRes.ok) {
+        const body = await discoverRes.json();
+        if (body.issuer && body.authorization_endpoint && body.token_endpoint) {
+          ok(`Discovery doc responds; issuer=${String(body.issuer)}`);
+          break;
+        }
       }
-      ok(`Discovery endpoint responds; issuer=${String(body.issuer)}`);
-      break;
+
+      // Discovery missing → try the authorize fallback.
+      const authzRes = await fetch(`${API_BASE_URL}/v1/auth/oauth2/authorize`);
+      if (authzRes.status === 400) {
+        ok('authorize endpoint returns 400 (bad params) — plugin + schema are live.');
+        note(
+          'Discovery doc at /v1/auth/.well-known/oauth-authorization-server is not yet exposed.\n' +
+            'MCP clients that auto-discover will need it later — track that as a follow-up.',
+        );
+        break;
+      }
+
+      throw new Error(
+        `discovery returned ${String(discoverRes.status)}, authorize returned ${String(authzRes.status)}`,
+      );
     } catch (err) {
       if (attempts >= 3) {
-        fail(`OAuth discovery still failing after ${String(attempts)} tries: ${String(err)}`);
+        fail(`OAuth probe failed after ${String(attempts)} tries: ${String(err)}`);
         note('The migration may not have rolled out yet — wait a minute and re-run this script.');
         process.exit(1);
       }

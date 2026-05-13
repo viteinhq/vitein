@@ -1,3 +1,4 @@
+import { oauthProviderAuthServerMetadata } from '@better-auth/oauth-provider';
 import { Hono } from 'hono';
 import { createAuth } from '../infra/auth.js';
 import type { AppVariables, Env } from '../types/env.js';
@@ -12,6 +13,17 @@ import type { AppVariables, Env } from '../types/env.js';
  * request logging / Sentry tags can see "kind: anonymous".
  */
 export const authRoute = new Hono<{ Bindings: Env; Variables: AppVariables }>();
+
+// OAuth 2.1 / 8414 discovery doc. The oauth-provider plugin tags its
+// internal `/.well-known/oauth-authorization-server` endpoint as
+// SERVER_ONLY (not exposed via HTTP) when `basePath` is non-root, so we
+// surface it ourselves using the plugin's exported handler. Mounts at
+// `/v1/auth/.well-known/oauth-authorization-server`.
+authRoute.get('/.well-known/oauth-authorization-server', async (c) => {
+  const auth = createAuth(c.env);
+  const handler = oauthProviderAuthServerMetadata(auth);
+  return handler(c.req.raw);
+});
 
 authRoute.all('/*', async (c) => {
   const auth = createAuth(c.env);
