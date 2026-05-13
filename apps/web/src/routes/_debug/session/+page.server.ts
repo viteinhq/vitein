@@ -21,26 +21,38 @@ export const load: PageServerLoad = async (event) => {
     .map((p) => p.trim().split('=')[0])
     .filter(Boolean);
 
-  let meStatus: number | null = null;
-  let meBody: unknown = null;
-  try {
-    const res = await apiFetch(event, '/v1/users/me');
-    meStatus = res.status;
-    const text = await res.text();
+  async function probe(path: string) {
+    let status: number | null = null;
+    let body: unknown = null;
     try {
-      meBody = JSON.parse(text) as unknown;
-    } catch {
-      meBody = text;
+      const res = await apiFetch(event, path);
+      status = res.status;
+      const text = await res.text();
+      try {
+        body = JSON.parse(text) as unknown;
+      } catch {
+        body = text;
+      }
+    } catch (err) {
+      body = String(err);
     }
-  } catch (err) {
-    meBody = String(err);
+    return { status, body };
   }
+
+  const me = await probe('/v1/users/me');
+  // Better-Auth's own session endpoint, bypasses our authMiddleware. If
+  // this returns a session object while /v1/users/me 401s, the bug is in
+  // our middleware. If this also returns null, the cookie value isn't
+  // recognised by Better-Auth.
+  const betterAuthSession = await probe('/v1/auth/get-session');
 
   return {
     cookieHeaderLength: cookieHeader.length,
     cookieNames,
-    meStatus,
-    meBody,
+    meStatus: me.status,
+    meBody: me.body,
+    sessionStatus: betterAuthSession.status,
+    sessionBody: betterAuthSession.body,
     requestUrl: event.url.toString(),
     origin: event.url.origin,
   };
