@@ -70,11 +70,15 @@ const body = {
 console.log(`→ POST ${baseUrl}/v1/auth/oauth2/register`);
 console.log('  redirect_uris:', redirectUris);
 
+// Better-Auth's session-cookie check rejects POSTs without an Origin
+// header that matches a trusted origin (CSRF defense). The API base
+// itself is always trusted (it's the auth.baseURL), so set it here.
 const res = await fetch(`${baseUrl}/v1/auth/oauth2/register`, {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
     Cookie: cookie,
+    Origin: baseUrl,
   },
   body: JSON.stringify(body),
 });
