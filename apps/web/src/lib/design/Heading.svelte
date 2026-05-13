@@ -13,7 +13,7 @@
    * duplicated across pricing / legal / signin/check-email so the
    * migration is visually a no-op.
    */
-  type Level = 'page' | 'section' | 'subsection';
+  type Level = 'page' | 'section' | 'panel' | 'subsection';
   type Tag = 'h1' | 'h2' | 'h3';
 
   interface Props {
@@ -28,12 +28,14 @@
   const levels: Record<Level, string> = {
     page: 'text-3xl font-bold tracking-tight',
     section: 'text-xl font-semibold',
+    panel: 'text-lg font-semibold',
     subsection: 'text-base font-semibold',
   };
 
   const defaultTagFor: Record<Level, Tag> = {
     page: 'h1',
     section: 'h2',
+    panel: 'h2',
     subsection: 'h3',
   };
 

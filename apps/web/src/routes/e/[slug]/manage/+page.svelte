@@ -1,7 +1,7 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
   import { page } from '$app/state';
-  import { Banner, Button, TextField } from '$lib/design';
+  import { Banner, Button, Heading, Section, Text, TextField } from '$lib/design';
   import { localizeError } from '$lib/errors';
   import * as m from '$lib/paraglide/messages.js';
   import type { PageProps } from './$types';
@@ -73,17 +73,17 @@
 
 <section class="mx-auto max-w-3xl space-y-8">
   <header class="space-y-1">
-    <p class="text-sm text-slate-500">{m.manage_label()}</p>
-    <h1 class="text-3xl font-bold tracking-tight">{data.event.title}</h1>
-    <p class="text-sm text-slate-500">
+    <Text tone="subtle" size="sm">{m.manage_label()}</Text>
+    <Heading>{data.event.title}</Heading>
+    <Text tone="subtle" size="sm">
       {m.manage_public_link()}
       <a class="underline" href="/e/{data.event.slug}">/e/{data.event.slug}</a>
-    </p>
+    </Text>
   </header>
 
-  <section class="space-y-2 rounded-lg border border-slate-200 p-4">
-    <h2 class="text-lg font-semibold">{m.manage_upgrade_heading()}</h2>
-    <p class="text-sm text-slate-600">{m.manage_upgrade_body()}</p>
+  <Section>
+    <Heading level="panel">{m.manage_upgrade_heading()}</Heading>
+    <Text tone="muted" size="sm">{m.manage_upgrade_body()}</Text>
 
     {#if upgraded}
       <Banner tone="success">{m.manage_upgrade_success()}</Banner>
@@ -170,11 +170,11 @@
         </div>
       </div>
     {/if}
-  </section>
+  </Section>
 
-  <section class="space-y-2 rounded-lg border border-slate-200 p-4">
-    <h2 class="text-lg font-semibold">{m.manage_media_heading()}</h2>
-    <p class="text-sm text-slate-600">{m.manage_media_hint()}</p>
+  <Section>
+    <Heading level="panel">{m.manage_media_heading()}</Heading>
+    <Text tone="muted" size="sm">{m.manage_media_hint()}</Text>
 
     {#if form?.mediaError}
       <Banner tone="error">
@@ -236,21 +236,21 @@
       />
       <Button type="submit" size="sm">{m.manage_media_upload()}</Button>
     </form>
-  </section>
+  </Section>
 
-  <section class="space-y-2 rounded-lg border border-slate-200 p-4">
-    <h2 class="text-lg font-semibold">{m.manage_rsvps_heading()}</h2>
-    <p class="text-sm text-slate-600">
+  <Section>
+    <Heading level="panel">{m.manage_rsvps_heading()}</Heading>
+    <Text tone="muted" size="sm">
       {m.manage_rsvps_summary({
         yes: rsvpCounts.yes,
         maybe: rsvpCounts.maybe,
         no: rsvpCounts.no,
         plus: rsvpCounts.plusOnes,
       })}
-    </p>
+    </Text>
 
     {#if data.rsvps.length === 0}
-      <p class="pt-1 text-sm text-slate-500">{m.manage_rsvps_empty()}</p>
+      <Text tone="subtle" size="sm" class="pt-1">{m.manage_rsvps_empty()}</Text>
     {:else}
       <ul class="divide-y divide-slate-200 pt-2">
         {#each data.rsvps as r (r.id)}
@@ -271,10 +271,10 @@
         {/each}
       </ul>
     {/if}
-  </section>
+  </Section>
 
-  <section class="space-y-2 rounded-lg border border-slate-200 p-4">
-    <h2 class="text-lg font-semibold">{m.manage_edit_heading()}</h2>
+  <Section>
+    <Heading level="panel">{m.manage_edit_heading()}</Heading>
 
     {#if form?.updateSuccess}
       <Banner tone="success">{m.manage_edit_saved()}</Banner>
@@ -318,11 +318,11 @@
 
       <Button type="submit">{m.manage_edit_submit()}</Button>
     </form>
-  </section>
+  </Section>
 
-  <section class="space-y-2 rounded-lg border border-slate-200 p-4">
-    <h2 class="text-lg font-semibold">{m.manage_announcements_heading()}</h2>
-    <p class="text-sm text-slate-600">{m.manage_announcements_body()}</p>
+  <Section>
+    <Heading level="panel">{m.manage_announcements_heading()}</Heading>
+    <Text tone="muted" size="sm">{m.manage_announcements_body()}</Text>
 
     {#if form?.announceError}
       <Banner tone="error">
@@ -370,15 +370,15 @@
         </form>
       {/if}
     </div>
-  </section>
+  </Section>
 
-  <section class="space-y-2 rounded-lg border border-slate-200 p-4">
-    <h2 class="text-lg font-semibold">{m.manage_password_heading()}</h2>
-    <p class="text-sm text-slate-600">
+  <Section>
+    <Heading level="panel">{m.manage_password_heading()}</Heading>
+    <Text tone="muted" size="sm">
       {data.event.hasPassword
         ? m.manage_password_body_locked()
         : m.manage_password_body_unlocked()}
-    </p>
+    </Text>
 
     {#if paidTier !== 'plus'}
       <Banner tone="warn">{m.manage_password_plus_required()}</Banner>
@@ -422,11 +422,11 @@
         </form>
       {/if}
     {/if}
-  </section>
+  </Section>
 
-  <section class="space-y-2 rounded-lg border border-slate-200 p-4">
-    <h2 class="text-lg font-semibold">{m.manage_reminder_heading()}</h2>
-    <p class="text-sm text-slate-600">{m.manage_reminder_body()}</p>
+  <Section>
+    <Heading level="panel">{m.manage_reminder_heading()}</Heading>
+    <Text tone="muted" size="sm">{m.manage_reminder_body()}</Text>
 
     {#if form?.reminderQueued}
       <Banner tone="success">{m.manage_reminder_queued()}</Banner>
@@ -438,5 +438,5 @@
     <form method="POST" action="?/remind&token={data.token}" use:enhance class="pt-2">
       <Button type="submit" variant="secondary" size="sm">{m.manage_reminder_submit()}</Button>
     </form>
-  </section>
+  </Section>
 </section>
