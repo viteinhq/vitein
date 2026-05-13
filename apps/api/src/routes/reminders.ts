@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { ValidationError } from '../domain/errors.js';
 import { queueImmediateReminder } from '../domain/reminders/reminders.js';
 import { db } from '../infra/db.js';
-import { requireCreator } from '../middleware/require-creator.js';
+import { requireEventOwnership } from '../middleware/require-event-ownership.js';
 import type { AppVariables, Env } from '../types/env.js';
 
 export const remindersRoute = new Hono<{ Bindings: Env; Variables: AppVariables }>();
@@ -16,7 +16,7 @@ remindersRoute.post(
   zValidator('param', idParamSchema, (r) => {
     if (!r.success) throw new ValidationError('Invalid event id', { issues: r.error.issues });
   }),
-  requireCreator('id'),
+  requireEventOwnership('id', { scope: 'events:write' }),
   async (c) => {
     const { id } = c.req.valid('param');
     const reminder = await queueImmediateReminder(db(c.env), id);
