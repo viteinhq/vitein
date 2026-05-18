@@ -19,7 +19,7 @@
   "dependencies": {
     "@better-auth/oauth-provider": "^1.6.11",
     "@hono/zod-validator": "^0.7.6",
-    "@sentry/cloudflare": "^10.52.0",
+    "@sentry/cloudflare": "^10.53.1",
     "@vitein/db-schema": "workspace:*",
     "@vitein/i18n-messages": "workspace:*",
     "better-auth": "^1.6.11",
