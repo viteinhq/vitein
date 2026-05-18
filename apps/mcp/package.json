@@ -16,7 +16,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@sentry/cloudflare": "^10.52.0",
+    "@sentry/cloudflare": "^10.53.1",
     "@vitein/ts-sdk": "workspace:*",
     "zod": "^4.0.0"
   },
