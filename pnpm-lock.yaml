@@ -24,8 +24,8 @@ importers:
         specifier: ^1.6.11
         version: 1.6.11(2kbn5xcltpj3nhzavfuvk3bgsm)
       '@hono/zod-validator':
-        specifier: ^0.7.6
-        version: 0.7.6(hono@4.12.18)(zod@4.3.6)
+        specifier: ^0.8.0
+        version: 0.8.0(hono@4.12.18)(zod@4.3.6)
       '@sentry/cloudflare':
         specifier: ^10.52.0
         version: 10.52.0(@cloudflare/workers-types@4.20260504.1)
@@ -1093,10 +1093,10 @@ packages:
   '@hey-api/types@0.1.4':
     resolution: {integrity: sha512-thWfawrDIP7wSI9ioT13I5soaaqB5vAPIiZmgD8PbeEVKNrkonc0N/Sjj97ezl7oQgusZmaNphGdMKipPO6IBg==}
 
-  '@hono/zod-validator@0.7.6':
-    resolution: {integrity: sha512-Io1B6d011Gj1KknV4rXYz4le5+5EubcWEU/speUjuw9XMMIaP3n78yXLhjd2A3PXaXaUwEAluOiAyLqhBEJgsw==}
+  '@hono/zod-validator@0.8.0':
+    resolution: {integrity: sha512-5uS4S1/LKtZQYvD4BtpPUFkOv8d1wNxHHrChm26buMiEYc1FrHWvDUaKVBwkiVtvSExHSpLGDvcnpI2Copyj9w==}
     peerDependencies:
-      hono: '>=3.9.0'
+      hono: '>=4.10.0'
       zod: ^3.25.0 || ^4.0.0
 
   '@humanfs/core@0.19.2':
@@ -4630,7 +4630,7 @@ snapshots:
 
   '@hey-api/types@0.1.4': {}
 
-  '@hono/zod-validator@0.7.6(hono@4.12.18)(zod@4.3.6)':
+  '@hono/zod-validator@0.8.0(hono@4.12.18)(zod@4.3.6)':
     dependencies:
       hono: 4.12.18
       zod: 4.3.6
