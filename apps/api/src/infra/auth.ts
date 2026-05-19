@@ -165,7 +165,13 @@ export function createAuth(env: Env) {
         // matches ARCHITECTURE §5.3.
         accessTokenExpiresIn: 60 * 60,
         refreshTokenExpiresIn: 60 * 60 * 24 * 60,
-        validAudiences: [apiBaseURL],
+        // RFC 8707 "resource indicators": MCP clients (Inspector,
+        // Claude Desktop, ChatGPT) pass `resource=<mcp-server-url>` on
+        // authorize + token requests so the token is audience-bound
+        // to the specific resource server. Accept the API origin AND
+        // each MCP worker URL. The MCP host derives from the API
+        // host (api-staging → mcp-staging, api → mcp).
+        validAudiences: [apiBaseURL, apiBaseURL.replace('://api', '://mcp') + '/mcp'],
       }),
     ],
   });
