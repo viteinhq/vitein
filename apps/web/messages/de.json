@@ -256,5 +256,10 @@
   "err_http_event_not_found": "Dieses Event existiert nicht oder wurde entfernt.",
   "err_http_creator_token_required": "Diese Seite benötigt einen gültigen Verwaltungs-Link. Schau in die E-Mail, die wir dir gesendet haben.",
   "err_http_creator_token_invalid": "Dein Verwaltungs-Link ist nicht mehr gültig. Fordere auf der Wiederherstellungsseite einen neuen an.",
-  "err_http_missing_token_or_callback": "Dieser Anmelde-Link ist unvollständig. Bitte fordere einen neuen an."
+  "err_http_missing_token_or_callback": "Dieser Anmelde-Link ist unvollständig. Bitte fordere einen neuen an.",
+  "cookie_consent_title": "Cookies",
+  "cookie_consent_body": "Wir verwenden notwendige Cookies, um dich angemeldet zu halten und deine Sprache zu merken. Mit deiner Zustimmung nutzen wir auch optionale Cookies, um die Nutzung des Dienstes zu verstehen.",
+  "cookie_consent_link_privacy": "Datenschutzdetails",
+  "cookie_consent_accept_all": "Alle akzeptieren",
+  "cookie_consent_essential_only": "Nur notwendige"
 }

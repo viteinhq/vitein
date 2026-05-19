@@ -256,5 +256,10 @@
   "oauth_scope_guests_read": "View your guest lists",
   "oauth_scope_guests_write": "Add and remove guests",
   "oauth_scope_rsvps_read": "View RSVPs to your events",
-  "oauth_scope_rsvps_write": "Submit RSVPs on your behalf"
+  "oauth_scope_rsvps_write": "Submit RSVPs on your behalf",
+  "cookie_consent_title": "Informazioni sui cookie",
+  "cookie_consent_body": "Usiamo cookie essenziali per mantenerti connesso e ricordare la tua lingua. Con il tuo consenso, usiamo anche cookie opzionali per capire l'uso del servizio.",
+  "cookie_consent_link_privacy": "Dettagli sulla privacy",
+  "cookie_consent_accept_all": "Accetta tutti",
+  "cookie_consent_essential_only": "Solo essenziali"
 }

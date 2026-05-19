@@ -1,6 +1,7 @@
 <script lang="ts">
   import { version } from '$app/environment';
   import { ParaglideJS } from '@inlang/paraglide-sveltekit';
+  import { CookieConsent } from '$lib/design';
   import LanguageSwitcher from '$lib/design/LanguageSwitcher.svelte';
   import { i18n } from '$lib/i18n';
   import * as m from '$lib/paraglide/messages.js';
@@ -8,7 +9,11 @@
   import type { LayoutProps } from './$types';
   import '../app.css';
 
-  let { children }: LayoutProps & { children: Snippet } = $props();
+  let { data, children }: LayoutProps & { children: Snippet } = $props();
+
+  const showCookieBanner = $derived(
+    data.consent.isGdprRegion && data.consent.choice === null,
+  );
 </script>
 
 <ParaglideJS {i18n}>
@@ -48,4 +53,5 @@
       </div>
     </footer>
   </div>
+  <CookieConsent initialShown={showCookieBanner} />
 </ParaglideJS>

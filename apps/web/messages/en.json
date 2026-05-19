@@ -256,5 +256,10 @@
   "err_http_event_not_found": "This event doesn't exist or has been removed.",
   "err_http_creator_token_required": "This page needs a valid management link. Check the email we sent you.",
   "err_http_creator_token_invalid": "Your management link is no longer valid. Request a new one from the recovery page.",
-  "err_http_missing_token_or_callback": "This sign-in link is incomplete. Please request a new one."
+  "err_http_missing_token_or_callback": "This sign-in link is incomplete. Please request a new one.",
+  "cookie_consent_title": "About cookies",
+  "cookie_consent_body": "We use essential cookies to keep you signed in and remember your language. With your permission, we also use optional cookies to understand how the service is used.",
+  "cookie_consent_link_privacy": "Privacy details",
+  "cookie_consent_accept_all": "Accept all",
+  "cookie_consent_essential_only": "Essential only"
 }
