@@ -3,6 +3,12 @@ import { captureToSentry } from '$lib/server/sentry';
 import { sequence } from '@sveltejs/kit/hooks';
 import type { Handle, HandleServerError } from '@sveltejs/kit';
 
+// Build-time-baked release tag, injected by Vite's `define` from
+// process.env.BUILD_SHA. Empty string locally; matches the SHA used
+// by sentry-cli when uploading source maps in CI.
+declare const __BUILD_SHA__: string;
+const BUILD_SHA = __BUILD_SHA__ || undefined;
+
 /**
  * Server-side hook chain:
  *  1. `i18n.handle()` — detects the locale from cookie + Accept-Language
@@ -50,6 +56,7 @@ export const handleError: HandleServerError = async ({ error, event }) => {
         ? 'staging'
         : 'production',
       requestId: event.locals.requestId,
+      release: BUILD_SHA,
     });
   }
   return {
