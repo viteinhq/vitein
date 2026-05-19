@@ -105,6 +105,26 @@ async function handleMcp(request: Request, env: Env): Promise<Response> {
     return new Response(null, { status: 204, headers: cors });
   }
 
+  // GET /mcp opens the server→client notification stream in the
+  // Streamable HTTP spec. In stateless + JSON-response mode we never
+  // produce server-initiated notifications, so the stream would hang
+  // forever and Cloudflare Workers kills it as a runaway. The spec
+  // explicitly allows 405 here — compliant clients fall back to
+  // POST-only and continue normally.
+  if (request.method === 'GET') {
+    return new Response(
+      JSON.stringify({
+        jsonrpc: '2.0',
+        error: { code: -32000, message: 'Server-initiated notifications not supported' },
+        id: null,
+      }),
+      {
+        status: 405,
+        headers: { 'Content-Type': 'application/json', Allow: 'POST, DELETE, OPTIONS', ...cors },
+      },
+    );
+  }
+
   const bearer = extractBearer(request.headers.get('authorization'));
   const server = buildServer(env, bearer);
   const transport = new WebStandardStreamableHTTPServerTransport({
