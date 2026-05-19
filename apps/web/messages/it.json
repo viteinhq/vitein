@@ -239,5 +239,22 @@
   "err_http_event_not_found": "Questo evento non esiste o è stato rimosso.",
   "err_http_creator_token_required": "Questa pagina richiede un link di gestione valido. Controlla l'email che ti abbiamo inviato.",
   "err_http_creator_token_invalid": "Il tuo link di gestione non è più valido. Richiedine uno nuovo dalla pagina di recupero.",
-  "err_http_missing_token_or_callback": "Questo link di accesso è incompleto. Richiedine uno nuovo."
+  "err_http_missing_token_or_callback": "Questo link di accesso è incompleto. Richiedine uno nuovo.",
+  "oauth_consent_title": "Authorize access",
+  "oauth_consent_intro": "{appName} wants to access your vite.in account.",
+  "oauth_consent_scopes_heading": "Requested permissions",
+  "oauth_consent_approve": "Allow",
+  "oauth_consent_deny": "Deny",
+  "oauth_consent_note": "You can revoke access at any time from your account settings.",
+  "oauth_consent_invalid_request": "This authorization request is invalid or has expired. Try again from the application that brought you here.",
+  "oauth_scope_openid": "Sign in with your vite.in identity",
+  "oauth_scope_profile": "Read your profile (name, locale, timezone)",
+  "oauth_scope_email": "Read your email address",
+  "oauth_scope_offline_access": "Stay signed in (refresh tokens)",
+  "oauth_scope_events_read": "View your events",
+  "oauth_scope_events_write": "Create and edit your events",
+  "oauth_scope_guests_read": "View your guest lists",
+  "oauth_scope_guests_write": "Add and remove guests",
+  "oauth_scope_rsvps_read": "View RSVPs to your events",
+  "oauth_scope_rsvps_write": "Submit RSVPs on your behalf"
 }
