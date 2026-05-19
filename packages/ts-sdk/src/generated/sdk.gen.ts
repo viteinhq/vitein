@@ -74,6 +74,9 @@ import type {
   UpdateEventData,
   UpdateEventErrors,
   UpdateEventResponses,
+  UpdateMeData,
+  UpdateMeErrors,
+  UpdateMeResponses,
   UploadMediaData,
   UploadMediaErrors,
   UploadMediaResponses,
@@ -453,6 +456,27 @@ export const getMe = <ThrowOnError extends boolean = false>(
   (options?.client ?? client).get<GetMeResponses, GetMeErrors, ThrowOnError>({
     url: '/v1/users/me',
     ...options,
+  });
+
+/**
+ * Update the authenticated user's profile
+ *
+ * Updates one or more profile fields. All fields are optional; omit
+ * a field to leave it unchanged. Email is not updatable here — that
+ * flows through Better-Auth's email-change endpoint with a magic-
+ * link confirmation.
+ *
+ */
+export const updateMe = <ThrowOnError extends boolean = false>(
+  options: Options<UpdateMeData, ThrowOnError>,
+) =>
+  (options.client ?? client).patch<UpdateMeResponses, UpdateMeErrors, ThrowOnError>({
+    url: '/v1/users/me',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
   });
 
 /**

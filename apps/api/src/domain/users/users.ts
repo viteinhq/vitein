@@ -11,6 +11,35 @@ export async function getMe(db: Db, userId: string): Promise<typeof users.$infer
   return row;
 }
 
+/**
+ * Patch the user's profile fields. `email` is intentionally not in the
+ * accepted set — that flows through Better-Auth's change-email path with
+ * a magic-link confirmation. Undefined fields are left untouched; passing
+ * `name: null` clears it.
+ */
+export interface UpdateMeInput {
+  name?: string | null;
+  locale?: string;
+  timezone?: string;
+}
+
+export async function updateMe(
+  db: Db,
+  userId: string,
+  input: UpdateMeInput,
+): Promise<typeof users.$inferSelect> {
+  const patch: Partial<typeof users.$inferInsert> = {};
+  if ('name' in input) patch.name = input.name ?? null;
+  if (input.locale !== undefined) patch.locale = input.locale;
+  if (input.timezone !== undefined) patch.timezone = input.timezone;
+  patch.updatedAt = new Date();
+  await db
+    .update(users)
+    .set(patch)
+    .where(and(eq(users.id, userId), isNull(users.deletedAt)));
+  return getMe(db, userId);
+}
+
 /** Events owned by the authenticated user (claimed or created while signed in). */
 export async function getMyEvents(db: Db, userId: string): Promise<(typeof events.$inferSelect)[]> {
   return db
