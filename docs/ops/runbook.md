@@ -90,6 +90,13 @@ If `/v1/health` returns `db: error`:
 Note: as of 2026-04-21 the memory flag says `DATABASE_URL` is overdue for
 rotation on staging — do that before the next release.
 
+### Data-loss event
+
+If the database is up but data went bad (mistaken `DELETE`, bad
+migration, application bug wrote junk over hours): see
+[`db-restore.md`](./db-restore.md). Restore is via branching at a
+timestamp; we don't take or load dumps.
+
 ### Resend outage
 
 If mail is queued > 15 minutes:
