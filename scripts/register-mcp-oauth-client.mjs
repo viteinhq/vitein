@@ -59,11 +59,11 @@ const body = {
     'rsvps:read',
     'rsvps:write',
   ],
-  // First-party client: trust the consent (no UI prompt). Third-party
-  // apps registered later via a developer portal will leave this false
-  // and go through the consent screen.
-  skip_consent: true,
-  // PKCE remains required by the plugin regardless of this flag.
+  // PKCE remains required by the plugin regardless of `public`.
+  // `skip_consent` is intentionally NOT sent — the OAuth Provider plugin
+  // rejects it at Dynamic Client Registration time (RFC 7591 doesn't list
+  // it as a registration parameter). Flip the flag post-registration via
+  // a direct DB update once we have an admin endpoint.
   public: false,
 };
 
