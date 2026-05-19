@@ -116,10 +116,18 @@ async function resolveOAuthBearer(env: Env, token: string): Promise<AuthContext 
   if (!env.DATABASE_URL || !env.AUTH_SECRET) return null;
 
   const apiBaseURL = deriveApiBaseURL(env);
+  // Better-Auth's JWT issuer matches the discovery doc's `issuer`,
+  // which is `<api-base>/v1/auth` (baseURL + basePath), not `<api-base>`.
+  const issuer = `${apiBaseURL}/v1/auth`;
+  // MCP clients pass `resource=<mcp-url>` per RFC 8707, so tokens
+  // issued to them are bound to the MCP audience. Accept either the
+  // API origin (server-to-server in Phase 3) or the MCP worker URL.
+  const mcpURL = `${apiBaseURL.replace('://api', '://mcp')}/mcp`;
+  const audience = [apiBaseURL, mcpURL];
 
   try {
     const payload = await verifyAccessToken(token, {
-      verifyOptions: { issuer: apiBaseURL, audience: apiBaseURL },
+      verifyOptions: { issuer, audience },
       jwksUrl: `${apiBaseURL}/v1/auth/jwks`,
     });
 
