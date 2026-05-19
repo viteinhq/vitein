@@ -45,9 +45,11 @@ const redirectUris = process.env.MCP_REDIRECT_URIS?.split(',').map((s) => s.trim
 ];
 
 const body = {
-  name: 'vite.in MCP Server',
+  client_name: 'vite.in MCP Server',
   redirect_uris: redirectUris,
-  scopes: [
+  // The create-client endpoint takes `scope` as a single space-separated
+  // string (RFC 6749 §3.3), unlike DCR's `scopes` array.
+  scope: [
     'openid',
     'profile',
     'email',
@@ -58,22 +60,30 @@ const body = {
     'guests:write',
     'rsvps:read',
     'rsvps:write',
-  ],
-  // PKCE remains required by the plugin regardless of `public`.
-  // `skip_consent` is intentionally NOT sent — the OAuth Provider plugin
-  // rejects it at Dynamic Client Registration time (RFC 7591 doesn't list
-  // it as a registration parameter). Flip the flag post-registration via
-  // a direct DB update once we have an admin endpoint.
-  public: false,
+  ].join(' '),
+  // Confidential client — server-to-server token exchange uses the
+  // client_secret. `client_secret_basic` is the plugin default.
+  token_endpoint_auth_method: 'client_secret_basic',
+  grant_types: ['authorization_code', 'refresh_token'],
+  response_types: ['code'],
+  type: 'web',
 };
 
-console.log(`→ POST ${baseUrl}/v1/auth/oauth2/register`);
+// Use /oauth2/create-client instead of /oauth2/register:
+// - /oauth2/register is RFC 7591 Dynamic Client Registration. Gated by
+//   `allowDynamicClientRegistration` which we keep disabled (default) —
+//   we don't want strangers registering OAuth clients against us.
+// - /oauth2/create-client is the authenticated-user endpoint. Any
+//   signed-in user can create a client on their own account. Suitable
+//   for the first-party MCP server (and, later, the developer portal
+//   for third-party apps in Phase 3).
+console.log(`→ POST ${baseUrl}/v1/auth/oauth2/create-client`);
 console.log('  redirect_uris:', redirectUris);
 
 // Better-Auth's session-cookie check rejects POSTs without an Origin
 // header that matches a trusted origin (CSRF defense). The API base
 // itself is always trusted (it's the auth.baseURL), so set it here.
-const res = await fetch(`${baseUrl}/v1/auth/oauth2/register`, {
+const res = await fetch(`${baseUrl}/v1/auth/oauth2/create-client`, {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
