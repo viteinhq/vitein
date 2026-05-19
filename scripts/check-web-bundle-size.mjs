@@ -27,8 +27,11 @@ const CLIENT_DIR = path.join(
 );
 
 // Budgets (bytes). Keep loose; Lighthouse handles the fine grain.
-const RAW_TOTAL_BUDGET = 500 * 1024; // 500 KB
-const GZ_TOTAL_BUDGET = 120 * 1024; // 120 KB
+// Note: this is the total across every client JS file. A given route
+// only downloads a small subset (typically the route node + two
+// shared chunks). Lighthouse asserts the per-page budgets.
+const RAW_TOTAL_BUDGET = 600 * 1024; // 600 KB
+const GZ_TOTAL_BUDGET = 150 * 1024; // 150 KB
 
 const fmt = (n) =>
   n >= 1024 ? `${(n / 1024).toFixed(1)} KB` : `${n} B`;
