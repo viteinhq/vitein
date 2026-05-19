@@ -17,7 +17,15 @@ import type { Actions, PageServerLoad } from './$types';
  * `redirect_uri` — we send the browser there.
  */
 
+/**
+ * Better-Auth's /oauth2/consent returns `{ redirect: true, url: '…' }`
+ * — both the accept and deny paths flow through the same shape. We
+ * also accept RFC-7591-style `redirect_uri` as a fallback for
+ * forward-compat with a future plugin rename.
+ */
 interface ConsentResponse {
+  redirect?: boolean;
+  url?: string;
   redirect_uri?: string;
   error?: string;
   error_description?: string;
@@ -102,13 +110,14 @@ export const actions: Actions = {
     }
 
     const body = (await res.json()) as ConsentResponse;
-    if (!body.redirect_uri) {
+    const target = body.url ?? body.redirect_uri;
+    if (!target) {
       throw httpError(500, {
-        message: 'Consent response missing redirect_uri',
+        message: 'Consent response missing redirect target',
         code: 'http_consent_missing_redirect',
       });
     }
 
-    throw redirect(303, body.redirect_uri);
+    throw redirect(303, target);
   },
 };
