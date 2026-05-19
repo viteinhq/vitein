@@ -134,6 +134,15 @@ export function createAuth(env: Env) {
       oauthProvider({
         loginPage: `${webBase}/signin`,
         consentPage: `${webBase}/oauth/consent`,
+        // MCP-spec OAuth clients (Claude Desktop, ChatGPT, the MCP
+        // Inspector, …) self-register via RFC 7591 Dynamic Client
+        // Registration on first contact — there's no developer portal
+        // for them to pre-register on. Enable DCR everywhere except
+        // production, where we tighten access via the future Phase 3
+        // developer portal. The DCR endpoint still requires PKCE and
+        // doesn't permit `skip_consent`, so every dynamically-
+        // registered client must go through the consent screen.
+        allowDynamicClientRegistration: env.ENVIRONMENT !== 'production',
         // Phase-1.5 scope list. Add more (templates:read etc.) as the
         // corresponding endpoints land.
         scopes: [
