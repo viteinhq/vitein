@@ -1,0 +1,88 @@
+name: Lighthouse audit
+
+# Manual + post-deploy. Not on PRs — running against next.vite.in
+# would race the PR's own deploy.
+on:
+  workflow_dispatch:
+  schedule:
+    # Daily at 06:00 UTC. Cheap signal that staging didn't regress
+    # overnight (e.g. dependency upgrades silently changing bundle
+    # size).
+    - cron: '0 6 * * *'
+  workflow_run:
+    workflows: ['Deploy']
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  lighthouse:
+    name: Lighthouse → next.vite.in
+    # Skip after a failed deploy — bad signal to lighthouse something
+    # that didn't update.
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - name: Wait for staging deploy to settle
+        # The workflow_run trigger fires the moment Deploy finishes but
+        # CF Pages can take up to ~30s after that for the new bundle to
+        # propagate to the edge. Sleep avoids auditing a stale build.
+        if: github.event_name == 'workflow_run'
+        run: sleep 30
+
+      - name: Run Lighthouse CI
+        run: pnpm dlx @lhci/cli@0.15.x autorun --config=apps/web/lighthouserc.json
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+
+      - name: Open issue on regression
+        if: failure()
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const sha = context.sha;
+            const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
+
+            try {
+              await github.rest.issues.getLabel({ owner, repo, name: 'lighthouse-regression' });
+            } catch (err) {
+              if (err.status === 404) {
+                await github.rest.issues.createLabel({
+                  owner,
+                  repo,
+                  name: 'lighthouse-regression',
+                  color: 'fbca04',
+                  description: 'Lighthouse audit failed a budget assertion.',
+                });
+              } else {
+                throw err;
+              }
+            }
+
+            await github.rest.issues.create({
+              owner,
+              repo,
+              title: `Lighthouse regression: ${sha.slice(0, 7)}`,
+              body: [
+                `Lighthouse CI failed against next.vite.in.`,
+                ``,
+                `**Run:** ${runUrl}`,
+                ``,
+                `Click the run for the failing assertion (perf/a11y/CLS/LCP/bundle-size).`,
+                `Budgets live in apps/web/lighthouserc.json.`,
+              ].join('\n'),
+              labels: ['lighthouse-regression'],
+            });
