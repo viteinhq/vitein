@@ -23,7 +23,7 @@
     "@vitein/db-schema": "workspace:*",
     "@vitein/i18n-messages": "workspace:*",
     "better-auth": "^1.6.11",
-    "hono": "^4.12.18",
+    "hono": "^4.12.21",
     "uuidv7": "^1.0.2",
     "zod": "^4.0.0"
   },
