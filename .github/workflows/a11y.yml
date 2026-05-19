@@ -1,0 +1,83 @@
+name: Accessibility audit
+
+# Manual + post-deploy. Mirror of lighthouse.yml — same cadence
+# (we don't want a11y to silently regress between launches).
+on:
+  workflow_dispatch:
+  schedule:
+    # Daily at 06:30 UTC — 30 min after Lighthouse so logs don't
+    # interleave in the morning issues feed.
+    - cron: '30 6 * * *'
+  workflow_run:
+    workflows: ['Deploy']
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  axe:
+    name: axe-core → next.vite.in
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - name: Wait for staging deploy to settle
+        if: github.event_name == 'workflow_run'
+        run: sleep 30
+
+      - name: Install Chromium (for headless axe runs)
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Run axe-core audit
+        run: node scripts/run-axe-audit.mjs https://next.vite.in
+
+      - name: Open issue on regression
+        if: failure()
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const sha = context.sha;
+            const runUrl = `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`;
+
+            try {
+              await github.rest.issues.getLabel({ owner, repo, name: 'a11y-regression' });
+            } catch (err) {
+              if (err.status === 404) {
+                await github.rest.issues.createLabel({
+                  owner,
+                  repo,
+                  name: 'a11y-regression',
+                  color: '5319e7',
+                  description: 'axe-core found accessibility violations.',
+                });
+              } else {
+                throw err;
+              }
+            }
+
+            await github.rest.issues.create({
+              owner,
+              repo,
+              title: `a11y regression: ${sha.slice(0, 7)}`,
+              body: [
+                `axe-core surfaced WCAG violations on next.vite.in.`,
+                ``,
+                `**Run:** ${runUrl}`,
+                ``,
+                `Audit script: \`scripts/run-axe-audit.mjs\`. The run log lists the violating rules + nodes.`,
+                `Rules audited: WCAG 2.1 A + AA (axe-core defaults).`,
+              ].join('\n'),
+              labels: ['a11y-regression'],
+            });
