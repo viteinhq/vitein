@@ -126,6 +126,38 @@ async function handleMcp(request: Request, env: Env): Promise<Response> {
   }
 
   const bearer = extractBearer(request.headers.get('authorization'));
+
+  // Require a bearer at the transport layer. MCP-spec clients
+  // (Claude Desktop via mcp-remote, ChatGPT, the Inspector's Quick
+  // OAuth) need a 401 + WWW-Authenticate response with a
+  // `resource_metadata` pointer to trigger the OAuth bootstrap flow
+  // — without it, they assume the server is anonymous and never
+  // open the auth-code browser window.
+  //
+  // We always 401 on missing bearer regardless of which tool the
+  // call would have hit; the public tools (create_event, public
+  // reads) stay accessible via the REST API for anonymous web users.
+  // MCP itself is a user-delegated surface — Phase-2 design.
+  if (!bearer) {
+    const url = new URL(request.url);
+    const resourceMetadata = `https://${url.host}/.well-known/oauth-protected-resource`;
+    return new Response(
+      JSON.stringify({
+        jsonrpc: '2.0',
+        id: null,
+        error: { code: -32001, message: 'Authentication required' },
+      }),
+      {
+        status: 401,
+        headers: {
+          'Content-Type': 'application/json',
+          'WWW-Authenticate': `Bearer realm="vitein-mcp", resource_metadata="${resourceMetadata}"`,
+          ...cors,
+        },
+      },
+    );
+  }
+
   const server = buildServer(env, bearer);
   const transport = new WebStandardStreamableHTTPServerTransport({
     sessionIdGenerator: undefined,
