@@ -45,7 +45,7 @@
         <LanguageSwitcher />
       </div>
       <div
-        class="mx-auto mt-4 max-w-4xl font-mono text-[10px] text-slate-400"
+        class="mx-auto mt-4 max-w-4xl font-mono text-[10px] text-slate-600"
         aria-hidden="true"
         title="build"
       >
