@@ -1,6 +1,8 @@
+import { oauthProviderAuthServerMetadata } from '@better-auth/oauth-provider';
 import * as Sentry from '@sentry/cloudflare';
 import { Hono } from 'hono';
 import { runScheduled } from './cron.js';
+import { createAuth } from './infra/auth.js';
 import { authMiddleware } from './middleware/auth.js';
 import { errorHandler } from './middleware/error.js';
 import { rateLimit } from './middleware/rate-limit.js';
@@ -28,6 +30,19 @@ app.use('*', authMiddleware);
 // Rate limiting per resolved auth context. Skipped in environments without
 // the RATE_LIMITER binding (local dev unless wired up).
 app.use('*', rateLimit);
+
+// RFC 8414 canonical discovery: clients build the URL by taking the
+// issuer's authority, prepending `/.well-known/oauth-authorization-server`,
+// and appending the issuer path. Our issuer is `<host>/v1/auth`, so the
+// canonical URL is `<host>/.well-known/oauth-authorization-server/v1/auth`.
+// Better-Auth's plugin also serves the doc at `<issuer>/.well-known/...`,
+// but the MCP Inspector and most spec-conformant clients hit the RFC 8414
+// form — we expose it here. Same handler powers both.
+app.get('/.well-known/oauth-authorization-server/v1/auth', async (c) => {
+  const auth = createAuth(c.env);
+  const handler = oauthProviderAuthServerMetadata(auth);
+  return handler(c.req.raw);
+});
 
 // /v1/auth/claim is ours (needs c.var.auth) and must match BEFORE the
 // Better-Auth catch-all below swallows everything under /v1/auth.
