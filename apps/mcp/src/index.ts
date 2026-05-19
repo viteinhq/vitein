@@ -1,32 +1,98 @@
 import * as Sentry from '@sentry/cloudflare';
-import { dispatch, tools } from './server.js';
+import { Server } from '@modelcontextprotocol/sdk/server/index.js';
+import { WebStandardStreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js';
+import {
+  CallToolRequestSchema,
+  ListToolsRequestSchema,
+  type CallToolResult,
+} from '@modelcontextprotocol/sdk/types.js';
+import { tools } from './server.js';
 import { sentryOptions } from './sentry.js';
-import type { Env } from './types.js';
+import type { Env, ToolDefinition } from './types.js';
 
 /**
  * Worker entry.
  *
- * - `POST /mcp` — JSON-RPC 2.0, the Phase 1 transport. Accepts
- *   `initialize`, `tools/list`, and `tools/call`. Full Streamable HTTP
- *   transport (sessions, SSE) lands in Phase 2.
+ * - `GET|POST|DELETE /mcp` — Streamable HTTP transport (MCP spec). The
+ *   SDK's `WebStandardStreamableHTTPServerTransport` handles SSE setup,
+ *   JSON-RPC framing, and the GET → notification stream / POST → request
+ *   / DELETE → session close routing.
  * - `GET /` — server info banner, useful for probes.
- * - `GET /_debug/boom` — throws on purpose; used to verify Sentry wiring
- *   end-to-end. Kept because incident drills need a cheap throw target.
+ * - `GET /_debug/boom` — throws on purpose; used to verify Sentry wiring.
  *
- * Auth: the worker itself doesn't verify bearer tokens — it forwards
- * them to the Core API verbatim. The API runs `verifyAccessToken` and
- * makes the final allow/deny decision. This keeps the MCP worker
- * stateless and means JWT-key rotation only has to happen in one place.
- * For OAuth-gated tools, see `server.ts` `requiresAuth` handling.
+ * Statelessness: we run with `sessionIdGenerator: undefined` +
+ * `enableJsonResponse: true`. Each HTTP request gets a fresh Server +
+ * Transport. This trades long-lived streaming for surviving across worker
+ * isolates — sessions in-memory don't survive a CF isolate eviction
+ * anyway, so the simpler model wins until we add Durable Objects.
+ *
+ * Auth: the bearer token from `Authorization: Bearer …` is forwarded
+ * verbatim into each tool call via closure. OAuth-gated tools fail with
+ * a structured "auth required" result when no bearer is present.
  */
+
+const toolByName = new Map<string, ToolDefinition>(tools.map((t) => [t.name, t]));
+
+const SERVER_INFO = { name: 'vitein-mcp', version: '0.0.0' };
+
+function buildServer(env: Env, bearer: string | null): Server {
+  const server = new Server(SERVER_INFO, { capabilities: { tools: {} } });
+
+  server.setRequestHandler(ListToolsRequestSchema, () => ({
+    tools: tools.map((t) => ({
+      name: t.name,
+      description: t.description,
+      inputSchema: t.inputSchema as Record<string, unknown>,
+    })),
+  }));
+
+  server.setRequestHandler(CallToolRequestSchema, async (request): Promise<CallToolResult> => {
+    const name = request.params.name;
+    const args = (request.params.arguments ?? {}) as unknown;
+    const tool = toolByName.get(name);
+    if (!tool) {
+      return {
+        content: [{ type: 'text', text: `Tool not found: ${name}` }],
+        isError: true,
+      };
+    }
+    if (tool.requiresAuth && !bearer) {
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `Tool "${name}" requires an OAuth access token. Ask the user to authorize the MCP client first.`,
+          },
+        ],
+        isError: true,
+      };
+    }
+    const result = await tool.handler(env, args, { bearer });
+    return result as CallToolResult;
+  });
+
+  return server;
+}
+
+async function handleMcp(request: Request, env: Env): Promise<Response> {
+  const bearer = extractBearer(request.headers.get('authorization'));
+  const server = buildServer(env, bearer);
+  const transport = new WebStandardStreamableHTTPServerTransport({
+    sessionIdGenerator: undefined,
+    enableJsonResponse: true,
+  });
+  await server.connect(transport);
+  return transport.handleRequest(request);
+}
+
 const handler: ExportedHandler<Env> = {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
 
     if (request.method === 'GET' && url.pathname === '/') {
       return Response.json({
-        name: 'vitein-mcp',
-        version: '0.0.0',
+        name: SERVER_INFO.name,
+        version: SERVER_INFO.version,
         environment: env.ENVIRONMENT,
         tools: tools.map((t) => t.name),
       });
@@ -36,27 +102,8 @@ const handler: ExportedHandler<Env> = {
       throw new Error('mcp_debug_boom — intentional Sentry canary');
     }
 
-    if (request.method === 'POST' && url.pathname === '/mcp') {
-      let payload: unknown;
-      try {
-        payload = await request.json();
-      } catch {
-        return Response.json(
-          { jsonrpc: '2.0', id: null, error: { code: -32700, message: 'Parse error' } },
-          { status: 400 },
-        );
-      }
-
-      if (!isJsonRpcRequest(payload)) {
-        return Response.json(
-          { jsonrpc: '2.0', id: null, error: { code: -32600, message: 'Invalid Request' } },
-          { status: 400 },
-        );
-      }
-
-      const bearer = extractBearer(request.headers.get('authorization'));
-      const response = await dispatch(env, payload, { bearer });
-      return Response.json(response);
+    if (url.pathname === '/mcp') {
+      return handleMcp(request, env);
     }
 
     return new Response('Not found', { status: 404 });
@@ -69,15 +116,4 @@ function extractBearer(header: string | null): string | null {
   if (!header) return null;
   const match = /^Bearer (.+)$/i.exec(header.trim());
   return match?.[1] ?? null;
-}
-
-function isJsonRpcRequest(value: unknown): value is {
-  jsonrpc: '2.0';
-  id: number | string | null;
-  method: string;
-  params?: Record<string, unknown>;
-} {
-  if (!value || typeof value !== 'object') return false;
-  const v = value as Record<string, unknown>;
-  return v['jsonrpc'] === '2.0' && typeof v['method'] === 'string';
 }
