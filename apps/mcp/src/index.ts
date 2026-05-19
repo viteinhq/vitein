@@ -74,7 +74,37 @@ function buildServer(env: Env, bearer: string | null): Server {
   return server;
 }
 
+/**
+ * Build the CORS headers we attach to every /mcp response. The MCP
+ * Inspector runs in a browser, so without these the preflight fails and
+ * the actual request never reaches us. Auth is via bearer token, not
+ * origin checks, so reflecting the requesting Origin is safe. We deny
+ * the request entirely if no Origin is supplied — non-browser callers
+ * pass without preflight and don't need these headers anyway.
+ */
+function corsHeaders(request: Request): Record<string, string> {
+  const origin = request.headers.get('origin');
+  if (!origin) return {};
+  return {
+    'Access-Control-Allow-Origin': origin,
+    'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers':
+      'Authorization, Content-Type, Accept, Mcp-Session-Id, Last-Event-Id, MCP-Protocol-Version',
+    'Access-Control-Expose-Headers': 'Mcp-Session-Id',
+    'Access-Control-Max-Age': '86400',
+    Vary: 'Origin',
+  };
+}
+
 async function handleMcp(request: Request, env: Env): Promise<Response> {
+  const cors = corsHeaders(request);
+
+  // The SDK transport returns 405 on OPTIONS and never adds CORS
+  // headers, so browser preflights fail. Handle OPTIONS ourselves.
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { status: 204, headers: cors });
+  }
+
   const bearer = extractBearer(request.headers.get('authorization'));
   const server = buildServer(env, bearer);
   const transport = new WebStandardStreamableHTTPServerTransport({
@@ -82,7 +112,13 @@ async function handleMcp(request: Request, env: Env): Promise<Response> {
     enableJsonResponse: true,
   });
   await server.connect(transport);
-  return transport.handleRequest(request);
+
+  const response = await transport.handleRequest(request);
+
+  // Mutate the response to add CORS headers without copying the body
+  // (which would break SSE streaming if we ever stop using JSON mode).
+  for (const [k, v] of Object.entries(cors)) response.headers.set(k, v);
+  return response;
 }
 
 const handler: ExportedHandler<Env> = {
