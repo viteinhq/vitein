@@ -71,13 +71,17 @@ visibility" layer, not the on-call paging layer.
 
 ---
 
-## Option B — Self-host Uptime Kuma publicly
+## Option B — Self-host Uptime Kuma publicly (chosen)
 
 **Why:** We already run Kuma locally; the same monitors power the
-public status page. Zero ongoing cost beyond the VPS bill.
+public status page. Zero ongoing cost beyond the existing host bill.
 
 **Tradeoff:** Hosting overhead (single point of failure unless you
 add another), no slick incident-history UI compared to BetterStack.
+
+**Concrete walkthrough for Kim's setup** (Kuma on Pi, exposed via
+Cloudflare Tunnel — no port-forwarding needed):
+[`status-page-kuma-tunnel.md`](./status-page-kuma-tunnel.md).
 
 ### Setup steps
 
