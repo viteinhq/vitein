@@ -49,5 +49,11 @@ jobs:
       - name: Build
         run: pnpm build
 
+      - name: Web bundle-size budget
+        # Catches gross regressions before they hit staging. Lighthouse CI
+        # (.github/workflows/lighthouse.yml) covers the real-network
+        # numbers post-deploy.
+        run: node scripts/check-web-bundle-size.mjs
+
       - name: Test
         run: pnpm test
