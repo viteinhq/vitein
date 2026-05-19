@@ -239,5 +239,22 @@
   "err_http_event_not_found": "Dit evenement bestaat niet of is verwijderd.",
   "err_http_creator_token_required": "Deze pagina heeft een geldige beheer-link nodig. Bekijk de e-mail die we hebben gestuurd.",
   "err_http_creator_token_invalid": "Je beheer-link is niet meer geldig. Vraag een nieuwe aan op de herstelpagina.",
-  "err_http_missing_token_or_callback": "Deze inloglink is onvolledig. Vraag een nieuwe aan."
+  "err_http_missing_token_or_callback": "Deze inloglink is onvolledig. Vraag een nieuwe aan.",
+  "oauth_consent_title": "Authorize access",
+  "oauth_consent_intro": "{appName} wants to access your vite.in account.",
+  "oauth_consent_scopes_heading": "Requested permissions",
+  "oauth_consent_approve": "Allow",
+  "oauth_consent_deny": "Deny",
+  "oauth_consent_note": "You can revoke access at any time from your account settings.",
+  "oauth_consent_invalid_request": "This authorization request is invalid or has expired. Try again from the application that brought you here.",
+  "oauth_scope_openid": "Sign in with your vite.in identity",
+  "oauth_scope_profile": "Read your profile (name, locale, timezone)",
+  "oauth_scope_email": "Read your email address",
+  "oauth_scope_offline_access": "Stay signed in (refresh tokens)",
+  "oauth_scope_events_read": "View your events",
+  "oauth_scope_events_write": "Create and edit your events",
+  "oauth_scope_guests_read": "View your guest lists",
+  "oauth_scope_guests_write": "Add and remove guests",
+  "oauth_scope_rsvps_read": "View RSVPs to your events",
+  "oauth_scope_rsvps_write": "Submit RSVPs on your behalf"
 }
