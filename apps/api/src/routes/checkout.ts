@@ -10,7 +10,7 @@ import {
   StripeApiError,
   StripeNotConfiguredError,
 } from '../infra/stripe.js';
-import { requireCreator } from '../middleware/require-creator.js';
+import { requireEventOwnership } from '../middleware/require-event-ownership.js';
 import type { AppVariables, Env } from '../types/env.js';
 
 export const checkoutRoute = new Hono<{ Bindings: Env; Variables: AppVariables }>();
@@ -33,7 +33,7 @@ checkoutRoute.post(
     if (!result.success)
       throw new ValidationError('Invalid event id', { issues: result.error.issues });
   }),
-  requireCreator('id'),
+  requireEventOwnership('id', { scope: 'events:write' }),
   zValidator('json', checkoutInputSchema, (result) => {
     if (!result.success)
       throw new ValidationError('Invalid checkout body', { issues: result.error.issues });
@@ -57,18 +57,19 @@ checkoutRoute.post(
     }
 
     const webBase = c.env.WEB_BASE_URL ?? 'https://vite.in';
-    // Creator auth rides on the X-Creator-Token header; we need the plain
-    // token back on the return URLs so /manage can re-authenticate the
-    // creator after the Stripe round-trip. Read it from the header that
-    // the middleware already validated.
-    const creatorToken = c.req.header('X-Creator-Token') ?? '';
-    const returnBase = `${webBase}/e/${event.slug}/manage?token=${encodeURIComponent(creatorToken)}`;
+    // Build the return URL. If the caller authed with a creator token,
+    // round-trip it so /manage can re-authenticate after the Stripe
+    // hop. Signed-in owners (session / OAuth) don't need a token —
+    // they re-authenticate via the existing cookie / bearer.
+    const creatorToken = c.req.header('X-Creator-Token');
+    const manageUrl = `${webBase}/e/${event.slug}/manage`;
+    const tokenParam = creatorToken ? `&token=${encodeURIComponent(creatorToken)}` : '';
 
     try {
       const session = await createCheckoutSession(c.env, {
         priceId,
-        successUrl: `${returnBase}&upgraded=1`,
-        cancelUrl: `${returnBase}&canceled=1`,
+        successUrl: `${manageUrl}?upgraded=1${tokenParam}`,
+        cancelUrl: `${manageUrl}?canceled=1${tokenParam}`,
         clientReferenceId: event.id,
         // tier travels on the Session so the webhook can persist it even if
         // `line_items` isn't expanded on the checkout.session.completed event.

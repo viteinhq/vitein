@@ -57,10 +57,21 @@ export const load: LayoutServerLoad = ({ request, cookies }) => {
   // hasn't decided yet; the banner stays visible until they do.
   const existingChoice = cookies.get('vitein_consent') ?? null;
 
+  // Cheap "signed in?" probe: the Better-Auth session cookie is
+  // present iff there was at least one successful sign-in. We don't
+  // verify the cookie here — that's the API's job on the next
+  // request. The worst case is showing "Dashboard" instead of
+  // "Sign in" for a user with an expired session; clicking it
+  // redirects them back to /signin via the account layout guard.
+  const signedIn =
+    cookies.get('__Secure-better-auth.session_token') !== undefined ||
+    cookies.get('better-auth.session_token') !== undefined;
+
   return {
     consent: {
       isGdprRegion,
       choice: existingChoice as 'accepted' | 'essential' | null,
     },
+    signedIn,
   };
 };

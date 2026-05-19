@@ -14,9 +14,23 @@ interface EventListItem {
 
 export const load: PageServerLoad = async (event) => {
   const res = await apiFetch(event, '/v1/users/me/events');
-  if (!res.ok) return { events: [] };
+  if (!res.ok) return { upcoming: [] as EventListItem[], past: [] as EventListItem[] };
   const body = (await res.json()) as unknown as { items: EventListItem[] };
-  return { events: body.items };
+
+  // The API returns newest-startsAt first. We split into "upcoming or
+  // happening now" vs "already happened" so the dashboard can show
+  // past events under an Archive section instead of mixing them with
+  // active ones. Upcoming flips to soonest-first (closest hosting
+  // commitment at the top); past stays newest-first.
+  const now = Date.now();
+  const upcoming: EventListItem[] = [];
+  const past: EventListItem[] = [];
+  for (const it of body.items) {
+    if (new Date(it.startsAt).getTime() >= now) upcoming.push(it);
+    else past.push(it);
+  }
+  upcoming.reverse();
+  return { upcoming, past };
 };
 
 export const actions: Actions = {

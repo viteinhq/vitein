@@ -287,5 +287,8 @@
   "settings_delete_confirm_hint": "Case-sensitive.",
   "settings_delete_confirm_required": "Type DELETE in the field to confirm.",
   "settings_delete_button": "Delete my account",
-  "settings_delete_error": "Account deletion failed. Try again or contact support."
+  "settings_delete_error": "Account deletion failed. Try again or contact support.",
+  "nav_dashboard": "Dashboard",
+  "dashboard_upcoming_heading": "Aankomend",
+  "dashboard_archive_heading": "Archief"
 }

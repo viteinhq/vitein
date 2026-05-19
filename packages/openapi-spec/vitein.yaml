@@ -740,12 +740,18 @@ components:
     CreatorTokenHeader:
       name: X-Creator-Token
       in: header
-      required: true
+      required: false
       schema:
         type: string
       description: |
         Plaintext creator token (the value delivered by the magic-link email).
         The server hashes it and compares against `event_tokens.token_hash`.
+
+        Optional: signed-in users whose `users.id` matches the event's
+        `creator_user_id` can call the same endpoints with the
+        Better-Auth session cookie instead of this header. OAuth bearers
+        with the appropriate scope are accepted too. See
+        `apps/api/src/middleware/require-event-ownership.ts`.
 
   schemas:
     HealthResponse:

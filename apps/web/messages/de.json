@@ -287,5 +287,8 @@
   "settings_delete_confirm_hint": "Groß-/Kleinschreibung beachten.",
   "settings_delete_confirm_required": "Tippe DELETE ins Feld zur Bestätigung.",
   "settings_delete_button": "Mein Konto löschen",
-  "settings_delete_error": "Account-Löschung fehlgeschlagen. Erneut versuchen oder Support kontaktieren."
+  "settings_delete_error": "Account-Löschung fehlgeschlagen. Erneut versuchen oder Support kontaktieren.",
+  "nav_dashboard": "Dashboard",
+  "dashboard_upcoming_heading": "Demnächst",
+  "dashboard_archive_heading": "Archiv"
 }
