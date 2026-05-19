@@ -211,6 +211,21 @@ export type UserProfile = {
   createdAt: string;
 };
 
+/**
+ * All fields are optional; omit a field to leave it unchanged.
+ */
+export type UserUpdateInput = {
+  name?: string | null;
+  /**
+   * IETF BCP 47 tag (e.g. `de`, `en-US`).
+   */
+  locale?: string;
+  /**
+   * IANA timezone (e.g. `Europe/Zurich`).
+   */
+  timezone?: string;
+};
+
 export type UserExport = {
   exportedAt: string;
   user: UserProfile;
@@ -1141,6 +1156,35 @@ export type GetMeResponses = {
 };
 
 export type GetMeResponse = GetMeResponses[keyof GetMeResponses];
+
+export type UpdateMeData = {
+  body: UserUpdateInput;
+  path?: never;
+  query?: never;
+  url: '/v1/users/me';
+};
+
+export type UpdateMeErrors = {
+  /**
+   * Request body or query parameters failed validation.
+   */
+  400: Error;
+  /**
+   * Missing or invalid creator token.
+   */
+  401: Error;
+};
+
+export type UpdateMeError = UpdateMeErrors[keyof UpdateMeErrors];
+
+export type UpdateMeResponses = {
+  /**
+   * Updated user.
+   */
+  200: UserProfile;
+};
+
+export type UpdateMeResponse = UpdateMeResponses[keyof UpdateMeResponses];
 
 export type GetMyEventsData = {
   body?: never;

@@ -1,7 +1,16 @@
+import { zValidator } from '@hono/zod-validator';
 import { Hono } from 'hono';
+import { z } from 'zod';
 import type { AuthContext } from '../domain/auth/context.js';
 import { listAuditForUser } from '../domain/audit/audit.js';
-import { exportMe, getMe, getMyEvents, softDeleteMe } from '../domain/users/users.js';
+import {
+  exportMe,
+  getMe,
+  getMyEvents,
+  softDeleteMe,
+  updateMe,
+} from '../domain/users/users.js';
+import { ValidationError } from '../domain/errors.js';
 import { db } from '../infra/db.js';
 import { requireScope } from '../middleware/require-scope.js';
 import { requireUser } from '../middleware/require-user.js';
@@ -26,6 +35,25 @@ usersRoute.get('/me', async (c) => {
   const user = await getMe(db(c.env), userIdFromAuth(c.var.auth));
   return c.json(toProfile(user));
 });
+
+const updateMeInputSchema = z.object({
+  name: z.string().max(200).nullable().optional(),
+  locale: z.string().min(2).max(10).optional(),
+  timezone: z.string().min(1).max(64).optional(),
+});
+
+usersRoute.patch(
+  '/me',
+  zValidator('json', updateMeInputSchema, (result) => {
+    if (!result.success)
+      throw new ValidationError('Invalid profile update', { issues: result.error.issues });
+  }),
+  async (c) => {
+    const input = c.req.valid('json');
+    const user = await updateMe(db(c.env), userIdFromAuth(c.var.auth), input);
+    return c.json(toProfile(user));
+  },
+);
 
 usersRoute.delete('/me', async (c) => {
   await softDeleteMe(db(c.env), userIdFromAuth(c.var.auth));

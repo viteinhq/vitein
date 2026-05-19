@@ -611,6 +611,31 @@ paths:
               schema: { $ref: '#/components/schemas/UserProfile' }
         '401':
           $ref: '#/components/responses/Unauthorized'
+    patch:
+      operationId: updateMe
+      summary: Update the authenticated user's profile
+      description: |
+        Updates one or more profile fields. All fields are optional; omit
+        a field to leave it unchanged. Email is not updatable here — that
+        flows through Better-Auth's email-change endpoint with a magic-
+        link confirmation.
+      tags: [users]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateInput'
+      responses:
+        '200':
+          description: Updated user.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/UserProfile' }
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
     delete:
       operationId: deleteMe
       summary: Soft-delete the authenticated user (30-day grace)
@@ -965,6 +990,22 @@ components:
         locale: { type: string }
         timezone: { type: string }
         createdAt: { type: string, format: date-time }
+
+    UserUpdateInput:
+      type: object
+      description: All fields are optional; omit a field to leave it unchanged.
+      properties:
+        name: { type: [string, 'null'], maxLength: 200 }
+        locale:
+          type: string
+          minLength: 2
+          maxLength: 10
+          description: IETF BCP 47 tag (e.g. `de`, `en-US`).
+        timezone:
+          type: string
+          minLength: 1
+          maxLength: 64
+          description: IANA timezone (e.g. `Europe/Zurich`).
 
     UserExport:
       type: object

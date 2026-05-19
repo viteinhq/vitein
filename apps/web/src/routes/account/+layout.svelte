@@ -16,6 +16,7 @@
     </div>
     <nav class="flex items-center gap-3 text-sm">
       <a href="/account/dashboard" class="underline">{m.account_nav_dashboard()}</a>
+      <a href="/account/settings" class="underline">{m.account_nav_settings()}</a>
       <form method="POST" action="/account/signout" use:enhance>
         <Button type="submit" variant="secondary" size="sm">
           {m.account_signout()}
