@@ -7,6 +7,7 @@ export function sentryOptions(env: Env): Sentry.CloudflareOptions {
     environment: env.ENVIRONMENT,
     tracesSampleRate: env.ENVIRONMENT === 'production' ? 0.1 : 1.0,
     sendDefaultPii: false,
+    ...(env.BUILD_SHA ? { release: env.BUILD_SHA } : {}),
   };
   return env.SENTRY_DSN ? { ...base, dsn: env.SENTRY_DSN } : base;
 }

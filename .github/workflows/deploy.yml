@@ -16,6 +16,10 @@ permissions:
 env:
   CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
   CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+  # Sentry source-map upload reads these. Each step skips itself when
+  # SENTRY_AUTH_TOKEN is empty (e.g. before the Sentry org is set up).
+  SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+  SENTRY_ORG: ${{ vars.SENTRY_ORG }}
 
 jobs:
   deploy-api:
@@ -33,7 +37,24 @@ jobs:
       - name: Compute build stamp
         id: stamp
         run: echo "stamp=$(date -u +%Y-%m-%dT%H:%MZ)" >> "$GITHUB_OUTPUT"
-      - run: |
+      - name: Build API bundle (for source-map upload)
+        run: |
+          pnpm -F @vitein/api exec wrangler deploy --env staging --dry-run \
+            --outdir .wrangler/dist-staging \
+            --var BUILD_SHA:${{ github.sha }} \
+            --var BUILD_STAMP:${{ steps.stamp.outputs.stamp }}
+      - name: Upload API source maps to Sentry
+        if: env.SENTRY_AUTH_TOKEN != '' && vars.SENTRY_PROJECT_API != ''
+        run: |
+          pnpm dlx @sentry/cli releases new ${{ github.sha }} \
+            --org "$SENTRY_ORG" --project "${{ vars.SENTRY_PROJECT_API }}"
+          pnpm dlx @sentry/cli sourcemaps upload .wrangler/dist-staging \
+            --release ${{ github.sha }} \
+            --org "$SENTRY_ORG" --project "${{ vars.SENTRY_PROJECT_API }}"
+          pnpm dlx @sentry/cli releases finalize ${{ github.sha }} \
+            --org "$SENTRY_ORG" --project "${{ vars.SENTRY_PROJECT_API }}"
+      - name: Deploy API
+        run: |
           pnpm -F @vitein/api exec wrangler deploy --env staging \
             --var BUILD_SHA:${{ github.sha }} \
             --var BUILD_STAMP:${{ steps.stamp.outputs.stamp }}
@@ -50,7 +71,25 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm -F @vitein/mcp exec wrangler deploy --env staging
+      - name: Build MCP bundle (for source-map upload)
+        run: |
+          pnpm -F @vitein/mcp exec wrangler deploy --env staging --dry-run \
+            --outdir .wrangler/dist-staging \
+            --var BUILD_SHA:${{ github.sha }}
+      - name: Upload MCP source maps to Sentry
+        if: env.SENTRY_AUTH_TOKEN != '' && vars.SENTRY_PROJECT_MCP != ''
+        run: |
+          pnpm dlx @sentry/cli releases new ${{ github.sha }} \
+            --org "$SENTRY_ORG" --project "${{ vars.SENTRY_PROJECT_MCP }}"
+          pnpm dlx @sentry/cli sourcemaps upload .wrangler/dist-staging \
+            --release ${{ github.sha }} \
+            --org "$SENTRY_ORG" --project "${{ vars.SENTRY_PROJECT_MCP }}"
+          pnpm dlx @sentry/cli releases finalize ${{ github.sha }} \
+            --org "$SENTRY_ORG" --project "${{ vars.SENTRY_PROJECT_MCP }}"
+      - name: Deploy MCP
+        run: |
+          pnpm -F @vitein/mcp exec wrangler deploy --env staging \
+            --var BUILD_SHA:${{ github.sha }}
 
   deploy-web:
     name: Web → Pages (staging)
@@ -64,7 +103,20 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm -F @vitein/web build
+      - name: Build Web
+        env:
+          BUILD_SHA: ${{ github.sha }}
+        run: pnpm -F @vitein/web build
+      - name: Upload Web source maps to Sentry
+        if: env.SENTRY_AUTH_TOKEN != '' && vars.SENTRY_PROJECT_WEB != ''
+        run: |
+          pnpm dlx @sentry/cli releases new ${{ github.sha }} \
+            --org "$SENTRY_ORG" --project "${{ vars.SENTRY_PROJECT_WEB }}"
+          pnpm dlx @sentry/cli sourcemaps upload apps/web/.svelte-kit/cloudflare \
+            --release ${{ github.sha }} \
+            --org "$SENTRY_ORG" --project "${{ vars.SENTRY_PROJECT_WEB }}"
+          pnpm dlx @sentry/cli releases finalize ${{ github.sha }} \
+            --org "$SENTRY_ORG" --project "${{ vars.SENTRY_PROJECT_WEB }}"
       # Cloudflare Pages rejects commit messages whose body contains some
       # shell-metachar sequences as "invalid UTF-8" (e.g. `$<…>`). Pass an
       # ASCII-only subject from the SHA so the deploy always accepts.
