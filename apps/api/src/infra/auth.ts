@@ -137,12 +137,16 @@ export function createAuth(env: Env) {
         // MCP-spec OAuth clients (Claude Desktop, ChatGPT, the MCP
         // Inspector, …) self-register via RFC 7591 Dynamic Client
         // Registration on first contact — there's no developer portal
-        // for them to pre-register on. Enable DCR everywhere except
-        // production, where we tighten access via the future Phase 3
-        // developer portal. The DCR endpoint still requires PKCE and
-        // doesn't permit `skip_consent`, so every dynamically-
-        // registered client must go through the consent screen.
+        // for them to pre-register on, and they have no user session
+        // yet at registration time. Enable both DCR and anonymous DCR
+        // everywhere except production. Anonymous registration forces
+        // `token_endpoint_auth_method: 'none'` (public PKCE clients
+        // only) — secret-based confidential clients still require a
+        // session. PKCE remains mandatory, and `skip_consent` is
+        // rejected at DCR time so every dynamically-registered client
+        // must clear the consent screen.
         allowDynamicClientRegistration: env.ENVIRONMENT !== 'production',
+        allowUnauthenticatedClientRegistration: env.ENVIRONMENT !== 'production',
         // Phase-1.5 scope list. Add more (templates:read etc.) as the
         // corresponding endpoints land.
         scopes: [
