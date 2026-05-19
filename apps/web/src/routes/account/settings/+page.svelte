@@ -1,6 +1,6 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
-  import { Banner, Button, Heading, Section, Text, TextField } from '$lib/design';
+  import { Banner, Button, Heading, Section, Text, TextField, TimezonePicker } from '$lib/design';
   import { LOCALE_ENDONYMS } from '$lib/i18n-locales';
   import * as m from '$lib/paraglide/messages.js';
   import type { PageProps } from './$types';
@@ -82,11 +82,12 @@
           </select>
         </label>
 
-        <TextField
+        <TimezonePicker
           label={m.settings_timezone_label()}
           name="timezone"
           bind:value={timezone}
           hint={m.settings_timezone_hint()}
+          listId="settings-tz-list"
         />
 
         <Button type="submit">{m.settings_save()}</Button>

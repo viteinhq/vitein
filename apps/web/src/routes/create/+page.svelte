@@ -1,7 +1,7 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
   import { page } from '$app/state';
-  import { Banner, Button, Card, TextField } from '$lib/design';
+  import { Banner, Button, Card, TextField, TimezonePicker } from '$lib/design';
   import { localizeError } from '$lib/errors';
   import * as m from '$lib/paraglide/messages.js';
   import type { PageProps } from './$types';
@@ -16,20 +16,11 @@
     typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'UTC',
   );
 
-  // Intl.supportedValuesOf lands widely (iOS 15.4+, Chrome 99+, FF 93+).
-  // Fall back to a short hand-picked list if absent — the freetext input
-  // still accepts anything the API will parse.
-  const timezoneOptions = $derived.by<string[]>(() => {
-    if (typeof Intl !== 'undefined' && 'supportedValuesOf' in Intl) {
-      try {
-        return (
-          Intl as unknown as { supportedValuesOf: (k: string) => string[] }
-        ).supportedValuesOf('timeZone');
-      } catch {
-        /* fall through */
-      }
-    }
-    return ['UTC', 'Europe/Zurich', 'Europe/Berlin', 'Europe/London', 'America/New_York'];
+  // Timezone options now live inside the reusable TimezonePicker
+  // component — see `$lib/design/TimezonePicker.svelte`.
+  let timezoneValue = $state('');
+  $effect(() => {
+    timezoneValue = String(form?.values?.timezone ?? defaultTimezone);
   });
 
   const shareUrl = $derived(form?.success ? `${page.url.origin}/e/${form.slug}` : '');
@@ -114,12 +105,6 @@
       <p class="text-sm text-slate-600">{m.create_subtitle()}</p>
     </header>
 
-    <datalist id="tz-list">
-      {#each timezoneOptions as tz (tz)}
-        <option value={tz}></option>
-      {/each}
-    </datalist>
-
     <form
       method="POST"
       use:enhance={() => {
@@ -182,14 +167,12 @@
           />
         </div>
 
-        <TextField
+        <TimezonePicker
           name="timezone"
-          list="tz-list"
-          required
-          autocomplete="off"
-          value={form?.values?.timezone ?? defaultTimezone}
+          bind:value={timezoneValue}
           label={m.create_field_timezone()}
           hint={m.create_field_timezone_hint()}
+          listId="create-tz-list"
         />
       </fieldset>
 

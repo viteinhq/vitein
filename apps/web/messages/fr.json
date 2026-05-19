@@ -290,5 +290,16 @@
   "settings_delete_error": "Account deletion failed. Try again or contact support.",
   "nav_dashboard": "Tableau de bord",
   "dashboard_upcoming_heading": "À venir",
-  "dashboard_archive_heading": "Archive"
+  "dashboard_archive_heading": "Archive",
+  "manage_edit_ends_at_label": "Ends (optional)",
+  "manage_edit_ends_at_hint": "Leave blank if it's a single-point event.",
+  "manage_edit_timezone_label": "Timezone",
+  "manage_edit_timezone_hint": "IANA name. Type to search.",
+  "manage_delete_heading": "Delete event",
+  "manage_delete_body": "Soft-deletes the event. Guests can't RSVP anymore, the public page returns 404, and the link stops working. We keep the row for 30 days in case you need it restored — contact support.",
+  "manage_delete_confirm_label": "Type DELETE to confirm",
+  "manage_delete_confirm_hint": "Case-sensitive.",
+  "manage_delete_confirm_required": "Type DELETE in the field to confirm.",
+  "manage_delete_button": "Delete this event",
+  "manage_delete_failed": "Deletion failed. Please try again."
 }

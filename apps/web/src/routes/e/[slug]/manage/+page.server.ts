@@ -1,6 +1,7 @@
 import { error as httpError, fail, redirect } from '@sveltejs/kit';
 import {
   createCheckout,
+  deleteEvent,
   deleteMedia,
   getEventBySlug,
   getEventManage,
@@ -96,11 +97,15 @@ export const actions: Actions = {
     const title = String(form.get('title') ?? '').trim();
     const description = String(form.get('description') ?? '').trim();
     const startsAt = String(form.get('startsAt') ?? '');
+    const endsAt = String(form.get('endsAt') ?? '');
+    const timezone = String(form.get('timezone') ?? '').trim();
     const locationText = String(form.get('locationText') ?? '').trim();
 
     if (title) body.title = title;
     if (description) body.description = description;
     if (startsAt) body.startsAt = new Date(startsAt).toISOString();
+    if (endsAt) body.endsAt = new Date(endsAt).toISOString();
+    if (timezone) body.timezone = timezone;
     if (locationText) body.locationText = locationText;
 
     if (Object.keys(body).length === 0) {
@@ -292,5 +297,39 @@ export const actions: Actions = {
     });
     if (error) return fail(500, { mediaError: 'manage_delete_failed' });
     return { mediaDeleted: true };
+  },
+
+  /**
+   * Soft-delete the event. Mirrors the /account/settings danger zone:
+   * user must type DELETE to confirm. The API uses ownership-based
+   * auth so both creator-token and signed-in-owner flows work.
+   */
+  deleteEvent: async ({ request, params, url, platform }) => {
+    configureApi(resolveBaseUrl(platform));
+    const headers = ownershipHeaders(request, url.searchParams.get('token'), url.origin);
+
+    const form = await request.formData();
+    const confirm = String(form.get('confirm') ?? '');
+    if (confirm !== 'DELETE') {
+      return fail(400, { deleteError: 'manage_delete_confirm_required' });
+    }
+
+    const bySlug = await getEventBySlug({ path: { slug: params.slug } });
+    if (bySlug.error || !bySlug.data) return fail(404, { deleteError: 'manage_event_not_found' });
+
+    const { error, response } = await deleteEvent({
+      path: { id: bySlug.data.id },
+      headers,
+    });
+    if (error && response?.status !== 204) {
+      return fail(response?.status ?? 500, {
+        deleteError: 'manage_delete_failed',
+        deleteStatus: response?.status,
+      });
+    }
+    // Soft-deleted — back to whichever entry the user came from. The
+    // dashboard is the right place for a signed-in owner; the public
+    // homepage for a token-only creator.
+    throw redirect(303, '/account/dashboard');
   },
 };

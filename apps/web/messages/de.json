@@ -290,5 +290,16 @@
   "settings_delete_error": "Account-Löschung fehlgeschlagen. Erneut versuchen oder Support kontaktieren.",
   "nav_dashboard": "Dashboard",
   "dashboard_upcoming_heading": "Demnächst",
-  "dashboard_archive_heading": "Archiv"
+  "dashboard_archive_heading": "Archiv",
+  "manage_edit_ends_at_label": "Ende (optional)",
+  "manage_edit_ends_at_hint": "Leer lassen, wenn es ein punktuelles Event ist.",
+  "manage_edit_timezone_label": "Zeitzone",
+  "manage_edit_timezone_hint": "IANA-Name. Zum Suchen tippen.",
+  "manage_delete_heading": "Event löschen",
+  "manage_delete_body": "Soft-Delete des Events. Gäste können nicht mehr zusagen, die öffentliche Seite liefert 404, der Link funktioniert nicht mehr. Die Daten bleiben 30 Tage gespeichert — bei Bedarf kann der Support wiederherstellen.",
+  "manage_delete_confirm_label": "Tippe DELETE zur Bestätigung",
+  "manage_delete_confirm_hint": "Groß-/Kleinschreibung beachten.",
+  "manage_delete_confirm_required": "Tippe DELETE ins Feld zur Bestätigung.",
+  "manage_delete_button": "Dieses Event löschen",
+  "manage_delete_failed": "Löschen fehlgeschlagen. Bitte erneut versuchen."
 }

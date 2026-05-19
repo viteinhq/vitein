@@ -1,7 +1,7 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
   import { page } from '$app/state';
-  import { Banner, Button, Heading, Section, Text, TextField } from '$lib/design';
+  import { Banner, Button, Heading, Section, Text, TextField, TimezonePicker } from '$lib/design';
   import { localizeError } from '$lib/errors';
   import * as m from '$lib/paraglide/messages.js';
   import type { PageProps } from './$types';
@@ -50,12 +50,25 @@
   });
 
   const startsAtForInput = $derived(toLocalInputValue(data.event.startsAt));
+  const endsAtForInput = $derived(
+    data.event.endsAt ? toLocalInputValue(data.event.endsAt) : '',
+  );
 
   function toLocalInputValue(iso: string): string {
     const d = new Date(iso);
     const pad = (n: number) => String(n).padStart(2, '0');
     return `${String(d.getFullYear())}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
   }
+
+  // Seeded by the effect on first render; same pattern as
+  // /account/settings to dodge Svelte's state_referenced_locally
+  // warning when reading a prop in $state(...).
+  let editTimezone = $state('');
+  $effect(() => {
+    editTimezone = data.event.timezone;
+  });
+
+  let deleteConfirm = $state('');
 
   const rsvpCounts = $derived.by(() => {
     const counts = { yes: 0, maybe: 0, no: 0, plusOnes: 0 };
@@ -310,6 +323,22 @@
       />
 
       <TextField
+        type="datetime-local"
+        name="endsAt"
+        value={endsAtForInput}
+        label={m.manage_edit_ends_at_label()}
+        hint={m.manage_edit_ends_at_hint()}
+      />
+
+      <TimezonePicker
+        name="timezone"
+        bind:value={editTimezone}
+        label={m.manage_edit_timezone_label()}
+        hint={m.manage_edit_timezone_hint()}
+        listId="manage-edit-tz-list"
+      />
+
+      <TextField
         name="locationText"
         value={data.event.locationText ?? ''}
         maxlength={500}
@@ -317,6 +346,35 @@
       />
 
       <Button type="submit">{m.manage_edit_submit()}</Button>
+    </form>
+  </Section>
+
+  <!-- Danger zone: soft-delete the event. Confirmation gate matches
+       the Settings → Delete account pattern. -->
+  <Section>
+    <Heading level="panel">{m.manage_delete_heading()}</Heading>
+    <Text tone="muted" size="sm">{m.manage_delete_body()}</Text>
+
+    {#if form && 'deleteError' in form && form.deleteError === 'manage_delete_confirm_required'}
+      <Banner tone="warn">{m.manage_delete_confirm_required()}</Banner>
+    {:else if form && 'deleteError' in form && form.deleteError}
+      <Banner tone="error">{m.manage_delete_failed()}</Banner>
+    {/if}
+
+    <form
+      method="POST"
+      action="?/deleteEvent&token={data.token}"
+      use:enhance
+      class="space-y-3"
+    >
+      <TextField
+        label={m.manage_delete_confirm_label()}
+        name="confirm"
+        bind:value={deleteConfirm}
+        placeholder="DELETE"
+        hint={m.manage_delete_confirm_hint()}
+      />
+      <Button type="submit" variant="danger">{m.manage_delete_button()}</Button>
     </form>
   </Section>
 
