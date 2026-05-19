@@ -2,6 +2,7 @@ import { oauthProvider } from '@better-auth/oauth-provider';
 import {
   accounts,
   createDb,
+  jwks,
   oauthAccessTokens,
   oauthClients,
   oauthConsents,
@@ -70,6 +71,10 @@ export function createAuth(env: Env) {
         oauthAccessToken: oauthAccessTokens,
         oauthRefreshToken: oauthRefreshTokens,
         oauthConsent: oauthConsents,
+        // JWT plugin key material. Required for every getSession() call
+        // (jwt() hooks into the session resolution path), not just OAuth
+        // bearer issuance — missing this binding crashes auth entirely.
+        jwks,
       },
     }),
     emailAndPassword: { enabled: false },
