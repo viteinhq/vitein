@@ -80,7 +80,13 @@ function productionCsp(platform: App.Platform | undefined): string {
     "base-uri 'self'",
     "object-src 'none'",
     "frame-ancestors 'none'",
-    "form-action 'self'",
+    // Stripe Checkout: our /e/[slug]/manage upgrade form POSTs to a
+    // SvelteKit action that 303s to checkout.stripe.com. CSP
+    // form-action enforces the entire redirect chain (not just the
+    // initial target), so we must allowlist Stripe's checkout origin
+    // here — otherwise the browser silently aborts the navigation
+    // and the user stays put.
+    "form-action 'self' https://checkout.stripe.com",
     "img-src 'self' https: data:",
     "font-src 'self' data:",
     "manifest-src 'self'",
