@@ -1,4 +1,10 @@
-import { verifyAccessToken } from 'better-auth/oauth2';
+import { verifyJwsAccessToken } from 'better-auth/oauth2';
+
+// `jose`'s JSONWebKeySet shape isn't directly exposed by better-auth/oauth2,
+// and `jose` isn't a direct dependency. Locally type it just enough.
+interface JsonWebKeySetLike {
+  keys: Array<Record<string, unknown>>;
+}
 import { and, eq, eventTokens } from '@vitein/db-schema';
 import type { MiddlewareHandler } from 'hono';
 import type { AuthContext } from '../domain/auth/context.js';
@@ -126,9 +132,24 @@ async function resolveOAuthBearer(env: Env, token: string): Promise<AuthContext 
   const audience = [apiBaseURL, mcpURL];
 
   try {
-    const payload = await verifyAccessToken(token, {
+    // Fetch JWKS in-process via the Better-Auth API instead of
+    // looping back through the public URL. Cloudflare Workers can
+    // hit their own custom-domain hostnames, but the loopback
+    // pathway is unreliable enough that the JWKS fetch was failing
+    // with `Jwks failed: <none>` even though the same URL responds
+    // from the outside. Reading directly off the Auth instance is
+    // simpler and faster (no HTTP, no edge round-trip).
+    const auth = createAuth(env);
+    const jwksFetch = async () => {
+      const result = (await auth.api.getJwks()) as JsonWebKeySetLike;
+      return result;
+    };
+
+    const payload = await verifyJwsAccessToken(token, {
       verifyOptions: { issuer, audience },
-      jwksUrl: `${apiBaseURL}/v1/auth/jwks`,
+      // The function type wants a jose JSONWebKeySet which we don't
+      // depend on directly; the shape matches at runtime.
+      jwksFetch: jwksFetch as unknown as string,
     });
 
     const userId = typeof payload.sub === 'string' ? payload.sub : null;
