@@ -11,7 +11,7 @@ import { DomainError, ValidationError } from '../domain/errors.js';
 import { tierIncludes, tierOf } from '../domain/payments/payments.js';
 import { db } from '../infra/db.js';
 import { localeFromAcceptLanguage, sendAnnouncement } from '../infra/email.js';
-import { requireCreator } from '../middleware/require-creator.js';
+import { requireEventOwnership } from '../middleware/require-event-ownership.js';
 import type { AppVariables, Env } from '../types/env.js';
 
 export const announcementsRoute = new Hono<{ Bindings: Env; Variables: AppVariables }>();
@@ -26,7 +26,7 @@ announcementsRoute.get(
   zValidator('param', idParamSchema, (r) => {
     if (!r.success) throw new ValidationError('Invalid event id', { issues: r.error.issues });
   }),
-  requireCreator('id'),
+  requireEventOwnership('id', { scope: 'events:read' }),
   async (c) => {
     const { id } = c.req.valid('param');
     const items = await listAnnouncements(db(c.env), id);
@@ -56,7 +56,7 @@ announcementsRoute.post(
   zValidator('param', idParamSchema, (r) => {
     if (!r.success) throw new ValidationError('Invalid event id', { issues: r.error.issues });
   }),
-  requireCreator('id'),
+  requireEventOwnership('id', { scope: 'events:write' }),
   zValidator('json', postSchema, (r) => {
     if (!r.success)
       throw new ValidationError('Invalid announcement body', { issues: r.error.issues });

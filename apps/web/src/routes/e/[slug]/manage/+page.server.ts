@@ -19,22 +19,43 @@ function resolveBaseUrl(platform: App.Platform | undefined): string {
   return platform?.env?.API_BASE_URL ?? process.env.API_BASE_URL ?? 'http://localhost:8787';
 }
 
-export const load: PageServerLoad = async ({ params, url, platform }) => {
+/**
+ * Build the auth headers for SDK calls from this load fn. Two
+ * accepted paths into /manage:
+ *
+ *  1. Creator-token mode: `?token=…` query param (magic-link email).
+ *     Sent as `X-Creator-Token`; the API still recognises it.
+ *  2. Session mode: a signed-in user whose `creator_user_id` matches
+ *     the event. Achieved by forwarding the inbound Cookie + Origin
+ *     so Better-Auth picks up the session on the API side.
+ *
+ * We include both kinds of headers when both signals are present —
+ * `requireEventOwnership` accepts whichever lights up first.
+ */
+function ownershipHeaders(
+  request: Request,
+  token: string | null,
+  origin: string,
+): Record<string, string> {
+  const headers: Record<string, string> = {};
+  if (token) headers['X-Creator-Token'] = token;
+  const cookie = request.headers.get('cookie');
+  if (cookie) headers['Cookie'] = cookie;
+  headers['Origin'] = origin;
+  return headers;
+}
+
+export const load: PageServerLoad = async ({ params, url, platform, request }) => {
   configureApi(resolveBaseUrl(platform));
 
   const token = url.searchParams.get('token');
-  if (!token)
-    throw httpError(401, {
-      message: 'Creator token required',
-      code: 'http_creator_token_required',
-    });
+  const headers = ownershipHeaders(request, token, url.origin);
 
   const bySlug = await getEventBySlug({ path: { slug: params.slug } });
   if (bySlug.error || !bySlug.data)
     throw httpError(404, { message: 'Event not found', code: 'http_event_not_found' });
 
   const eventId = bySlug.data.id;
-  const headers = { 'X-Creator-Token': token };
 
   const [manage, rsvps, guests, media, announcements] = await Promise.all([
     getEventManage({ path: { id: eventId }, headers }),
@@ -44,8 +65,12 @@ export const load: PageServerLoad = async ({ params, url, platform }) => {
     listAnnouncements({ path: { id: eventId }, headers }),
   ]);
 
-  if (manage.error || !manage.data)
-    throw httpError(401, { message: 'Creator token invalid', code: 'http_creator_token_invalid' });
+  if (manage.error || !manage.data) {
+    // No valid auth — push the user to sign in. The dashboard can
+    // get them back to /manage with session auth. The creator-token
+    // path goes through the magic-link email, not this redirect.
+    throw redirect(303, `/signin?next=${encodeURIComponent(url.pathname)}`);
+  }
 
   return {
     token,
@@ -61,7 +86,7 @@ export const actions: Actions = {
   update: async ({ request, params, url, platform }) => {
     configureApi(resolveBaseUrl(platform));
     const token = url.searchParams.get('token');
-    if (!token) return fail(401, { updateError: 'manage_missing_token' });
+    const headers = ownershipHeaders(request, token, url.origin);
 
     const bySlug = await getEventBySlug({ path: { slug: params.slug } });
     if (bySlug.error || !bySlug.data) return fail(404, { updateError: 'manage_event_not_found' });
@@ -84,7 +109,7 @@ export const actions: Actions = {
 
     const { error } = await updateEvent({
       path: { id: bySlug.data.id },
-      headers: { 'X-Creator-Token': token },
+      headers,
       body,
     });
 
@@ -92,17 +117,16 @@ export const actions: Actions = {
     return { updateSuccess: true };
   },
 
-  remind: async ({ params, url, platform }) => {
+  remind: async ({ request, params, url, platform }) => {
     configureApi(resolveBaseUrl(platform));
-    const token = url.searchParams.get('token');
-    if (!token) return fail(401, { reminderError: 'manage_missing_token' });
+    const headers = ownershipHeaders(request, url.searchParams.get('token'), url.origin);
 
     const bySlug = await getEventBySlug({ path: { slug: params.slug } });
     if (bySlug.error || !bySlug.data) return fail(404, { reminderError: 'manage_event_not_found' });
 
     const { error } = await sendReminder({
       path: { id: bySlug.data.id },
-      headers: { 'X-Creator-Token': token },
+      headers,
     });
 
     if (error) return fail(500, { reminderError: 'manage_reminder_failed' });
@@ -111,8 +135,7 @@ export const actions: Actions = {
 
   uploadMedia: async ({ request, params, url, platform }) => {
     const apiBase = resolveBaseUrl(platform);
-    const token = url.searchParams.get('token');
-    if (!token) return fail(401, { mediaError: 'manage_missing_token' });
+    const ownership = ownershipHeaders(request, url.searchParams.get('token'), url.origin);
 
     const form = await request.formData();
     const file = form.get('file');
@@ -135,7 +158,7 @@ export const actions: Actions = {
       body: await file.arrayBuffer(),
       headers: {
         'Content-Type': file.type || 'application/octet-stream',
-        'X-Creator-Token': token,
+        ...ownership,
       },
     });
 
@@ -153,8 +176,7 @@ export const actions: Actions = {
 
   announce: async ({ request, params, url, platform }) => {
     configureApi(resolveBaseUrl(platform));
-    const token = url.searchParams.get('token');
-    if (!token) return fail(401, { announceError: 'manage_missing_token' });
+    const headers = ownershipHeaders(request, url.searchParams.get('token'), url.origin);
 
     const bySlug = await getEventBySlug({ path: { slug: params.slug } });
     if (bySlug.error || !bySlug.data) return fail(404, { announceError: 'manage_event_not_found' });
@@ -166,7 +188,7 @@ export const actions: Actions = {
 
     const { data, error, response } = await sendAnnouncement({
       path: { id: bySlug.data.id },
-      headers: { 'X-Creator-Token': token },
+      headers,
       body: { stage },
     });
 
@@ -192,8 +214,7 @@ export const actions: Actions = {
 
   setPassword: async ({ request, params, url, platform }) => {
     configureApi(resolveBaseUrl(platform));
-    const token = url.searchParams.get('token');
-    if (!token) return fail(401, { passwordError: 'manage_missing_token' });
+    const headers = ownershipHeaders(request, url.searchParams.get('token'), url.origin);
 
     const bySlug = await getEventBySlug({ path: { slug: params.slug } });
     if (bySlug.error || !bySlug.data) return fail(404, { passwordError: 'manage_event_not_found' });
@@ -208,7 +229,7 @@ export const actions: Actions = {
 
     const { error, response } = await updateEvent({
       path: { id: bySlug.data.id },
-      headers: { 'X-Creator-Token': token },
+      headers,
       body: { password: clear ? null : raw },
     });
 
@@ -223,8 +244,7 @@ export const actions: Actions = {
 
   upgrade: async ({ request, params, url, platform }) => {
     configureApi(resolveBaseUrl(platform));
-    const token = url.searchParams.get('token');
-    if (!token) return fail(401, { upgradeError: 'manage_missing_token' });
+    const headers = ownershipHeaders(request, url.searchParams.get('token'), url.origin);
 
     const bySlug = await getEventBySlug({ path: { slug: params.slug } });
     if (bySlug.error || !bySlug.data) return fail(404, { upgradeError: 'manage_event_not_found' });
@@ -241,7 +261,7 @@ export const actions: Actions = {
 
     const { data, error, response } = await createCheckout({
       path: { id: bySlug.data.id },
-      headers: { 'X-Creator-Token': token },
+      headers,
       body: { tier, currency },
     });
 
@@ -257,8 +277,7 @@ export const actions: Actions = {
 
   deleteMedia: async ({ request, params, url, platform }) => {
     configureApi(resolveBaseUrl(platform));
-    const token = url.searchParams.get('token');
-    if (!token) return fail(401, { mediaError: 'manage_missing_token' });
+    const headers = ownershipHeaders(request, url.searchParams.get('token'), url.origin);
 
     const form = await request.formData();
     const mediaId = String(form.get('mediaId') ?? '');
@@ -269,7 +288,7 @@ export const actions: Actions = {
 
     const { error } = await deleteMedia({
       path: { id: bySlug.data.id, mediaId },
-      headers: { 'X-Creator-Token': token },
+      headers,
     });
     if (error) return fail(500, { mediaError: 'manage_delete_failed' });
     return { mediaDeleted: true };

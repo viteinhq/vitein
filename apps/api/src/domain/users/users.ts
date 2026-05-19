@@ -1,4 +1,4 @@
-import { and, eq, events, isNull, rsvps, users, type Db } from '@vitein/db-schema';
+import { and, desc, eq, events, isNull, rsvps, users, type Db } from '@vitein/db-schema';
 import { NotFoundError } from '../errors.js';
 
 export async function getMe(db: Db, userId: string): Promise<typeof users.$inferSelect> {
@@ -40,13 +40,18 @@ export async function updateMe(
   return getMe(db, userId);
 }
 
-/** Events owned by the authenticated user (claimed or created while signed in). */
+/**
+ * Events owned by the authenticated user. Ordered by start date,
+ * most recent first — matches the dashboard's expectation that the
+ * "next thing I'm hosting" sits at the top. The dashboard further
+ * splits upcoming vs past on the client side.
+ */
 export async function getMyEvents(db: Db, userId: string): Promise<(typeof events.$inferSelect)[]> {
   return db
     .select()
     .from(events)
     .where(and(eq(events.creatorUserId, userId), isNull(events.deletedAt)))
-    .orderBy(events.startsAt);
+    .orderBy(desc(events.startsAt));
 }
 
 /**

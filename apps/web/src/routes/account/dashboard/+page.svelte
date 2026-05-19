@@ -54,29 +54,62 @@
     <Button type="submit" variant="secondary" size="sm">{m.dashboard_claim_submit()}</Button>
   </form>
 
-  {#if data.events.length === 0}
+  {#if data.upcoming.length === 0 && data.past.length === 0}
     <Card class="!bg-slate-50">
       <p class="text-sm text-slate-600">
         {m.dashboard_empty_line()}
         <a href="/create" class="underline">{m.dashboard_empty_create()}</a>{m.dashboard_empty_or_claim()}
       </p>
     </Card>
-  {:else}
-    <ul class="divide-y divide-slate-200 rounded-md border border-slate-200">
-      {#each data.events as ev (ev.id)}
-        <li class="flex items-center justify-between p-4">
-          <div>
-            <a href="/e/{ev.slug}" class="font-medium underline">{ev.title}</a>
-            <p class="text-sm text-slate-500">
-              {formatStart(ev.startsAt, ev.timezone)} ({ev.timezone})
-              {#if ev.locationText}· {ev.locationText}{/if}
-            </p>
-          </div>
-          <span class="rounded-full border border-slate-200 px-2 py-0.5 text-xs text-slate-500">
-            {ev.visibility}
-          </span>
-        </li>
-      {/each}
-    </ul>
+  {/if}
+
+  {#if data.upcoming.length > 0}
+    <div class="space-y-2">
+      <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-500">
+        {m.dashboard_upcoming_heading()}
+      </h2>
+      <ul class="divide-y divide-slate-200 rounded-md border border-slate-200">
+        {#each data.upcoming as ev (ev.id)}
+          <li class="flex items-center justify-between p-4">
+            <div>
+              <!-- Owner reaches /manage with session auth — the API
+                   accepts ownership-based access on manage routes. -->
+              <a href="/e/{ev.slug}/manage" class="font-medium underline">{ev.title}</a>
+              <p class="text-sm text-slate-500">
+                {formatStart(ev.startsAt, ev.timezone)} ({ev.timezone})
+                {#if ev.locationText}· {ev.locationText}{/if}
+              </p>
+            </div>
+            <span class="rounded-full border border-slate-200 px-2 py-0.5 text-xs text-slate-500">
+              {ev.visibility}
+            </span>
+          </li>
+        {/each}
+      </ul>
+    </div>
+  {/if}
+
+  {#if data.past.length > 0}
+    <div class="space-y-2">
+      <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-500">
+        {m.dashboard_archive_heading()}
+      </h2>
+      <ul class="divide-y divide-slate-200 rounded-md border border-slate-200 opacity-75">
+        {#each data.past as ev (ev.id)}
+          <li class="flex items-center justify-between p-4">
+            <div>
+              <a href="/e/{ev.slug}/manage" class="font-medium underline">{ev.title}</a>
+              <p class="text-sm text-slate-500">
+                {formatStart(ev.startsAt, ev.timezone)} ({ev.timezone})
+                {#if ev.locationText}· {ev.locationText}{/if}
+              </p>
+            </div>
+            <span class="rounded-full border border-slate-200 px-2 py-0.5 text-xs text-slate-500">
+              {ev.visibility}
+            </span>
+          </li>
+        {/each}
+      </ul>
+    </div>
   {/if}
 </section>

@@ -6,7 +6,7 @@ import { isViewTokenValid } from '../domain/events/view-tokens.js';
 import { deleteMedia, listMedia, publicUrlFor, uploadMedia } from '../domain/media/media.js';
 import { ValidationError } from '../domain/errors.js';
 import { db } from '../infra/db.js';
-import { requireCreator } from '../middleware/require-creator.js';
+import { requireEventOwnership } from '../middleware/require-event-ownership.js';
 import type { AppVariables, Env } from '../types/env.js';
 
 export const mediaRoute = new Hono<{ Bindings: Env; Variables: AppVariables }>();
@@ -26,7 +26,7 @@ mediaRoute.post(
   zValidator('param', idParamSchema, (r) => {
     if (!r.success) throw new ValidationError('Invalid event id', { issues: r.error.issues });
   }),
-  requireCreator('id'),
+  requireEventOwnership('id', { scope: 'events:write' }),
   async (c) => {
     if (!c.env.R2_MEDIA) {
       throw new ValidationError('Media storage is not configured in this environment.');
@@ -78,7 +78,7 @@ mediaRoute.delete(
   zValidator('param', doubleIdParamSchema, (r) => {
     if (!r.success) throw new ValidationError('Invalid id(s)', { issues: r.error.issues });
   }),
-  requireCreator('id'),
+  requireEventOwnership('id', { scope: 'events:write' }),
   async (c) => {
     if (!c.env.R2_MEDIA) {
       throw new ValidationError('Media storage is not configured in this environment.');

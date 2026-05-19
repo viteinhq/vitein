@@ -303,6 +303,12 @@ export type EventId = string;
  * Plaintext creator token (the value delivered by the magic-link email).
  * The server hashes it and compares against `event_tokens.token_hash`.
  *
+ * Optional: signed-in users whose `users.id` matches the event's
+ * `creator_user_id` can call the same endpoints with the
+ * Better-Auth session cookie instead of this header. OAuth bearers
+ * with the appropriate scope are accepted too. See
+ * `apps/api/src/middleware/require-event-ownership.ts`.
+ *
  */
 export type CreatorTokenHeader = string;
 
@@ -406,13 +412,19 @@ export type GetEventIcsResponse = GetEventIcsResponses[keyof GetEventIcsResponse
 
 export type DeleteEventData = {
   body?: never;
-  headers: {
+  headers?: {
     /**
      * Plaintext creator token (the value delivered by the magic-link email).
      * The server hashes it and compares against `event_tokens.token_hash`.
      *
+     * Optional: signed-in users whose `users.id` matches the event's
+     * `creator_user_id` can call the same endpoints with the
+     * Better-Auth session cookie instead of this header. OAuth bearers
+     * with the appropriate scope are accepted too. See
+     * `apps/api/src/middleware/require-event-ownership.ts`.
+     *
      */
-    'X-Creator-Token': string;
+    'X-Creator-Token'?: string;
   };
   path: {
     /**
@@ -478,13 +490,19 @@ export type GetEventResponse = GetEventResponses[keyof GetEventResponses];
 
 export type UpdateEventData = {
   body: EventUpdateInput;
-  headers: {
+  headers?: {
     /**
      * Plaintext creator token (the value delivered by the magic-link email).
      * The server hashes it and compares against `event_tokens.token_hash`.
      *
+     * Optional: signed-in users whose `users.id` matches the event's
+     * `creator_user_id` can call the same endpoints with the
+     * Better-Auth session cookie instead of this header. OAuth bearers
+     * with the appropriate scope are accepted too. See
+     * `apps/api/src/middleware/require-event-ownership.ts`.
+     *
      */
-    'X-Creator-Token': string;
+    'X-Creator-Token'?: string;
   };
   path: {
     /**
@@ -524,13 +542,19 @@ export type UpdateEventResponse = UpdateEventResponses[keyof UpdateEventResponse
 
 export type GetEventManageData = {
   body?: never;
-  headers: {
+  headers?: {
     /**
      * Plaintext creator token (the value delivered by the magic-link email).
      * The server hashes it and compares against `event_tokens.token_hash`.
      *
+     * Optional: signed-in users whose `users.id` matches the event's
+     * `creator_user_id` can call the same endpoints with the
+     * Better-Auth session cookie instead of this header. OAuth bearers
+     * with the appropriate scope are accepted too. See
+     * `apps/api/src/middleware/require-event-ownership.ts`.
+     *
      */
-    'X-Creator-Token': string;
+    'X-Creator-Token'?: string;
   };
   path: {
     /**
@@ -566,13 +590,19 @@ export type GetEventManageResponse = GetEventManageResponses[keyof GetEventManag
 
 export type ListRsvpsData = {
   body?: never;
-  headers: {
+  headers?: {
     /**
      * Plaintext creator token (the value delivered by the magic-link email).
      * The server hashes it and compares against `event_tokens.token_hash`.
      *
+     * Optional: signed-in users whose `users.id` matches the event's
+     * `creator_user_id` can call the same endpoints with the
+     * Better-Auth session cookie instead of this header. OAuth bearers
+     * with the appropriate scope are accepted too. See
+     * `apps/api/src/middleware/require-event-ownership.ts`.
+     *
      */
-    'X-Creator-Token': string;
+    'X-Creator-Token'?: string;
   };
   path: {
     /**
@@ -640,13 +670,19 @@ export type SubmitRsvpResponse = SubmitRsvpResponses[keyof SubmitRsvpResponses];
 
 export type ListGuestsData = {
   body?: never;
-  headers: {
+  headers?: {
     /**
      * Plaintext creator token (the value delivered by the magic-link email).
      * The server hashes it and compares against `event_tokens.token_hash`.
      *
+     * Optional: signed-in users whose `users.id` matches the event's
+     * `creator_user_id` can call the same endpoints with the
+     * Better-Auth session cookie instead of this header. OAuth bearers
+     * with the appropriate scope are accepted too. See
+     * `apps/api/src/middleware/require-event-ownership.ts`.
+     *
      */
-    'X-Creator-Token': string;
+    'X-Creator-Token'?: string;
   };
   path: {
     /**
@@ -680,13 +716,19 @@ export type ListGuestsResponse = ListGuestsResponses[keyof ListGuestsResponses];
 
 export type AddGuestData = {
   body: GuestInput;
-  headers: {
+  headers?: {
     /**
      * Plaintext creator token (the value delivered by the magic-link email).
      * The server hashes it and compares against `event_tokens.token_hash`.
      *
+     * Optional: signed-in users whose `users.id` matches the event's
+     * `creator_user_id` can call the same endpoints with the
+     * Better-Auth session cookie instead of this header. OAuth bearers
+     * with the appropriate scope are accepted too. See
+     * `apps/api/src/middleware/require-event-ownership.ts`.
+     *
      */
-    'X-Creator-Token': string;
+    'X-Creator-Token'?: string;
   };
   path: {
     /**
@@ -754,13 +796,19 @@ export type ListMediaResponse = ListMediaResponses[keyof ListMediaResponses];
 
 export type UploadMediaData = {
   body: Blob | File;
-  headers: {
+  headers?: {
     /**
      * Plaintext creator token (the value delivered by the magic-link email).
      * The server hashes it and compares against `event_tokens.token_hash`.
      *
+     * Optional: signed-in users whose `users.id` matches the event's
+     * `creator_user_id` can call the same endpoints with the
+     * Better-Auth session cookie instead of this header. OAuth bearers
+     * with the appropriate scope are accepted too. See
+     * `apps/api/src/middleware/require-event-ownership.ts`.
+     *
      */
-    'X-Creator-Token': string;
+    'X-Creator-Token'?: string;
   };
   path: {
     /**
@@ -802,13 +850,19 @@ export type UploadMediaResponse = UploadMediaResponses[keyof UploadMediaResponse
 
 export type DeleteMediaData = {
   body?: never;
-  headers: {
+  headers?: {
     /**
      * Plaintext creator token (the value delivered by the magic-link email).
      * The server hashes it and compares against `event_tokens.token_hash`.
      *
+     * Optional: signed-in users whose `users.id` matches the event's
+     * `creator_user_id` can call the same endpoints with the
+     * Better-Auth session cookie instead of this header. OAuth bearers
+     * with the appropriate scope are accepted too. See
+     * `apps/api/src/middleware/require-event-ownership.ts`.
+     *
      */
-    'X-Creator-Token': string;
+    'X-Creator-Token'?: string;
   };
   path: {
     /**
@@ -898,13 +952,19 @@ export type CreateCheckoutData = {
      */
     currency?: 'EUR' | 'USD' | 'CHF' | 'GBP';
   };
-  headers: {
+  headers?: {
     /**
      * Plaintext creator token (the value delivered by the magic-link email).
      * The server hashes it and compares against `event_tokens.token_hash`.
      *
+     * Optional: signed-in users whose `users.id` matches the event's
+     * `creator_user_id` can call the same endpoints with the
+     * Better-Auth session cookie instead of this header. OAuth bearers
+     * with the appropriate scope are accepted too. See
+     * `apps/api/src/middleware/require-event-ownership.ts`.
+     *
      */
-    'X-Creator-Token': string;
+    'X-Creator-Token'?: string;
   };
   path: {
     /**
@@ -957,13 +1017,19 @@ export type CreateCheckoutResponse = CreateCheckoutResponses[keyof CreateCheckou
 
 export type ListAnnouncementsData = {
   body?: never;
-  headers: {
+  headers?: {
     /**
      * Plaintext creator token (the value delivered by the magic-link email).
      * The server hashes it and compares against `event_tokens.token_hash`.
      *
+     * Optional: signed-in users whose `users.id` matches the event's
+     * `creator_user_id` can call the same endpoints with the
+     * Better-Auth session cookie instead of this header. OAuth bearers
+     * with the appropriate scope are accepted too. See
+     * `apps/api/src/middleware/require-event-ownership.ts`.
+     *
      */
-    'X-Creator-Token': string;
+    'X-Creator-Token'?: string;
   };
   path: {
     /**
@@ -1000,13 +1066,19 @@ export type SendAnnouncementData = {
   body: {
     stage: 'save_the_date' | 'invitation';
   };
-  headers: {
+  headers?: {
     /**
      * Plaintext creator token (the value delivered by the magic-link email).
      * The server hashes it and compares against `event_tokens.token_hash`.
      *
+     * Optional: signed-in users whose `users.id` matches the event's
+     * `creator_user_id` can call the same endpoints with the
+     * Better-Auth session cookie instead of this header. OAuth bearers
+     * with the appropriate scope are accepted too. See
+     * `apps/api/src/middleware/require-event-ownership.ts`.
+     *
      */
-    'X-Creator-Token': string;
+    'X-Creator-Token'?: string;
   };
   path: {
     /**
@@ -1062,13 +1134,19 @@ export type SendAnnouncementResponse = SendAnnouncementResponses[keyof SendAnnou
 
 export type SendReminderData = {
   body?: never;
-  headers: {
+  headers?: {
     /**
      * Plaintext creator token (the value delivered by the magic-link email).
      * The server hashes it and compares against `event_tokens.token_hash`.
      *
+     * Optional: signed-in users whose `users.id` matches the event's
+     * `creator_user_id` can call the same endpoints with the
+     * Better-Auth session cookie instead of this header. OAuth bearers
+     * with the appropriate scope are accepted too. See
+     * `apps/api/src/middleware/require-event-ownership.ts`.
+     *
      */
-    'X-Creator-Token': string;
+    'X-Creator-Token'?: string;
   };
   path: {
     /**

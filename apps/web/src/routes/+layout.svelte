@@ -24,7 +24,11 @@
         <nav class="flex items-center gap-4 text-sm">
           <a href="/create" class="hover:underline">{m.nav_create()}</a>
           <a href="/pricing" class="hover:underline">{m.nav_pricing()}</a>
-          <a href="/signin" class="hover:underline">{m.nav_signin()}</a>
+          {#if data.signedIn}
+            <a href="/account/dashboard" class="hover:underline">{m.nav_dashboard()}</a>
+          {:else}
+            <a href="/signin" class="hover:underline">{m.nav_signin()}</a>
+          {/if}
         </nav>
       </div>
     </header>
