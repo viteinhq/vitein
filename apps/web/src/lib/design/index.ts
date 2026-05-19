@@ -20,3 +20,4 @@ export { default as LanguageSwitcher } from './LanguageSwitcher.svelte';
 export { default as Section } from './Section.svelte';
 export { default as Text } from './Text.svelte';
 export { default as TextField } from './TextField.svelte';
+export { default as TimezonePicker } from './TimezonePicker.svelte';
