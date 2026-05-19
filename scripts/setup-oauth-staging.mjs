@@ -258,12 +258,19 @@ async function step4RegisterClient() {
     process.exit(1);
   }
 
+  // Better-Auth's session cookie name carries the `__Secure-` prefix on
+  // HTTPS (RFC 6265bis — auto-added when baseURL is https). Staging and
+  // prod are both HTTPS; only `dev` runs on http://localhost without
+  // the prefix.
+  const cookieName =
+    ENV === 'dev' ? 'better-auth.session_token' : '__Secure-better-auth.session_token';
+
   console.log('Running register-mcp-oauth-client.mjs …');
   const res = runCapture('node', ['scripts/register-mcp-oauth-client.mjs'], {
     env: {
       ...process.env,
       API_BASE_URL,
-      ADMIN_SESSION_COOKIE: `better-auth.session_token=${cookieValue}`,
+      ADMIN_SESSION_COOKIE: `${cookieName}=${cookieValue}`,
     },
   });
 
