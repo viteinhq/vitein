@@ -158,6 +158,34 @@ const handler: ExportedHandler<Env> = {
       throw new Error('mcp_debug_boom — intentional Sentry canary');
     }
 
+    // OAuth 2.0 Protected Resource Metadata (RFC 9728). The MCP spec
+    // tells clients to look here to discover which authorization
+    // server protects this resource; the Inspector et al follow it to
+    // bootstrap the OAuth flow without out-of-band configuration.
+    if (request.method === 'GET' && url.pathname === '/.well-known/oauth-protected-resource') {
+      const authServer = `${env.API_BASE_URL}/v1/auth`;
+      return Response.json(
+        {
+          resource: `https://${url.host}/mcp`,
+          authorization_servers: [authServer],
+          scopes_supported: [
+            'openid',
+            'profile',
+            'email',
+            'offline_access',
+            'events:read',
+            'events:write',
+            'guests:read',
+            'guests:write',
+            'rsvps:read',
+            'rsvps:write',
+          ],
+          bearer_methods_supported: ['header'],
+        },
+        { headers: corsHeaders(request) },
+      );
+    }
+
     if (url.pathname === '/mcp') {
       return handleMcp(request, env);
     }
