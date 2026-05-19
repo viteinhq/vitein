@@ -237,11 +237,13 @@ async function step3SignInPrompt() {
   header(3, 'Sign in to the staging dashboard');
   const url = ENV === 'production' ? 'https://vite.in/signin' : 'https://next.vite.in/signin';
   note(
-    `Open ${c.bold(url)} in a browser, request a magic link to your email,\n` +
-      `click the link, then in DevTools → Application → Cookies copy the\n` +
-      `VALUE of the "better-auth.session_token" cookie.`,
+    `1. Open ${c.bold(url)} and sign in via magic link.\n` +
+      `2. Open DevTools → Application → Cookies for the dashboard origin.\n` +
+      `3. Copy the VALUE of "__Secure-better-auth.session_token" (or\n` +
+      `   "better-auth.session_token" in dev) to your clipboard.\n` +
+      `\nThis step does NOT ask for the cookie value — that comes next.`,
   );
-  await confirm();
+  await confirm('When the cookie is on your clipboard, press Enter (do not paste here)…');
 }
 
 async function step4RegisterClient() {
