@@ -17,6 +17,7 @@ export {
   oauthAccessTokens,
   oauthRefreshTokens,
   oauthConsents,
+  jwks,
   schema,
   type User,
   type NewUser,
@@ -50,4 +51,6 @@ export {
   type NewOauthRefreshToken,
   type OauthConsent,
   type NewOauthConsent,
+  type Jwks,
+  type NewJwks,
 } from './schema.js';

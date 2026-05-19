@@ -383,6 +383,21 @@ export const oauthConsents = pgTable(
 );
 
 /**
+ * Better-Auth JWT plugin key material. The plugin generates an asymmetric
+ * keypair on first use, persists it here, and serves the public half via
+ * `/v1/auth/jwks`. Without this table Better-Auth's `getSession` throws
+ * (the JWT plugin hooks into every session request) — so it's required
+ * even on the cookie-session path, not just for OAuth bearer issuance.
+ */
+export const jwks = pgTable('jwks', {
+  id: text().primaryKey(),
+  publicKey: text('public_key').notNull(),
+  privateKey: text('private_key').notNull(),
+  createdAt: nowTs(),
+  expiresAt: timestamp('expires_at', { withTimezone: true }),
+});
+
+/**
  * Append-only audit log. Any side-effectful action (event write, RSVP,
  * reminder send, payment complete) gets a row. No foreign keys on
  * `event_id` so the log survives event deletion.
@@ -434,6 +449,8 @@ export type OauthRefreshToken = typeof oauthRefreshTokens.$inferSelect;
 export type NewOauthRefreshToken = typeof oauthRefreshTokens.$inferInsert;
 export type OauthConsent = typeof oauthConsents.$inferSelect;
 export type NewOauthConsent = typeof oauthConsents.$inferInsert;
+export type Jwks = typeof jwks.$inferSelect;
+export type NewJwks = typeof jwks.$inferInsert;
 
 export const schema = {
   users,
@@ -452,4 +469,5 @@ export const schema = {
   oauthAccessTokens,
   oauthRefreshTokens,
   oauthConsents,
+  jwks,
 };

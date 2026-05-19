@@ -36,6 +36,13 @@
       "when": 1778661463337,
       "tag": "0004_soft_vanisher",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1779189061207,
+      "tag": "0005_bored_retro_girl",
+      "breakpoints": true
     }
   ]
 }
