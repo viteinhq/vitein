@@ -1,8 +1,7 @@
 <script lang="ts">
   import { version } from '$app/environment';
   import { ParaglideJS } from '@inlang/paraglide-sveltekit';
-  import { CookieConsent } from '$lib/design';
-  import LanguageSwitcher from '$lib/design/LanguageSwitcher.svelte';
+  import { ArrowRight, Button, CookieConsent, LanguageSwitcher, Wordmark } from '$lib/design';
   import { i18n } from '$lib/i18n';
   import * as m from '$lib/paraglide/messages.js';
   import type { Snippet } from 'svelte';
@@ -14,46 +13,86 @@
   const showCookieBanner = $derived(
     data.consent.isConsentRegion && data.consent.choice === null,
   );
+
+  const navLink = 'rounded-full px-3 py-2 text-sm font-medium text-ink/70 transition hover:text-ink';
 </script>
 
 <ParaglideJS {i18n}>
   <div class="flex min-h-screen flex-col">
-    <header class="border-b border-slate-200 px-6 py-4">
-      <div class="mx-auto flex max-w-4xl items-center justify-between">
-        <a href="/" class="text-xl font-semibold tracking-tight">vite.in</a>
-        <nav class="flex items-center gap-4 text-sm">
-          <a href="/create" class="hover:underline">{m.nav_create()}</a>
-          <a href="/pricing" class="hover:underline">{m.nav_pricing()}</a>
+    <header class="border-b border-rule">
+      <div class="mx-auto flex max-w-5xl items-center justify-between px-5 py-3.5 sm:px-6">
+        <Wordmark href="/" size={23} />
+        <nav class="flex items-center gap-1">
+          <a href="/pricing" class="{navLink} hidden sm:inline-block">{m.nav_pricing()}</a>
           {#if data.signedIn}
-            <a href="/account/dashboard" class="hover:underline">{m.nav_dashboard()}</a>
+            <a href="/account/dashboard" class="{navLink} hidden sm:inline-block">
+              {m.nav_dashboard()}
+            </a>
           {:else}
-            <a href="/signin" class="hover:underline">{m.nav_signin()}</a>
+            <a href="/signin" class="{navLink} hidden sm:inline-block">{m.nav_signin()}</a>
           {/if}
+          <Button href="/create" variant="accent" size="sm" class="ms-1">
+            {m.nav_create()}
+            <ArrowRight size={12} />
+          </Button>
         </nav>
       </div>
     </header>
 
-    <main class="flex-1 px-6 py-12">
+    <main class="flex-1">
       {@render children()}
     </main>
 
-    <footer class="border-t border-slate-200 px-6 py-6 text-sm text-slate-500">
-      <div
-        class="mx-auto flex max-w-4xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
-      >
-        <nav class="flex gap-4">
-          <a href="/legal/impressum" class="hover:underline">{m.footer_impressum()}</a>
-          <a href="/legal/privacy" class="hover:underline">{m.footer_privacy()}</a>
-          <a href="/legal/terms" class="hover:underline">{m.footer_terms()}</a>
-        </nav>
-        <LanguageSwitcher />
-      </div>
-      <div
-        class="mx-auto mt-4 max-w-4xl font-mono text-[10px] text-slate-600"
-        aria-hidden="true"
-        title="build"
-      >
-        {version}
+    <footer class="bg-ink text-paper">
+      <div class="mx-auto max-w-5xl px-6 py-12">
+        <div class="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
+          <div class="max-w-xs">
+            <Wordmark href="/" size={26} class="text-paper" />
+            <p class="mt-3 text-sm leading-relaxed text-paper/55">{m.footer_tagline()}</p>
+          </div>
+          <nav class="flex gap-12 text-sm">
+            <div class="flex flex-col gap-2.5">
+              <span class="font-mono text-[10px] tracking-[0.12em] text-paper/40 uppercase">
+                vite.in
+              </span>
+              <a href="/create" class="text-paper/75 hover:text-paper">{m.nav_create()}</a>
+              <a href="/pricing" class="text-paper/75 hover:text-paper">{m.nav_pricing()}</a>
+              <a
+                href="https://github.com/viteinhq/vitein"
+                class="text-paper/75 hover:text-paper"
+                rel="noopener"
+              >
+                {m.home_oss_link()}
+              </a>
+            </div>
+            <div class="flex flex-col gap-2.5">
+              <span class="font-mono text-[10px] tracking-[0.12em] text-paper/40 uppercase">
+                Legal
+              </span>
+              <a href="/legal/impressum" class="text-paper/75 hover:text-paper">
+                {m.footer_impressum()}
+              </a>
+              <a href="/legal/privacy" class="text-paper/75 hover:text-paper">
+                {m.footer_privacy()}
+              </a>
+              <a href="/legal/terms" class="text-paper/75 hover:text-paper">
+                {m.footer_terms()}
+              </a>
+            </div>
+          </nav>
+        </div>
+
+        <div
+          class="mt-10 flex flex-col gap-4 border-t border-paper/15 pt-6 sm:flex-row sm:items-center sm:justify-between"
+        >
+          <div class="flex items-center gap-3">
+            <LanguageSwitcher />
+            <span class="font-mono text-[10px] text-paper/45">AGPL-3.0 · open source</span>
+          </div>
+          <span class="font-mono text-[10px] text-paper/35" aria-hidden="true" title="build">
+            {version}
+          </span>
+        </div>
       </div>
     </footer>
   </div>

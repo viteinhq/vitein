@@ -3,24 +3,20 @@
   import type { HTMLAnchorAttributes, HTMLButtonAttributes } from 'svelte/elements';
 
   /**
-   * Brand button. Three variants × two sizes for now; add more only when
-   * the existing palette can't cover the layout.
+   * Brand button — pill-shaped, chunky, high-contrast.
    *
-   * - `primary` — slate-900, white text. The default "do this" action.
-   * - `secondary` — white card with slate-300 border. For "go elsewhere"
-   *   without competing with a primary CTA.
-   * - `danger` — red-600. For destructive operations (delete event,
-   *   remove guest). Sparingly.
+   * - `primary` — ink fill, paper text. The default "do this" action.
+   * - `accent` — electric-chartreuse fill. The loudest CTA; one per view.
+   * - `secondary` — outline only. "Go elsewhere" without competing.
+   * - `danger` — coral fill. Destructive operations, sparingly.
    *
-   * Sizes: `md` (the default form-control size) and `sm` (footer-level
-   * actions, inline chips). Anything else is a one-off Tailwind class on
-   * the call site, not a new variant.
+   * Sizes: `sm` (inline/footer actions), `md` (form-control default),
+   * `lg` (hero / primary-page CTAs).
    *
-   * Polymorphic: pass `href` to render as `<a>` (navigation styled as a
-   * button — common for "Back to home" affordances). Without `href`,
-   * stays a `<button type="button">` (override `type` for forms).
+   * Polymorphic: pass `href` to render as `<a>`; without it, a
+   * `<button type="button">` (override `type` for forms).
    */
-  type Variant = 'primary' | 'secondary' | 'danger';
+  type Variant = 'primary' | 'accent' | 'secondary' | 'danger';
   type Size = 'sm' | 'md' | 'lg';
 
   type Props = (
@@ -41,23 +37,22 @@
     ...rest
   }: Props = $props();
 
-  // ClassValue includes null/array/object shapes; we only consume it as a
-  // string here, so coerce up front.
   const classes = $derived(typeof classesProp === 'string' ? classesProp : '');
 
   const base =
-    'inline-flex items-center justify-center gap-2 rounded-md font-medium transition disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900';
+    'inline-flex items-center justify-center gap-2 rounded-full font-semibold transition disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink';
 
   const variants: Record<Variant, string> = {
-    primary: 'bg-slate-900 text-white hover:bg-slate-700',
-    secondary: 'border border-slate-300 bg-white text-slate-900 hover:bg-slate-50',
-    danger: 'bg-red-600 text-white hover:bg-red-500',
+    primary: 'bg-ink text-paper hover:opacity-90',
+    accent: 'bg-accent text-accent-ink hover:brightness-105',
+    secondary: 'border-[1.5px] border-ink bg-transparent text-ink hover:bg-ink hover:text-paper',
+    danger: 'bg-coral text-white hover:brightness-105',
   };
 
   const sizes: Record<Size, string> = {
-    sm: 'px-2.5 py-1 text-xs',
-    md: 'px-4 py-2 text-sm',
-    lg: 'px-5 py-2.5 text-base',
+    sm: 'px-3.5 py-2 text-xs',
+    md: 'px-5 py-2.5 text-sm',
+    lg: 'px-6 py-3.5 text-[15px]',
   };
 
   const klass = $derived(`${base} ${variants[variant]} ${sizes[size]} ${classes}`);

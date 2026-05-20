@@ -69,12 +69,14 @@
           maxlength={200}
         />
 
-        <label class="flex flex-col gap-1 text-sm">
-          <span class="font-medium text-slate-700">{m.settings_locale_label()}</span>
+        <label class="block">
+          <span class="font-mono text-[10px] font-medium tracking-[0.08em] text-ink-muted uppercase">
+            {m.settings_locale_label()}
+          </span>
           <select
             name="locale"
             bind:value={locale}
-            class="rounded-md border border-slate-300 px-3 py-2 text-sm"
+            class="mt-1.5 block w-full rounded-xl border border-rule bg-card px-4 py-3 text-[15px] text-ink focus:outline-none focus:ring-2 focus:ring-accent"
           >
             {#each locales as [tag, endonym] (tag)}
               <option value={tag}>{endonym}</option>

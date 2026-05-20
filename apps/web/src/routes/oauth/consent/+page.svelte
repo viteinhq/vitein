@@ -1,6 +1,6 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
-  import { Button, Heading, Section, Text } from '$lib/design';
+  import { Button, Eyebrow } from '$lib/design';
   import * as m from '$lib/paraglide/messages.js';
   import type { PageData } from './$types';
 
@@ -32,27 +32,37 @@
   <title>{m.oauth_consent_title()} — vite.in</title>
 </svelte:head>
 
-<section class="mx-auto max-w-md space-y-6">
-  <Heading level="page">{m.oauth_consent_title()}</Heading>
+<section class="mx-auto max-w-md px-6 py-16">
+  <Eyebrow num="◇" label="OAuth" />
+  <h1 class="font-display mt-4 text-3xl font-bold tracking-tighter">
+    {m.oauth_consent_title()}
+  </h1>
 
   {#if data.invalid}
-    <Text>{m.oauth_consent_invalid_request()}</Text>
+    <p class="mt-3 leading-relaxed text-ink-muted">{m.oauth_consent_invalid_request()}</p>
   {:else}
-    <Text>{m.oauth_consent_intro({ appName: data.clientName })}</Text>
+    <p class="mt-3 leading-relaxed text-ink-muted">
+      {m.oauth_consent_intro({ appName: data.clientName })}
+    </p>
 
-    <Section>
-      <Heading level="panel">{m.oauth_consent_scopes_heading()}</Heading>
-      <ul class="space-y-1 list-disc ps-5">
+    <div class="mt-6 rounded-card border border-rule bg-card p-5">
+      <span class="font-mono text-[10px] tracking-[0.12em] text-ink-muted uppercase">
+        {m.oauth_consent_scopes_heading()}
+      </span>
+      <ul class="mt-3 space-y-2">
         {#each data.scopes as scope (scope)}
-          <li><Text size="sm">{describe(scope)}</Text></li>
+          <li class="flex gap-2 text-sm">
+            <span class="text-coral">·</span>
+            <span>{describe(scope)}</span>
+          </li>
         {/each}
       </ul>
-    </Section>
+    </div>
 
-    <form method="POST" use:enhance class="flex gap-2">
+    <form method="POST" use:enhance class="mt-6 flex gap-2">
       <input type="hidden" name="oauth_query" value={data.oauthQuery} />
       <input type="hidden" name="scope" value={data.scopes.join(' ')} />
-      <Button type="submit" name="decision" value="accept" class="flex-1">
+      <Button type="submit" name="decision" value="accept" variant="accent" class="flex-1">
         {m.oauth_consent_approve()}
       </Button>
       <Button
@@ -66,6 +76,6 @@
       </Button>
     </form>
 
-    <Text tone="subtle" size="sm">{m.oauth_consent_note()}</Text>
+    <p class="mt-4 text-xs leading-relaxed text-ink-muted/70">{m.oauth_consent_note()}</p>
   {/if}
 </section>

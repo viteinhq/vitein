@@ -2,13 +2,9 @@
   import type { Snippet } from 'svelte';
 
   /**
-   * Tighter sibling to `Card`. Same hairline border + rounded corners,
-   * but `p-4` instead of `p-5` and `space-y-2` baked into the inner
-   * layout. Use it for stacked sub-panels of a management screen — the
-   * manage page repeats this exact wrapper 7 times.
-   *
-   * Heading is the caller's job (use the `Heading` primitive); this
-   * component is purely about the chrome.
+   * Sub-panel wrapper. Hairline rule, rounded-card corners, `p-5`, with
+   * `space-y-3` baked in. Use it for stacked sub-panels of a management
+   * screen. Heading is the caller's job (use the `Heading` primitive).
    */
   interface Props {
     class?: string;
@@ -18,6 +14,6 @@
   let { class: classes = '', children }: Props = $props();
 </script>
 
-<section class="space-y-2 rounded-lg border border-slate-200 p-4 {classes}">
+<section class="rounded-card border border-rule bg-card space-y-3 p-5 {classes}">
   {@render children()}
 </section>

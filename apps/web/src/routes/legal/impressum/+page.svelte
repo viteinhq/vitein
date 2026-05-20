@@ -7,7 +7,7 @@
   <title>{m.legal_impressum_title()} — vite.in</title>
 </svelte:head>
 
-<section class="mx-auto max-w-2xl space-y-6">
+<section class="mx-auto max-w-2xl space-y-6 px-6 py-12">
   <Heading level="page">{m.legal_impressum_title()}</Heading>
 
   <Banner tone="warn">
@@ -21,18 +21,18 @@
     <Heading level="panel">{m.impressum_operator_heading()}</Heading>
     <dl class="space-y-2 text-sm">
       <div class="grid grid-cols-3 gap-2">
-        <dt class="font-medium text-slate-700">{m.impressum_operator_name_label()}</dt>
-        <dd class="col-span-2 text-slate-900">{m.impressum_operator_name_value()}</dd>
+        <dt class="font-medium text-ink-muted">{m.impressum_operator_name_label()}</dt>
+        <dd class="col-span-2 text-ink">{m.impressum_operator_name_value()}</dd>
       </div>
       <div class="grid grid-cols-3 gap-2">
-        <dt class="font-medium text-slate-700">{m.impressum_operator_address_label()}</dt>
-        <dd class="col-span-2 whitespace-pre-line text-slate-900">
+        <dt class="font-medium text-ink-muted">{m.impressum_operator_address_label()}</dt>
+        <dd class="col-span-2 whitespace-pre-line text-ink">
           {m.impressum_operator_address_value()}
         </dd>
       </div>
       <div class="grid grid-cols-3 gap-2">
-        <dt class="font-medium text-slate-700">Country</dt>
-        <dd class="col-span-2 text-slate-900">{m.impressum_operator_country_value()}</dd>
+        <dt class="font-medium text-ink-muted">Country</dt>
+        <dd class="col-span-2 text-ink">{m.impressum_operator_country_value()}</dd>
       </div>
     </dl>
   </Section>
@@ -41,7 +41,7 @@
     <Heading level="panel">{m.impressum_contact_heading()}</Heading>
     <dl class="space-y-2 text-sm">
       <div class="grid grid-cols-3 gap-2">
-        <dt class="font-medium text-slate-700">{m.impressum_contact_email_label()}</dt>
+        <dt class="font-medium text-ink-muted">{m.impressum_contact_email_label()}</dt>
         <dd class="col-span-2">
           <a class="underline" href="mailto:{m.impressum_contact_email_value()}">
             {m.impressum_contact_email_value()}

@@ -2,16 +2,13 @@
   import type { Snippet } from 'svelte';
 
   /**
-   * Page and section headings. One component instead of three so call sites
-   * always get the same tracking, weight, and ramp between levels.
+   * Page and section headings — Bricolage display, tight tracking.
    *
-   * `level` is the *visual* size; pass `tag` if the semantic level differs
-   * (e.g. a `<h2>` that should still look like a page title at the top of
-   * a sub-page). Defaults to matching tag and level.
+   * `level` is the *visual* size; pass `tag` if the semantic level
+   * differs. Defaults to matching tag and level.
    *
-   * Sizes deliberately mirror the existing inline styles that were
-   * duplicated across pricing / legal / signin/check-email so the
-   * migration is visually a no-op.
+   * The italic accent in the design ("plan." / "for any kind") is the
+   * caller's job — wrap a span in `italic` inside the heading children.
    */
   type Level = 'page' | 'section' | 'panel' | 'subsection';
   type Tag = 'h1' | 'h2' | 'h3';
@@ -26,9 +23,9 @@
   let { level = 'page', tag, class: classes = '', children }: Props = $props();
 
   const levels: Record<Level, string> = {
-    page: 'text-3xl font-bold tracking-tight',
-    section: 'text-xl font-semibold',
-    panel: 'text-lg font-semibold',
+    page: 'font-display text-4xl font-bold tracking-tighter sm:text-5xl',
+    section: 'font-display text-2xl font-bold tracking-tight sm:text-3xl',
+    panel: 'font-display text-lg font-bold tracking-tight',
     subsection: 'text-base font-semibold',
   };
 

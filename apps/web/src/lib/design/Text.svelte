@@ -2,15 +2,13 @@
   import type { Snippet } from 'svelte';
 
   /**
-   * Body copy. Three tones cover everything in the app today:
+   * Body copy. Three tones:
    *
-   * - `default` — the standard slate-700 paragraph.
-   * - `muted` — slate-600, for supporting/secondary copy.
-   * - `subtle` — slate-500, for caption-level hints (e.g. "Wrong email?
-   *   Try again").
+   * - `default` — standard ink paragraph.
+   * - `muted` — supporting / secondary copy.
+   * - `subtle` — caption-level hints.
    *
-   * Sizes: `md` is the regular paragraph; `sm` is for in-card help text
-   * and the muted caption row that several pages already use.
+   * Sizes: `md` is the regular paragraph; `sm` is in-card help text.
    */
   type Tone = 'default' | 'muted' | 'subtle';
   type Size = 'sm' | 'md';
@@ -25,9 +23,9 @@
   let { tone = 'default', size = 'md', class: classes = '', children }: Props = $props();
 
   const tones: Record<Tone, string> = {
-    default: 'text-slate-700',
-    muted: 'text-slate-600',
-    subtle: 'text-slate-500',
+    default: 'text-ink',
+    muted: 'text-ink-muted',
+    subtle: 'text-ink-muted/70',
   };
 
   const sizes: Record<Size, string> = {
@@ -36,4 +34,4 @@
   };
 </script>
 
-<p class="{sizes[size]} {tones[tone]} {classes}">{@render children()}</p>
+<p class="{sizes[size]} {tones[tone]} {classes} leading-relaxed">{@render children()}</p>

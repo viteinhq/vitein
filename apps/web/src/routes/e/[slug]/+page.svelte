@@ -1,7 +1,7 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
   import { page } from '$app/state';
-  import { Banner, Button, Card, TextField } from '$lib/design';
+  import { ArrowRight, Banner, Button, Eyebrow, TextField } from '$lib/design';
   import { localizeError } from '$lib/errors';
   import * as m from '$lib/paraglide/messages.js';
   import type { PageProps } from './$types';
@@ -63,18 +63,17 @@
     }
   }
 
-  // Show the form again after the user clicks "Change my answer".
   function changeAnswer() {
     resetForm = true;
   }
 
   const showConfirmation = $derived(form?.rsvpSuccess && !resetForm);
 
-  // `locked` is the dynamic flag: true when the event has a password AND
-  // the current caller has no valid view token. `hasPassword` stays true
-  // even after unlocking, so we branch on `locked` for the UI.
   const isLocked = $derived(Boolean(data.event.locked));
   let pwdSubmitting = $state(false);
+
+  const kvLabel = 'font-mono text-[10px] tracking-[0.12em] uppercase opacity-60';
+  const kvValue = 'mt-1 font-display text-xl font-bold tracking-tight leading-tight';
 </script>
 
 <svelte:head>
@@ -82,71 +81,78 @@
   <meta name="description" content={data.event.description ?? data.event.title} />
 </svelte:head>
 
-<section class="mx-auto max-w-2xl space-y-8">
+<section class="mx-auto max-w-2xl px-6 py-10">
   {#if isLocked}
-    <Card class="!p-6">
-      <div class="space-y-4">
-        <h1 class="text-2xl font-semibold tracking-tight">{m.event_locked_heading()}</h1>
-        <p class="text-sm text-slate-600">{m.event_locked_body()}</p>
+    <div class="rounded-card border border-rule bg-card p-7">
+      <Eyebrow num="✦" label="vite.in" />
+      <h1 class="font-display mt-4 text-3xl font-bold tracking-tighter">
+        {m.event_locked_heading()}
+      </h1>
+      <p class="mt-2 text-sm leading-relaxed text-ink-muted">{m.event_locked_body()}</p>
 
-        {#if form && 'pwdError' in form && form.pwdError}
-          <Banner tone="error">{localizeError(form.pwdError)}</Banner>
-        {/if}
-
-        <form
-          method="POST"
-          action="?/verifyPassword"
-          use:enhance={() => {
-            pwdSubmitting = true;
-            return async ({ update }) => {
-              await update();
-              pwdSubmitting = false;
-            };
-          }}
-          class="space-y-3"
-        >
-          <TextField
-            type="password"
-            name="password"
-            required
-            autocomplete="current-password"
-            label={m.event_locked_password_label()}
-          />
-          <Button type="submit" disabled={pwdSubmitting}>
-            {pwdSubmitting ? m.event_locked_submitting() : m.event_locked_submit()}
-          </Button>
-        </form>
-      </div>
-    </Card>
-  {:else}
-    <article class="space-y-5">
-      {#if data.cover?.url}
-        <img
-          src={data.cover.url}
-          alt=""
-          width="1200"
-          height="630"
-          class="h-56 w-full rounded-lg object-cover sm:h-72"
-        />
+      {#if form && 'pwdError' in form && form.pwdError}
+        <div class="mt-4"><Banner tone="error">{localizeError(form.pwdError)}</Banner></div>
       {/if}
 
-      <h1 class="text-balance text-4xl font-bold tracking-tight">{data.event.title}</h1>
+      <form
+        method="POST"
+        action="?/verifyPassword"
+        use:enhance={() => {
+          pwdSubmitting = true;
+          return async ({ update }) => {
+            await update();
+            pwdSubmitting = false;
+          };
+        }}
+        class="mt-5 space-y-3"
+      >
+        <TextField
+          type="password"
+          name="password"
+          required
+          autocomplete="current-password"
+          label={m.event_locked_password_label()}
+        />
+        <Button type="submit" variant="accent" disabled={pwdSubmitting}>
+          {pwdSubmitting ? m.event_locked_submitting() : m.event_locked_submit()}
+        </Button>
+      </form>
+    </div>
+  {:else}
+    {#if data.cover?.url}
+      <img
+        src={data.cover.url}
+        alt=""
+        width="1200"
+        height="630"
+        class="mb-6 h-56 w-full rounded-card object-cover sm:h-72"
+      />
+    {/if}
 
-      <dl class="space-y-3 text-slate-700">
+    <!-- invitation hero -->
+    <div class="rounded-card bg-accent p-7 text-accent-ink sm:p-10">
+      <span class="font-mono text-[10px] tracking-[0.18em] uppercase opacity-70">
+        {m.invite_eyebrow()}
+      </span>
+      <h1
+        class="font-display mt-4 text-5xl leading-[0.92] font-bold tracking-tighter text-balance sm:text-6xl"
+      >
+        {data.event.title}
+      </h1>
+
+      <dl class="mt-8 grid gap-6 sm:grid-cols-2">
         <div>
-          <dt class="text-xs font-semibold uppercase tracking-wider text-slate-500">
-            {m.event_when_label()}
-          </dt>
-          <dd class="mt-1">
+          <dt class={kvLabel}>{m.event_when_label()}</dt>
+          <dd class={kvValue}>
             <time datetime={data.event.startsAt}>{startsInEventTz}</time>
             {#if endsInEventTz}
-              <span class="text-slate-500">{m.event_until()}</span>
+              <span class="opacity-60"> {m.event_until()} </span>
               <time datetime={data.event.endsAt}>{endsInEventTz}</time>
             {/if}
-            <span class="text-sm text-slate-500"> · {data.event.timezone}</span>
           </dd>
+          <dd class="mt-1 font-mono text-[11px] opacity-55">{data.event.timezone}</dd>
           {#if showLocalTime}
-            <dd class="mt-1 text-sm text-slate-500">
+            <dd class="mt-0.5 font-mono text-[11px] opacity-55">
               {m.event_your_local_time()}
               {startsInViewerTz}
             </dd>
@@ -155,35 +161,35 @@
 
         {#if data.event.locationText}
           <div>
-            <dt class="text-xs font-semibold uppercase tracking-wider text-slate-500">
-              {m.event_where_label()}
-            </dt>
-            <dd class="mt-1">{data.event.locationText}</dd>
+            <dt class={kvLabel}>{m.event_where_label()}</dt>
+            <dd class={kvValue}>{data.event.locationText}</dd>
           </div>
         {/if}
       </dl>
+    </div>
 
-      {#if data.event.description}
-        <p class="whitespace-pre-line text-slate-800">{data.event.description}</p>
-      {/if}
+    {#if data.event.description}
+      <p class="mt-6 text-base leading-relaxed whitespace-pre-line text-ink">
+        {data.event.description}
+      </p>
+    {/if}
 
-      <div class="flex flex-wrap gap-2">
-        <Button onclick={shareNative} variant="secondary" size="sm">{m.event_share()}</Button>
-        <Button onclick={copyLink} variant="secondary" size="sm">
-          {copied ? m.event_copied() : m.event_copy_link()}
-        </Button>
-        <Button href="/e/{data.event.slug}/event.ics" variant="secondary" size="sm">
-          {m.event_add_to_calendar()}
-        </Button>
-      </div>
-    </article>
+    <div class="mt-6 flex flex-wrap gap-2">
+      <Button onclick={shareNative} variant="secondary" size="sm">{m.event_share()}</Button>
+      <Button onclick={copyLink} variant="secondary" size="sm">
+        {copied ? m.event_copied() : m.event_copy_link()}
+      </Button>
+      <Button href="/e/{data.event.slug}/event.ics" variant="secondary" size="sm">
+        {m.event_add_to_calendar()}
+      </Button>
+    </div>
 
     {#if data.gallery.length > 0}
-      <section class="space-y-3">
-        <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-500">
+      <section class="mt-8">
+        <span class="font-mono text-[10px] tracking-[0.12em] text-ink-muted uppercase">
           {m.event_gallery_heading()}
-        </h2>
-        <ul class="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        </span>
+        <ul class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
           {#each data.gallery as g (g.id)}
             {#if g.url}
               <li>
@@ -192,7 +198,7 @@
                   alt=""
                   width="400"
                   height="400"
-                  class="h-32 w-full rounded-md object-cover"
+                  class="h-32 w-full rounded-xl object-cover"
                 />
               </li>
             {/if}
@@ -201,139 +207,159 @@
       </section>
     {/if}
 
-    <Card class="!p-6">
-      <div class="space-y-4">
-        <h2 class="text-xl font-semibold">{m.event_rsvp_heading()}</h2>
+    <!-- RSVP -->
+    <div class="mt-8 rounded-card bg-ink p-6 text-paper sm:p-7">
+      <span class="font-mono text-[10px] tracking-[0.12em] text-paper/55 uppercase">
+        {m.event_rsvp_heading()}
+      </span>
 
-        {#if showConfirmation}
-          <Card tone="success" class="!p-4">
-            <div class="space-y-3">
-              {#if form?.rsvpName}
-                <p class="font-medium">{m.event_rsvp_thanks_named({ name: form.rsvpName })}</p>
-              {/if}
-              <p class="text-sm">
-                {#if form?.rsvpStatus === 'yes'}
-                  {m.event_rsvp_thanks_yes()}
-                {:else if form?.rsvpStatus === 'maybe'}
-                  {m.event_rsvp_thanks_maybe()}
-                {:else}
-                  {m.event_rsvp_thanks_no()}
-                {/if}
-              </p>
-              <div class="flex flex-wrap gap-2 pt-1">
-                <Button href="/e/{data.event.slug}/event.ics" variant="secondary" size="sm">
-                  {m.event_add_to_calendar()}
-                </Button>
-                <Button onclick={changeAnswer} variant="secondary" size="sm">
-                  {m.event_rsvp_change()}
-                </Button>
-              </div>
-            </div>
-          </Card>
-        {:else}
-          {#if form?.rsvpError}
-            <Banner tone="error">{localizeError(form.rsvpError)}</Banner>
+      {#if showConfirmation}
+        <div class="mt-4 rounded-2xl bg-accent p-5 text-accent-ink">
+          {#if form?.rsvpName}
+            <p class="font-display text-xl font-bold tracking-tight">
+              {m.event_rsvp_thanks_named({ name: form.rsvpName })}
+            </p>
           {/if}
+          <p class="mt-1 text-sm">
+            {#if form?.rsvpStatus === 'yes'}
+              {m.event_rsvp_thanks_yes()}
+            {:else if form?.rsvpStatus === 'maybe'}
+              {m.event_rsvp_thanks_maybe()}
+            {:else}
+              {m.event_rsvp_thanks_no()}
+            {/if}
+          </p>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <Button href="/e/{data.event.slug}/event.ics" variant="secondary" size="sm">
+              {m.event_add_to_calendar()}
+            </Button>
+            <button
+              type="button"
+              onclick={changeAnswer}
+              class="rounded-full border-[1.5px] border-accent-ink px-3.5 py-2 text-xs font-semibold transition hover:bg-accent-ink hover:text-accent"
+            >
+              {m.event_rsvp_change()}
+            </button>
+          </div>
+        </div>
+      {:else}
+        {#if form?.rsvpError}
+          <div class="mt-4"><Banner tone="error">{localizeError(form.rsvpError)}</Banner></div>
+        {/if}
 
-          <form
-            method="POST"
-            action="?/rsvp"
-            use:enhance={() => {
-              submitting = true;
-              return async ({ update }) => {
-                await update();
-                submitting = false;
-                resetForm = false;
-              };
-            }}
-            class="space-y-4"
-          >
-            <fieldset>
-              <legend class="text-sm font-medium">{m.event_rsvp_question()}</legend>
-              <div class="mt-2 grid grid-cols-3 gap-2">
-                <label
-                  class="flex cursor-pointer items-center justify-center rounded-md border border-slate-300 px-3 py-2 text-sm font-medium hover:bg-slate-50 has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50 has-[:checked]:text-emerald-900"
-                >
-                  <input type="radio" name="status" value="yes" checked class="sr-only" />
-                  {m.event_rsvp_yes()}
-                </label>
-                <label
-                  class="flex cursor-pointer items-center justify-center rounded-md border border-slate-300 px-3 py-2 text-sm font-medium hover:bg-slate-50 has-[:checked]:border-amber-500 has-[:checked]:bg-amber-50 has-[:checked]:text-amber-900"
-                >
-                  <input type="radio" name="status" value="maybe" class="sr-only" />
-                  {m.event_rsvp_maybe()}
-                </label>
-                <label
-                  class="flex cursor-pointer items-center justify-center rounded-md border border-slate-300 px-3 py-2 text-sm font-medium hover:bg-slate-50 has-[:checked]:border-rose-500 has-[:checked]:bg-rose-50 has-[:checked]:text-rose-900"
-                >
-                  <input type="radio" name="status" value="no" class="sr-only" />
-                  {m.event_rsvp_no()}
-                </label>
-              </div>
-            </fieldset>
-
-            <TextField
-              name="name"
-              required
-              maxlength={200}
-              label={m.event_rsvp_name_label()}
-            />
-
-            <TextField
-              type="email"
-              name="email"
-              label={m.event_rsvp_email_optional()}
-              hint={m.event_rsvp_email_hint()}
-            />
-
-            <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
-              <label class="block sm:col-span-1">
-                <span class="text-sm font-medium">{m.event_rsvp_plus_ones()}</span>
-                <input
-                  type="number"
-                  name="plusOnes"
-                  min="0"
-                  max="20"
-                  value={plusOnesCount}
-                  oninput={onPlusOnesInput}
-                  class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2"
-                />
+        <form
+          method="POST"
+          action="?/rsvp"
+          use:enhance={() => {
+            submitting = true;
+            return async ({ update }) => {
+              await update();
+              submitting = false;
+              resetForm = false;
+            };
+          }}
+          class="mt-4 space-y-4"
+        >
+          <fieldset>
+            <legend class="text-sm font-semibold text-paper">{m.event_rsvp_question()}</legend>
+            <div class="mt-2 grid grid-cols-3 gap-2">
+              <label
+                class="flex cursor-pointer items-center justify-center rounded-xl border-[1.5px] border-paper/25 px-3 py-3 text-sm font-semibold text-paper transition has-[:checked]:border-transparent has-[:checked]:bg-accent has-[:checked]:text-accent-ink"
+              >
+                <input type="radio" name="status" value="yes" checked class="sr-only" />
+                {m.event_rsvp_yes()}
+              </label>
+              <label
+                class="flex cursor-pointer items-center justify-center rounded-xl border-[1.5px] border-paper/25 px-3 py-3 text-sm font-semibold text-paper transition has-[:checked]:border-transparent has-[:checked]:bg-amber-300 has-[:checked]:text-ink"
+              >
+                <input type="radio" name="status" value="maybe" class="sr-only" />
+                {m.event_rsvp_maybe()}
+              </label>
+              <label
+                class="flex cursor-pointer items-center justify-center rounded-xl border-[1.5px] border-paper/25 px-3 py-3 text-sm font-semibold text-paper transition has-[:checked]:border-transparent has-[:checked]:bg-paper has-[:checked]:text-ink"
+              >
+                <input type="radio" name="status" value="no" class="sr-only" />
+                {m.event_rsvp_no()}
               </label>
             </div>
+          </fieldset>
 
-            {#if plusOnesSlots.length > 0}
-              <fieldset class="space-y-2 rounded-md border border-slate-200 bg-slate-50 p-3">
-                <legend class="px-1 text-sm font-medium">
-                  {m.event_rsvp_plus_ones_names_label()}
-                </legend>
-                <p class="text-xs text-slate-500">{m.event_rsvp_plus_ones_names_hint()}</p>
-                {#each plusOnesSlots as i (i)}
-                  <input
-                    name="plusOneName"
-                    maxlength="200"
-                    placeholder={m.event_rsvp_plus_one_placeholder()}
-                    class="block w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
-                  />
-                {/each}
-              </fieldset>
-            {/if}
+          <label class="block">
+            <span class="font-mono text-[10px] tracking-[0.08em] text-paper/55 uppercase">
+              {m.event_rsvp_name_label()}
+            </span>
+            <input
+              name="name"
+              required
+              maxlength="200"
+              class="mt-1.5 block w-full rounded-xl border border-paper/20 bg-paper/5 px-4 py-3 text-[15px] text-paper placeholder:text-paper/40 focus:outline-none focus:ring-2 focus:ring-accent"
+            />
+          </label>
 
-            <label class="block">
-              <span class="text-sm font-medium">{m.event_rsvp_message_optional()}</span>
-              <textarea
-                name="message"
-                rows="2"
-                maxlength="2000"
-                class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2"
-              ></textarea>
-            </label>
+          <label class="block">
+            <span class="font-mono text-[10px] tracking-[0.08em] text-paper/55 uppercase">
+              {m.event_rsvp_email_optional()}
+            </span>
+            <input
+              type="email"
+              name="email"
+              class="mt-1.5 block w-full rounded-xl border border-paper/20 bg-paper/5 px-4 py-3 text-[15px] text-paper placeholder:text-paper/40 focus:outline-none focus:ring-2 focus:ring-accent"
+            />
+            <span class="mt-1 block font-mono text-[10px] text-paper/40">
+              {m.event_rsvp_email_hint()}
+            </span>
+          </label>
 
-            <Button type="submit" disabled={submitting}>
-              {submitting ? m.event_rsvp_submitting() : m.event_rsvp_submit()}
-            </Button>
-          </form>
-        {/if}
-      </div>
-    </Card>
+          <label class="block max-w-[10rem]">
+            <span class="font-mono text-[10px] tracking-[0.08em] text-paper/55 uppercase">
+              {m.event_rsvp_plus_ones()}
+            </span>
+            <input
+              type="number"
+              name="plusOnes"
+              min="0"
+              max="20"
+              value={plusOnesCount}
+              oninput={onPlusOnesInput}
+              class="mt-1.5 block w-full rounded-xl border border-paper/20 bg-paper/5 px-4 py-3 text-[15px] text-paper focus:outline-none focus:ring-2 focus:ring-accent"
+            />
+          </label>
+
+          {#if plusOnesSlots.length > 0}
+            <fieldset class="space-y-2 rounded-xl border border-paper/15 bg-paper/5 p-4">
+              <legend class="px-1 font-mono text-[10px] tracking-[0.08em] text-paper/55 uppercase">
+                {m.event_rsvp_plus_ones_names_label()}
+              </legend>
+              <p class="text-xs text-paper/50">{m.event_rsvp_plus_ones_names_hint()}</p>
+              {#each plusOnesSlots as i (i)}
+                <input
+                  name="plusOneName"
+                  maxlength="200"
+                  placeholder={m.event_rsvp_plus_one_placeholder()}
+                  class="block w-full rounded-lg border border-paper/20 bg-paper/5 px-3 py-2 text-sm text-paper placeholder:text-paper/40 focus:outline-none focus:ring-2 focus:ring-accent"
+                />
+              {/each}
+            </fieldset>
+          {/if}
+
+          <label class="block">
+            <span class="font-mono text-[10px] tracking-[0.08em] text-paper/55 uppercase">
+              {m.event_rsvp_message_optional()}
+            </span>
+            <textarea
+              name="message"
+              rows="2"
+              maxlength="2000"
+              class="mt-1.5 block w-full rounded-xl border border-paper/20 bg-paper/5 px-4 py-3 text-[15px] text-paper placeholder:text-paper/40 focus:outline-none focus:ring-2 focus:ring-accent"
+            ></textarea>
+          </label>
+
+          <Button type="submit" variant="accent" size="lg" disabled={submitting} class="w-full">
+            {submitting ? m.event_rsvp_submitting() : m.event_rsvp_submit()}
+            {#if !submitting}<ArrowRight size={15} />{/if}
+          </Button>
+        </form>
+      {/if}
+    </div>
   {/if}
 </section>

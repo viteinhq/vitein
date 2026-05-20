@@ -2,15 +2,15 @@
   import type { Snippet } from 'svelte';
 
   /**
-   * Rounded container with a hairline border. The base of every "panel"
-   * surface on the web app — event details, manage panels, RSVP form,
-   * pricing cards. Pass children; spacing inside is the caller's job.
+   * Rounded container with a hairline rule. The base "panel" surface —
+   * event details, manage panels, RSVP form, pricing cards. Pass
+   * children; inner spacing is the caller's job.
    *
-   * `tone` lets the card carry a state hint without us inventing more
-   * wrapper components. `info`/`success`/`warn` use a soft tinted
-   * background; `default` is plain white-on-slate.
+   * `tone` carries a state hint without inventing more wrappers:
+   * `accent` is the loud chartreuse panel, `success`/`warn`/`info` are
+   * soft tints, `default` is plain card-white.
    */
-  type Tone = 'default' | 'info' | 'success' | 'warn';
+  type Tone = 'default' | 'accent' | 'info' | 'success' | 'warn';
 
   interface Props {
     tone?: Tone;
@@ -21,13 +21,14 @@
   let { tone = 'default', class: classes = '', children }: Props = $props();
 
   const tones: Record<Tone, string> = {
-    default: 'border-slate-200 bg-white',
-    info: 'border-sky-200 bg-sky-50',
-    success: 'border-emerald-200 bg-emerald-50',
-    warn: 'border-amber-300 bg-amber-50',
+    default: 'border-rule bg-card text-ink',
+    accent: 'border-transparent bg-accent text-accent-ink',
+    info: 'border-rule bg-paper-2 text-ink',
+    success: 'border-ink/15 bg-accent/35 text-ink',
+    warn: 'border-amber-400/40 bg-amber-100/60 text-ink',
   };
 </script>
 
-<div class="rounded-lg border p-5 {tones[tone]} {classes}">
+<div class="rounded-card border p-5 {tones[tone]} {classes}">
   {@render children()}
 </div>

@@ -7,7 +7,7 @@
   <title>{m.legal_privacy_title()} — vite.in</title>
 </svelte:head>
 
-<section class="mx-auto max-w-2xl space-y-6">
+<section class="mx-auto max-w-2xl space-y-6 px-6 py-12">
   <Heading level="page">{m.legal_privacy_title()}</Heading>
 
   <Banner tone="warn">
@@ -34,23 +34,23 @@
     <div class="space-y-3 text-sm">
       <div>
         <p class="font-medium">{m.privacy_data_anonymous_label()}</p>
-        <p class="text-slate-700">{m.privacy_data_anonymous_body()}</p>
+        <p class="text-ink-muted">{m.privacy_data_anonymous_body()}</p>
       </div>
       <div>
         <p class="font-medium">{m.privacy_data_rsvps_label()}</p>
-        <p class="text-slate-700">{m.privacy_data_rsvps_body()}</p>
+        <p class="text-ink-muted">{m.privacy_data_rsvps_body()}</p>
       </div>
       <div>
         <p class="font-medium">{m.privacy_data_account_label()}</p>
-        <p class="text-slate-700">{m.privacy_data_account_body()}</p>
+        <p class="text-ink-muted">{m.privacy_data_account_body()}</p>
       </div>
       <div>
         <p class="font-medium">{m.privacy_data_payment_label()}</p>
-        <p class="text-slate-700">{m.privacy_data_payment_body()}</p>
+        <p class="text-ink-muted">{m.privacy_data_payment_body()}</p>
       </div>
       <div>
         <p class="font-medium">{m.privacy_data_logs_label()}</p>
-        <p class="text-slate-700">{m.privacy_data_logs_body()}</p>
+        <p class="text-ink-muted">{m.privacy_data_logs_body()}</p>
       </div>
     </div>
   </Section>
@@ -63,7 +63,7 @@
   <Section>
     <Heading level="panel">{m.privacy_subprocessors_heading()}</Heading>
     <Text>{m.privacy_subprocessors_body()}</Text>
-    <ul class="list-disc space-y-1 ps-5 text-sm text-slate-700">
+    <ul class="list-disc space-y-1 ps-5 text-sm text-ink-muted">
       <li>{m.privacy_subprocessor_cloudflare()}</li>
       <li>{m.privacy_subprocessor_neon()}</li>
       <li>{m.privacy_subprocessor_resend()}</li>
@@ -76,7 +76,7 @@
   <Section>
     <Heading level="panel">{m.privacy_cookies_heading()}</Heading>
     <Text>{m.privacy_cookies_body()}</Text>
-    <ul class="list-disc space-y-1 ps-5 text-sm text-slate-700">
+    <ul class="list-disc space-y-1 ps-5 text-sm text-ink-muted">
       <li>{@html m.privacy_cookie_consent()}</li>
       <li>{@html m.privacy_cookie_lang()}</li>
       <li>{@html m.privacy_cookie_session()}</li>
@@ -91,7 +91,7 @@
   <Section>
     <Heading level="panel">{m.privacy_rights_heading()}</Heading>
     <Text>{m.privacy_rights_body()}</Text>
-    <ul class="list-disc space-y-2 ps-5 text-sm text-slate-700">
+    <ul class="list-disc space-y-2 ps-5 text-sm text-ink-muted">
       <li>{@html m.privacy_rights_self()}</li>
       <li>{@html m.privacy_rights_contact()}</li>
     </ul>

@@ -7,7 +7,7 @@
   <title>{m.legal_terms_title()} — vite.in</title>
 </svelte:head>
 
-<section class="mx-auto max-w-2xl space-y-6">
+<section class="mx-auto max-w-2xl space-y-6 px-6 py-12">
   <Heading level="page">{m.legal_terms_title()}</Heading>
 
   <Banner tone="warn">
@@ -37,7 +37,7 @@
   <Section>
     <Heading level="panel">{m.terms_use_heading()}</Heading>
     <Text>{m.terms_use_body()}</Text>
-    <ul class="list-disc space-y-1 ps-5 text-sm text-slate-700">
+    <ul class="list-disc space-y-1 ps-5 text-sm text-ink-muted">
       <li>{m.terms_use_item_illegal()}</li>
       <li>{m.terms_use_item_spam()}</li>
       <li>{m.terms_use_item_harass()}</li>
