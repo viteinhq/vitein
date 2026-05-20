@@ -1,8 +1,11 @@
 import { and, eq, eventMedia, events, isNull, type Db } from '@vitein/db-schema';
 import { ConflictError, NotFoundError, ValidationError } from '../errors.js';
+import { readImageDimensions } from './dimensions.js';
 import { extensionFor, sniffImageMime, type AcceptedMime } from './mime.js';
 
 export const MAX_BYTES = 10 * 1024 * 1024; // 10 MiB
+/** Pixel-count ceiling — defence-in-depth against decompression-bomb inputs. */
+export const MAX_PIXELS = 100_000_000; // 100 MP
 const MAX_PER_EVENT = 10;
 
 export type MediaKind = 'cover' | 'gallery';
@@ -35,6 +38,13 @@ export async function uploadMedia(
     throw new ValidationError('Only JPEG, PNG, WebP, GIF, or AVIF images are accepted.');
   }
 
+  // Header-only dimension read — populates width/height and rejects
+  // pathological pixel counts. `null` for headers we can't parse (AVIF).
+  const dimensions = readImageDimensions(input.bytes, mime);
+  if (dimensions && dimensions.width * dimensions.height > MAX_PIXELS) {
+    throw new ValidationError(`Image exceeds the maximum of ${String(MAX_PIXELS)} pixels.`);
+  }
+
   await assertEventActive(db, input.eventId);
   await assertQuota(db, input.eventId);
 
@@ -48,6 +58,8 @@ export async function uploadMedia(
       kind,
       mimeType: mime,
       sizeBytes: input.bytes.byteLength,
+      width: dimensions?.width ?? null,
+      height: dimensions?.height ?? null,
     })
     .returning();
   if (!staged) throw new Error('Media insert returned no row');

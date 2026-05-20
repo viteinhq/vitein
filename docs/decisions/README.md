@@ -10,6 +10,7 @@ Each ADR is a short, dated, immutable record of an architectural decision. Forma
 | 0004 | SDK generator tooling       | Accepted | 2026-04-19 |
 | 0005 | Better-Auth schema strategy | Accepted | 2026-04-19 |
 | 0006 | Mobile client strategy      | Accepted | 2026-05-20 |
+| 0007 | Media upload hardening      | Accepted | 2026-05-20 |
 
 ## How to write a new ADR
 
