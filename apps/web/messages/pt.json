@@ -32,14 +32,6 @@
   "pricing_free_item_magic": "Gestão por link mágico",
   "pricing_free_item_confirm": "Confirmações por e-mail",
   "pricing_free_item_calendar": "Adicionar ao calendário",
-  "pricing_paid_name": "Evento premium",
-  "pricing_paid_price": "5 € / 5 $ / 5 CHF / 5 £",
-  "pricing_paid_desc": "Pagamento único por evento. Desbloqueia acabamento e extras.",
-  "pricing_paid_item_slug": "URL personalizada",
-  "pricing_paid_item_brand": "Remover a marca vite.in",
-  "pricing_paid_item_media": "Imagem de capa e galeria",
-  "pricing_paid_item_reminders": "Lembretes programados",
-  "pricing_paid_item_password": "Eventos protegidos por senha",
   "legal_impressum_title": "Aviso legal",
   "legal_privacy_title": "Política de privacidade",
   "legal_terms_title": "Termos de serviço",
@@ -394,5 +386,9 @@
   "terms_law_heading": "Governing law + venue",
   "terms_law_body": "These terms are governed by Swiss law, excluding its conflict-of-law rules. Venue is the courts at the operator's seat. After the Estonia OÜ becomes the controller, this section will be updated; existing customers will be notified.",
   "terms_contact_heading": "Contact",
-  "terms_contact_body": "Questions about these terms or about a specific event: hello@vite.in. Data-protection inquiries: privacy@vite.in."
+  "terms_contact_body": "Questions about these terms or about a specific event: hello@vite.in. Data-protection inquiries: privacy@vite.in.",
+  "pricing_subtitle": "Free for most events. One-time payment per event for premium — no subscription, ever.",
+  "pricing_basic_price": "€5 / $5 / CHF 5 / £4",
+  "pricing_plus_price": "€9 / $9 / CHF 9 / £7",
+  "pricing_per_event": "one-time, per event"
 }
