@@ -96,6 +96,8 @@ graph TB
 | **Feature flags**       | Cloudflare KV-backed flag service (simple) or PostHog if analytics becomes primary                                | Start simple, upgrade if needed.                                                                                                                                                                                                                                                      |
 | **Analytics**           | PostHog (self-host or cloud EU)                                                                                   | Event tracking across all clients. EU hosting for GDPR.                                                                                                                                                                                                                               |
 
+**Mobile rollout is staged — see ADR 0006.** The web app ships first as an installable PWA (Web Push, home-screen install); native iOS then native Android follow as separate stages, gated on PWA adoption data. The iOS and Android rows above describe the eventual native stack, not a parallel Phase-1 build.
+
 ---
 
 ## 4. Repository structure
