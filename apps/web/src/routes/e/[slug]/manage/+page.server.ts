@@ -46,6 +46,31 @@ function ownershipHeaders(
   return headers;
 }
 
+/**
+ * Geo-suggest the checkout currency from the visitor's IP country
+ * (Cloudflare's `cf-ipcountry` header). This only sets the dropdown
+ * default — the user can override, and Stripe's billing-address
+ * detection is what fixes the actually-charged price (ARCHITECTURE
+ * §12.6). Unknown / EU / everything-else falls back to EUR.
+ */
+type CheckoutCurrency = 'EUR' | 'USD' | 'CHF' | 'GBP' | 'INR';
+
+function suggestCurrency(request: Request): CheckoutCurrency {
+  const country = request.headers.get('cf-ipcountry')?.toUpperCase();
+  switch (country) {
+    case 'IN':
+      return 'INR';
+    case 'US':
+      return 'USD';
+    case 'GB':
+      return 'GBP';
+    case 'CH':
+      return 'CHF';
+    default:
+      return 'EUR';
+  }
+}
+
 export const load: PageServerLoad = async ({ params, url, platform, request }) => {
   configureApi(resolveBaseUrl(platform));
 
@@ -80,6 +105,7 @@ export const load: PageServerLoad = async ({ params, url, platform, request }) =
     guests: guests.data?.items ?? [],
     media: media.data?.items ?? [],
     announcements: announcements.data?.items ?? [],
+    suggestedCurrency: suggestCurrency(request),
   };
 };
 

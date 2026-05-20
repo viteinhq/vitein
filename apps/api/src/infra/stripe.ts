@@ -169,7 +169,9 @@ function constantTimeEqual(a: string, b: string): boolean {
 }
 
 export type Tier = 'basic' | 'plus';
-export type Currency = 'EUR' | 'USD' | 'CHF' | 'GBP';
+// Phase 1: EUR/USD/CHF/GBP fixed anchors. Phase 1.5 adds INR as the
+// first Purchasing-Power-Pricing market (ARCHITECTURE §12.4).
+export type Currency = 'EUR' | 'USD' | 'CHF' | 'GBP' | 'INR';
 
 /**
  * Resolve the configured Price ID for a (tier, currency) pair. Returns null
@@ -187,6 +189,8 @@ export function priceIdFor(env: Env, tier: Tier, currency: Currency): string | n
         return env.STRIPE_PRICE_BASIC_CHF ?? null;
       case 'GBP':
         return env.STRIPE_PRICE_BASIC_GBP ?? null;
+      case 'INR':
+        return env.STRIPE_PRICE_BASIC_INR ?? null;
     }
   }
   switch (currency) {
@@ -198,5 +202,7 @@ export function priceIdFor(env: Env, tier: Tier, currency: Currency): string | n
       return env.STRIPE_PRICE_PLUS_CHF ?? null;
     case 'GBP':
       return env.STRIPE_PRICE_PLUS_GBP ?? null;
+    case 'INR':
+      return env.STRIPE_PRICE_PLUS_INR ?? null;
   }
 }

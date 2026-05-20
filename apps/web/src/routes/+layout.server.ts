@@ -1,13 +1,13 @@
 import type { LayoutServerLoad } from './$types';
 
 /**
- * EU + EEA + UK + Switzerland — jurisdictions where GDPR (or near-
- * equivalent: UK-GDPR, FADP) requires an explicit cookie-consent
- * banner before non-essential tracking. ISO 3166-1 alpha-2 codes.
- * Non-EU visitors still see a privacy notice via the footer; they
- * just don't get the active banner.
+ * Jurisdictions where a data-protection law requires an explicit
+ * cookie-consent banner before non-essential tracking: GDPR (EU/EEA),
+ * UK-GDPR, Switzerland's FADP, and India's DPDPA (added in Phase 1.5
+ * alongside the India PPP market). ISO 3166-1 alpha-2 codes. Visitors
+ * elsewhere still get the footer privacy notice, just not the banner.
  */
-const GDPR_REGION = new Set([
+const CONSENT_REGION = new Set([
   // EU 27
   'AT',
   'BE',
@@ -43,6 +43,8 @@ const GDPR_REGION = new Set([
   // UK + Switzerland (FADP)
   'GB',
   'CH',
+  // India — DPDPA (Phase 1.5 PPP market)
+  'IN',
 ]);
 
 export const load: LayoutServerLoad = ({ request, cookies }) => {
@@ -51,7 +53,7 @@ export const load: LayoutServerLoad = ({ request, cookies }) => {
   // local dev (no banner shown), which is fine — anything that
   // matters runs on staging or prod.
   const country = request.headers.get('cf-ipcountry') ?? undefined;
-  const isGdprRegion = country ? GDPR_REGION.has(country.toUpperCase()) : false;
+  const isConsentRegion = country ? CONSENT_REGION.has(country.toUpperCase()) : false;
 
   // `vitein_consent`: `accepted` | `essential`. Unset = the user
   // hasn't decided yet; the banner stays visible until they do.
@@ -69,7 +71,7 @@ export const load: LayoutServerLoad = ({ request, cookies }) => {
 
   return {
     consent: {
-      isGdprRegion,
+      isConsentRegion,
       choice: existingChoice as 'accepted' | 'essential' | null,
     },
     signedIn,

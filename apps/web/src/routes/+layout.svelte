@@ -12,7 +12,7 @@
   let { data, children }: LayoutProps & { children: Snippet } = $props();
 
   const showCookieBanner = $derived(
-    data.consent.isGdprRegion && data.consent.choice === null,
+    data.consent.isConsentRegion && data.consent.choice === null,
   );
 </script>
 
