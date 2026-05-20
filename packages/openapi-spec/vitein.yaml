@@ -608,6 +608,11 @@ paths:
                   kind: { type: string }
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Reminder emails are a premium feature (Basic or Plus).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
         '404':
           $ref: '#/components/responses/NotFound'
 

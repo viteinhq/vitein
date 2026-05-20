@@ -11,7 +11,9 @@
   const upgraded = $derived(page.url.searchParams.get('upgraded') === '1');
   const canceled = $derived(page.url.searchParams.get('canceled') === '1');
 
-  type Currency = 'EUR' | 'USD' | 'CHF' | 'GBP' | 'INR';
+  // INR is a Phase-1.5 market — not a launch currency. Until INR Stripe
+  // prices exist, the upgrade UI only offers the four launch anchors.
+  type Currency = 'EUR' | 'USD' | 'CHF' | 'GBP';
   // svelte-ignore state_referenced_locally
   let currency = $state<Currency>(data.suggestedCurrency);
 
@@ -25,8 +27,6 @@
         return m.tier_basic_price_chf();
       case 'GBP':
         return m.tier_basic_price_gbp();
-      case 'INR':
-        return m.tier_basic_price_inr();
     }
   });
   const plusPrice = $derived.by(() => {
@@ -39,8 +39,6 @@
         return m.tier_plus_price_chf();
       case 'GBP':
         return m.tier_plus_price_gbp();
-      case 'INR':
-        return m.tier_plus_price_inr();
     }
   });
 
@@ -250,7 +248,6 @@
             <option value="USD">$ USD</option>
             <option value="CHF">CHF</option>
             <option value="GBP">£ GBP</option>
-            <option value="INR">₹ INR</option>
           </select>
         </label>
 

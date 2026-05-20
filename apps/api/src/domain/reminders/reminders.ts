@@ -1,5 +1,6 @@
 import { and, auditLog, eq, events, isNull, reminders, sql, type Db } from '@vitein/db-schema';
-import { NotFoundError } from '../errors.js';
+import { DomainError, NotFoundError } from '../errors.js';
+import { tierIncludes, tierOf } from '../payments/payments.js';
 
 const DUE_BATCH_LIMIT = 100;
 
@@ -46,17 +47,26 @@ export async function markReminderSent(
  * Manually queue an immediate reminder (used by `POST /v1/events/:id/reminders/send`).
  * The cron loop picks it up on its next run; we do not send synchronously
  * here so the route stays fast and bounded.
+ *
+ * Reminder emails are a premium feature (`reminders`, included on Basic and
+ * Plus) — unpaid events are gated here so the paid tier is enforced, not
+ * just advertised.
  */
 export async function queueImmediateReminder(
   db: Db,
   eventId: string,
 ): Promise<typeof reminders.$inferSelect> {
   const [event] = await db
-    .select({ id: events.id })
+    .select({ isPaid: events.isPaid, paidFeatures: events.paidFeatures })
     .from(events)
     .where(and(eq(events.id, eventId), isNull(events.deletedAt)))
     .limit(1);
   if (!event) throw new NotFoundError('event.not_found', 'Event not found');
+
+  const tier = tierOf(event);
+  if (!tier || !tierIncludes(tier, 'reminders')) {
+    throw new DomainError('event.feature_gated', 'Reminder emails are a premium feature', 403);
+  }
 
   const [row] = await db
     .insert(reminders)
