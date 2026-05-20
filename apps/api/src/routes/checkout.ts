@@ -17,7 +17,7 @@ export const checkoutRoute = new Hono<{ Bindings: Env; Variables: AppVariables }
 
 const checkoutInputSchema = z.object({
   tier: z.enum(['basic', 'plus']),
-  currency: z.enum(['EUR', 'USD', 'CHF', 'GBP']).optional(),
+  currency: z.enum(['EUR', 'USD', 'CHF', 'GBP', 'INR']).optional(),
 });
 
 const idSchema = z.object({ id: z.string().uuid() });

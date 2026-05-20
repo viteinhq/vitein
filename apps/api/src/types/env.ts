@@ -40,6 +40,9 @@ export interface Env {
   STRIPE_PRICE_PLUS_USD?: string;
   STRIPE_PRICE_PLUS_CHF?: string;
   STRIPE_PRICE_PLUS_GBP?: string;
+  // Phase 1.5 — India PPP (ARCHITECTURE §12.4).
+  STRIPE_PRICE_BASIC_INR?: string;
+  STRIPE_PRICE_PLUS_INR?: string;
 
   // Bindings added later (KV, Queues) go here:
   // KV_CACHE: KVNamespace;

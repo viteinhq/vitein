@@ -397,5 +397,7 @@
   "dashboard_stats_upcoming": "Upcoming",
   "dashboard_stats_rsvps": "RSVPs",
   "dashboard_stats_attending": "Attending",
-  "dashboard_stats_rsvp_breakdown": "{yes} yes · {maybe} maybe · {no} no · {plus} plus-ones"
+  "dashboard_stats_rsvp_breakdown": "{yes} yes · {maybe} maybe · {no} no · {plus} plus-ones",
+  "tier_basic_price_inr": "₹149",
+  "tier_plus_price_inr": "₹299"
 }

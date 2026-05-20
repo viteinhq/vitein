@@ -976,9 +976,13 @@ export type CreateCheckoutData = {
      */
     tier: 'basic' | 'plus';
     /**
-     * Currency anchor to bill in. Maps to a configured Stripe Price.
+     * Currency anchor to bill in. Maps to a configured Stripe
+     * Price. INR is the Phase-1.5 Purchasing-Power-Pricing
+     * market; a checkout in an anchor with no configured
+     * Price returns 503.
+     *
      */
-    currency?: 'EUR' | 'USD' | 'CHF' | 'GBP';
+    currency?: 'EUR' | 'USD' | 'CHF' | 'GBP' | 'INR';
   };
   headers?: {
     /**

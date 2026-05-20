@@ -461,9 +461,13 @@ paths:
                   description: Premium tier to bill for.
                 currency:
                   type: string
-                  enum: [EUR, USD, CHF, GBP]
+                  enum: [EUR, USD, CHF, GBP, INR]
                   default: EUR
-                  description: Currency anchor to bill in. Maps to a configured Stripe Price.
+                  description: |
+                    Currency anchor to bill in. Maps to a configured Stripe
+                    Price. INR is the Phase-1.5 Purchasing-Power-Pricing
+                    market; a checkout in an anchor with no configured
+                    Price returns 503.
       responses:
         '200':
           description: Checkout session URL.

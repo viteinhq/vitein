@@ -397,5 +397,7 @@
   "dashboard_stats_upcoming": "Demnächst",
   "dashboard_stats_rsvps": "Zusagen gesamt",
   "dashboard_stats_attending": "Kommen",
-  "dashboard_stats_rsvp_breakdown": "{yes} ja · {maybe} vielleicht · {no} nein · {plus} Begleitpersonen"
+  "dashboard_stats_rsvp_breakdown": "{yes} ja · {maybe} vielleicht · {no} nein · {plus} Begleitpersonen",
+  "tier_basic_price_inr": "₹149",
+  "tier_plus_price_inr": "₹299"
 }

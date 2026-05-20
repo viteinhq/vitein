@@ -11,8 +11,13 @@
   const upgraded = $derived(page.url.searchParams.get('upgraded') === '1');
   const canceled = $derived(page.url.searchParams.get('canceled') === '1');
 
-  type Currency = 'EUR' | 'USD' | 'CHF' | 'GBP';
-  let currency = $state<Currency>('EUR');
+  type Currency = 'EUR' | 'USD' | 'CHF' | 'GBP' | 'INR';
+  // Default is geo-suggested from the visitor's IP (cf-ipcountry) by
+  // the load fn — an Indian visitor sees ₹ pre-selected. Seeded once;
+  // after that it's user-controlled (re-seeding on every `data`
+  // change would clobber the dropdown when a form action reloads).
+  // svelte-ignore state_referenced_locally
+  let currency = $state<Currency>(data.suggestedCurrency);
 
   const basicPrice = $derived.by(() => {
     switch (currency) {
@@ -24,6 +29,8 @@
         return m.tier_basic_price_chf();
       case 'GBP':
         return m.tier_basic_price_gbp();
+      case 'INR':
+        return m.tier_basic_price_inr();
     }
   });
   const plusPrice = $derived.by(() => {
@@ -36,6 +43,8 @@
         return m.tier_plus_price_chf();
       case 'GBP':
         return m.tier_plus_price_gbp();
+      case 'INR':
+        return m.tier_plus_price_inr();
     }
   });
 
@@ -134,6 +143,7 @@
             <option value="USD">$ USD</option>
             <option value="CHF">CHF</option>
             <option value="GBP">£ GBP</option>
+            <option value="INR">₹ INR</option>
           </select>
         </label>
 
