@@ -1,5 +1,9 @@
 import { Hono } from 'hono';
-import { markEventPaid } from '../../domain/payments/payments.js';
+import {
+  claimStripeEvent,
+  markEventPaid,
+  releaseStripeEvent,
+} from '../../domain/payments/payments.js';
 import { db } from '../../infra/db.js';
 import { verifyWebhookSignature, WebhookVerificationError } from '../../infra/stripe.js';
 import type { AppVariables, Env } from '../../types/env.js';
@@ -86,12 +90,29 @@ stripeWebhookRoute.post('/', async (c) => {
     return c.json({ received: true, handled: false });
   }
 
-  await markEventPaid(db(c.env), {
-    eventId,
-    tier,
-    paymentRef: session.id,
-    metadata: { stripeEventId: evt.id },
-  });
+  const dbc = db(c.env);
+
+  // Idempotency: claim the event id before the side-effecting write so a
+  // duplicate Stripe delivery is acknowledged without re-running it (and
+  // without appending a second `payment.completed` audit row).
+  const fresh = await claimStripeEvent(dbc, evt.id, evt.type);
+  if (!fresh) {
+    logger.info('stripe_webhook_duplicate', { stripeEventId: evt.id });
+    return c.json({ received: true, handled: false, duplicate: true });
+  }
+
+  try {
+    await markEventPaid(dbc, {
+      eventId,
+      tier,
+      paymentRef: session.id,
+      metadata: { stripeEventId: evt.id },
+    });
+  } catch (err) {
+    // Release the claim so Stripe's retry can re-process this event.
+    await releaseStripeEvent(dbc, evt.id).catch(() => {});
+    throw err;
+  }
 
   return c.json({ received: true, handled: true, tier });
 });

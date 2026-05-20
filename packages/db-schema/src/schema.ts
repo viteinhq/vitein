@@ -417,6 +417,17 @@ export const auditLog = pgTable(
   (t) => [index('audit_log_event_idx').on(t.eventId), index('audit_log_action_idx').on(t.action)],
 );
 
+/**
+ * Stripe webhook idempotency ledger. One row per processed Stripe event id
+ * (`evt_…`). The webhook handler claims the id before marking an event paid;
+ * a duplicate delivery hits the primary key and is skipped. Append-only.
+ */
+export const stripeEvents = pgTable('stripe_events', {
+  id: text().primaryKey(),
+  type: text().notNull(),
+  processedAt: nowTs(),
+});
+
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Session = typeof sessions.$inferSelect;
@@ -451,6 +462,8 @@ export type OauthConsent = typeof oauthConsents.$inferSelect;
 export type NewOauthConsent = typeof oauthConsents.$inferInsert;
 export type Jwks = typeof jwks.$inferSelect;
 export type NewJwks = typeof jwks.$inferInsert;
+export type StripeEvent = typeof stripeEvents.$inferSelect;
+export type NewStripeEvent = typeof stripeEvents.$inferInsert;
 
 export const schema = {
   users,
@@ -470,4 +483,5 @@ export const schema = {
   oauthRefreshTokens,
   oauthConsents,
   jwks,
+  stripeEvents,
 };
