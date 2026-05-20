@@ -53,13 +53,11 @@ function ownershipHeaders(
  * detection is what fixes the actually-charged price (ARCHITECTURE
  * §12.6). Unknown / EU / everything-else falls back to EUR.
  */
-type CheckoutCurrency = 'EUR' | 'USD' | 'CHF' | 'GBP' | 'INR';
+type CheckoutCurrency = 'EUR' | 'USD' | 'CHF' | 'GBP';
 
 function suggestCurrency(request: Request): CheckoutCurrency {
   const country = request.headers.get('cf-ipcountry')?.toUpperCase();
   switch (country) {
-    case 'IN':
-      return 'INR';
     case 'US':
       return 'USD';
     case 'GB':

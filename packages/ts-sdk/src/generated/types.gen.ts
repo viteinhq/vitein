@@ -1196,6 +1196,10 @@ export type SendReminderErrors = {
    */
   401: Error;
   /**
+   * Reminder emails are a premium feature (Basic or Plus).
+   */
+  403: Error;
+  /**
    * Resource not found.
    */
   404: Error;

@@ -41,23 +41,22 @@ export async function listAnnouncements(db: Db, eventId: string): Promise<Announ
   }));
 }
 
-export interface PrepareAnnouncementResult {
+export interface AnnouncementContext {
   event: typeof events.$inferSelect;
   recipients: string[];
-  row: typeof eventAnnouncements.$inferSelect;
 }
 
 /**
- * Insert an `event_announcements` row in the "queued" state (sent_at = null)
- * and collect the guest-email list. Enforces the once-per-stage rule via the
- * unique index. The actual email dispatch happens in the route handler so
- * tests can stub Resend without touching the DB.
+ * Load the event and its guest-email list for a send, and validate the
+ * recipient list. Does NOT insert anything: the caller runs tier gating
+ * between this and `insertAnnouncement`, so a gated send never leaves an
+ * orphan row that the once-per-stage unique index would then block forever.
  */
-export async function prepareAnnouncement(
+export async function loadAnnouncementContext(
   db: Db,
   eventId: string,
   stage: AnnouncementStage,
-): Promise<PrepareAnnouncementResult> {
+): Promise<AnnouncementContext> {
   if (stage !== 'save_the_date' && stage !== 'invitation') {
     throw new ValidationError('Unknown announcement stage', { stage });
   }
@@ -86,14 +85,27 @@ export async function prepareAnnouncement(
     );
   }
 
-  let row: typeof eventAnnouncements.$inferSelect;
+  return { event, recipients };
+}
+
+/**
+ * Insert an `event_announcements` row in the "queued" state (sent_at = null).
+ * Enforces the once-per-stage rule via the unique index. Call this only
+ * after tier gating has passed — see `loadAnnouncementContext`.
+ */
+export async function insertAnnouncement(
+  db: Db,
+  eventId: string,
+  stage: AnnouncementStage,
+  recipientCount: number,
+): Promise<typeof eventAnnouncements.$inferSelect> {
   try {
     const [inserted] = await db
       .insert(eventAnnouncements)
-      .values({ eventId, stage, recipientCount: recipients.length })
+      .values({ eventId, stage, recipientCount })
       .returning();
     if (!inserted) throw new Error('Announcement insert returned no row');
-    row = inserted;
+    return inserted;
   } catch (err) {
     if (isUniqueAnnouncementError(err)) {
       throw new ConflictError(
@@ -103,8 +115,6 @@ export async function prepareAnnouncement(
     }
     throw err;
   }
-
-  return { event, recipients, row };
 }
 
 /** Stamp sent_at + append audit-log row once all emails finished. */

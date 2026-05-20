@@ -2,9 +2,10 @@ import { zValidator } from '@hono/zod-validator';
 import { Hono } from 'hono';
 import { z } from 'zod';
 import {
+  insertAnnouncement,
   listAnnouncements,
+  loadAnnouncementContext,
   markAnnouncementSent,
-  prepareAnnouncement,
 } from '../domain/announcements/announcements.js';
 import { DomainError, ValidationError } from '../domain/errors.js';
 import { tierIncludes, tierOf } from '../domain/payments/payments.js';
@@ -64,14 +65,25 @@ announcementsRoute.post(
     const { id } = c.req.valid('param');
     const { stage } = c.req.valid('json');
 
-    const { event, recipients, row } = await prepareAnnouncement(db(c.env), id, stage);
+    const { event, recipients } = await loadAnnouncementContext(db(c.env), id, stage);
 
+    // Tier gate runs *before* the row insert — a gated send must not leave an
+    // orphan `event_announcements` row, or the once-per-stage unique index
+    // would block a legitimate retry after the creator upgrades.
+    const tier = tierOf(event);
     if (stage === 'save_the_date') {
-      const tier = tierOf(event);
       if (!tier || !tierIncludes(tier, 'save_the_date')) {
         throw new DomainError('event.feature_gated', 'Save-the-Date is a Plus-tier feature', 403);
       }
+    } else if (!tier) {
+      throw new DomainError(
+        'event.feature_gated',
+        'Sending invitations requires a premium event',
+        403,
+      );
     }
+
+    const row = await insertAnnouncement(db(c.env), id, stage, recipients.length);
 
     const webBase = c.env.WEB_BASE_URL ?? 'https://vite.in';
     const eventUrl = `${webBase}/e/${event.slug}`;
