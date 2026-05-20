@@ -25,7 +25,7 @@
   const tones: Record<Tone, string> = {
     default: 'text-ink',
     muted: 'text-ink-muted',
-    subtle: 'text-ink-muted/70',
+    subtle: 'text-ink-muted',
   };
 
   const sizes: Record<Size, string> = {

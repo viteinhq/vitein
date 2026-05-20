@@ -147,7 +147,7 @@
       {#each steps as step, i (step.title)}
         <li class="rounded-card border border-rule bg-card p-6">
           <span
-            class="font-display block text-5xl leading-none font-bold tracking-tighter text-coral"
+            class="font-display block text-5xl leading-none font-bold tracking-tighter text-coral-deep"
           >
             {String(i + 1).padStart(2, '0')}
           </span>

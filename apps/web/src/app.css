@@ -21,7 +21,12 @@
   --color-card: #ffffff;
   --color-accent: #e3ff3a;
   --color-accent-ink: #0a0a0a;
+  /* `coral` is the bright brand pop — safe as a decorative fill and as
+     text on dark surfaces. `coral-deep` is the WCAG-AA shade for coral
+     *text* on light backgrounds and fills carrying white text (clears
+     4.5:1 on paper and under white). */
   --color-coral: #ff5436;
+  --color-coral-deep: #bf3413;
 
   /* Type — webfont first, system stack after. Non-Latin scripts fall
      through to system-ui automatically (the webfonts are Latin-only).

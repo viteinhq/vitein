@@ -124,7 +124,7 @@
             <div class="min-w-0">
               <a
                 href="/e/{ev.slug}/manage"
-                class="font-display font-bold tracking-tight hover:text-coral"
+                class="font-display font-bold tracking-tight hover:text-coral-deep"
               >
                 {ev.title}
               </a>
@@ -159,7 +159,7 @@
             <div class="min-w-0">
               <a
                 href="/e/{ev.slug}/manage"
-                class="font-display font-bold tracking-tight hover:text-coral"
+                class="font-display font-bold tracking-tight hover:text-coral-deep"
               >
                 {ev.title}
               </a>

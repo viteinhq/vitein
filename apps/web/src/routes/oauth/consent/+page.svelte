@@ -52,7 +52,7 @@
       <ul class="mt-3 space-y-2">
         {#each data.scopes as scope (scope)}
           <li class="flex gap-2 text-sm">
-            <span class="text-coral">·</span>
+            <span class="text-coral-deep">·</span>
             <span>{describe(scope)}</span>
           </li>
         {/each}
@@ -76,6 +76,6 @@
       </Button>
     </form>
 
-    <p class="mt-4 text-xs leading-relaxed text-ink-muted/70">{m.oauth_consent_note()}</p>
+    <p class="mt-4 text-xs leading-relaxed text-ink-muted">{m.oauth_consent_note()}</p>
   {/if}
 </section>

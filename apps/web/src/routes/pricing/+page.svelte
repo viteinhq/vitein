@@ -84,7 +84,7 @@
         <ul class="mt-4 space-y-2 text-sm">
           {#each tier.items as item (item)}
             <li class="flex gap-2">
-              <span class={tier.accent ? 'text-accent-ink' : 'text-coral'}>·</span>
+              <span class={tier.accent ? 'text-accent-ink' : 'text-coral-deep'}>·</span>
               <span>{item}</span>
             </li>
           {/each}
