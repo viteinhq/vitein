@@ -189,7 +189,7 @@ Terms.
   process until Kuma restarts. Check `systemctl status uptime-kuma`
   (or your equivalent) after a Kuma upgrade.
 - **Rotating the tunnel:** `cloudflared tunnel delete vitein-status`
-  + re-run from step 3. The DNS record rotates with the new UUID.
+  - re-run from step 3. The DNS record rotates with the new UUID.
 - **Local LAN access still works:** the tunnel is purely additive;
   Kuma's local port stays reachable for direct admin sessions.
 
@@ -197,10 +197,10 @@ Terms.
 
 ## Troubleshooting
 
-| Symptom                                  | Likely cause                                                                              |
-| ---------------------------------------- | ----------------------------------------------------------------------------------------- |
-| `cloudflared` won't start                | typo in `config.yml`. Run `cloudflared tunnel ingress validate`.                          |
-| `status.vite.in` 502                     | Kuma isn't reachable at `localhost:3001` from the Pi. `curl localhost:3001` to verify.    |
-| `status.vite.in` 522 / connection-reset  | Tunnel is down. `journalctl -u cloudflared -n 100`.                                       |
-| `status.vite.in/` shows 404              | Default status page not configured. See section 7.                                        |
-| Kuma works locally, tunnel can't see it  | Kuma bound to `127.0.0.1` only; bind to `0.0.0.0` (or the loopback the tunnel goes through). |
+| Symptom                                 | Likely cause                                                                                 |
+| --------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `cloudflared` won't start               | typo in `config.yml`. Run `cloudflared tunnel ingress validate`.                             |
+| `status.vite.in` 502                    | Kuma isn't reachable at `localhost:3001` from the Pi. `curl localhost:3001` to verify.       |
+| `status.vite.in` 522 / connection-reset | Tunnel is down. `journalctl -u cloudflared -n 100`.                                          |
+| `status.vite.in/` shows 404             | Default status page not configured. See section 7.                                           |
+| Kuma works locally, tunnel can't see it | Kuma bound to `127.0.0.1` only; bind to `0.0.0.0` (or the loopback the tunnel goes through). |

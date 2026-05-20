@@ -5,7 +5,6 @@ import {
   listAnnouncements,
   markAnnouncementSent,
   prepareAnnouncement,
-  type AnnouncementStage,
 } from '../domain/announcements/announcements.js';
 import { DomainError, ValidationError } from '../domain/errors.js';
 import { tierIncludes, tierOf } from '../domain/payments/payments.js';
@@ -90,7 +89,7 @@ announcementsRoute.post(
             eventTitle: event.title,
             startsAt: event.startsAt,
             eventUrl,
-            stage: stage as AnnouncementStage,
+            stage: stage,
           },
           eventLocale,
         );
@@ -105,7 +104,7 @@ announcementsRoute.post(
       }
     }
 
-    await markAnnouncementSent(db(c.env), row.id, event.id, stage as AnnouncementStage, {
+    await markAnnouncementSent(db(c.env), row.id, event.id, stage, {
       recipientCount: recipients.length,
       sent: sentOk,
       failed,

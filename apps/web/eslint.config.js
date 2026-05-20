@@ -36,6 +36,17 @@ export default [
     },
   },
   {
+    // Legal pages render localized strings that contain anchor tags
+    // (e.g. "see our <a>privacy policy</a>") via `{@html}`. The input is
+    // our own Paraglide message catalogue — never user input — so the
+    // XSS rule doesn't apply here. Scoped to the legal directory so the
+    // rule still guards every other component.
+    files: ['**/routes/legal/**/*.svelte'],
+    rules: {
+      'svelte/no-at-html-tags': 'off',
+    },
+  },
+  {
     ignores: ['.svelte-kit/**', 'build/**', 'dist/**'],
   },
 ];

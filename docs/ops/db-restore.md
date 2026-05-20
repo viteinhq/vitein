@@ -17,13 +17,13 @@ The restore is always "branch from a timestamp", never "load a dump".
 
 ## When to use this
 
-| Situation                                                  | Restore?                                                |
-| ---------------------------------------------------------- | ------------------------------------------------------- |
-| Single row deleted by accident                             | Yes — fastest recovery is a branch + manual re-insert.  |
-| Bad migration that ran against staging or prod             | Yes — the migration is part of the WAL.                 |
-| Application bug wrote junk data over N hours               | Yes if the affected range is well-defined.              |
-| Neon outage                                                | No — wait for Neon. Don't try to "restore from cache".  |
-| Wrong `DATABASE_URL` pointing the API at a different env   | No — fix the secret. The data is fine.                  |
+| Situation                                                | Restore?                                               |
+| -------------------------------------------------------- | ------------------------------------------------------ |
+| Single row deleted by accident                           | Yes — fastest recovery is a branch + manual re-insert. |
+| Bad migration that ran against staging or prod           | Yes — the migration is part of the WAL.                |
+| Application bug wrote junk data over N hours             | Yes if the affected range is well-defined.             |
+| Neon outage                                              | No — wait for Neon. Don't try to "restore from cache". |
+| Wrong `DATABASE_URL` pointing the API at a different env | No — fix the secret. The data is fine.                 |
 
 If you're under doubt: branch first, decide later. Branching is free
 and read-only against the parent — it can't make things worse.
@@ -154,6 +154,7 @@ mass deletion, etc.).
      re-read env on each request — no restart needed).
 
 4. Confirm the API is now talking to the restored database:
+
    ```bash
    curl https://api.vite.in/v1/health
    # → "db": "connected"

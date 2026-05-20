@@ -149,7 +149,7 @@ async function resolveOAuthBearer(env: Env, token: string): Promise<AuthContext 
       verifyOptions: { issuer, audience },
       // The function type wants a jose JSONWebKeySet which we don't
       // depend on directly; the shape matches at runtime.
-      jwksFetch: jwksFetch as unknown as string,
+      jwksFetch: jwksFetch,
     });
 
     const userId = typeof payload.sub === 'string' ? payload.sub : null;

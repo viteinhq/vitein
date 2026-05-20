@@ -28,9 +28,10 @@ export const load: PageServerLoad = async (event) => {
     apiFetch(event, '/v1/users/me/stats'),
   ]);
 
-  const stats: UserStats = statsRes.ok
-    ? ((await statsRes.json()) as unknown as UserStats)
-    : EMPTY_STATS;
+  // `Response.json()` is `any`; assert the API shape on the value (not
+  // the binding) so the cast isn't flagged as redundant against a typed
+  // annotation, and the raw `any` never lands unguarded.
+  const stats = statsRes.ok ? ((await statsRes.json()) as UserStats) : EMPTY_STATS;
 
   if (!eventsRes.ok) {
     return { upcoming: [] as EventListItem[], past: [] as EventListItem[], stats };

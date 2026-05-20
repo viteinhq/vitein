@@ -27,11 +27,10 @@
      through to system-ui automatically (the webfonts are Latin-only).
      We keep a broad system stack on --font-sans so Devanagari / Tamil /
      CJK / Arabic still render from the OS's bundled fonts. */
-  --font-display:
-    'Bricolage Grotesque Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Bricolage Grotesque Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-sans:
-    'Geist Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
-    'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+    'Geist Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
   --font-serif: 'Instrument Serif', 'Times New Roman', Georgia, serif;
   --font-mono: 'Geist Mono Variable', ui-monospace, 'SF Mono', Menlo, monospace;
 

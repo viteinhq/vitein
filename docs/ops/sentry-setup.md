@@ -30,13 +30,13 @@ On https://sentry.io (or self-hosted Sentry):
 
 In the repo settings → Secrets and variables → Actions:
 
-| Kind | Name | Value |
-| --- | --- | --- |
-| Secret | `SENTRY_AUTH_TOKEN` | the `sntrys_…` token from step 2 |
-| Variable | `SENTRY_ORG` | your Sentry org slug (e.g. `vitein`) |
-| Variable | `SENTRY_PROJECT_API` | `vitein-api` |
-| Variable | `SENTRY_PROJECT_MCP` | `vitein-mcp` |
-| Variable | `SENTRY_PROJECT_WEB` | `vitein-web` |
+| Kind     | Name                 | Value                                |
+| -------- | -------------------- | ------------------------------------ |
+| Secret   | `SENTRY_AUTH_TOKEN`  | the `sntrys_…` token from step 2     |
+| Variable | `SENTRY_ORG`         | your Sentry org slug (e.g. `vitein`) |
+| Variable | `SENTRY_PROJECT_API` | `vitein-api`                         |
+| Variable | `SENTRY_PROJECT_MCP` | `vitein-mcp`                         |
+| Variable | `SENTRY_PROJECT_WEB` | `vitein-web`                         |
 
 The auth token is a secret (write/destroy-only). Project slugs and the
 org name are variables (visible in logs, fine — they're not sensitive).
