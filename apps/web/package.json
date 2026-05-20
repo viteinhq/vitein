@@ -25,7 +25,7 @@
     "@vitein/ts-sdk": "workspace:*"
   },
   "devDependencies": {
-    "@inlang/paraglide-js": "^1.11.8",
+    "@inlang/paraglide-js": "^2.18.1",
     "@sveltejs/adapter-cloudflare": "^7.2.8",
     "@sveltejs/kit": "^2.60.1",
     "@sveltejs/vite-plugin-svelte": "^7.1.2",
