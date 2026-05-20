@@ -22,8 +22,31 @@ env:
   SENTRY_ORG: ${{ vars.SENTRY_ORG }}
 
 jobs:
+  migrate-staging:
+    name: Migrate staging DB
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # Drizzle migrations are applied to the staging Neon branch before the
+    # API deploys, so new code never reaches a Worker ahead of its schema.
+    # The step self-skips until STAGING_DATABASE_URL is configured, so this
+    # job does not block staging deploys before the secret exists.
+    env:
+      DATABASE_URL: ${{ secrets.STAGING_DATABASE_URL }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Apply Drizzle migrations to the staging branch
+        if: env.DATABASE_URL != ''
+        run: pnpm -F @vitein/db-schema db:migrate
+
   deploy-api:
     name: API → staging
+    needs: [migrate-staging]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -133,7 +156,7 @@ jobs:
   # noticed for hours. Re-uses one open issue per commit to avoid noise.
   notify-failure:
     name: Open issue on deploy failure
-    needs: [deploy-api, deploy-mcp, deploy-web]
+    needs: [migrate-staging, deploy-api, deploy-mcp, deploy-web]
     if: failure()
     runs-on: ubuntu-latest
     timeout-minutes: 2
@@ -170,7 +193,7 @@ jobs:
               `**Run:** ${runUrl}`,
               `**Triggered by:** \`${context.eventName}\` on \`${context.ref}\``,
               ``,
-              `Open the run linked above to see which of \`deploy-api\`, \`deploy-mcp\`, \`deploy-web\` turned red.`,
+              `Open the run linked above to see which of \`migrate-staging\`, \`deploy-api\`, \`deploy-mcp\`, \`deploy-web\` turned red.`,
               ``,
               `Staging may be running stale code until the next successful deploy. See \`docs/ops/runbook.md\` → Worker rollback.`,
             ].join('\n');

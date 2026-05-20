@@ -40,8 +40,8 @@ migrations/         generated SQL + drizzle journal; commit both
 3. Review the generated SQL. If it is wrong, delete and edit the schema until drizzle-kit produces the right thing.
 4. Apply to your Neon dev branch: `DATABASE_URL=<dev-branch-url> pnpm -F @vitein/db-schema db:migrate`.
 5. Commit schema + migration together.
-6. CI (Task 0.11) deploys staging on merge to `main`; `db:migrate` is run there against the staging branch.
-7. Production migrations run from tagged releases.
+6. On merge to `main`, the `Deploy` workflow runs `db:migrate` against the staging branch (the `migrate-staging` job) before deploying the API.
+7. Production migrations are applied with the `Migrate production DB` workflow — a manual `workflow_dispatch` run, gated by the `production` GitHub Environment. Run it before deploying API code that needs the new schema.
 
 ## Neon branches
 
