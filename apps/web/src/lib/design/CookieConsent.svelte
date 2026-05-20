@@ -39,14 +39,14 @@
   <div
     role="region"
     aria-label={m.cookie_consent_title()}
-    class="fixed inset-x-0 bottom-0 z-50 border-t border-slate-200 bg-white shadow-lg"
+    class="fixed inset-x-0 bottom-0 z-50 border-t border-rule bg-card shadow-[0_-10px_30px_-12px_rgba(0,0,0,0.25)]"
   >
     <div
-      class="mx-auto flex max-w-4xl flex-col gap-3 px-6 py-4 sm:flex-row sm:items-center sm:justify-between"
+      class="mx-auto flex max-w-5xl flex-col gap-3 px-6 py-4 sm:flex-row sm:items-center sm:justify-between"
     >
       <div class="space-y-1 text-sm">
-        <p class="font-medium text-slate-900">{m.cookie_consent_title()}</p>
-        <p class="text-slate-600">
+        <p class="font-display font-bold tracking-tight text-ink">{m.cookie_consent_title()}</p>
+        <p class="text-ink-muted">
           {m.cookie_consent_body()}
           <a href="/legal/privacy" class="underline">{m.cookie_consent_link_privacy()}</a>
         </p>

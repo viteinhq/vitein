@@ -1,7 +1,7 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
   import { page } from '$app/state';
-  import { Banner, Button, Card, TextField, TimezonePicker } from '$lib/design';
+  import { ArrowRight, Banner, Button, Eyebrow, InviteCard, TextField, TimezonePicker } from '$lib/design';
   import { localizeError } from '$lib/errors';
   import * as m from '$lib/paraglide/messages.js';
   import type { PageProps } from './$types';
@@ -16,12 +16,33 @@
     typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'UTC',
   );
 
-  // Timezone options now live inside the reusable TimezonePicker
-  // component — see `$lib/design/TimezonePicker.svelte`.
-  let timezoneValue = $state('');
-  $effect(() => {
-    timezoneValue = String(form?.values?.timezone ?? defaultTimezone);
-  });
+  // Writable `$derived` — seeded from `form.values` (so a failed submit
+  // re-populates every field) yet freely reassignable as the user types.
+  // The user's edits hold until `form` changes again. Drives both the
+  // form submit and the live invitation preview.
+  let titleValue = $derived(String(form?.values?.title ?? ''));
+  let locationValue = $derived(String(form?.values?.locationText ?? ''));
+  let startsAtValue = $derived(String(form?.values?.startsAt ?? ''));
+  let timezoneValue = $derived(String(form?.values?.timezone ?? defaultTimezone));
+
+  function formatPreviewDate(v: string): string {
+    if (!v) return '';
+    const d = new Date(v);
+    if (Number.isNaN(d.getTime())) return '';
+    try {
+      return new Intl.DateTimeFormat(undefined, {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+      }).format(d);
+    } catch {
+      return '';
+    }
+  }
+
+  const previewDate = $derived(formatPreviewDate(startsAtValue));
 
   const shareUrl = $derived(form?.success ? `${page.url.origin}/e/${form.slug}` : '');
 
@@ -44,66 +65,90 @@
       shareInput?.select();
     }
   }
+
+  const legendClass = 'font-mono text-[10px] font-medium tracking-[0.12em] text-ink-muted uppercase';
+  const textareaClass =
+    'mt-1.5 block w-full rounded-xl border border-rule bg-card px-4 py-3 text-[15px] text-ink placeholder:text-ink-muted/60 focus:outline-none focus:ring-2 focus:ring-accent';
 </script>
 
 <svelte:head>
   <title>{m.create_title()} — vite.in</title>
 </svelte:head>
 
-<section class="mx-auto max-w-xl space-y-8">
-  {#if form?.success}
-    <Card tone="success">
-      <div class="space-y-4">
-        <h1 class="text-2xl font-semibold tracking-tight">{m.create_success_heading()}</h1>
+{#if form?.success}
+  <!-- ─── Created — share state ──────────────────────────── -->
+  <section class="mx-auto max-w-xl px-6 py-14">
+    <Eyebrow num="✓" label={m.create_success_heading()} />
+    <h1
+      class="font-display mt-4 text-4xl leading-[0.95] font-bold tracking-tighter sm:text-5xl"
+    >
+      {m.create_success_heading()}
+    </h1>
+    {#if form.title}
+      <p class="mt-3 text-base text-ink-muted">{form.title}</p>
+    {/if}
 
-        {#if form.title}
-          <p class="text-sm font-medium text-slate-700">{form.title}</p>
-        {/if}
-
-        <div class="space-y-2">
-          <p class="text-xs font-medium text-slate-600">{m.create_success_share_label()}</p>
-          <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
-            <input
-              readonly
-              bind:this={shareInput}
-              value={shareUrl}
-              class="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 font-mono text-sm text-slate-800"
-              onclick={selectShareUrl}
-            />
-            <Button onclick={copyShare} class="shrink-0">
-              {copied ? m.create_success_copied() : m.create_success_copy()}
-            </Button>
-          </div>
-        </div>
-
-        <div class="flex flex-wrap gap-2">
-          <Button
-            href="/e/{form.slug}"
-            variant="secondary"
-            size="sm"
-            data-sveltekit-reload
-          >
-            {m.create_success_open()}
-          </Button>
-        </div>
-
-        {#if form.magicLinkSent}
-          <p class="text-sm text-slate-700">{m.create_success_magic_sent()}</p>
-        {:else if form.creatorTokenPreview}
-          <p class="text-sm text-slate-700">
-            {m.create_success_dev_mode()}
-            <a class="underline" href="/e/{form.slug}/manage?token={form.creatorTokenPreview}">
-              /e/{form.slug}/manage
-            </a>
-          </p>
-        {/if}
+    <!-- link card -->
+    <div class="mt-8 rounded-card bg-ink p-5 text-paper">
+      <span class="font-mono text-[10px] tracking-[0.12em] text-paper/50 uppercase">
+        {m.create_success_share_label()}
+      </span>
+      <input
+        readonly
+        bind:this={shareInput}
+        value={shareUrl}
+        onclick={selectShareUrl}
+        class="mt-2 block w-full bg-transparent font-mono text-[15px] text-paper focus:outline-none"
+      />
+      <div class="mt-4 flex flex-wrap gap-2">
+        <Button onclick={copyShare} variant="accent" size="sm">
+          {copied ? m.create_success_copied() : m.create_success_copy()}
+        </Button>
+        <a
+          href="/e/{form.slug}"
+          data-sveltekit-reload
+          class="inline-flex items-center gap-2 rounded-full border border-paper/30 px-3.5 py-2 text-xs font-semibold text-paper transition hover:bg-paper hover:text-ink"
+        >
+          {m.create_success_open()}
+          <ArrowRight size={12} />
+        </a>
       </div>
-    </Card>
-  {:else}
-    <header class="space-y-2">
-      <h1 class="text-3xl font-bold tracking-tight">{m.create_title()}</h1>
-      <p class="text-sm text-slate-600">{m.create_subtitle()}</p>
-    </header>
+    </div>
+
+    {#if form.magicLinkSent}
+      <p class="mt-5 text-sm leading-relaxed text-ink-muted">{m.create_success_magic_sent()}</p>
+    {:else if form.creatorTokenPreview}
+      <p class="mt-5 text-sm leading-relaxed text-ink-muted">
+        {m.create_success_dev_mode()}
+        <a class="underline" href="/e/{form.slug}/manage?token={form.creatorTokenPreview}">
+          /e/{form.slug}/manage
+        </a>
+      </p>
+    {/if}
+  </section>
+{:else}
+  <!-- ─── Create form ────────────────────────────────────── -->
+  <section class="mx-auto max-w-xl px-6 py-14">
+    <Eyebrow num="01" label={m.nav_create()} />
+    <h1
+      class="font-display mt-4 text-4xl leading-[0.95] font-bold tracking-tighter sm:text-5xl"
+    >
+      {m.create_title()}
+    </h1>
+    <p class="mt-3 text-base leading-relaxed text-ink-muted">{m.create_subtitle()}</p>
+
+    <!-- live preview -->
+    <div class="mt-8 flex justify-center">
+      <div class="aspect-[3/4] w-56">
+        <InviteCard
+          variant="lime"
+          eyebrow={m.invite_eyebrow()}
+          title={titleValue || m.create_field_title()}
+          date={previewDate}
+          place={locationValue}
+        />
+      </div>
+    </div>
 
     <form
       method="POST"
@@ -114,49 +159,46 @@
           submitting = false;
         };
       }}
-      class="space-y-8"
+      class="mt-10 space-y-8"
     >
       {#if form?.error}
         <Banner tone="error">{localizeError(form.error)}</Banner>
       {/if}
 
       <fieldset class="space-y-4">
-        <legend class="text-sm font-semibold uppercase tracking-wider text-slate-500">
-          {m.create_section_basics()}
-        </legend>
+        <legend class={legendClass}>{m.create_section_basics()}</legend>
 
         <TextField
           name="title"
           required
           maxlength={200}
-          value={form?.values?.title ?? ''}
+          bind:value={titleValue}
           label={m.create_field_title()}
         />
 
         <label class="block">
-          <span class="text-sm font-medium">{m.create_field_description()}</span>
+          <span class={legendClass}>{m.create_field_description()}</span>
           <textarea
             name="description"
             maxlength="5000"
             rows="3"
-            class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2"
-            >{form?.values?.description ?? ''}</textarea
+            class={textareaClass}>{form?.values?.description ?? ''}</textarea
           >
-          <span class="mt-1 block text-xs text-slate-500">{m.create_field_description_hint()}</span>
+          <span class="mt-1 block font-mono text-[10px] tracking-wide text-ink-muted/70">
+            {m.create_field_description_hint()}
+          </span>
         </label>
       </fieldset>
 
       <fieldset class="space-y-4">
-        <legend class="text-sm font-semibold uppercase tracking-wider text-slate-500">
-          {m.create_section_when()}
-        </legend>
+        <legend class={legendClass}>{m.create_section_when()}</legend>
 
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <TextField
             type="datetime-local"
             name="startsAt"
             required
-            value={form?.values?.startsAt ?? ''}
+            bind:value={startsAtValue}
             label={m.create_field_starts_at()}
           />
           <TextField
@@ -177,62 +219,58 @@
       </fieldset>
 
       <fieldset class="space-y-4">
-        <legend class="text-sm font-semibold uppercase tracking-wider text-slate-500">
-          {m.create_section_where()}
-        </legend>
+        <legend class={legendClass}>{m.create_section_where()}</legend>
 
         <TextField
           name="locationText"
           maxlength={500}
-          value={form?.values?.locationText ?? ''}
+          bind:value={locationValue}
           label={m.create_field_location_optional()}
         />
       </fieldset>
 
       <fieldset class="space-y-3">
-        <legend class="text-sm font-semibold uppercase tracking-wider text-slate-500">
-          {m.create_section_visibility()}
-        </legend>
+        <legend class={legendClass}>{m.create_section_visibility()}</legend>
 
         <label
-          class="flex items-start gap-3 rounded-md border border-slate-200 p-3 hover:bg-slate-50"
+          class="flex cursor-pointer items-start gap-3 rounded-xl border border-rule bg-card p-4 transition hover:border-ink/30"
         >
           <input
             type="radio"
             name="visibility"
             value="link_only"
             checked={(form?.values?.visibility ?? 'link_only') === 'link_only'}
-            class="mt-1"
+            class="mt-0.5 accent-ink"
           />
           <span>
-            <span class="block text-sm font-medium">{m.create_visibility_link_only()}</span>
-            <span class="block text-xs text-slate-500">
+            <span class="block text-sm font-semibold">{m.create_visibility_link_only()}</span>
+            <span class="mt-0.5 block text-xs text-ink-muted">
               {m.create_visibility_link_only_hint()}
             </span>
           </span>
         </label>
 
         <label
-          class="flex items-start gap-3 rounded-md border border-slate-200 p-3 hover:bg-slate-50"
+          class="flex cursor-pointer items-start gap-3 rounded-xl border border-rule bg-card p-4 transition hover:border-ink/30"
         >
           <input
             type="radio"
             name="visibility"
             value="public"
             checked={form?.values?.visibility === 'public'}
-            class="mt-1"
+            class="mt-0.5 accent-ink"
           />
           <span>
-            <span class="block text-sm font-medium">{m.create_visibility_public()}</span>
-            <span class="block text-xs text-slate-500">{m.create_visibility_public_hint()}</span>
+            <span class="block text-sm font-semibold">{m.create_visibility_public()}</span>
+            <span class="mt-0.5 block text-xs text-ink-muted">
+              {m.create_visibility_public_hint()}
+            </span>
           </span>
         </label>
       </fieldset>
 
       <fieldset class="space-y-4">
-        <legend class="text-sm font-semibold uppercase tracking-wider text-slate-500">
-          {m.create_section_contact()}
-        </legend>
+        <legend class={legendClass}>{m.create_section_contact()}</legend>
 
         <TextField
           type="email"
@@ -244,9 +282,10 @@
         />
       </fieldset>
 
-      <Button type="submit" disabled={submitting}>
+      <Button type="submit" variant="accent" size="lg" disabled={submitting} class="w-full">
         {submitting ? m.create_submitting() : m.create_submit()}
+        {#if !submitting}<ArrowRight size={15} />{/if}
       </Button>
     </form>
-  {/if}
-</section>
+  </section>
+{/if}

@@ -1,68 +1,103 @@
 <script lang="ts">
-  import { Card, Heading, Text } from '$lib/design';
+  import { ArrowRight, Button, Eyebrow } from '$lib/design';
   import * as m from '$lib/paraglide/messages.js';
+
+  const tiers = [
+    {
+      name: m.pricing_free_name(),
+      price: m.pricing_free_price(),
+      per: '',
+      tagline: m.pricing_free_desc(),
+      items: [
+        m.pricing_free_item_rsvps(),
+        m.pricing_free_item_magic(),
+        m.pricing_free_item_confirm(),
+        m.pricing_free_item_calendar(),
+      ],
+      accent: false,
+    },
+    {
+      name: m.tier_basic_name(),
+      price: m.pricing_basic_price(),
+      per: m.pricing_per_event(),
+      tagline: m.tier_basic_tagline(),
+      items: [
+        m.tier_basic_item_branding(),
+        m.tier_basic_item_slug(),
+        m.tier_basic_item_reminders(),
+        m.tier_basic_item_cover(),
+      ],
+      accent: false,
+    },
+    {
+      name: m.tier_plus_name(),
+      price: m.pricing_plus_price(),
+      per: m.pricing_per_event(),
+      tagline: m.tier_plus_tagline(),
+      items: [
+        m.tier_plus_item_everything_basic(),
+        m.tier_plus_item_plus_ones(),
+        m.tier_plus_item_password(),
+        m.tier_plus_item_save_the_date(),
+      ],
+      accent: true,
+    },
+  ];
 </script>
 
 <svelte:head>
   <title>{m.pricing_title()} — vite.in</title>
 </svelte:head>
 
-<section class="mx-auto max-w-4xl space-y-8">
-  <header class="space-y-2">
-    <Heading level="page">{m.pricing_title()}</Heading>
-    <Text tone="muted">{m.pricing_subtitle()}</Text>
-  </header>
+<section class="mx-auto max-w-5xl px-6 py-14">
+  <Eyebrow num="$" label={m.pricing_title()} />
+  <h1 class="font-display mt-4 text-4xl font-bold tracking-tighter sm:text-5xl">
+    {m.pricing_title()}
+  </h1>
+  <p class="mt-3 max-w-xl text-base leading-relaxed text-ink-muted">{m.pricing_subtitle()}</p>
 
-  <div class="grid gap-6 md:grid-cols-3">
-    <!-- Free -->
-    <Card>
-      <div class="space-y-3">
-        <Heading level="section" tag="h2">{m.pricing_free_name()}</Heading>
-        <p class="text-2xl font-bold">{m.pricing_free_price()}</p>
-        <Text tone="muted" size="sm">{m.pricing_free_desc()}</Text>
-        <ul class="mt-2 list-disc space-y-1 ps-5 text-sm text-slate-700">
-          <li>{m.pricing_free_item_rsvps()}</li>
-          <li>{m.pricing_free_item_magic()}</li>
-          <li>{m.pricing_free_item_confirm()}</li>
-          <li>{m.pricing_free_item_calendar()}</li>
+  <div class="mt-10 grid gap-4 md:grid-cols-3">
+    {#each tiers as tier (tier.name)}
+      <div
+        class="flex flex-col rounded-card border p-6 {tier.accent
+          ? 'border-transparent bg-accent text-accent-ink'
+          : 'border-rule bg-card text-ink'}"
+      >
+        <h2 class="font-display text-xl font-bold tracking-tight">{tier.name}</h2>
+        <div class="mt-3 flex items-baseline gap-1.5">
+          <span class="font-display text-5xl font-bold tracking-tighter">{tier.price}</span>
+          {#if tier.per}
+            <span
+              class="font-mono text-[10px] tracking-wide uppercase {tier.accent
+                ? 'text-accent-ink/65'
+                : 'text-ink-muted'}"
+            >
+              {tier.per}
+            </span>
+          {/if}
+        </div>
+        <p
+          class="mt-3 text-sm leading-relaxed {tier.accent ? 'text-accent-ink/80' : 'text-ink-muted'}"
+        >
+          {tier.tagline}
+        </p>
+        <ul class="mt-4 space-y-2 text-sm">
+          {#each tier.items as item (item)}
+            <li class="flex gap-2">
+              <span class={tier.accent ? 'text-accent-ink' : 'text-coral'}>·</span>
+              <span>{item}</span>
+            </li>
+          {/each}
         </ul>
       </div>
-    </Card>
+    {/each}
+  </div>
 
-    <!-- Basic -->
-    <Card>
-      <div class="space-y-3">
-        <Heading level="section" tag="h2">{m.tier_basic_name()}</Heading>
-        <p class="text-2xl font-bold">{m.pricing_basic_price()}</p>
-        <Text tone="subtle" size="sm">{m.pricing_per_event()}</Text>
-        <Text tone="muted" size="sm">{m.tier_basic_tagline()}</Text>
-        <ul class="mt-2 list-disc space-y-1 ps-5 text-sm text-slate-700">
-          <li>{m.tier_basic_item_branding()}</li>
-          <li>{m.tier_basic_item_slug()}</li>
-          <li>{m.tier_basic_item_reminders()}</li>
-          <li>{m.tier_basic_item_cover()}</li>
-        </ul>
-      </div>
-    </Card>
-
-    <!--
-      Plus is the upsell anchor — heavier border for emphasis. The Card
-      primitive has no "featured" tone yet; when a second page needs the
-      same treatment, that becomes a Card variant.
-    -->
-    <div class="rounded-lg border-2 border-slate-900 bg-white p-5">
-      <div class="space-y-3">
-        <Heading level="section" tag="h2">{m.tier_plus_name()}</Heading>
-        <p class="text-2xl font-bold">{m.pricing_plus_price()}</p>
-        <Text tone="subtle" size="sm">{m.pricing_per_event()}</Text>
-        <Text tone="muted" size="sm">{m.tier_plus_tagline()}</Text>
-        <ul class="mt-2 list-disc space-y-1 ps-5 text-sm text-slate-700">
-          <li>{m.tier_plus_item_everything_basic()}</li>
-          <li>{m.tier_plus_item_plus_ones()}</li>
-          <li>{m.tier_plus_item_password()}</li>
-          <li>{m.tier_plus_item_save_the_date()}</li>
-        </ul>
-      </div>
-    </div>
+  <div class="mt-10 flex items-center gap-3">
+    <Button href="/create" variant="primary" size="lg">
+      {m.home_cta_primary()}
+      <ArrowRight size={15} />
+    </Button>
+    <p class="text-sm text-ink-muted">{m.pricing_per_event()}</p>
   </div>
 </section>

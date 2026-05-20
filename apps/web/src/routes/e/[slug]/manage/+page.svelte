@@ -12,10 +12,6 @@
   const canceled = $derived(page.url.searchParams.get('canceled') === '1');
 
   type Currency = 'EUR' | 'USD' | 'CHF' | 'GBP' | 'INR';
-  // Default is geo-suggested from the visitor's IP (cf-ipcountry) by
-  // the load fn — an Indian visitor sees ₹ pre-selected. Seeded once;
-  // after that it's user-controlled (re-seeding on every `data`
-  // change would clobber the dropdown when a form action reloads).
   // svelte-ignore state_referenced_locally
   let currency = $state<Currency>(data.suggestedCurrency);
 
@@ -59,9 +55,7 @@
   });
 
   const startsAtForInput = $derived(toLocalInputValue(data.event.startsAt));
-  const endsAtForInput = $derived(
-    data.event.endsAt ? toLocalInputValue(data.event.endsAt) : '',
-  );
+  const endsAtForInput = $derived(data.event.endsAt ? toLocalInputValue(data.event.endsAt) : '');
 
   function toLocalInputValue(iso: string): string {
     const d = new Date(iso);
@@ -69,13 +63,9 @@
     return `${String(d.getFullYear())}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
   }
 
-  // Seeded by the effect on first render; same pattern as
-  // /account/settings to dodge Svelte's state_referenced_locally
-  // warning when reading a prop in $state(...).
-  let editTimezone = $state('');
-  $effect(() => {
-    editTimezone = data.event.timezone;
-  });
+  // Writable `$derived`: seeded from the loaded event, reassignable as
+  // the creator edits the timezone field.
+  let editTimezone = $derived(data.event.timezone);
 
   let deleteConfirm = $state('');
 
@@ -87,22 +77,139 @@
     }
     return counts;
   });
+  const rsvpTotal = $derived(rsvpCounts.yes + rsvpCounts.maybe + rsvpCounts.no);
+  const pct = (n: number) => (rsvpTotal > 0 ? (n / rsvpTotal) * 100 : 0);
+
+  const eventWhen = $derived(
+    new Intl.DateTimeFormat(undefined, {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      timeZone: data.event.timezone,
+    }).format(new Date(data.event.startsAt)),
+  );
+
+  const shareUrl = $derived(`${page.url.origin}/e/${data.event.slug}`);
+  let copied = $state(false);
+  async function copyLink() {
+    if (typeof navigator === 'undefined' || !navigator.clipboard) return;
+    await navigator.clipboard.writeText(shareUrl);
+    copied = true;
+    setTimeout(() => (copied = false), 2000);
+  }
+
+  const avatarColors = ['#ff5436', '#3343ff', '#e3ff3a', '#ffba47', '#7a7670'];
+  const lightAvatar = new Set(['#e3ff3a', '#ffba47']);
+
+  const statusLabel = (s: 'yes' | 'maybe' | 'no') =>
+    s === 'yes' ? m.event_rsvp_yes() : s === 'maybe' ? m.event_rsvp_maybe() : m.event_rsvp_no();
+
+  const textareaClass =
+    'mt-1.5 block w-full rounded-xl border border-rule bg-card px-4 py-3 text-[15px] text-ink focus:outline-none focus:ring-2 focus:ring-accent';
+  const legendClass = 'font-mono text-[10px] font-medium tracking-[0.12em] text-ink-muted uppercase';
 </script>
 
 <svelte:head>
   <title>{m.manage_label()}: {data.event.title}</title>
 </svelte:head>
 
-<section class="mx-auto max-w-3xl space-y-8">
-  <header class="space-y-1">
-    <Text tone="subtle" size="sm">{m.manage_label()}</Text>
-    <Heading>{data.event.title}</Heading>
-    <Text tone="subtle" size="sm">
-      {m.manage_public_link()}
-      <a class="underline" href="/e/{data.event.slug}">/e/{data.event.slug}</a>
-    </Text>
+<section class="mx-auto max-w-3xl space-y-6 px-6 py-10">
+  <!-- header -->
+  <header>
+    <span class="font-mono text-[10px] tracking-[0.12em] text-ink-muted uppercase">
+      {m.manage_label()}
+    </span>
+    <h1 class="font-display mt-1 text-3xl leading-none font-bold tracking-tighter sm:text-4xl">
+      {data.event.title}
+    </h1>
+    <p class="mt-2 font-mono text-[11px] text-ink-muted">
+      {eventWhen}{#if data.event.locationText} · {data.event.locationText}{/if}
+    </p>
   </header>
 
+  <!-- share row -->
+  <div class="rounded-card flex items-center gap-3 bg-ink p-3.5 ps-5 text-paper">
+    <span class="min-w-0 flex-1 truncate font-mono text-sm">
+      {page.url.host}/e/<span class="text-accent">{data.event.slug}</span>
+    </span>
+    <button
+      type="button"
+      onclick={copyLink}
+      class="shrink-0 rounded-full bg-accent px-3.5 py-2 text-xs font-semibold text-accent-ink"
+    >
+      {copied ? m.event_copied() : m.event_copy_link()}
+    </button>
+  </div>
+
+  <!-- RSVP overview -->
+  <Section>
+    <Heading level="panel">{m.manage_rsvps_heading()}</Heading>
+
+    <div class="flex items-baseline gap-2">
+      <span class="font-display text-6xl leading-none font-bold tracking-tighter">
+        {rsvpCounts.yes}
+      </span>
+      <span class="font-display text-2xl font-medium text-ink-muted">/ {rsvpTotal}</span>
+    </div>
+    <Text tone="muted" size="sm">
+      {m.manage_rsvps_summary({
+        yes: rsvpCounts.yes,
+        maybe: rsvpCounts.maybe,
+        no: rsvpCounts.no,
+        plus: rsvpCounts.plusOnes,
+      })}
+    </Text>
+
+    {#if rsvpTotal > 0}
+      <div class="flex h-2.5 overflow-hidden rounded-full bg-paper-2">
+        <div class="bg-accent" style="width: {pct(rsvpCounts.yes)}%"></div>
+        <div style="width: {pct(rsvpCounts.maybe)}%; background:#ffba47"></div>
+        <div style="width: {pct(rsvpCounts.no)}%; background:#7a7670"></div>
+      </div>
+    {/if}
+
+    {#if data.rsvps.length === 0}
+      <Text tone="subtle" size="sm">{m.manage_rsvps_empty()}</Text>
+    {:else}
+      <ul class="divide-y divide-rule">
+        {#each data.rsvps as r, i (r.id)}
+          {@const color = avatarColors[i % avatarColors.length]}
+          <li class="flex items-center gap-3 py-3">
+            <span
+              class="font-display flex size-9 shrink-0 items-center justify-center rounded-full text-sm font-bold"
+              style="background: {color}; color: {lightAvatar.has(color) ? '#0a0a0a' : '#fff'}"
+            >
+              {r.name.slice(0, 1).toUpperCase()}
+            </span>
+            <div class="min-w-0 flex-1">
+              <p class="truncate text-sm font-semibold">{r.name}</p>
+              {#if r.plusOnes || r.message}
+                <p class="truncate font-mono text-[10px] text-ink-muted">
+                  {#if r.plusOnes}+{r.plusOnes}{/if}
+                  {#if r.plusOnes && r.message} · {/if}
+                  {#if r.message}{r.message}{/if}
+                </p>
+              {/if}
+            </div>
+            <span
+              class="shrink-0 rounded-md px-2 py-1 font-mono text-[10px] font-semibold tracking-[0.08em] uppercase {r.status ===
+              'yes'
+                ? 'bg-accent text-accent-ink'
+                : r.status === 'maybe'
+                  ? 'bg-amber-300 text-ink'
+                  : 'border border-rule text-ink-muted'}"
+            >
+              {statusLabel(r.status)}
+            </span>
+          </li>
+        {/each}
+      </ul>
+    {/if}
+  </Section>
+
+  <!-- Upgrade -->
   <Section>
     <Heading level="panel">{m.manage_upgrade_heading()}</Heading>
     <Text tone="muted" size="sm">{m.manage_upgrade_body()}</Text>
@@ -132,12 +239,12 @@
         {/if}
       </Banner>
     {:else}
-      <div class="space-y-4 pt-2">
-        <label class="flex items-center gap-2 text-xs font-medium text-slate-600">
+      <div class="space-y-4">
+        <label class="flex items-center gap-2 text-xs font-medium text-ink-muted">
           {m.manage_upgrade_currency_label()}
           <select
             bind:value={currency}
-            class="rounded-md border border-slate-300 px-2 py-1 text-sm"
+            class="rounded-lg border border-rule bg-card px-2.5 py-1.5 text-sm text-ink"
           >
             <option value="EUR">€ EUR</option>
             <option value="USD">$ USD</option>
@@ -151,16 +258,16 @@
           <form
             method="POST"
             action="?/upgrade&token={data.token}"
-            class="space-y-3 rounded-lg border border-slate-200 p-4"
+            class="space-y-3 rounded-xl border border-rule p-4"
           >
             <input type="hidden" name="tier" value="basic" />
             <input type="hidden" name="currency" value={currency} />
             <div>
-              <p class="text-sm font-semibold">{m.tier_basic_name()}</p>
-              <p class="text-xs text-slate-500">{m.tier_basic_tagline()}</p>
+              <p class="font-display text-base font-bold tracking-tight">{m.tier_basic_name()}</p>
+              <p class="text-xs text-ink-muted">{m.tier_basic_tagline()}</p>
             </div>
-            <p class="text-2xl font-bold">{basicPrice}</p>
-            <ul class="space-y-1 text-xs text-slate-700">
+            <p class="font-display text-3xl font-bold tracking-tighter">{basicPrice}</p>
+            <ul class="space-y-1 text-xs text-ink-muted">
               <li>· {m.tier_basic_item_branding()}</li>
               <li>· {m.tier_basic_item_slug()}</li>
               <li>· {m.tier_basic_item_reminders()}</li>
@@ -173,28 +280,31 @@
           <form
             method="POST"
             action="?/upgrade&token={data.token}"
-            class="space-y-3 rounded-lg border-2 border-slate-900 p-4"
+            class="space-y-3 rounded-xl border-2 border-ink p-4"
           >
             <input type="hidden" name="tier" value="plus" />
             <input type="hidden" name="currency" value={currency} />
             <div>
-              <p class="text-sm font-semibold">{m.tier_plus_name()}</p>
-              <p class="text-xs text-slate-500">{m.tier_plus_tagline()}</p>
+              <p class="font-display text-base font-bold tracking-tight">{m.tier_plus_name()}</p>
+              <p class="text-xs text-ink-muted">{m.tier_plus_tagline()}</p>
             </div>
-            <p class="text-2xl font-bold">{plusPrice}</p>
-            <ul class="space-y-1 text-xs text-slate-700">
+            <p class="font-display text-3xl font-bold tracking-tighter">{plusPrice}</p>
+            <ul class="space-y-1 text-xs text-ink-muted">
               <li>· {m.tier_plus_item_everything_basic()}</li>
               <li>· {m.tier_plus_item_plus_ones()}</li>
               <li>· {m.tier_plus_item_password()}</li>
               <li>· {m.tier_plus_item_save_the_date()}</li>
             </ul>
-            <Button type="submit" class="w-full">{m.manage_upgrade_choose_plus()}</Button>
+            <Button type="submit" variant="accent" class="w-full">
+              {m.manage_upgrade_choose_plus()}
+            </Button>
           </form>
         </div>
       </div>
     {/if}
   </Section>
 
+  <!-- Media -->
   <Section>
     <Heading level="panel">{m.manage_media_heading()}</Heading>
     <Text tone="muted" size="sm">{m.manage_media_hint()}</Text>
@@ -214,7 +324,7 @@
     {/if}
 
     {#if data.media.length > 0}
-      <ul class="grid grid-cols-2 gap-3 pt-2 sm:grid-cols-3">
+      <ul class="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {#each data.media as mediaItem (mediaItem.id)}
           <li class="space-y-2">
             {#if mediaItem.url}
@@ -223,11 +333,11 @@
                 alt=""
                 width="200"
                 height="200"
-                class="h-32 w-full rounded-md object-cover"
+                class="h-32 w-full rounded-xl object-cover"
               />
             {:else}
               <div
-                class="flex h-32 w-full items-center justify-center rounded-md border border-dashed border-slate-300 text-xs text-slate-400"
+                class="flex h-32 w-full items-center justify-center rounded-xl border border-dashed border-rule text-xs text-ink-muted"
               >
                 {m.manage_media_no_url()}
               </div>
@@ -243,23 +353,20 @@
       </ul>
     {/if}
 
-    <!-- Upload is premium-gated (Basic + Plus). The API enforces it with
-         a 403; the UI hides the form on free events and points at the
-         upgrade panel instead, so a free creator never hits the 403. -->
     {#if data.event.isPaid}
       <form
         method="POST"
         action="?/uploadMedia&token={data.token}"
         enctype="multipart/form-data"
         use:enhance
-        class="flex items-center gap-3 pt-3"
+        class="flex items-center gap-3"
       >
         <input
           type="file"
           name="file"
           accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
           required
-          class="block w-full text-sm"
+          class="block w-full text-sm text-ink-muted file:me-3 file:rounded-full file:border-0 file:bg-ink file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-paper"
         />
         <Button type="submit" size="sm">{m.manage_media_upload()}</Button>
       </form>
@@ -268,41 +375,7 @@
     {/if}
   </Section>
 
-  <Section>
-    <Heading level="panel">{m.manage_rsvps_heading()}</Heading>
-    <Text tone="muted" size="sm">
-      {m.manage_rsvps_summary({
-        yes: rsvpCounts.yes,
-        maybe: rsvpCounts.maybe,
-        no: rsvpCounts.no,
-        plus: rsvpCounts.plusOnes,
-      })}
-    </Text>
-
-    {#if data.rsvps.length === 0}
-      <Text tone="subtle" size="sm" class="pt-1">{m.manage_rsvps_empty()}</Text>
-    {:else}
-      <ul class="divide-y divide-slate-200 pt-2">
-        {#each data.rsvps as r (r.id)}
-          <li class="py-2 text-sm">
-            <span class="font-medium">{r.name}</span>
-            <span class="text-slate-500">— {r.status}{r.plusOnes ? ` (+${r.plusOnes})` : ''}</span>
-            {#if r.plusOnesDetails && r.plusOnesDetails.length > 0}
-              <ul class="mt-1 ms-4 list-disc text-xs text-slate-500">
-                {#each r.plusOnesDetails as p, i (i)}
-                  <li>{p.name}</li>
-                {/each}
-              </ul>
-            {/if}
-            {#if r.message}
-              <p class="mt-1 text-slate-600">{r.message}</p>
-            {/if}
-          </li>
-        {/each}
-      </ul>
-    {/if}
-  </Section>
-
+  <!-- Edit -->
   <Section>
     <Heading level="panel">{m.manage_edit_heading()}</Heading>
 
@@ -313,7 +386,7 @@
       <Banner tone="error">{localizeError(form.updateError)}</Banner>
     {/if}
 
-    <form method="POST" action="?/update&token={data.token}" use:enhance class="space-y-3 pt-2">
+    <form method="POST" action="?/update&token={data.token}" use:enhance class="space-y-3">
       <TextField
         name="title"
         value={data.event.title}
@@ -322,12 +395,8 @@
       />
 
       <label class="block">
-        <span class="text-sm font-medium">{m.manage_edit_description_label()}</span>
-        <textarea
-          name="description"
-          rows="3"
-          maxlength="5000"
-          class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-2"
+        <span class={legendClass}>{m.manage_edit_description_label()}</span>
+        <textarea name="description" rows="3" maxlength="5000" class={textareaClass}
           >{data.event.description ?? ''}</textarea
         >
       </label>
@@ -366,35 +435,7 @@
     </form>
   </Section>
 
-  <!-- Danger zone: soft-delete the event. Confirmation gate matches
-       the Settings → Delete account pattern. -->
-  <Section>
-    <Heading level="panel">{m.manage_delete_heading()}</Heading>
-    <Text tone="muted" size="sm">{m.manage_delete_body()}</Text>
-
-    {#if form && 'deleteError' in form && form.deleteError === 'manage_delete_confirm_required'}
-      <Banner tone="warn">{m.manage_delete_confirm_required()}</Banner>
-    {:else if form && 'deleteError' in form && form.deleteError}
-      <Banner tone="error">{m.manage_delete_failed()}</Banner>
-    {/if}
-
-    <form
-      method="POST"
-      action="?/deleteEvent&token={data.token}"
-      use:enhance
-      class="space-y-3"
-    >
-      <TextField
-        label={m.manage_delete_confirm_label()}
-        name="confirm"
-        bind:value={deleteConfirm}
-        placeholder="DELETE"
-        hint={m.manage_delete_confirm_hint()}
-      />
-      <Button type="submit" variant="danger">{m.manage_delete_button()}</Button>
-    </form>
-  </Section>
-
+  <!-- Announcements -->
   <Section>
     <Heading level="panel">{m.manage_announcements_heading()}</Heading>
     <Text tone="muted" size="sm">{m.manage_announcements_body()}</Text>
@@ -429,11 +470,11 @@
       <Banner tone="warn">{m.manage_announcements_plus_hint()}</Banner>
     {/if}
 
-    <div class="flex flex-wrap gap-2 pt-2">
+    <div class="flex flex-wrap gap-2">
       {#if paidTier === 'plus' && !data.announcements.some((a) => a.stage === 'save_the_date' && a.sentAt)}
         <form method="POST" action="?/announce&token={data.token}" use:enhance>
           <input type="hidden" name="stage" value="save_the_date" />
-          <Button type="submit" variant="secondary" size="sm" class="!border-2 !border-slate-900">
+          <Button type="submit" variant="secondary" size="sm">
             {m.manage_announcements_save_the_date()}
           </Button>
         </form>
@@ -447,6 +488,7 @@
     </div>
   </Section>
 
+  <!-- Password -->
   <Section>
     <Heading level="panel">{m.manage_password_heading()}</Heading>
     <Text tone="muted" size="sm">
@@ -472,7 +514,7 @@
         method="POST"
         action="?/setPassword&token={data.token}"
         use:enhance
-        class="flex flex-wrap gap-2 pt-2"
+        class="flex flex-wrap gap-2"
       >
         <input
           type="password"
@@ -481,7 +523,7 @@
           maxlength="200"
           autocomplete="new-password"
           placeholder={m.manage_password_placeholder()}
-          class="flex-1 rounded-md border border-slate-300 px-3 py-2 text-sm"
+          class="flex-1 rounded-xl border border-rule bg-card px-4 py-2.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-accent"
         />
         <Button type="submit" size="sm">
           {data.event.hasPassword ? m.manage_password_update() : m.manage_password_set()}
@@ -489,16 +531,15 @@
       </form>
 
       {#if data.event.hasPassword}
-        <form method="POST" action="?/setPassword&token={data.token}" use:enhance class="pt-2">
+        <form method="POST" action="?/setPassword&token={data.token}" use:enhance>
           <input type="hidden" name="clear" value="1" />
-          <Button type="submit" variant="secondary" size="sm">
-            {m.manage_password_clear()}
-          </Button>
+          <Button type="submit" variant="secondary" size="sm">{m.manage_password_clear()}</Button>
         </form>
       {/if}
     {/if}
   </Section>
 
+  <!-- Reminders -->
   <Section>
     <Heading level="panel">{m.manage_reminder_heading()}</Heading>
     <Text tone="muted" size="sm">{m.manage_reminder_body()}</Text>
@@ -510,8 +551,31 @@
       <Banner tone="error">{localizeError(form.reminderError)}</Banner>
     {/if}
 
-    <form method="POST" action="?/remind&token={data.token}" use:enhance class="pt-2">
+    <form method="POST" action="?/remind&token={data.token}" use:enhance>
       <Button type="submit" variant="secondary" size="sm">{m.manage_reminder_submit()}</Button>
     </form>
   </Section>
+
+  <!-- Danger zone -->
+  <section class="rounded-card border border-coral/40 bg-coral/5 space-y-3 p-5">
+    <Heading level="panel">{m.manage_delete_heading()}</Heading>
+    <Text tone="muted" size="sm">{m.manage_delete_body()}</Text>
+
+    {#if form && 'deleteError' in form && form.deleteError === 'manage_delete_confirm_required'}
+      <Banner tone="warn">{m.manage_delete_confirm_required()}</Banner>
+    {:else if form && 'deleteError' in form && form.deleteError}
+      <Banner tone="error">{m.manage_delete_failed()}</Banner>
+    {/if}
+
+    <form method="POST" action="?/deleteEvent&token={data.token}" use:enhance class="space-y-3">
+      <TextField
+        label={m.manage_delete_confirm_label()}
+        name="confirm"
+        bind:value={deleteConfirm}
+        placeholder="DELETE"
+        hint={m.manage_delete_confirm_hint()}
+      />
+      <Button type="submit" variant="danger">{m.manage_delete_button()}</Button>
+    </form>
+  </section>
 </section>

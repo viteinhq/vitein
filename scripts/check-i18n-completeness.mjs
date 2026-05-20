@@ -44,11 +44,17 @@ async function loadKeys(file) {
   return new Set(Object.keys(obj).filter((k) => !IGNORED_KEYS.has(k)));
 }
 
+// A locale file is named for its BCP-47 tag — `en.json`, `pt-BR.json`.
+// Anything else in the directory (notably `es 2.json`-style copies that
+// macOS / cloud-sync tools leave behind) is not a locale and must not
+// be treated as one.
+const LOCALE_FILE = /^[a-z]{2,3}(-[a-z0-9]+)*\.json$/i;
+
 async function checkStore(store) {
   const dir = path.join(REPO_ROOT, store.dir);
   let files;
   try {
-    files = (await fs.readdir(dir)).filter((f) => f.endsWith('.json'));
+    files = (await fs.readdir(dir)).filter((f) => LOCALE_FILE.test(f));
   } catch {
     console.error(`✗ ${store.label}: directory not found (${store.dir})`);
     return false;

@@ -106,17 +106,17 @@
     aria-haspopup="listbox"
     aria-expanded={open}
     aria-controls="lang-switcher-list"
-    class="inline-flex items-center gap-1 rounded-md border border-slate-300 bg-white px-2.5 py-1 text-xs text-slate-700 hover:bg-slate-50"
+    class="inline-flex items-center gap-1.5 rounded-full border border-rule bg-card px-3 py-1.5 text-xs text-ink transition hover:bg-paper-2"
   >
     <span>{endonym(current)}</span>
-    <span aria-hidden="true" class="text-slate-400">▾</span>
+    <span aria-hidden="true" class="text-ink-muted">▾</span>
   </button>
 
   {#if open}
     <div
       bind:this={listEl}
       id="lang-switcher-list"
-      class="absolute end-0 z-20 mt-1 w-48 rounded-md border border-slate-200 bg-white shadow-lg"
+      class="absolute end-0 bottom-full z-20 mb-1 w-52 overflow-hidden rounded-xl border border-rule bg-card shadow-[0_16px_40px_-12px_rgba(0,0,0,0.35)]"
     >
       <input
         bind:this={inputEl}
@@ -126,10 +126,10 @@
         autocomplete="off"
         aria-label="Filter languages"
         placeholder="Search…"
-        class="block w-full rounded-t-md border-b border-slate-200 px-3 py-2 text-xs focus:outline-none"
+        class="block w-full border-b border-rule bg-transparent px-3 py-2.5 text-xs text-ink focus:outline-none"
       />
       {#if filtered.length === 0}
-        <p class="px-3 py-2 text-xs text-slate-500">No matches.</p>
+        <p class="px-3 py-2 text-xs text-ink-muted">No matches.</p>
       {:else}
         <ul role="listbox" aria-label="Languages" class="max-h-64 overflow-y-auto py-1">
           {#each filtered as tag, i (tag)}
@@ -141,10 +141,10 @@
                 data-sveltekit-reload
                 role="option"
                 aria-selected={tag === current}
-                class:bg-slate-100={i === focused}
-                class="block px-3 py-1.5 text-xs hover:bg-slate-100 {tag === current
-                  ? 'font-medium text-slate-900'
-                  : 'text-slate-700'}"
+                class:bg-paper-2={i === focused}
+                class="block px-3 py-1.5 text-xs hover:bg-paper-2 {tag === current
+                  ? 'font-medium text-ink'
+                  : 'text-ink-muted'}"
                 onclick={close}
               >
                 {endonym(tag)}
