@@ -6,19 +6,71 @@ import { build, files, version } from '$service-worker';
 const sw = self as unknown as ServiceWorkerGlobalScope;
 
 const CACHE = `vitein-${version}`;
-const OFFLINE_URL = '/offline.html';
+const OFFLINE_URL = '/offline';
 
-// App shell: hashed build assets + everything in static/ (icons, manifest,
-// offline page). Hashed assets are immutable, so a `version` bump is a
-// clean cache swap.
+// The offline fallback is inlined rather than shipped as a `static/` file.
+// Cloudflare Pages 308-redirects every `*.html` asset to its extensionless
+// form, and that target is then swallowed by SvelteKit's catch-all route
+// (404). A fetched `offline.html` therefore never resolves — which would
+// make `cache.addAll` reject and abort the whole service-worker install.
+const OFFLINE_HTML = `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Offline — vite.in</title>
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f1eee7;
+        color: #0a0a0a;
+        font-family: system-ui, -apple-system, sans-serif;
+        text-align: center;
+        padding: 24px;
+      }
+      .box { max-width: 22rem; }
+      h1 { font-size: 1.5rem; margin: 0 0 0.5rem; letter-spacing: -0.02em; }
+      p { color: #6b6863; line-height: 1.5; margin: 0; }
+      .dot {
+        display: inline-block;
+        width: 0.55rem;
+        height: 0.55rem;
+        border-radius: 50%;
+        background: #ff5436;
+        vertical-align: middle;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="box">
+      <h1>You're offline <span class="dot"></span></h1>
+      <p>vite.in needs a connection right now. Check your network and try again.</p>
+    </div>
+  </body>
+</html>`;
+
+// App shell: hashed build assets + everything in static/ (icons, manifest).
+// Hashed assets are immutable, so a `version` bump is a clean cache swap.
 const PRECACHE = [...build, ...files];
 
 sw.addEventListener('install', (event) => {
   event.waitUntil(
-    caches
-      .open(CACHE)
-      .then((cache) => cache.addAll(PRECACHE))
-      .then(() => sw.skipWaiting()),
+    (async () => {
+      const cache = await caches.open(CACHE);
+      await cache.addAll(PRECACHE);
+      // The offline page is synthesised here — it has no URL on the origin.
+      await cache.put(
+        OFFLINE_URL,
+        new Response(OFFLINE_HTML, {
+          headers: { 'Content-Type': 'text/html; charset=utf-8' },
+        }),
+      );
+      await sw.skipWaiting();
+    })(),
   );
 });
 
