@@ -847,16 +847,1270 @@ const pl: TemplateBundle = {
   },
 };
 
-/**
- * Email-template bundles per locale. `Partial` on purpose: the visible
- * product UI is localised into every supported language, but the
- * transactional email templates are translated in a separate pass
- * (same staged approach as the legal pages). A locale without a
- * bundle falls back to English in `templatesFor` — a Hindi user gets
- * an English magic-link email until the email pass lands, never a
- * broken one.
- */
-const bundles: Partial<Record<Locale, TemplateBundle>> = { en, de, fr, es, it, pt, nl, pl };
+const hi: TemplateBundle = {
+  creatorMagicLink: {
+    subject: ({ eventTitle }) => `अपना इवेंट प्रबंधित करें: ${eventTitle}`,
+    body: ({ eventTitle, manageUrl }) =>
+      [
+        `आपका इवेंट "${eventTitle}" vite.in पर लाइव है।`,
+        '',
+        'इसे प्रबंधित करने के लिए नीचे दिए गए लिंक का उपयोग करें — RSVP देखें, विवरण संपादित करें, अनुस्मारक भेजें:',
+        manageUrl,
+        '',
+        'यह लिंक निजी रखें। जिसके पास यह लिंक है, वह इवेंट प्रबंधित कर सकता है।',
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  signInMagicLink: {
+    subject: () => 'आपका vite.in साइन-इन लिंक',
+    body: ({ url }) =>
+      [
+        'vite.in में साइन इन करने के लिए नीचे दिए गए लिंक पर क्लिक करें:',
+        url,
+        '',
+        'यह लिंक 10 मिनट में समाप्त हो जाएगा। यदि आपने इसका अनुरोध नहीं किया, तो आप इस ईमेल को अनदेखा कर सकते हैं।',
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  rsvpConfirmation: {
+    subject: ({ eventTitle }) => `RSVP दर्ज किया गया: ${eventTitle}`,
+    body: ({ eventTitle, status, eventUrl }) => {
+      const line =
+        status === 'yes'
+          ? 'आप इस इवेंट में शामिल हो रहे हैं।'
+          : status === 'maybe'
+            ? 'आप शायद इस इवेंट में शामिल होंगे।'
+            : 'आप इस इवेंट में शामिल नहीं हो रहे हैं।';
+      return [
+        `धन्यवाद — हमने "${eventTitle}" के लिए आपका RSVP दर्ज कर लिया है।`,
+        line,
+        '',
+        'इवेंट विवरण:',
+        eventUrl,
+        '',
+        'आप फ़ॉर्म दोबारा सबमिट करके अपना RSVP कभी भी अपडेट कर सकते हैं।',
+        '',
+        '— vite.in',
+      ].join('\n');
+    },
+  },
+  rsvpNotification: {
+    subject: ({ eventTitle }) => `${eventTitle} के लिए नया RSVP`,
+    body: ({ eventTitle, guestName, status, plusOnes, manageUrl }) => {
+      const extras = plusOnes > 0 ? ` (+${String(plusOnes)})` : '';
+      return [
+        `"${eventTitle}" पर नया RSVP: ${guestName} — ${status}${extras}.`,
+        '',
+        'अपना इवेंट प्रबंधित करें और सभी RSVP देखें:',
+        manageUrl,
+        '',
+        '— vite.in',
+      ].join('\n');
+    },
+  },
+  reminder: {
+    subject: ({ eventTitle }) => `अनुस्मारक: ${eventTitle}`,
+    body: ({ eventTitle, startsAt, eventUrl }) =>
+      [
+        `अनुस्मारक: "${eventTitle}" ${startsAt.toISOString()} को होने वाला है।`,
+        '',
+        'इवेंट विवरण:',
+        eventUrl,
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  announcement: {
+    subject: ({ eventTitle, stage }) =>
+      stage === 'save_the_date'
+        ? `तारीख़ सुरक्षित रखें — ${eventTitle}`
+        : `आप आमंत्रित हैं: ${eventTitle}`,
+    body: ({ eventTitle, startsAt, eventUrl, stage }) => {
+      if (stage === 'save_the_date') {
+        return [
+          `तारीख़ सुरक्षित रखें: "${eventTitle}" — ${startsAt.toISOString()}.`,
+          '',
+          'स्थान और विवरण के साथ पूरा आमंत्रण बाद में आएगा। फ़िलहाल, कृपया अपने कैलेंडर में यह तारीख़ सुरक्षित रखें।',
+          '',
+          eventUrl,
+          '',
+          '— vite.in',
+        ].join('\n');
+      }
+      return [
+        `आप "${eventTitle}" में ${startsAt.toISOString()} को आमंत्रित हैं।`,
+        '',
+        'विवरण और RSVP:',
+        eventUrl,
+        '',
+        '— vite.in',
+      ].join('\n');
+    },
+  },
+};
+
+const bn: TemplateBundle = {
+  creatorMagicLink: {
+    subject: ({ eventTitle }) => `আপনার ইভেন্ট পরিচালনা করুন: ${eventTitle}`,
+    body: ({ eventTitle, manageUrl }) =>
+      [
+        `আপনার ইভেন্ট "${eventTitle}" vite.in-এ লাইভ রয়েছে।`,
+        '',
+        'এটি পরিচালনা করতে নিচের লিঙ্কটি ব্যবহার করুন — RSVP দেখুন, বিবরণ সম্পাদনা করুন, অনুস্মারক পাঠান:',
+        manageUrl,
+        '',
+        'এই লিঙ্কটি গোপন রাখুন। যার কাছে লিঙ্ক আছে সে ইভেন্ট পরিচালনা করতে পারে।',
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  signInMagicLink: {
+    subject: () => 'আপনার vite.in সাইন-ইন লিঙ্ক',
+    body: ({ url }) =>
+      [
+        'vite.in-এ সাইন ইন করতে নিচের লিঙ্কে ক্লিক করুন:',
+        url,
+        '',
+        'এই লিঙ্কটি ১০ মিনিটে মেয়াদোত্তীর্ণ হবে। আপনি যদি এটির অনুরোধ না করে থাকেন, তবে এই ইমেলটি উপেক্ষা করতে পারেন।',
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  rsvpConfirmation: {
+    subject: ({ eventTitle }) => `RSVP রেকর্ড করা হয়েছে: ${eventTitle}`,
+    body: ({ eventTitle, status, eventUrl }) => {
+      const line =
+        status === 'yes'
+          ? 'আপনি এই ইভেন্টে যোগ দিচ্ছেন।'
+          : status === 'maybe'
+            ? 'আপনি সম্ভবত এই ইভেন্টে যোগ দেবেন।'
+            : 'আপনি এই ইভেন্টে যোগ দিচ্ছেন না।';
+      return [
+        `ধন্যবাদ — আমরা "${eventTitle}"-এর জন্য আপনার RSVP রেকর্ড করেছি।`,
+        line,
+        '',
+        'ইভেন্ট বিবরণ:',
+        eventUrl,
+        '',
+        'আপনি ফর্মটি আবার জমা দিয়ে যেকোনো সময় আপনার RSVP আপডেট করতে পারেন।',
+        '',
+        '— vite.in',
+      ].join('\n');
+    },
+  },
+  rsvpNotification: {
+    subject: ({ eventTitle }) => `${eventTitle}-এর জন্য নতুন RSVP`,
+    body: ({ eventTitle, guestName, status, plusOnes, manageUrl }) => {
+      const extras = plusOnes > 0 ? ` (+${String(plusOnes)})` : '';
+      return [
+        `"${eventTitle}"-এ নতুন RSVP: ${guestName} — ${status}${extras}.`,
+        '',
+        'আপনার ইভেন্ট পরিচালনা করুন এবং সমস্ত RSVP দেখুন:',
+        manageUrl,
+        '',
+        '— vite.in',
+      ].join('\n');
+    },
+  },
+  reminder: {
+    subject: ({ eventTitle }) => `অনুস্মারক: ${eventTitle}`,
+    body: ({ eventTitle, startsAt, eventUrl }) =>
+      [
+        `অনুস্মারক: "${eventTitle}" ${startsAt.toISOString()}-এ অনুষ্ঠিত হবে।`,
+        '',
+        'ইভেন্ট বিবরণ:',
+        eventUrl,
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  announcement: {
+    subject: ({ eventTitle, stage }) =>
+      stage === 'save_the_date'
+        ? `তারিখ সংরক্ষণ করুন — ${eventTitle}`
+        : `আপনি আমন্ত্রিত: ${eventTitle}`,
+    body: ({ eventTitle, startsAt, eventUrl, stage }) => {
+      if (stage === 'save_the_date') {
+        return [
+          `তারিখ সংরক্ষণ করুন: "${eventTitle}" — ${startsAt.toISOString()}.`,
+          '',
+          'স্থান ও বিবরণসহ সম্পূর্ণ আমন্ত্রণ পরে আসবে। আপাতত, অনুগ্রহ করে আপনার ক্যালেন্ডারে তারিখটি সংরক্ষণ করুন।',
+          '',
+          eventUrl,
+          '',
+          '— vite.in',
+        ].join('\n');
+      }
+      return [
+        `আপনি "${eventTitle}"-এ ${startsAt.toISOString()}-এ আমন্ত্রিত।`,
+        '',
+        'বিবরণ ও RSVP:',
+        eventUrl,
+        '',
+        '— vite.in',
+      ].join('\n');
+    },
+  },
+};
+
+const ta: TemplateBundle = {
+  creatorMagicLink: {
+    subject: ({ eventTitle }) => `உங்கள் நிகழ்வை நிர்வகிக்கவும்: ${eventTitle}`,
+    body: ({ eventTitle, manageUrl }) =>
+      [
+        `உங்கள் நிகழ்வு "${eventTitle}" vite.in-இல் செயலில் உள்ளது.`,
+        '',
+        'அதை நிர்வகிக்க கீழே உள்ள இணைப்பைப் பயன்படுத்தவும் — RSVP-களைப் பார்க்க, விவரங்களைத் திருத்த, நினைவூட்டல்களை அனுப்ப:',
+        manageUrl,
+        '',
+        'இந்த இணைப்பை தனிப்பட்டதாக வைத்திருங்கள். இணைப்பு உள்ள எவரும் நிகழ்வை நிர்வகிக்க முடியும்.',
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  signInMagicLink: {
+    subject: () => 'உங்கள் vite.in உள்நுழைவு இணைப்பு',
+    body: ({ url }) =>
+      [
+        'vite.in-இல் உள்நுழைய கீழே உள்ள இணைப்பைக் கிளிக் செய்யவும்:',
+        url,
+        '',
+        'இந்த இணைப்பு 10 நிமிடங்களில் காலாவதியாகும். நீங்கள் இதைக் கோரவில்லை எனில், இந்த மின்னஞ்சலைப் புறக்கணிக்கலாம்.',
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  rsvpConfirmation: {
+    subject: ({ eventTitle }) => `RSVP பதிவு செய்யப்பட்டது: ${eventTitle}`,
+    body: ({ eventTitle, status, eventUrl }) => {
+      const line =
+        status === 'yes'
+          ? 'நீங்கள் இந்த நிகழ்வில் கலந்துகொள்கிறீர்கள்.'
+          : status === 'maybe'
+            ? 'நீங்கள் இந்த நிகழ்வில் கலந்துகொள்ளக்கூடும்.'
+            : 'நீங்கள் இந்த நிகழ்வில் கலந்துகொள்ளவில்லை.';
+      return [
+        `நன்றி — "${eventTitle}"-க்கான உங்கள் RSVP-ஐ பதிவு செய்தோம்.`,
+        line,
+        '',
+        'நிகழ்வு விவரங்கள்:',
+        eventUrl,
+        '',
+        'படிவத்தை மீண்டும் சமர்ப்பித்து உங்கள் RSVP-ஐ எப்போது வேண்டுமானாலும் புதுப்பிக்கலாம்.',
+        '',
+        '— vite.in',
+      ].join('\n');
+    },
+  },
+  rsvpNotification: {
+    subject: ({ eventTitle }) => `${eventTitle}-க்கான புதிய RSVP`,
+    body: ({ eventTitle, guestName, status, plusOnes, manageUrl }) => {
+      const extras = plusOnes > 0 ? ` (+${String(plusOnes)})` : '';
+      return [
+        `"${eventTitle}"-இல் புதிய RSVP: ${guestName} — ${status}${extras}.`,
+        '',
+        'உங்கள் நிகழ்வை நிர்வகித்து அனைத்து RSVP-களையும் பாருங்கள்:',
+        manageUrl,
+        '',
+        '— vite.in',
+      ].join('\n');
+    },
+  },
+  reminder: {
+    subject: ({ eventTitle }) => `நினைவூட்டல்: ${eventTitle}`,
+    body: ({ eventTitle, startsAt, eventUrl }) =>
+      [
+        `நினைவூட்டல்: "${eventTitle}" ${startsAt.toISOString()} அன்று நடைபெறுகிறது.`,
+        '',
+        'நிகழ்வு விவரங்கள்:',
+        eventUrl,
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  announcement: {
+    subject: ({ eventTitle, stage }) =>
+      stage === 'save_the_date'
+        ? `தேதியை குறித்துக்கொள்ளுங்கள் — ${eventTitle}`
+        : `நீங்கள் அழைக்கப்பட்டுள்ளீர்கள்: ${eventTitle}`,
+    body: ({ eventTitle, startsAt, eventUrl, stage }) => {
+      if (stage === 'save_the_date') {
+        return [
+          `தேதியை குறித்துக்கொள்ளுங்கள்: "${eventTitle}" — ${startsAt.toISOString()}.`,
+          '',
+          'இடம் மற்றும் விவரங்களுடன் முழு அழைப்பிதழ் பின்னர் வரும். தற்போதைக்கு, உங்கள் நாட்காட்டியில் இந்தத் தேதியை ஒதுக்கி வைக்கவும்.',
+          '',
+          eventUrl,
+          '',
+          '— vite.in',
+        ].join('\n');
+      }
+      return [
+        `"${eventTitle}"-க்கு ${startsAt.toISOString()} அன்று நீங்கள் அழைக்கப்பட்டுள்ளீர்கள்.`,
+        '',
+        'விவரங்கள் மற்றும் RSVP:',
+        eventUrl,
+        '',
+        '— vite.in',
+      ].join('\n');
+    },
+  },
+};
+
+const te: TemplateBundle = {
+  creatorMagicLink: {
+    subject: ({ eventTitle }) => `మీ ఈవెంట్‌ను నిర్వహించండి: ${eventTitle}`,
+    body: ({ eventTitle, manageUrl }) =>
+      [
+        `మీ ఈవెంట్ "${eventTitle}" vite.in‌లో లైవ్‌లో ఉంది.`,
+        '',
+        'దీన్ని నిర్వహించడానికి కింది లింక్‌ను ఉపయోగించండి — RSVP‌లను చూడండి, వివరాలను సవరించండి, రిమైండర్‌లను పంపండి:',
+        manageUrl,
+        '',
+        'ఈ లింక్‌ను గోప్యంగా ఉంచండి. లింక్ ఉన్న ఎవరైనా ఈవెంట్‌ను నిర్వహించగలరు.',
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  signInMagicLink: {
+    subject: () => 'మీ vite.in సైన్-ఇన్ లింక్',
+    body: ({ url }) =>
+      [
+        'vite.in‌లో సైన్ ఇన్ చేయడానికి కింది లింక్‌పై క్లిక్ చేయండి:',
+        url,
+        '',
+        'ఈ లింక్ 10 నిమిషాల్లో గడువు ముగుస్తుంది. మీరు దీన్ని అభ్యర్థించకపోతే, ఈ ఇమెయిల్‌ను విస్మరించవచ్చు.',
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  rsvpConfirmation: {
+    subject: ({ eventTitle }) => `RSVP నమోదు చేయబడింది: ${eventTitle}`,
+    body: ({ eventTitle, status, eventUrl }) => {
+      const line =
+        status === 'yes'
+          ? 'మీరు ఈ ఈవెంట్‌కు హాజరవుతున్నారు.'
+          : status === 'maybe'
+            ? 'మీరు బహుశా ఈ ఈవెంట్‌కు హాజరవుతారు.'
+            : 'మీరు ఈ ఈవెంట్‌కు హాజరు కావడం లేదు.';
+      return [
+        `ధన్యవాదాలు — "${eventTitle}" కోసం మీ RSVP‌ను మేము నమోదు చేశాము.`,
+        line,
+        '',
+        'ఈవెంట్ వివరాలు:',
+        eventUrl,
+        '',
+        'ఫారమ్‌ను మళ్లీ సమర్పించడం ద్వారా మీ RSVP‌ను ఎప్పుడైనా అప్‌డేట్ చేయవచ్చు.',
+        '',
+        '— vite.in',
+      ].join('\n');
+    },
+  },
+  rsvpNotification: {
+    subject: ({ eventTitle }) => `${eventTitle} కోసం కొత్త RSVP`,
+    body: ({ eventTitle, guestName, status, plusOnes, manageUrl }) => {
+      const extras = plusOnes > 0 ? ` (+${String(plusOnes)})` : '';
+      return [
+        `"${eventTitle}"‌లో కొత్త RSVP: ${guestName} — ${status}${extras}.`,
+        '',
+        'మీ ఈవెంట్‌ను నిర్వహించి అన్ని RSVP‌లను చూడండి:',
+        manageUrl,
+        '',
+        '— vite.in',
+      ].join('\n');
+    },
+  },
+  reminder: {
+    subject: ({ eventTitle }) => `రిమైండర్: ${eventTitle}`,
+    body: ({ eventTitle, startsAt, eventUrl }) =>
+      [
+        `రిమైండర్: "${eventTitle}" ${startsAt.toISOString()}‌న జరగనుంది.`,
+        '',
+        'ఈవెంట్ వివరాలు:',
+        eventUrl,
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  announcement: {
+    subject: ({ eventTitle, stage }) =>
+      stage === 'save_the_date'
+        ? `తేదీని గుర్తుంచుకోండి — ${eventTitle}`
+        : `మీరు ఆహ్వానించబడ్డారు: ${eventTitle}`,
+    body: ({ eventTitle, startsAt, eventUrl, stage }) => {
+      if (stage === 'save_the_date') {
+        return [
+          `తేదీని గుర్తుంచుకోండి: "${eventTitle}" — ${startsAt.toISOString()}.`,
+          '',
+          'స్థలం మరియు వివరాలతో పూర్తి ఆహ్వానం తర్వాత వస్తుంది. ప్రస్తుతానికి, దయచేసి మీ క్యాలెండర్‌లో ఈ తేదీని కేటాయించి ఉంచండి.',
+          '',
+          eventUrl,
+          '',
+          '— vite.in',
+        ].join('\n');
+      }
+      return [
+        `"${eventTitle}"‌కు ${startsAt.toISOString()}‌న మీరు ఆహ్వానించబడ్డారు.`,
+        '',
+        'వివరాలు మరియు RSVP:',
+        eventUrl,
+        '',
+        '— vite.in',
+      ].join('\n');
+    },
+  },
+};
+
+const mr: TemplateBundle = {
+  creatorMagicLink: {
+    subject: ({ eventTitle }) => `तुमचा इव्हेंट व्यवस्थापित करा: ${eventTitle}`,
+    body: ({ eventTitle, manageUrl }) =>
+      [
+        `तुमचा इव्हेंट "${eventTitle}" vite.in वर लाइव्ह आहे.`,
+        '',
+        'तो व्यवस्थापित करण्यासाठी खालील लिंक वापरा — RSVP पाहा, तपशील संपादित करा, स्मरणपत्रे पाठवा:',
+        manageUrl,
+        '',
+        'ही लिंक खाजगी ठेवा. ज्याच्याकडे लिंक आहे तो इव्हेंट व्यवस्थापित करू शकतो.',
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  signInMagicLink: {
+    subject: () => 'तुमची vite.in साइन-इन लिंक',
+    body: ({ url }) =>
+      [
+        'vite.in वर साइन इन करण्यासाठी खालील लिंकवर क्लिक करा:',
+        url,
+        '',
+        'ही लिंक 10 मिनिटांत कालबाह्य होईल. तुम्ही याची विनंती केली नसल्यास, हा ईमेल दुर्लक्षित करू शकता.',
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  rsvpConfirmation: {
+    subject: ({ eventTitle }) => `RSVP नोंदवले गेले: ${eventTitle}`,
+    body: ({ eventTitle, status, eventUrl }) => {
+      const line =
+        status === 'yes'
+          ? 'तुम्ही या इव्हेंटला उपस्थित राहत आहात.'
+          : status === 'maybe'
+            ? 'तुम्ही कदाचित या इव्हेंटला उपस्थित राहाल.'
+            : 'तुम्ही या इव्हेंटला उपस्थित राहत नाही.';
+      return [
+        `धन्यवाद — आम्ही "${eventTitle}" साठी तुमचे RSVP नोंदवले आहे.`,
+        line,
+        '',
+        'इव्हेंट तपशील:',
+        eventUrl,
+        '',
+        'फॉर्म पुन्हा सबमिट करून तुम्ही तुमचे RSVP कधीही अपडेट करू शकता.',
+        '',
+        '— vite.in',
+      ].join('\n');
+    },
+  },
+  rsvpNotification: {
+    subject: ({ eventTitle }) => `${eventTitle} साठी नवीन RSVP`,
+    body: ({ eventTitle, guestName, status, plusOnes, manageUrl }) => {
+      const extras = plusOnes > 0 ? ` (+${String(plusOnes)})` : '';
+      return [
+        `"${eventTitle}" वर नवीन RSVP: ${guestName} — ${status}${extras}.`,
+        '',
+        'तुमचा इव्हेंट व्यवस्थापित करा आणि सर्व RSVP पाहा:',
+        manageUrl,
+        '',
+        '— vite.in',
+      ].join('\n');
+    },
+  },
+  reminder: {
+    subject: ({ eventTitle }) => `स्मरणपत्र: ${eventTitle}`,
+    body: ({ eventTitle, startsAt, eventUrl }) =>
+      [
+        `स्मरणपत्र: "${eventTitle}" ${startsAt.toISOString()} रोजी होणार आहे.`,
+        '',
+        'इव्हेंट तपशील:',
+        eventUrl,
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  announcement: {
+    subject: ({ eventTitle, stage }) =>
+      stage === 'save_the_date'
+        ? `तारीख राखून ठेवा — ${eventTitle}`
+        : `तुम्हाला आमंत्रित केले आहे: ${eventTitle}`,
+    body: ({ eventTitle, startsAt, eventUrl, stage }) => {
+      if (stage === 'save_the_date') {
+        return [
+          `तारीख राखून ठेवा: "${eventTitle}" — ${startsAt.toISOString()}.`,
+          '',
+          'स्थान आणि तपशिलांसह संपूर्ण आमंत्रण नंतर येईल. सध्या, कृपया तुमच्या कॅलेंडरमध्ये ही तारीख राखून ठेवा.',
+          '',
+          eventUrl,
+          '',
+          '— vite.in',
+        ].join('\n');
+      }
+      return [
+        `"${eventTitle}" ला ${startsAt.toISOString()} रोजी तुम्हाला आमंत्रित केले आहे.`,
+        '',
+        'तपशील आणि RSVP:',
+        eventUrl,
+        '',
+        '— vite.in',
+      ].join('\n');
+    },
+  },
+};
+
+const gu: TemplateBundle = {
+  creatorMagicLink: {
+    subject: ({ eventTitle }) => `તમારી ઇવેન્ટ મેનેજ કરો: ${eventTitle}`,
+    body: ({ eventTitle, manageUrl }) =>
+      [
+        `તમારી ઇવેન્ટ "${eventTitle}" vite.in પર લાઇવ છે.`,
+        '',
+        'તેને મેનેજ કરવા માટે નીચેની લિંકનો ઉપયોગ કરો — RSVP જુઓ, વિગતો સંપાદિત કરો, રિમાઇન્ડર મોકલો:',
+        manageUrl,
+        '',
+        'આ લિંક ખાનગી રાખો. જેની પાસે લિંક છે તે ઇવેન્ટ મેનેજ કરી શકે છે.',
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  signInMagicLink: {
+    subject: () => 'તમારી vite.in સાઇન-ઇન લિંક',
+    body: ({ url }) =>
+      [
+        'vite.in પર સાઇન ઇન કરવા માટે નીચેની લિંક પર ક્લિક કરો:',
+        url,
+        '',
+        'આ લિંક 10 મિનિટમાં સમાપ્ત થશે. જો તમે તેની વિનંતી ન કરી હોય, તો તમે આ ઇમેઇલને અવગણી શકો છો.',
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  rsvpConfirmation: {
+    subject: ({ eventTitle }) => `RSVP નોંધાયું: ${eventTitle}`,
+    body: ({ eventTitle, status, eventUrl }) => {
+      const line =
+        status === 'yes'
+          ? 'તમે આ ઇવેન્ટમાં હાજરી આપી રહ્યા છો.'
+          : status === 'maybe'
+            ? 'તમે કદાચ આ ઇવેન્ટમાં હાજરી આપશો.'
+            : 'તમે આ ઇવેન્ટમાં હાજરી આપી રહ્યા નથી.';
+      return [
+        `આભાર — અમે "${eventTitle}" માટે તમારું RSVP નોંધ્યું છે.`,
+        line,
+        '',
+        'ઇવેન્ટ વિગતો:',
+        eventUrl,
+        '',
+        'ફોર્મ ફરીથી સબમિટ કરીને તમે તમારું RSVP ગમે ત્યારે અપડેટ કરી શકો છો.',
+        '',
+        '— vite.in',
+      ].join('\n');
+    },
+  },
+  rsvpNotification: {
+    subject: ({ eventTitle }) => `${eventTitle} માટે નવું RSVP`,
+    body: ({ eventTitle, guestName, status, plusOnes, manageUrl }) => {
+      const extras = plusOnes > 0 ? ` (+${String(plusOnes)})` : '';
+      return [
+        `"${eventTitle}" પર નવું RSVP: ${guestName} — ${status}${extras}.`,
+        '',
+        'તમારી ઇવેન્ટ મેનેજ કરો અને બધા RSVP જુઓ:',
+        manageUrl,
+        '',
+        '— vite.in',
+      ].join('\n');
+    },
+  },
+  reminder: {
+    subject: ({ eventTitle }) => `રિમાઇન્ડર: ${eventTitle}`,
+    body: ({ eventTitle, startsAt, eventUrl }) =>
+      [
+        `રિમાઇન્ડર: "${eventTitle}" ${startsAt.toISOString()} ના રોજ યોજાનાર છે.`,
+        '',
+        'ઇવેન્ટ વિગતો:',
+        eventUrl,
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  announcement: {
+    subject: ({ eventTitle, stage }) =>
+      stage === 'save_the_date'
+        ? `તારીખ સાચવી રાખો — ${eventTitle}`
+        : `તમને આમંત્રણ છે: ${eventTitle}`,
+    body: ({ eventTitle, startsAt, eventUrl, stage }) => {
+      if (stage === 'save_the_date') {
+        return [
+          `તારીખ સાચવી રાખો: "${eventTitle}" — ${startsAt.toISOString()}.`,
+          '',
+          'સ્થળ અને વિગતો સાથેનું સંપૂર્ણ આમંત્રણ પછીથી આવશે. હાલ પૂરતું, કૃપા કરીને તમારા કેલેન્ડરમાં આ તારીખ સાચવી રાખો.',
+          '',
+          eventUrl,
+          '',
+          '— vite.in',
+        ].join('\n');
+      }
+      return [
+        `"${eventTitle}" માં ${startsAt.toISOString()} ના રોજ તમને આમંત્રણ છે.`,
+        '',
+        'વિગતો અને RSVP:',
+        eventUrl,
+        '',
+        '— vite.in',
+      ].join('\n');
+    },
+  },
+};
+
+const kn: TemplateBundle = {
+  creatorMagicLink: {
+    subject: ({ eventTitle }) => `ನಿಮ್ಮ ಈವೆಂಟ್ ಅನ್ನು ನಿರ್ವಹಿಸಿ: ${eventTitle}`,
+    body: ({ eventTitle, manageUrl }) =>
+      [
+        `ನಿಮ್ಮ ಈವೆಂಟ್ "${eventTitle}" vite.in‌ನಲ್ಲಿ ಲೈವ್ ಆಗಿದೆ.`,
+        '',
+        'ಅದನ್ನು ನಿರ್ವಹಿಸಲು ಕೆಳಗಿನ ಲಿಂಕ್ ಬಳಸಿ — RSVP‌ಗಳನ್ನು ನೋಡಿ, ವಿವರಗಳನ್ನು ಸಂಪಾದಿಸಿ, ಜ್ಞಾಪನೆಗಳನ್ನು ಕಳುಹಿಸಿ:',
+        manageUrl,
+        '',
+        'ಈ ಲಿಂಕ್ ಅನ್ನು ಖಾಸಗಿಯಾಗಿ ಇರಿಸಿ. ಲಿಂಕ್ ಹೊಂದಿರುವ ಯಾರಾದರೂ ಈವೆಂಟ್ ಅನ್ನು ನಿರ್ವಹಿಸಬಹುದು.',
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  signInMagicLink: {
+    subject: () => 'ನಿಮ್ಮ vite.in ಸೈನ್-ಇನ್ ಲಿಂಕ್',
+    body: ({ url }) =>
+      [
+        'vite.in‌ನಲ್ಲಿ ಸೈನ್ ಇನ್ ಮಾಡಲು ಕೆಳಗಿನ ಲಿಂಕ್ ಕ್ಲಿಕ್ ಮಾಡಿ:',
+        url,
+        '',
+        'ಈ ಲಿಂಕ್ 10 ನಿಮಿಷಗಳಲ್ಲಿ ಅವಧಿ ಮುಗಿಯುತ್ತದೆ. ನೀವು ಇದನ್ನು ವಿನಂತಿಸದಿದ್ದರೆ, ಈ ಇಮೇಲ್ ಅನ್ನು ನಿರ್ಲಕ್ಷಿಸಬಹುದು.',
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  rsvpConfirmation: {
+    subject: ({ eventTitle }) => `RSVP ದಾಖಲಿಸಲಾಗಿದೆ: ${eventTitle}`,
+    body: ({ eventTitle, status, eventUrl }) => {
+      const line =
+        status === 'yes'
+          ? 'ನೀವು ಈ ಈವೆಂಟ್‌ನಲ್ಲಿ ಭಾಗವಹಿಸುತ್ತಿದ್ದೀರಿ.'
+          : status === 'maybe'
+            ? 'ನೀವು ಬಹುಶಃ ಈ ಈವೆಂಟ್‌ನಲ್ಲಿ ಭಾಗವಹಿಸುವಿರಿ.'
+            : 'ನೀವು ಈ ಈವೆಂಟ್‌ನಲ್ಲಿ ಭಾಗವಹಿಸುತ್ತಿಲ್ಲ.';
+      return [
+        `ಧನ್ಯವಾದಗಳು — "${eventTitle}" ಗಾಗಿ ನಿಮ್ಮ RSVP ಅನ್ನು ನಾವು ದಾಖಲಿಸಿದ್ದೇವೆ.`,
+        line,
+        '',
+        'ಈವೆಂಟ್ ವಿವರಗಳು:',
+        eventUrl,
+        '',
+        'ಫಾರ್ಮ್ ಅನ್ನು ಮತ್ತೆ ಸಲ್ಲಿಸುವ ಮೂಲಕ ನಿಮ್ಮ RSVP ಅನ್ನು ಯಾವಾಗ ಬೇಕಾದರೂ ನವೀಕರಿಸಬಹುದು.',
+        '',
+        '— vite.in',
+      ].join('\n');
+    },
+  },
+  rsvpNotification: {
+    subject: ({ eventTitle }) => `${eventTitle} ಗಾಗಿ ಹೊಸ RSVP`,
+    body: ({ eventTitle, guestName, status, plusOnes, manageUrl }) => {
+      const extras = plusOnes > 0 ? ` (+${String(plusOnes)})` : '';
+      return [
+        `"${eventTitle}"‌ನಲ್ಲಿ ಹೊಸ RSVP: ${guestName} — ${status}${extras}.`,
+        '',
+        'ನಿಮ್ಮ ಈವೆಂಟ್ ಅನ್ನು ನಿರ್ವಹಿಸಿ ಮತ್ತು ಎಲ್ಲಾ RSVP‌ಗಳನ್ನು ನೋಡಿ:',
+        manageUrl,
+        '',
+        '— vite.in',
+      ].join('\n');
+    },
+  },
+  reminder: {
+    subject: ({ eventTitle }) => `ಜ್ಞಾಪನೆ: ${eventTitle}`,
+    body: ({ eventTitle, startsAt, eventUrl }) =>
+      [
+        `ಜ್ಞಾಪನೆ: "${eventTitle}" ${startsAt.toISOString()}‌ರಂದು ನಡೆಯಲಿದೆ.`,
+        '',
+        'ಈವೆಂಟ್ ವಿವರಗಳು:',
+        eventUrl,
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  announcement: {
+    subject: ({ eventTitle, stage }) =>
+      stage === 'save_the_date'
+        ? `ದಿನಾಂಕವನ್ನು ಕಾಯ್ದಿರಿಸಿ — ${eventTitle}`
+        : `ನಿಮಗೆ ಆಹ್ವಾನವಿದೆ: ${eventTitle}`,
+    body: ({ eventTitle, startsAt, eventUrl, stage }) => {
+      if (stage === 'save_the_date') {
+        return [
+          `ದಿನಾಂಕವನ್ನು ಕಾಯ್ದಿರಿಸಿ: "${eventTitle}" — ${startsAt.toISOString()}.`,
+          '',
+          'ಸ್ಥಳ ಮತ್ತು ವಿವರಗಳೊಂದಿಗೆ ಪೂರ್ಣ ಆಹ್ವಾನ ನಂತರ ಬರುತ್ತದೆ. ಸದ್ಯಕ್ಕೆ, ದಯವಿಟ್ಟು ನಿಮ್ಮ ಕ್ಯಾಲೆಂಡರ್‌ನಲ್ಲಿ ಈ ದಿನಾಂಕವನ್ನು ಕಾಯ್ದಿರಿಸಿ.',
+          '',
+          eventUrl,
+          '',
+          '— vite.in',
+        ].join('\n');
+      }
+      return [
+        `"${eventTitle}"‌ಗೆ ${startsAt.toISOString()}‌ರಂದು ನಿಮಗೆ ಆಹ್ವಾನವಿದೆ.`,
+        '',
+        'ವಿವರಗಳು ಮತ್ತು RSVP:',
+        eventUrl,
+        '',
+        '— vite.in',
+      ].join('\n');
+    },
+  },
+};
+
+const ml: TemplateBundle = {
+  creatorMagicLink: {
+    subject: ({ eventTitle }) => `നിങ്ങളുടെ ഇവന്റ് കൈകാര്യം ചെയ്യുക: ${eventTitle}`,
+    body: ({ eventTitle, manageUrl }) =>
+      [
+        `നിങ്ങളുടെ ഇവന്റ് "${eventTitle}" vite.in-ൽ ലൈവ് ആണ്.`,
+        '',
+        'അത് കൈകാര്യം ചെയ്യാൻ താഴെയുള്ള ലിങ്ക് ഉപയോഗിക്കുക — RSVP-കൾ കാണുക, വിശദാംശങ്ങൾ എഡിറ്റ് ചെയ്യുക, ഓർമ്മപ്പെടുത്തലുകൾ അയയ്ക്കുക:',
+        manageUrl,
+        '',
+        'ഈ ലിങ്ക് സ്വകാര്യമായി സൂക്ഷിക്കുക. ലിങ്ക് ഉള്ള ആർക്കും ഇവന്റ് കൈകാര്യം ചെയ്യാം.',
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  signInMagicLink: {
+    subject: () => 'നിങ്ങളുടെ vite.in സൈൻ-ഇൻ ലിങ്ക്',
+    body: ({ url }) =>
+      [
+        'vite.in-ൽ സൈൻ ഇൻ ചെയ്യാൻ താഴെയുള്ള ലിങ്കിൽ ക്ലിക്ക് ചെയ്യുക:',
+        url,
+        '',
+        'ഈ ലിങ്ക് 10 മിനിറ്റിനുള്ളിൽ കാലഹരണപ്പെടും. നിങ്ങൾ ഇത് അഭ്യർത്ഥിച്ചിട്ടില്ലെങ്കിൽ, ഈ ഇമെയിൽ അവഗണിക്കാം.',
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  rsvpConfirmation: {
+    subject: ({ eventTitle }) => `RSVP രേഖപ്പെടുത്തി: ${eventTitle}`,
+    body: ({ eventTitle, status, eventUrl }) => {
+      const line =
+        status === 'yes'
+          ? 'നിങ്ങൾ ഈ ഇവന്റിൽ പങ്കെടുക്കുന്നു.'
+          : status === 'maybe'
+            ? 'നിങ്ങൾ ഒരുപക്ഷേ ഈ ഇവന്റിൽ പങ്കെടുക്കും.'
+            : 'നിങ്ങൾ ഈ ഇവന്റിൽ പങ്കെടുക്കുന്നില്ല.';
+      return [
+        `നന്ദി — "${eventTitle}"-നുള്ള നിങ്ങളുടെ RSVP ഞങ്ങൾ രേഖപ്പെടുത്തി.`,
+        line,
+        '',
+        'ഇവന്റ് വിശദാംശങ്ങൾ:',
+        eventUrl,
+        '',
+        'ഫോം വീണ്ടും സമർപ്പിച്ച് നിങ്ങളുടെ RSVP എപ്പോൾ വേണമെങ്കിലും അപ്ഡേറ്റ് ചെയ്യാം.',
+        '',
+        '— vite.in',
+      ].join('\n');
+    },
+  },
+  rsvpNotification: {
+    subject: ({ eventTitle }) => `${eventTitle}-നുള്ള പുതിയ RSVP`,
+    body: ({ eventTitle, guestName, status, plusOnes, manageUrl }) => {
+      const extras = plusOnes > 0 ? ` (+${String(plusOnes)})` : '';
+      return [
+        `"${eventTitle}"-ൽ പുതിയ RSVP: ${guestName} — ${status}${extras}.`,
+        '',
+        'നിങ്ങളുടെ ഇവന്റ് കൈകാര്യം ചെയ്ത് എല്ലാ RSVP-കളും കാണുക:',
+        manageUrl,
+        '',
+        '— vite.in',
+      ].join('\n');
+    },
+  },
+  reminder: {
+    subject: ({ eventTitle }) => `ഓർമ്മപ്പെടുത്തൽ: ${eventTitle}`,
+    body: ({ eventTitle, startsAt, eventUrl }) =>
+      [
+        `ഓർമ്മപ്പെടുത്തൽ: "${eventTitle}" ${startsAt.toISOString()}-ന് നടക്കുന്നു.`,
+        '',
+        'ഇവന്റ് വിശദാംശങ്ങൾ:',
+        eventUrl,
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  announcement: {
+    subject: ({ eventTitle, stage }) =>
+      stage === 'save_the_date'
+        ? `തീയതി കുറിച്ചുവയ്ക്കുക — ${eventTitle}`
+        : `നിങ്ങൾ ക്ഷണിക്കപ്പെട്ടിരിക്കുന്നു: ${eventTitle}`,
+    body: ({ eventTitle, startsAt, eventUrl, stage }) => {
+      if (stage === 'save_the_date') {
+        return [
+          `തീയതി കുറിച്ചുവയ്ക്കുക: "${eventTitle}" — ${startsAt.toISOString()}.`,
+          '',
+          'സ്ഥലവും വിശദാംശങ്ങളും ഉൾപ്പെടുന്ന പൂർണ്ണ ക്ഷണം പിന്നീട് വരും. തൽക്കാലം, ദയവായി നിങ്ങളുടെ കലണ്ടറിൽ ഈ തീയതി മാറ്റിവയ്ക്കുക.',
+          '',
+          eventUrl,
+          '',
+          '— vite.in',
+        ].join('\n');
+      }
+      return [
+        `"${eventTitle}"-ലേക്ക് ${startsAt.toISOString()}-ന് നിങ്ങൾ ക്ഷണിക്കപ്പെട്ടിരിക്കുന്നു.`,
+        '',
+        'വിശദാംശങ്ങളും RSVP-യും:',
+        eventUrl,
+        '',
+        '— vite.in',
+      ].join('\n');
+    },
+  },
+};
+
+const pa: TemplateBundle = {
+  creatorMagicLink: {
+    subject: ({ eventTitle }) => `ਆਪਣਾ ਇਵੈਂਟ ਪ੍ਰਬੰਧਿਤ ਕਰੋ: ${eventTitle}`,
+    body: ({ eventTitle, manageUrl }) =>
+      [
+        `ਤੁਹਾਡਾ ਇਵੈਂਟ "${eventTitle}" vite.in 'ਤੇ ਲਾਈਵ ਹੈ।`,
+        '',
+        "ਇਸਨੂੰ ਪ੍ਰਬੰਧਿਤ ਕਰਨ ਲਈ ਹੇਠਾਂ ਦਿੱਤੇ ਲਿੰਕ ਦੀ ਵਰਤੋਂ ਕਰੋ — RSVP ਵੇਖੋ, ਵੇਰਵੇ ਸੰਪਾਦਿਤ ਕਰੋ, ਯਾਦ-ਪੱਤਰ ਭੇਜੋ:",
+        manageUrl,
+        '',
+        'ਇਹ ਲਿੰਕ ਨਿੱਜੀ ਰੱਖੋ। ਜਿਸ ਕੋਲ ਲਿੰਕ ਹੈ ਉਹ ਇਵੈਂਟ ਪ੍ਰਬੰਧਿਤ ਕਰ ਸਕਦਾ ਹੈ।',
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  signInMagicLink: {
+    subject: () => 'ਤੁਹਾਡਾ vite.in ਸਾਈਨ-ਇਨ ਲਿੰਕ',
+    body: ({ url }) =>
+      [
+        "vite.in 'ਤੇ ਸਾਈਨ ਇਨ ਕਰਨ ਲਈ ਹੇਠਾਂ ਦਿੱਤੇ ਲਿੰਕ 'ਤੇ ਕਲਿੱਕ ਕਰੋ:",
+        url,
+        '',
+        'ਇਹ ਲਿੰਕ 10 ਮਿੰਟਾਂ ਵਿੱਚ ਮਿਆਦ ਪੁੱਗ ਜਾਵੇਗਾ। ਜੇ ਤੁਸੀਂ ਇਸਦੀ ਬੇਨਤੀ ਨਹੀਂ ਕੀਤੀ, ਤਾਂ ਤੁਸੀਂ ਇਸ ਈਮੇਲ ਨੂੰ ਅਣਡਿੱਠ ਕਰ ਸਕਦੇ ਹੋ।',
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  rsvpConfirmation: {
+    subject: ({ eventTitle }) => `RSVP ਦਰਜ ਕੀਤਾ ਗਿਆ: ${eventTitle}`,
+    body: ({ eventTitle, status, eventUrl }) => {
+      const line =
+        status === 'yes'
+          ? 'ਤੁਸੀਂ ਇਸ ਇਵੈਂਟ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋ ਰਹੇ ਹੋ।'
+          : status === 'maybe'
+            ? 'ਤੁਸੀਂ ਸ਼ਾਇਦ ਇਸ ਇਵੈਂਟ ਵਿੱਚ ਸ਼ਾਮਲ ਹੋਵੋਗੇ।'
+            : 'ਤੁਸੀਂ ਇਸ ਇਵੈਂਟ ਵਿੱਚ ਸ਼ਾਮਲ ਨਹੀਂ ਹੋ ਰਹੇ।';
+      return [
+        `ਧੰਨਵਾਦ — ਅਸੀਂ "${eventTitle}" ਲਈ ਤੁਹਾਡਾ RSVP ਦਰਜ ਕਰ ਲਿਆ ਹੈ।`,
+        line,
+        '',
+        'ਇਵੈਂਟ ਵੇਰਵੇ:',
+        eventUrl,
+        '',
+        'ਫਾਰਮ ਦੁਬਾਰਾ ਜਮ੍ਹਾਂ ਕਰਕੇ ਤੁਸੀਂ ਆਪਣਾ RSVP ਕਿਸੇ ਵੀ ਸਮੇਂ ਅੱਪਡੇਟ ਕਰ ਸਕਦੇ ਹੋ।',
+        '',
+        '— vite.in',
+      ].join('\n');
+    },
+  },
+  rsvpNotification: {
+    subject: ({ eventTitle }) => `${eventTitle} ਲਈ ਨਵਾਂ RSVP`,
+    body: ({ eventTitle, guestName, status, plusOnes, manageUrl }) => {
+      const extras = plusOnes > 0 ? ` (+${String(plusOnes)})` : '';
+      return [
+        `"${eventTitle}" 'ਤੇ ਨਵਾਂ RSVP: ${guestName} — ${status}${extras}.`,
+        '',
+        'ਆਪਣਾ ਇਵੈਂਟ ਪ੍ਰਬੰਧਿਤ ਕਰੋ ਅਤੇ ਸਾਰੇ RSVP ਵੇਖੋ:',
+        manageUrl,
+        '',
+        '— vite.in',
+      ].join('\n');
+    },
+  },
+  reminder: {
+    subject: ({ eventTitle }) => `ਯਾਦ-ਪੱਤਰ: ${eventTitle}`,
+    body: ({ eventTitle, startsAt, eventUrl }) =>
+      [
+        `ਯਾਦ-ਪੱਤਰ: "${eventTitle}" ${startsAt.toISOString()} ਨੂੰ ਹੋਣ ਵਾਲਾ ਹੈ।`,
+        '',
+        'ਇਵੈਂਟ ਵੇਰਵੇ:',
+        eventUrl,
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  announcement: {
+    subject: ({ eventTitle, stage }) =>
+      stage === 'save_the_date'
+        ? `ਤਾਰੀਖ਼ ਰਾਖਵੀਂ ਰੱਖੋ — ${eventTitle}`
+        : `ਤੁਹਾਨੂੰ ਸੱਦਾ ਹੈ: ${eventTitle}`,
+    body: ({ eventTitle, startsAt, eventUrl, stage }) => {
+      if (stage === 'save_the_date') {
+        return [
+          `ਤਾਰੀਖ਼ ਰਾਖਵੀਂ ਰੱਖੋ: "${eventTitle}" — ${startsAt.toISOString()}.`,
+          '',
+          'ਸਥਾਨ ਅਤੇ ਵੇਰਵਿਆਂ ਸਮੇਤ ਪੂਰਾ ਸੱਦਾ ਬਾਅਦ ਵਿੱਚ ਆਵੇਗਾ। ਫ਼ਿਲਹਾਲ, ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਕੈਲੰਡਰ ਵਿੱਚ ਇਹ ਤਾਰੀਖ਼ ਰਾਖਵੀਂ ਰੱਖੋ।',
+          '',
+          eventUrl,
+          '',
+          '— vite.in',
+        ].join('\n');
+      }
+      return [
+        `"${eventTitle}" ਵਿੱਚ ${startsAt.toISOString()} ਨੂੰ ਤੁਹਾਨੂੰ ਸੱਦਾ ਹੈ।`,
+        '',
+        'ਵੇਰਵੇ ਅਤੇ RSVP:',
+        eventUrl,
+        '',
+        '— vite.in',
+      ].join('\n');
+    },
+  },
+};
+
+const zh: TemplateBundle = {
+  creatorMagicLink: {
+    subject: ({ eventTitle }) => `管理您的活动：${eventTitle}`,
+    body: ({ eventTitle, manageUrl }) =>
+      [
+        `您的活动「${eventTitle}」已在 vite.in 上线。`,
+        '',
+        '使用下面的链接进行管理 — 查看回复、编辑详情、发送提醒：',
+        manageUrl,
+        '',
+        '请妥善保管此链接。任何拥有此链接的人都可以管理该活动。',
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  signInMagicLink: {
+    subject: () => '您的 vite.in 登录链接',
+    body: ({ url }) =>
+      [
+        '点击下面的链接登录 vite.in：',
+        url,
+        '',
+        '此链接将在 10 分钟后失效。如果您没有请求它，可以忽略此邮件。',
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  rsvpConfirmation: {
+    subject: ({ eventTitle }) => `回复已记录：${eventTitle}`,
+    body: ({ eventTitle, status, eventUrl }) => {
+      const line =
+        status === 'yes'
+          ? '您将出席此活动。'
+          : status === 'maybe'
+            ? '您可能出席此活动。'
+            : '您不出席此活动。';
+      return [
+        `谢谢 — 我们已记录您对「${eventTitle}」的回复。`,
+        line,
+        '',
+        '活动详情：',
+        eventUrl,
+        '',
+        '您可以随时重新提交表单来更新您的回复。',
+        '',
+        '— vite.in',
+      ].join('\n');
+    },
+  },
+  rsvpNotification: {
+    subject: ({ eventTitle }) => `${eventTitle} 的新回复`,
+    body: ({ eventTitle, guestName, status, plusOnes, manageUrl }) => {
+      const extras = plusOnes > 0 ? ` (+${String(plusOnes)})` : '';
+      return [
+        `「${eventTitle}」有新回复：${guestName} — ${status}${extras}。`,
+        '',
+        '管理您的活动并查看所有回复：',
+        manageUrl,
+        '',
+        '— vite.in',
+      ].join('\n');
+    },
+  },
+  reminder: {
+    subject: ({ eventTitle }) => `提醒：${eventTitle}`,
+    body: ({ eventTitle, startsAt, eventUrl }) =>
+      [
+        `提醒：「${eventTitle}」将于 ${startsAt.toISOString()} 举行。`,
+        '',
+        '活动详情：',
+        eventUrl,
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  announcement: {
+    subject: ({ eventTitle, stage }) =>
+      stage === 'save_the_date' ? `预留日期 — ${eventTitle}` : `诚邀您参加：${eventTitle}`,
+    body: ({ eventTitle, startsAt, eventUrl, stage }) => {
+      if (stage === 'save_the_date') {
+        return [
+          `预留日期：「${eventTitle}」— ${startsAt.toISOString()}。`,
+          '',
+          '包含地点和详情的完整邀请函稍后发送。目前，请先在您的日历中预留此日期。',
+          '',
+          eventUrl,
+          '',
+          '— vite.in',
+        ].join('\n');
+      }
+      return [
+        `诚邀您于 ${startsAt.toISOString()} 参加「${eventTitle}」。`,
+        '',
+        '详情与回复：',
+        eventUrl,
+        '',
+        '— vite.in',
+      ].join('\n');
+    },
+  },
+};
+
+const ja: TemplateBundle = {
+  creatorMagicLink: {
+    subject: ({ eventTitle }) => `イベントを管理：${eventTitle}`,
+    body: ({ eventTitle, manageUrl }) =>
+      [
+        `あなたのイベント「${eventTitle}」が vite.in で公開されました。`,
+        '',
+        '下のリンクから管理できます — 出欠回答の確認、詳細の編集、リマインダーの送信：',
+        manageUrl,
+        '',
+        'このリンクは非公開にしてください。リンクを持つ人は誰でもイベントを管理できます。',
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  signInMagicLink: {
+    subject: () => 'vite.in サインインリンク',
+    body: ({ url }) =>
+      [
+        '下のリンクをクリックして vite.in にサインインしてください：',
+        url,
+        '',
+        'このリンクは10分で期限切れになります。心当たりがない場合は、このメールを無視してください。',
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  rsvpConfirmation: {
+    subject: ({ eventTitle }) => `出欠回答を記録しました：${eventTitle}`,
+    body: ({ eventTitle, status, eventUrl }) => {
+      const line =
+        status === 'yes'
+          ? 'あなたはこのイベントに出席します。'
+          : status === 'maybe'
+            ? 'あなたはこのイベントに出席するかもしれません。'
+            : 'あなたはこのイベントを欠席します。';
+      return [
+        `ありがとうございます — 「${eventTitle}」へのあなたの出欠回答を記録しました。`,
+        line,
+        '',
+        'イベントの詳細：',
+        eventUrl,
+        '',
+        'フォームを再送信することで、出欠回答はいつでも更新できます。',
+        '',
+        '— vite.in',
+      ].join('\n');
+    },
+  },
+  rsvpNotification: {
+    subject: ({ eventTitle }) => `${eventTitle} の新しい出欠回答`,
+    body: ({ eventTitle, guestName, status, plusOnes, manageUrl }) => {
+      const extras = plusOnes > 0 ? ` (+${String(plusOnes)})` : '';
+      return [
+        `「${eventTitle}」に新しい出欠回答：${guestName} — ${status}${extras}。`,
+        '',
+        'イベントを管理してすべての出欠回答を確認：',
+        manageUrl,
+        '',
+        '— vite.in',
+      ].join('\n');
+    },
+  },
+  reminder: {
+    subject: ({ eventTitle }) => `リマインダー：${eventTitle}`,
+    body: ({ eventTitle, startsAt, eventUrl }) =>
+      [
+        `リマインダー：「${eventTitle}」は ${startsAt.toISOString()} に開催されます。`,
+        '',
+        'イベントの詳細：',
+        eventUrl,
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  announcement: {
+    subject: ({ eventTitle, stage }) =>
+      stage === 'save_the_date' ? `日程のお知らせ — ${eventTitle}` : `ご招待：${eventTitle}`,
+    body: ({ eventTitle, startsAt, eventUrl, stage }) => {
+      if (stage === 'save_the_date') {
+        return [
+          `日程のお知らせ：「${eventTitle}」— ${startsAt.toISOString()}。`,
+          '',
+          '場所や詳細を記した正式な招待状は後ほどお送りします。まずはカレンダーにこの日程をご予定ください。',
+          '',
+          eventUrl,
+          '',
+          '— vite.in',
+        ].join('\n');
+      }
+      return [
+        `${startsAt.toISOString()} 開催の「${eventTitle}」にご招待します。`,
+        '',
+        '詳細と出欠回答：',
+        eventUrl,
+        '',
+        '— vite.in',
+      ].join('\n');
+    },
+  },
+};
+
+const ko: TemplateBundle = {
+  creatorMagicLink: {
+    subject: ({ eventTitle }) => `이벤트 관리: ${eventTitle}`,
+    body: ({ eventTitle, manageUrl }) =>
+      [
+        `귀하의 이벤트 "${eventTitle}"이(가) vite.in에 공개되었습니다.`,
+        '',
+        '아래 링크로 관리하세요 — 회신 보기, 세부 정보 편집, 알림 전송:',
+        manageUrl,
+        '',
+        '이 링크는 비공개로 유지하세요. 링크를 가진 사람은 누구나 이벤트를 관리할 수 있습니다.',
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  signInMagicLink: {
+    subject: () => 'vite.in 로그인 링크',
+    body: ({ url }) =>
+      [
+        '아래 링크를 클릭하여 vite.in에 로그인하세요:',
+        url,
+        '',
+        '이 링크는 10분 후 만료됩니다. 요청하지 않으셨다면 이 이메일을 무시하셔도 됩니다.',
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  rsvpConfirmation: {
+    subject: ({ eventTitle }) => `회신이 기록되었습니다: ${eventTitle}`,
+    body: ({ eventTitle, status, eventUrl }) => {
+      const line =
+        status === 'yes'
+          ? '귀하는 이 이벤트에 참석합니다.'
+          : status === 'maybe'
+            ? '귀하는 이 이벤트에 참석할 수도 있습니다.'
+            : '귀하는 이 이벤트에 참석하지 않습니다.';
+      return [
+        `감사합니다 — "${eventTitle}"에 대한 귀하의 회신을 기록했습니다.`,
+        line,
+        '',
+        '이벤트 세부 정보:',
+        eventUrl,
+        '',
+        '양식을 다시 제출하여 언제든지 회신을 업데이트할 수 있습니다.',
+        '',
+        '— vite.in',
+      ].join('\n');
+    },
+  },
+  rsvpNotification: {
+    subject: ({ eventTitle }) => `${eventTitle}의 새 회신`,
+    body: ({ eventTitle, guestName, status, plusOnes, manageUrl }) => {
+      const extras = plusOnes > 0 ? ` (+${String(plusOnes)})` : '';
+      return [
+        `"${eventTitle}"에 새 회신: ${guestName} — ${status}${extras}.`,
+        '',
+        '이벤트를 관리하고 모든 회신을 확인하세요:',
+        manageUrl,
+        '',
+        '— vite.in',
+      ].join('\n');
+    },
+  },
+  reminder: {
+    subject: ({ eventTitle }) => `알림: ${eventTitle}`,
+    body: ({ eventTitle, startsAt, eventUrl }) =>
+      [
+        `알림: "${eventTitle}"이(가) ${startsAt.toISOString()}에 열립니다.`,
+        '',
+        '이벤트 세부 정보:',
+        eventUrl,
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  announcement: {
+    subject: ({ eventTitle, stage }) =>
+      stage === 'save_the_date' ? `날짜를 비워 두세요 — ${eventTitle}` : `초대합니다: ${eventTitle}`,
+    body: ({ eventTitle, startsAt, eventUrl, stage }) => {
+      if (stage === 'save_the_date') {
+        return [
+          `날짜를 비워 두세요: "${eventTitle}" — ${startsAt.toISOString()}.`,
+          '',
+          '장소와 세부 정보가 담긴 정식 초대장은 추후 보내드립니다. 우선 캘린더에 이 날짜를 비워 두세요.',
+          '',
+          eventUrl,
+          '',
+          '— vite.in',
+        ].join('\n');
+      }
+      return [
+        `${startsAt.toISOString()}에 열리는 "${eventTitle}"에 귀하를 초대합니다.`,
+        '',
+        '세부 정보 및 회신:',
+        eventUrl,
+        '',
+        '— vite.in',
+      ].join('\n');
+    },
+  },
+};
+
+const bundles: Record<Locale, TemplateBundle> = {
+  en,
+  de,
+  fr,
+  es,
+  it,
+  pt,
+  nl,
+  pl,
+  hi,
+  bn,
+  ta,
+  te,
+  mr,
+  gu,
+  kn,
+  ml,
+  pa,
+  zh,
+  ja,
+  ko,
+};
 
 /**
  * Look up a template bundle for a given locale, with English fallback.
@@ -864,5 +2118,5 @@ const bundles: Partial<Record<Locale, TemplateBundle>> = { en, de, fr, es, it, p
  */
 export function templatesFor(locale: Locale | undefined): TemplateBundle {
   if (locale && bundles[locale]) return bundles[locale];
-  return bundles[DEFAULT_LOCALE] as TemplateBundle;
+  return bundles[DEFAULT_LOCALE];
 }
