@@ -11,12 +11,20 @@
   type Status = 'idle' | 'subscribed' | 'denied' | 'working';
   let status = $state<Status>('idle');
   let supported = $state(false);
+  let iosTabHint = $state(false);
 
   $effect(() => {
     if (!browser) return;
     supported =
       'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
-    if (!supported) return;
+    if (!supported) {
+      // iOS Safari in a tab exposes `navigator.standalone === false` but no
+      // PushManager — push only works in the installed PWA. Surface that
+      // instead of leaving an empty space.
+      const nav = navigator as Navigator & { standalone?: boolean };
+      iosTabHint = nav.standalone === false;
+      return;
+    }
     if (Notification.permission === 'denied') {
       status = 'denied';
       return;
@@ -102,5 +110,10 @@
         {/if}
       </div>
     {/if}
+  </div>
+{:else if iosTabHint}
+  <div class="rounded-card border border-rule bg-card p-4">
+    <p class="text-sm font-semibold">{m.push_title()}</p>
+    <p class="mt-0.5 text-xs leading-relaxed text-ink-muted">{m.push_ios_hint()}</p>
   </div>
 {/if}
