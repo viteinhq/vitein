@@ -94,7 +94,7 @@ function deref(node: unknown, doc: Spec, seen = new Set<string>()): unknown {
   if (!node || typeof node !== 'object') return node;
   if (Array.isArray(node)) return node.map((n) => deref(n, doc, seen));
 
-  if ('$ref' in node && typeof (node).$ref === 'string') {
+  if ('$ref' in node && typeof node.$ref === 'string') {
     const ref = (node as { $ref: string }).$ref;
     if (!ref.startsWith('#/')) return node;
     if (seen.has(ref)) return {};
