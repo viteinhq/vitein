@@ -18,7 +18,10 @@
     "gu",
     "kn",
     "ml",
-    "pa"
+    "pa",
+    "zh",
+    "ja",
+    "ko"
   ],
   "modules": ["https://cdn.jsdelivr.net/npm/@inlang/plugin-message-format@2/dist/index.js"],
   "plugin.inlang.messageFormat": {

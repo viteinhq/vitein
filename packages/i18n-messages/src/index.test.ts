@@ -16,6 +16,9 @@ import gu from './locales/gu.json';
 import kn from './locales/kn.json';
 import ml from './locales/ml.json';
 import pa from './locales/pa.json';
+import zh from './locales/zh.json';
+import ja from './locales/ja.json';
+import ko from './locales/ko.json';
 import { negotiateLocale, SUPPORTED_LOCALES, translate, type Locale } from './index.js';
 
 describe('translate', () => {
@@ -49,11 +52,12 @@ describe('negotiateLocale', () => {
 
   it('honours q-values for ranking', () => {
     // Picks the highest-q supported tag.
-    expect(negotiateLocale('ja;q=1.0,de;q=0.8,en;q=0.5')).toBe('de');
+    expect(negotiateLocale('sw;q=1.0,de;q=0.8,en;q=0.5')).toBe('de');
+    expect(negotiateLocale('ja;q=1.0,de;q=0.8')).toBe('ja');
   });
 
   it('falls back to default for unsupported languages', () => {
-    expect(negotiateLocale('ja-JP,ko;q=0.5')).toBe('en');
+    expect(negotiateLocale('sw-KE,th;q=0.5')).toBe('en');
   });
 });
 
@@ -75,6 +79,9 @@ describe('locale dictionaries', () => {
     kn,
     ml,
     pa,
+    zh,
+    ja,
+    ko,
   };
 
   for (const [name, dict] of Object.entries(dicts)) {
@@ -109,6 +116,9 @@ describe('locale dictionaries', () => {
         'kn',
         'ml',
         'pa',
+        'zh',
+        'ja',
+        'ko',
       ].sort(),
     );
   });
