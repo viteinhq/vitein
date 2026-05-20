@@ -390,5 +390,7 @@
   "pricing_subtitle": "Kostenlos für die meisten Events. Premium ist eine Einmalzahlung pro Event — kein Abo, niemals.",
   "pricing_basic_price": "€5 / $5 / CHF 5 / £4",
   "pricing_plus_price": "€9 / $9 / CHF 9 / £7",
-  "pricing_per_event": "einmalig, pro Event"
+  "pricing_per_event": "einmalig, pro Event",
+  "tier_basic_item_cover": "Coverbild",
+  "manage_media_premium_locked": "Coverbild-Upload ist ein Premium-Feature. Werte dieses Event oben auf (Basic oder Plus), um es freizuschalten."
 }

@@ -40,6 +40,7 @@
           <li>{m.tier_basic_item_branding()}</li>
           <li>{m.tier_basic_item_slug()}</li>
           <li>{m.tier_basic_item_reminders()}</li>
+          <li>{m.tier_basic_item_cover()}</li>
         </ul>
       </div>
     </Card>

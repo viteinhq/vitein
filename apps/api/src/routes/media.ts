@@ -1,10 +1,11 @@
 import { zValidator } from '@hono/zod-validator';
 import { Hono } from 'hono';
 import { z } from 'zod';
-import { getEventPublic } from '../domain/events/events.js';
+import { getEventForCreator, getEventPublic } from '../domain/events/events.js';
 import { isViewTokenValid } from '../domain/events/view-tokens.js';
 import { deleteMedia, listMedia, publicUrlFor, uploadMedia } from '../domain/media/media.js';
-import { ValidationError } from '../domain/errors.js';
+import { DomainError, ValidationError } from '../domain/errors.js';
+import { tierOf } from '../domain/payments/payments.js';
 import { db } from '../infra/db.js';
 import { requireEventOwnership } from '../middleware/require-event-ownership.js';
 import type { AppVariables, Env } from '../types/env.js';
@@ -33,6 +34,20 @@ mediaRoute.post(
     }
 
     const { id } = c.req.valid('param');
+
+    // Media upload is a premium feature (`paid_features.media_upload`,
+    // sold on both Basic and Plus). Free events can't attach a cover —
+    // gate before touching R2. Deleting existing media stays ungated so
+    // an event that uploaded before this gate landed can still clean up.
+    const event = await getEventForCreator(db(c.env), id);
+    if (!tierOf(event)) {
+      throw new DomainError(
+        'event.feature_gated',
+        'Media upload requires a premium event (Basic or Plus)',
+        403,
+      );
+    }
+
     const url = new URL(c.req.url);
     const kindRaw = url.searchParams.get('kind');
     const kind = kindRaw === 'gallery' ? 'gallery' : 'cover';

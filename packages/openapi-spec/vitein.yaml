@@ -307,6 +307,10 @@ paths:
         but the server sniffs magic numbers and only trusts the sniffed
         type. Accepted types: JPEG, PNG, WebP, GIF, AVIF. Max 10 MiB. Max
         10 items per event.
+
+        Media upload is a premium feature (`paid_features.media_upload`,
+        included on both Basic and Plus). Free / unpaid events return
+        403 `event.feature_gated`.
       tags: [events]
       parameters:
         - $ref: '#/components/parameters/CreatorTokenHeader'
@@ -336,6 +340,11 @@ paths:
           $ref: '#/components/responses/ValidationError'
         '401':
           $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Media upload is gated to premium (Basic or Plus) events.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
         '409':
           description: Quota exceeded (10 media per event).
           content:
