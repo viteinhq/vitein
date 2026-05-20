@@ -1,0 +1,28 @@
+{
+  "not_found": "नहीं मिला",
+  "unauthorized": "अधिकृत नहीं",
+  "validation_error": "सत्यापन विफल",
+  "conflict": "मौजूदा स्थिति से टकराव",
+  "internal_error": "आंतरिक सर्वर त्रुटि",
+  "rate_limited": "बहुत अधिक अनुरोध — कृपया धीमे चलें",
+
+  "event.not_found": "इवेंट नहीं मिला",
+  "event.unauthorized": "यह निर्माता टोकन इस इवेंट से मेल नहीं खाता",
+  "event.no_password": "इवेंट पासवर्ड-संरक्षित नहीं है",
+  "event.password_invalid": "ग़लत पासवर्ड",
+  "event.feature_gated": "इस सुविधा के लिए Plus स्तर ज़रूरी है",
+  "event.already_paid": "इवेंट पहले से प्रीमियम है",
+
+  "user.not_found": "उपयोगकर्ता नहीं मिला",
+  "user.unauthorized": "जारी रखने के लिए कृपया साइन इन करें",
+
+  "media.not_found": "मीडिया नहीं मिला",
+  "media.quota_exceeded": "इस इवेंट के लिए मीडिया सीमा पूरी हो गई",
+
+  "announcement.too_many_recipients": "मेहमान सूची तत्काल-भेजने की सीमा से अधिक है",
+  "announcement.already_sent": "इस चरण के लिए एक घोषणा पहले ही भेजी जा चुकी है",
+
+  "stripe.not_configured": "इस वातावरण के लिए Stripe कॉन्फ़िगर नहीं है",
+  "stripe.price_not_configured": "इस स्तर और मुद्रा के लिए Stripe कॉन्फ़िगर नहीं है",
+  "stripe.api_error": "Stripe ने अनुरोध अस्वीकार कर दिया"
+}

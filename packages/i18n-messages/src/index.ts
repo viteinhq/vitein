@@ -6,8 +6,9 @@ import it from './locales/it.json';
 import pt from './locales/pt.json';
 import nl from './locales/nl.json';
 import pl from './locales/pl.json';
+import hi from './locales/hi.json';
 
-export type Locale = 'en' | 'de' | 'fr' | 'es' | 'it' | 'pt' | 'nl' | 'pl';
+export type Locale = 'en' | 'de' | 'fr' | 'es' | 'it' | 'pt' | 'nl' | 'pl' | 'hi';
 export const SUPPORTED_LOCALES: readonly Locale[] = [
   'en',
   'de',
@@ -17,6 +18,7 @@ export const SUPPORTED_LOCALES: readonly Locale[] = [
   'pt',
   'nl',
   'pl',
+  'hi',
 ] as const;
 export const DEFAULT_LOCALE: Locale = 'en';
 
@@ -29,6 +31,7 @@ const dictionaries: Record<Locale, Record<string, string>> = {
   pt,
   nl,
   pl,
+  hi,
 };
 
 /**

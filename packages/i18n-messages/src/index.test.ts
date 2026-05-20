@@ -7,6 +7,7 @@ import itDict from './locales/it.json';
 import pt from './locales/pt.json';
 import nl from './locales/nl.json';
 import pl from './locales/pl.json';
+import hi from './locales/hi.json';
 import { negotiateLocale, SUPPORTED_LOCALES, translate, type Locale } from './index.js';
 
 describe('translate', () => {
@@ -57,6 +58,7 @@ describe('locale dictionaries', () => {
     pt,
     nl,
     pl,
+    hi,
   };
 
   for (const [name, dict] of Object.entries(dicts)) {
@@ -73,7 +75,7 @@ describe('locale dictionaries', () => {
 
   it('SUPPORTED_LOCALES matches the dictionary set', () => {
     expect([...SUPPORTED_LOCALES].sort()).toEqual(
-      ['en', 'de', 'fr', 'es', 'it', 'pt', 'nl', 'pl'].sort(),
+      ['en', 'de', 'fr', 'es', 'it', 'pt', 'nl', 'pl', 'hi'].sort(),
     );
   });
 });
