@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <title>vite.in</title>
+  <rect width="32" height="32" fill="#e3ff3a" />
+  <path
+    d="M7.5 8.5 L12.5 23 L21 8.5"
+    fill="none"
+    stroke="#0a0a0a"
+    stroke-width="5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <circle cx="23.5" cy="20" r="2.9" fill="#ff5436" />
+</svg>
