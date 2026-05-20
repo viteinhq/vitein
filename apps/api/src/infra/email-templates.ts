@@ -1686,7 +1686,7 @@ const pa: TemplateBundle = {
       [
         `ਤੁਹਾਡਾ ਇਵੈਂਟ "${eventTitle}" vite.in 'ਤੇ ਲਾਈਵ ਹੈ।`,
         '',
-        "ਇਸਨੂੰ ਪ੍ਰਬੰਧਿਤ ਕਰਨ ਲਈ ਹੇਠਾਂ ਦਿੱਤੇ ਲਿੰਕ ਦੀ ਵਰਤੋਂ ਕਰੋ — RSVP ਵੇਖੋ, ਵੇਰਵੇ ਸੰਪਾਦਿਤ ਕਰੋ, ਯਾਦ-ਪੱਤਰ ਭੇਜੋ:",
+        'ਇਸਨੂੰ ਪ੍ਰਬੰਧਿਤ ਕਰਨ ਲਈ ਹੇਠਾਂ ਦਿੱਤੇ ਲਿੰਕ ਦੀ ਵਰਤੋਂ ਕਰੋ — RSVP ਵੇਖੋ, ਵੇਰਵੇ ਸੰਪਾਦਿਤ ਕਰੋ, ਯਾਦ-ਪੱਤਰ ਭੇਜੋ:',
         manageUrl,
         '',
         'ਇਹ ਲਿੰਕ ਨਿੱਜੀ ਰੱਖੋ। ਜਿਸ ਕੋਲ ਲਿੰਕ ਹੈ ਉਹ ਇਵੈਂਟ ਪ੍ਰਬੰਧਿਤ ਕਰ ਸਕਦਾ ਹੈ।',
@@ -2064,7 +2064,9 @@ const ko: TemplateBundle = {
   },
   announcement: {
     subject: ({ eventTitle, stage }) =>
-      stage === 'save_the_date' ? `날짜를 비워 두세요 — ${eventTitle}` : `초대합니다: ${eventTitle}`,
+      stage === 'save_the_date'
+        ? `날짜를 비워 두세요 — ${eventTitle}`
+        : `초대합니다: ${eventTitle}`,
     body: ({ eventTitle, startsAt, eventUrl, stage }) => {
       if (stage === 'save_the_date') {
         return [

@@ -24,7 +24,7 @@
     }
   });
 
-  const locales = Object.entries(LOCALE_ENDONYMS) as Array<[string, string]>;
+  const locales = Object.entries(LOCALE_ENDONYMS);
 </script>
 
 <svelte:head>

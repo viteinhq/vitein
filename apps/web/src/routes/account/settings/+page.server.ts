@@ -1,10 +1,7 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { i18n } from '$lib/i18n';
 import { apiFetch } from '$lib/server/api';
-import {
-  availableLanguageTags,
-  type AvailableLanguageTag,
-} from '$lib/paraglide/runtime.js';
+import { availableLanguageTags, type AvailableLanguageTag } from '$lib/paraglide/runtime.js';
 import type { Actions, PageServerLoad } from './$types';
 
 interface UserProfile {

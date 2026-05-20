@@ -25,14 +25,14 @@ unlimited history at 1-day granularity, 90-day full history.
 
 2. Create monitors matching [`uptime-monitors.md`](./uptime-monitors.md):
 
-   | Name             | URL                                                                                 | Keyword            |
-   | ---------------- | ----------------------------------------------------------------------------------- | ------------------ |
-   | Web staging      | `https://next.vite.in/`                                                             | `vite.in`          |
-   | API staging      | `https://api-staging.vite.in/v1/health`                                             | `"db":"connected"` |
-   | MCP staging      | `https://mcp-staging.vite.in/`                                                      | `vitein-mcp`       |
-   | Web prod\*       | `https://vite.in/`                                                                  | `vite.in`          |
-   | API prod\*       | `https://api.vite.in/v1/health`                                                     | `"db":"connected"` |
-   | MCP prod\*       | `https://mcp.vite.in/`                                                              | `vitein-mcp`       |
+   | Name        | URL                                     | Keyword            |
+   | ----------- | --------------------------------------- | ------------------ |
+   | Web staging | `https://next.vite.in/`                 | `vite.in`          |
+   | API staging | `https://api-staging.vite.in/v1/health` | `"db":"connected"` |
+   | MCP staging | `https://mcp-staging.vite.in/`          | `vitein-mcp`       |
+   | Web prod\*  | `https://vite.in/`                      | `vite.in`          |
+   | API prod\*  | `https://api.vite.in/v1/health`         | `"db":"connected"` |
+   | MCP prod\*  | `https://mcp.vite.in/`                  | `vitein-mcp`       |
 
    \* Wire prod monitors only after the cutover deploy is live; otherwise
    they'll constantly alert.
@@ -91,6 +91,7 @@ Cloudflare Tunnel — no port-forwarding needed):
    - **Hetzner CX11** — €4.51/mo, full VPS, runs anything.
 
 2. Run Uptime Kuma with persistent volume:
+
    ```
    docker run -d --restart=always -p 3001:3001 \
      -v uptime-kuma:/app/data \
@@ -99,6 +100,7 @@ Cloudflare Tunnel — no port-forwarding needed):
 
 3. Behind a reverse proxy (Caddy easiest) with TLS for
    `status.vite.in`. Caddyfile excerpt:
+
    ```
    status.vite.in {
      reverse_proxy localhost:3001

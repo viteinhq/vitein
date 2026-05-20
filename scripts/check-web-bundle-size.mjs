@@ -21,10 +21,7 @@ import { promisify } from 'node:util';
 const gzip = promisify(zlib.gzip);
 
 const REPO_ROOT = path.resolve(new URL('..', import.meta.url).pathname);
-const CLIENT_DIR = path.join(
-  REPO_ROOT,
-  'apps/web/.svelte-kit/output/client/_app/immutable',
-);
+const CLIENT_DIR = path.join(REPO_ROOT, 'apps/web/.svelte-kit/output/client/_app/immutable');
 
 // Budgets (bytes). Keep loose; Lighthouse handles the fine grain.
 // Note: this is the total across every client JS file. A given route
@@ -33,8 +30,7 @@ const CLIENT_DIR = path.join(
 const RAW_TOTAL_BUDGET = 600 * 1024; // 600 KB
 const GZ_TOTAL_BUDGET = 150 * 1024; // 150 KB
 
-const fmt = (n) =>
-  n >= 1024 ? `${(n / 1024).toFixed(1)} KB` : `${n} B`;
+const fmt = (n) => (n >= 1024 ? `${(n / 1024).toFixed(1)} KB` : `${n} B`);
 
 async function walk(dir) {
   const out = [];
