@@ -1,7 +1,6 @@
 import { fail, redirect } from '@sveltejs/kit';
-import { i18n } from '$lib/i18n';
 import { apiFetch } from '$lib/server/api';
-import { availableLanguageTags, type AvailableLanguageTag } from '$lib/paraglide/runtime.js';
+import { cookieName, isLocale, localizeHref } from '$lib/paraglide/runtime.js';
 import type { Actions, PageServerLoad } from './$types';
 
 interface UserProfile {
@@ -61,16 +60,14 @@ export const actions: Actions = {
     // + URL prefix so the change is visible immediately. Without this,
     // the PATCH writes `users.locale` but the visible UI keeps the
     // old language until the next language-switcher click.
-    if (locale && (availableLanguageTags as readonly string[]).includes(locale)) {
-      const tag = locale as AvailableLanguageTag;
-      event.cookies.set('paraglide_lang', tag, {
+    if (locale && isLocale(locale)) {
+      event.cookies.set(cookieName, locale, {
         path: '/',
         maxAge: 60 * 60 * 24 * 365,
         sameSite: 'lax',
         secure: !event.url.hostname.startsWith('localhost'),
       });
-      const next = i18n.resolveRoute('/account/settings', tag);
-      throw redirect(303, next);
+      throw redirect(303, localizeHref('/account/settings', { locale }));
     }
 
     return { updated: true };
