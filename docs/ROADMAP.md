@@ -79,31 +79,19 @@ This is the phase that pays the interest on all architectural promises. Cutting 
 - Account settings
 - Cookie consent (regional rules)
 
-#### 1.3 iOS app
+#### 1.3 Mobile (PWA)
 
-- Core networking layer with generated Swift SDK
-- Keychain-backed auth storage
-- Event view screen (from deep link or URL share)
-- RSVP flow
-- Create-event flow (account required on mobile for simplicity)
-- Push notifications (APNs) — for RSVP received, reminder sent, event approaching
-- Sign in with Apple
-- Share sheet integration (for sending invite links via native OS)
-- Basic templates (reuse web's design tokens)
+The mobile experience for Phase 1 is an installable PWA, not native apps — see ADR 0006.
 
-#### 1.4 Android app
+- Web app manifest + icon set (installable on iOS and Android home screens)
+- Service worker: app-shell cache, offline fallback page
+- Install prompts (Android `beforeinstallprompt`; iOS add-to-home-screen guidance)
+- Web Push (VAPID): subscription registration, push on RSVP received and reminders
+- Push backend: `push_subscriptions` table, spec endpoint, `QUEUE_PUSH` consumer
+- Notification settings for both account users and creator-token management
+- Lighthouse PWA audit green; install + push verified on real iOS and Android devices
 
-- Core networking layer with generated Kotlin SDK
-- EncryptedSharedPreferences / Keystore auth storage
-- Event view screen (from deep link or URL share)
-- RSVP flow
-- Create-event flow (account required on mobile)
-- Push notifications (FCM)
-- Sign in with Google
-- Share intent integration
-- Basic templates
-
-#### 1.5 Cutover & ops
+#### 1.4 Cutover & ops
 
 - v1 data archive (read-only export, kept for 1 year)
 - DNS cutover plan: feature-flag-gated so individual % of traffic can move to v2
@@ -114,7 +102,7 @@ This is the phase that pays the interest on all architectural promises. Cutting 
 ### Exit criteria
 
 - A user on any of the launch languages can create an event, share it, receive RSVPs, and upgrade to premium — entirely on v2.
-- iOS and Android apps approved in respective stores.
+- Mobile experience shipped: installable PWA with Web Push, verified on iOS and Android.
 - 100% of new event creation traffic goes to v2 for 2 consecutive weeks without regression.
 - Uptime ≥ 99.9% for 30 days.
 - First 50 paying events on v2.
@@ -122,6 +110,7 @@ This is the phase that pays the interest on all architectural promises. Cutting 
 ### Explicitly NOT in Phase 1
 
 - MCP server / agent integration (Phase 2).
+- Native iOS and Android apps (Phase 1.6 — staged after the PWA, see ADR 0006).
 - B2B / team accounts (Phase 2).
 - Regional payment providers beyond Stripe (Phase 2+).
 - Cultural template variants (Phase 3).
@@ -156,6 +145,33 @@ This is the phase that pays the interest on all architectural promises. Cutting 
 ### Why this is its own phase, not a feature in Phase 1
 
 Phase 1 is about getting v2 out the door. Phase 1.5 is about learning. Mixing them would either delay Phase 1 launch or rush PPP decisions without real data. Treating PPP-for-India as a small separate phase with its own exit criteria keeps both clean.
+
+---
+
+## Phase 1.6 — Native apps (gated on PWA adoption)
+
+**Goal:** Ship native iOS, then native Android, replacing the PWA for users who install them. Staged, not parallel — see ADR 0006.
+
+### Sequencing
+
+- **iOS first.** Swift / SwiftUI, built in-house. Repo `vite-in-ios`.
+- **Android second.** Kotlin / Compose. Repo `vite-in-android`. The finished iOS app is its reference port.
+- Whether this phase starts — and how it is resourced — is gated on PWA install / push adoption data from Phase 1.
+
+### Per-platform scope
+
+- Generated SDK from the OpenAPI spec (Swift via `swift-openapi-generator`; Kotlin via `openapi-generator`)
+- Secure auth token storage (Keychain / Keystore)
+- Event view from deep link or shared URL, RSVP flow, create-event flow (account-gated on native; anonymous creation stays on web / PWA)
+- Native push (APNs / FCM) — adds transport adapters to the Phase-1 notification layer
+- Native social sign-in (Sign in with Apple / Sign in with Google)
+- Native share integration
+- Basic templates reusing the web design tokens
+
+### Exit criteria
+
+- iOS and Android apps approved in their respective stores.
+- Native push delivery verified end-to-end on both platforms.
 
 ---
 
