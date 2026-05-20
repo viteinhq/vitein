@@ -847,7 +847,16 @@ const pl: TemplateBundle = {
   },
 };
 
-const bundles: Record<Locale, TemplateBundle> = { en, de, fr, es, it, pt, nl, pl };
+/**
+ * Email-template bundles per locale. `Partial` on purpose: the visible
+ * product UI is localised into every supported language, but the
+ * transactional email templates are translated in a separate pass
+ * (same staged approach as the legal pages). A locale without a
+ * bundle falls back to English in `templatesFor` — a Hindi user gets
+ * an English magic-link email until the email pass lands, never a
+ * broken one.
+ */
+const bundles: Partial<Record<Locale, TemplateBundle>> = { en, de, fr, es, it, pt, nl, pl };
 
 /**
  * Look up a template bundle for a given locale, with English fallback.
@@ -855,5 +864,5 @@ const bundles: Record<Locale, TemplateBundle> = { en, de, fr, es, it, pt, nl, pl
  */
 export function templatesFor(locale: Locale | undefined): TemplateBundle {
   if (locale && bundles[locale]) return bundles[locale];
-  return bundles[DEFAULT_LOCALE];
+  return bundles[DEFAULT_LOCALE] as TemplateBundle;
 }

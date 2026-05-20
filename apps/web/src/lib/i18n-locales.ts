@@ -26,6 +26,7 @@ export const LOCALE_ENDONYMS: Record<AvailableLanguageTag, string> = {
   pt: 'Português',
   nl: 'Nederlands',
   pl: 'Polski',
+  hi: 'हिन्दी',
 };
 
 /** Human-readable endonym for a locale, with a safe fallback to the tag. */
