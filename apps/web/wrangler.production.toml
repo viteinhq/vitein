@@ -1,0 +1,23 @@
+# Production Pages config for the `vitein-web` project (serves vite.in).
+#
+# The default wrangler.toml targets `vitein-web-staging` (next.vite.in)
+# and points every var at the staging API. Cloudflare Pages applies a
+# project's [vars] to whatever project a deploy lands on, so production
+# needs its own config file rather than a shared one with env blocks.
+#
+# Deploy with:
+#   pnpm -F @vitein/web exec wrangler pages deploy .svelte-kit/cloudflare \
+#     --config wrangler.production.toml --branch main
+name = "vitein-web"
+pages_build_output_dir = ".svelte-kit/cloudflare"
+compatibility_date = "2026-04-19"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+API_BASE_URL = "https://api.vite.in"
+
+[env.preview.vars]
+API_BASE_URL = "https://api.vite.in"
+
+[env.production.vars]
+API_BASE_URL = "https://api.vite.in"
