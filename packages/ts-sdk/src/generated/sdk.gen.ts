@@ -300,6 +300,10 @@ export const listMedia = <ThrowOnError extends boolean = false>(
  * type. Accepted types: JPEG, PNG, WebP, GIF, AVIF. Max 10 MiB. Max
  * 10 items per event.
  *
+ * Media upload is a premium feature (`paid_features.media_upload`,
+ * included on both Basic and Plus). Free / unpaid events return
+ * 403 `event.feature_gated`.
+ *
  */
 export const uploadMedia = <ThrowOnError extends boolean = false>(
   options: Options<UploadMediaData, ThrowOnError>,

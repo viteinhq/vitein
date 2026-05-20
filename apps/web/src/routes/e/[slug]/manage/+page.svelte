@@ -233,22 +233,29 @@
       </ul>
     {/if}
 
-    <form
-      method="POST"
-      action="?/uploadMedia&token={data.token}"
-      enctype="multipart/form-data"
-      use:enhance
-      class="flex items-center gap-3 pt-3"
-    >
-      <input
-        type="file"
-        name="file"
-        accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
-        required
-        class="block w-full text-sm"
-      />
-      <Button type="submit" size="sm">{m.manage_media_upload()}</Button>
-    </form>
+    <!-- Upload is premium-gated (Basic + Plus). The API enforces it with
+         a 403; the UI hides the form on free events and points at the
+         upgrade panel instead, so a free creator never hits the 403. -->
+    {#if data.event.isPaid}
+      <form
+        method="POST"
+        action="?/uploadMedia&token={data.token}"
+        enctype="multipart/form-data"
+        use:enhance
+        class="flex items-center gap-3 pt-3"
+      >
+        <input
+          type="file"
+          name="file"
+          accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
+          required
+          class="block w-full text-sm"
+        />
+        <Button type="submit" size="sm">{m.manage_media_upload()}</Button>
+      </form>
+    {:else}
+      <Banner tone="info">{m.manage_media_premium_locked()}</Banner>
+    {/if}
   </Section>
 
   <Section>

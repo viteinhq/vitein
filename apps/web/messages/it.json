@@ -390,5 +390,7 @@
   "pricing_subtitle": "Free for most events. One-time payment per event for premium — no subscription, ever.",
   "pricing_basic_price": "€5 / $5 / CHF 5 / £4",
   "pricing_plus_price": "€9 / $9 / CHF 9 / £7",
-  "pricing_per_event": "one-time, per event"
+  "pricing_per_event": "one-time, per event",
+  "tier_basic_item_cover": "Cover image",
+  "manage_media_premium_locked": "Cover image upload is a premium feature. Upgrade this event (Basic or Plus) above to unlock it."
 }

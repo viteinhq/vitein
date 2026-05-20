@@ -832,6 +832,10 @@ export type UploadMediaErrors = {
    */
   401: Error;
   /**
+   * Media upload is gated to premium (Basic or Plus) events.
+   */
+  403: Error;
+  /**
    * Quota exceeded (10 media per event).
    */
   409: Error;
