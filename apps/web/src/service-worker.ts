@@ -2,6 +2,7 @@
 /// <reference lib="webworker" />
 
 import { build, files, version } from '$service-worker';
+import { decodeVapidKey } from '$lib/pwa/vapid';
 
 const sw = self as unknown as ServiceWorkerGlobalScope;
 
@@ -159,3 +160,33 @@ sw.addEventListener('notificationclick', (event) => {
     }),
   );
 });
+
+// Browsers periodically rotate or expire a push subscription on their own.
+// Re-subscribe and hand the server the old + new endpoints so it can
+// migrate the stored record without losing the owner binding. The old
+// endpoint is the only credential available here — the SW holds no creator
+// token — so the server keys the migration on it.
+sw.addEventListener('pushsubscriptionchange', (event) => {
+  const change = event as ExtendableEvent & { oldSubscription?: PushSubscription };
+  change.waitUntil(resubscribe(change.oldSubscription?.endpoint));
+});
+
+async function resubscribe(oldEndpoint: string | undefined): Promise<void> {
+  if (!oldEndpoint) return;
+  try {
+    const keyRes = await fetch('/api/push');
+    if (!keyRes.ok) return;
+    const { key } = (await keyRes.json()) as { key: string };
+    const subscription = await sw.registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: decodeVapidKey(key),
+    });
+    await fetch('/api/push', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ oldEndpoint, subscription: subscription.toJSON() }),
+    });
+  } catch {
+    // Best-effort — if this fails the user re-enables manually next visit.
+  }
+}

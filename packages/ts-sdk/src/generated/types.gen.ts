@@ -284,6 +284,33 @@ export type PushSubscriptionInput = {
   };
 };
 
+/**
+ * A rotated Web Push subscription. `oldEndpoint` identifies the
+ * existing stored record to migrate; `endpoint` + `keys` are the
+ * replacement subscription from `PushSubscription.toJSON()`.
+ *
+ */
+export type PushSubscriptionRefreshInput = {
+  /**
+   * Endpoint URL of the subscription being replaced.
+   */
+  oldEndpoint: string;
+  /**
+   * The new Web Push service endpoint URL.
+   */
+  endpoint: string;
+  keys: {
+    /**
+     * Client public key (base64url).
+     */
+    p256dh: string;
+    /**
+     * Client auth secret (base64url).
+     */
+    auth: string;
+  };
+};
+
 export type Media = {
   id: string;
   eventId: string;
@@ -1570,3 +1597,30 @@ export type RegisterPushSubscriptionResponses = {
 
 export type RegisterPushSubscriptionResponse =
   RegisterPushSubscriptionResponses[keyof RegisterPushSubscriptionResponses];
+
+export type RefreshPushSubscriptionData = {
+  body: PushSubscriptionRefreshInput;
+  path?: never;
+  query?: never;
+  url: '/v1/push/subscriptions/refresh';
+};
+
+export type RefreshPushSubscriptionErrors = {
+  /**
+   * Request body or query parameters failed validation.
+   */
+  400: Error;
+};
+
+export type RefreshPushSubscriptionError =
+  RefreshPushSubscriptionErrors[keyof RefreshPushSubscriptionErrors];
+
+export type RefreshPushSubscriptionResponses = {
+  /**
+   * Subscription re-bound (or `oldEndpoint` was unknown).
+   */
+  204: void;
+};
+
+export type RefreshPushSubscriptionResponse =
+  RefreshPushSubscriptionResponses[keyof RefreshPushSubscriptionResponses];

@@ -16,9 +16,32 @@ export const GET: RequestHandler = async (event) => {
   return json((await res.json()) as { key: string });
 };
 
-/** Register a push subscription. */
+/**
+ * Register a push subscription — or, when `oldEndpoint` is present, re-bind
+ * a rotated one. The service worker fires `pushsubscriptionchange` with no
+ * token, so the rotation path keys on the old endpoint instead.
+ */
 export const POST: RequestHandler = async (event) => {
-  const body = (await event.request.json()) as { token?: string; subscription?: unknown };
+  const body = (await event.request.json()) as {
+    token?: string;
+    oldEndpoint?: string;
+    subscription?: { endpoint?: string; keys?: unknown };
+  };
+
+  if (body.oldEndpoint) {
+    const sub = body.subscription ?? {};
+    const res = await apiFetch(event, '/v1/push/subscriptions/refresh', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        oldEndpoint: body.oldEndpoint,
+        endpoint: sub.endpoint,
+        keys: sub.keys,
+      }),
+    });
+    return new Response(null, { status: res.ok ? 204 : res.status });
+  }
+
   const res = await apiFetch(event, '/v1/push/subscriptions', {
     method: 'POST',
     headers: pushHeaders(body.token),

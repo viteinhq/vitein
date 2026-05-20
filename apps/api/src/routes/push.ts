@@ -6,6 +6,7 @@ import { UnauthorizedError, ValidationError } from '../domain/errors.js';
 import {
   deletePushSubscription,
   type PushBinding,
+  refreshPushSubscription,
   registerPushSubscription,
 } from '../domain/push/push.js';
 import { db } from '../infra/db.js';
@@ -44,6 +45,35 @@ pushRoute.post(
     const input = c.req.valid('json');
     await registerPushSubscription(db(c), {
       binding: bindingFor(c.var.auth),
+      endpoint: input.endpoint,
+      p256dh: input.keys.p256dh,
+      auth: input.keys.auth,
+    });
+    return c.body(null, 204);
+  },
+);
+
+/**
+ * Public — no auth. A rotated subscription is re-bound by its old
+ * endpoint: the service worker fires `pushsubscriptionchange` without
+ * access to a creator token or session, so the unguessable old endpoint
+ * URL is the capability. See `refreshPushSubscription`.
+ */
+pushRoute.post(
+  '/subscriptions/refresh',
+  zValidator(
+    'json',
+    z.object({ oldEndpoint: z.string().url(), ...subscriptionSchema.shape }),
+    (r) => {
+      if (!r.success) {
+        throw new ValidationError('Invalid push subscription', { issues: r.error.issues });
+      }
+    },
+  ),
+  async (c) => {
+    const input = c.req.valid('json');
+    await refreshPushSubscription(db(c), {
+      oldEndpoint: input.oldEndpoint,
       endpoint: input.endpoint,
       p256dh: input.keys.p256dh,
       auth: input.keys.auth,

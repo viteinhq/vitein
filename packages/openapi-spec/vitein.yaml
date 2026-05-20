@@ -846,6 +846,34 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
 
+  /v1/push/subscriptions/refresh:
+    post:
+      operationId: refreshPushSubscription
+      summary: Re-bind a Web Push subscription after the browser rotates it
+      description: |
+        Public endpoint — no auth. When a browser fires
+        `pushsubscriptionchange` (it periodically rotates or expires push
+        subscriptions), the service worker re-subscribes and calls this to
+        migrate the stored record: the row matching `oldEndpoint` keeps
+        its owner binding (user account or event) and adopts the new
+        `endpoint` and keys.
+
+        The old endpoint is the capability — an unguessable, secret
+        push-service URL — so no creator token or session is required
+        (the service worker has access to neither). An unknown
+        `oldEndpoint` is a no-op.
+      tags: [push]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PushSubscriptionRefreshInput' }
+      responses:
+        '204':
+          description: Subscription re-bound (or `oldEndpoint` was unknown).
+        '400':
+          $ref: '#/components/responses/ValidationError'
+
 components:
   parameters:
     EventId:
@@ -1189,6 +1217,33 @@ components:
           type: string
           format: uri
           description: The Web Push service endpoint URL.
+        keys:
+          type: object
+          required: [p256dh, auth]
+          properties:
+            p256dh:
+              type: string
+              description: Client public key (base64url).
+            auth:
+              type: string
+              description: Client auth secret (base64url).
+
+    PushSubscriptionRefreshInput:
+      type: object
+      required: [oldEndpoint, endpoint, keys]
+      description: |
+        A rotated Web Push subscription. `oldEndpoint` identifies the
+        existing stored record to migrate; `endpoint` + `keys` are the
+        replacement subscription from `PushSubscription.toJSON()`.
+      properties:
+        oldEndpoint:
+          type: string
+          format: uri
+          description: Endpoint URL of the subscription being replaced.
+        endpoint:
+          type: string
+          format: uri
+          description: The new Web Push service endpoint URL.
         keys:
           type: object
           required: [p256dh, auth]
