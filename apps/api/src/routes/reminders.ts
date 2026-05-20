@@ -19,7 +19,7 @@ remindersRoute.post(
   requireEventOwnership('id', { scope: 'events:write' }),
   async (c) => {
     const { id } = c.req.valid('param');
-    const reminder = await queueImmediateReminder(db(c.env), id);
+    const reminder = await queueImmediateReminder(db(c), id);
     return c.json(
       {
         id: reminder.id,

@@ -1,5 +1,5 @@
 export { and, asc, desc, eq, gte, inArray, isNull, lt, lte, or, sql } from 'drizzle-orm';
-export { createDb, type Db } from './client.js';
+export { openDb, type Db, type DbHandle } from './client.js';
 export {
   users,
   sessions,

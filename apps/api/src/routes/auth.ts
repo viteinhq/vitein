@@ -1,6 +1,7 @@
 import { oauthProviderAuthServerMetadata } from '@better-auth/oauth-provider';
 import { Hono } from 'hono';
 import { createAuth } from '../infra/auth.js';
+import { db } from '../infra/db.js';
 import type { AppVariables, Env } from '../types/env.js';
 
 /**
@@ -20,12 +21,12 @@ export const authRoute = new Hono<{ Bindings: Env; Variables: AppVariables }>();
 // surface it ourselves using the plugin's exported handler. Mounts at
 // `/v1/auth/.well-known/oauth-authorization-server`.
 authRoute.get('/.well-known/oauth-authorization-server', async (c) => {
-  const auth = createAuth(c.env);
+  const auth = createAuth(c.env, db(c));
   const handler = oauthProviderAuthServerMetadata(auth);
   return handler(c.req.raw);
 });
 
 authRoute.all('/*', async (c) => {
-  const auth = createAuth(c.env);
+  const auth = createAuth(c.env, db(c));
   return auth.handler(c.req.raw);
 });

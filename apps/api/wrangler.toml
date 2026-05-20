@@ -41,6 +41,11 @@ class_name = "RateLimiter"
 binding = "R2_MEDIA"
 bucket_name = "vitein-media-staging"
 
+# Postgres connection pooled at the edge via Hyperdrive — see ADR 0008.
+[[env.staging.hyperdrive]]
+binding = "HYPERDRIVE"
+id = "063ef21041c44b0083f6466dbcd9b7f1"
+
 # Email delivery queue — producer + consumer are the same Worker.
 [[env.staging.queues.producers]]
 binding = "QUEUE_EMAIL"
@@ -70,6 +75,11 @@ class_name = "RateLimiter"
 [[env.production.r2_buckets]]
 binding = "R2_MEDIA"
 bucket_name = "vitein-media"
+
+# Postgres connection pooled at the edge via Hyperdrive — see ADR 0008.
+[[env.production.hyperdrive]]
+binding = "HYPERDRIVE"
+id = "e6c2d8110c624335b03e59bfbe46c25e"
 
 # Email delivery queue — producer + consumer are the same Worker.
 [[env.production.queues.producers]]

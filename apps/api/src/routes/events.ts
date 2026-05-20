@@ -1,5 +1,5 @@
 import { zValidator } from '@hono/zod-validator';
-import { Hono } from 'hono';
+import { Hono, type Context } from 'hono';
 import { z } from 'zod';
 import {
   createEvent,
@@ -78,7 +78,7 @@ eventsRoute.post(
   }),
   async (c) => {
     const input = c.req.valid('json');
-    const { event, creatorToken } = await createEvent(db(c.env), {
+    const { event, creatorToken } = await createEvent(db(c), {
       ...input,
       startsAt: new Date(input.startsAt),
       endsAt: input.endsAt ? new Date(input.endsAt) : null,
@@ -113,7 +113,7 @@ eventsRoute.get(
   }),
   async (c) => {
     const { slug } = c.req.valid('param');
-    const event = await getEventBySlug(db(c.env), slug);
+    const event = await getEventBySlug(db(c), slug);
     const locked = await resolveLocked(c, event);
     return c.json(toPublic(event, { locked }));
   },
@@ -126,7 +126,7 @@ eventsRoute.get(
   }),
   async (c) => {
     const { slug } = c.req.valid('param');
-    const event = await getEventBySlug(db(c.env), slug);
+    const event = await getEventBySlug(db(c), slug);
     if (await resolveLocked(c, event)) {
       throw new UnauthorizedError(
         'event.locked',
@@ -149,7 +149,7 @@ eventsRoute.get(
   }),
   async (c) => {
     const { id } = c.req.valid('param');
-    const event = await getEventPublic(db(c.env), id);
+    const event = await getEventPublic(db(c), id);
     const locked = await resolveLocked(c, event);
     return c.json(toPublic(event, { locked }));
   },
@@ -164,7 +164,7 @@ eventsRoute.get(
   requireEventOwnership('id', { scope: 'events:read' }),
   async (c) => {
     const { id } = c.req.valid('param');
-    const event = await getEventForCreator(db(c.env), id);
+    const event = await getEventForCreator(db(c), id);
     return c.json(toManage(event));
   },
 );
@@ -188,7 +188,7 @@ eventsRoute.patch(
     // Plus tier. Clearing (null) is always allowed so creators can drop
     // a password after a downgrade or accidental set.
     if (typeof input.password === 'string') {
-      const existing = await getEventForCreator(db(c.env), id);
+      const existing = await getEventForCreator(db(c), id);
       const tier = tierOf(existing);
       if (!tier || !tierIncludes(tier, 'password_protected')) {
         throw new DomainError(
@@ -199,7 +199,7 @@ eventsRoute.patch(
       }
     }
 
-    const event = await updateEvent(db(c.env), id, {
+    const event = await updateEvent(db(c), id, {
       title: input.title,
       description: input.description,
       timezone: input.timezone,
@@ -227,7 +227,7 @@ eventsRoute.post(
   async (c) => {
     const { id } = c.req.valid('param');
     const { password } = c.req.valid('json');
-    const event = await getEventPublic(db(c.env), id);
+    const event = await getEventPublic(db(c), id);
     if (!event.passwordHash) {
       // Nothing to verify — surface as unauthorized to avoid leaking state
       // about whether this event would be gated at all.
@@ -236,7 +236,7 @@ eventsRoute.post(
     const ok = await verifyPassword(password, event.passwordHash);
     if (!ok) throw new UnauthorizedError('event.password_invalid', 'Wrong password');
 
-    const { token, expiresAt } = await issueViewToken(db(c.env), event.id);
+    const { token, expiresAt } = await issueViewToken(db(c), event.id);
     return c.json({
       token,
       expiresAt: expiresAt.toISOString(),
@@ -254,7 +254,7 @@ eventsRoute.delete(
   requireEventOwnership('id', { scope: 'events:write' }),
   async (c) => {
     const { id } = c.req.valid('param');
-    await softDeleteEvent(db(c.env), id);
+    await softDeleteEvent(db(c), id);
     return c.body(null, 204);
   },
 );
@@ -310,11 +310,11 @@ function toManage(e: EventRow) {
  * `X-Event-View-Token` header is locked.
  */
 async function resolveLocked(
-  c: { env: Env; req: { header: (name: string) => string | undefined } },
+  c: Context<{ Bindings: Env; Variables: AppVariables }>,
   event: EventRow,
 ): Promise<boolean> {
   if (!event.passwordHash) return false;
   const token = c.req.header('X-Event-View-Token');
   if (!token) return true;
-  return !(await isViewTokenValid(db(c.env), event.id, token));
+  return !(await isViewTokenValid(db(c), event.id, token));
 }

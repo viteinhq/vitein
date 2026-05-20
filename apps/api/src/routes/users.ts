@@ -33,7 +33,7 @@ function userIdFromAuth(auth: AuthContext): string {
 }
 
 usersRoute.get('/me', async (c) => {
-  const user = await getMe(db(c.env), userIdFromAuth(c.var.auth));
+  const user = await getMe(db(c), userIdFromAuth(c.var.auth));
   return c.json(toProfile(user));
 });
 
@@ -51,18 +51,18 @@ usersRoute.patch(
   }),
   async (c) => {
     const input = c.req.valid('json');
-    const user = await updateMe(db(c.env), userIdFromAuth(c.var.auth), input);
+    const user = await updateMe(db(c), userIdFromAuth(c.var.auth), input);
     return c.json(toProfile(user));
   },
 );
 
 usersRoute.delete('/me', async (c) => {
-  await softDeleteMe(db(c.env), userIdFromAuth(c.var.auth));
+  await softDeleteMe(db(c), userIdFromAuth(c.var.auth));
   return c.body(null, 204);
 });
 
 usersRoute.get('/me/events', requireScope('events:read'), async (c) => {
-  const rows = await getMyEvents(db(c.env), userIdFromAuth(c.var.auth));
+  const rows = await getMyEvents(db(c), userIdFromAuth(c.var.auth));
   return c.json({
     items: rows.map((e) => ({
       id: e.id,
@@ -80,12 +80,12 @@ usersRoute.get('/me/events', requireScope('events:read'), async (c) => {
 });
 
 usersRoute.get('/me/stats', async (c) => {
-  const stats = await getMyStats(db(c.env), userIdFromAuth(c.var.auth));
+  const stats = await getMyStats(db(c), userIdFromAuth(c.var.auth));
   return c.json(stats);
 });
 
 usersRoute.get('/me/audit', async (c) => {
-  const rows = await listAuditForUser(db(c.env), userIdFromAuth(c.var.auth));
+  const rows = await listAuditForUser(db(c), userIdFromAuth(c.var.auth));
   return c.json({
     items: rows.map((r) => ({
       id: r.id,
@@ -98,7 +98,7 @@ usersRoute.get('/me/audit', async (c) => {
 });
 
 usersRoute.get('/me/export', async (c) => {
-  const bundle = await exportMe(db(c.env), userIdFromAuth(c.var.auth));
+  const bundle = await exportMe(db(c), userIdFromAuth(c.var.auth));
   return c.json({
     exportedAt: bundle.exportedAt.toISOString(),
     user: toProfile(bundle.user),

@@ -1,6 +1,6 @@
 import { sql } from '@vitein/db-schema';
-import { Hono } from 'hono';
-import { db } from '../infra/db.js';
+import { type Context, Hono } from 'hono';
+import { db, dbConnectionString } from '../infra/db.js';
 import type { AppVariables, Env } from '../types/env.js';
 
 type DbStatus = 'connected' | 'unavailable' | 'error';
@@ -8,23 +8,23 @@ type DbStatus = 'connected' | 'unavailable' | 'error';
 export const healthRoute = new Hono<{ Bindings: Env; Variables: AppVariables }>();
 
 healthRoute.get('/', async (c) => {
-  const dbStatus = await pingDb(c.env);
   return c.json({
     status: 'ok',
     environment: c.env.ENVIRONMENT,
-    db: dbStatus,
+    db: await pingDb(c),
     ts: new Date().toISOString(),
     buildSha: c.env.BUILD_SHA ?? null,
     buildStamp: c.env.BUILD_STAMP ?? null,
   });
 });
 
-async function pingDb(env: Env): Promise<DbStatus> {
-  if (!env.DATABASE_URL) return 'unavailable';
+async function pingDb(c: Context<{ Bindings: Env; Variables: AppVariables }>): Promise<DbStatus> {
+  if (!dbConnectionString(c.env)) return 'unavailable';
   try {
-    await db(env).execute(sql`select 1`);
+    await db(c).execute(sql`select 1`);
     return 'connected';
-  } catch {
+  } catch (err) {
+    c.var.logger.warn('health_db_ping_failed', { err: err as Error });
     return 'error';
   }
 }

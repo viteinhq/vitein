@@ -29,7 +29,7 @@ announcementsRoute.get(
   requireEventOwnership('id', { scope: 'events:read' }),
   async (c) => {
     const { id } = c.req.valid('param');
-    const items = await listAnnouncements(db(c.env), id);
+    const items = await listAnnouncements(db(c), id);
     return c.json({
       items: items.map((r) => ({
         id: r.id,
@@ -65,7 +65,7 @@ announcementsRoute.post(
     const { id } = c.req.valid('param');
     const { stage } = c.req.valid('json');
 
-    const { event, recipients } = await loadAnnouncementContext(db(c.env), id, stage);
+    const { event, recipients } = await loadAnnouncementContext(db(c), id, stage);
 
     // Tier gate runs *before* the row insert — a gated send must not leave an
     // orphan `event_announcements` row, or the once-per-stage unique index
@@ -83,7 +83,7 @@ announcementsRoute.post(
       );
     }
 
-    const row = await insertAnnouncement(db(c.env), id, stage, recipients.length);
+    const row = await insertAnnouncement(db(c), id, stage, recipients.length);
 
     const webBase = c.env.WEB_BASE_URL ?? 'https://vite.in';
     const eventUrl = `${webBase}/e/${event.slug}`;
@@ -116,7 +116,7 @@ announcementsRoute.post(
       }
     }
 
-    await markAnnouncementSent(db(c.env), row.id, event.id, stage, {
+    await markAnnouncementSent(db(c), row.id, event.id, stage, {
       recipientCount: recipients.length,
       sent: sentOk,
       failed,

@@ -17,7 +17,7 @@ export const claimRoute = new Hono<{ Bindings: Env; Variables: AppVariables }>()
 
 claimRoute.post('/', requireUser, async (c) => {
   if (c.var.auth.kind !== 'user') throw new Error('unreachable');
-  const user = await getMe(db(c.env), c.var.auth.userId);
-  const result = await claimEventsForUser(db(c.env), user.id, user.email);
+  const user = await getMe(db(c), c.var.auth.userId);
+  const result = await claimEventsForUser(db(c), user.id, user.email);
   return c.json(result);
 });

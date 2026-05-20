@@ -1,7 +1,7 @@
 import { oauthProvider } from '@better-auth/oauth-provider';
 import {
   accounts,
-  createDb,
+  type Db,
   jwks,
   oauthAccessTokens,
   oauthClients,
@@ -28,11 +28,8 @@ import { sendSignInMagicLink } from './email.js';
  * Throws if required env vars are missing — callers should guard with a
  * clear error. Guarded in `middleware/auth.ts` and `routes/auth.ts`.
  */
-export function createAuth(env: Env) {
-  if (!env.DATABASE_URL) throw new Error('DATABASE_URL is required for auth');
+export function createAuth(env: Env, db: Db) {
   if (!env.AUTH_SECRET) throw new Error('AUTH_SECRET is required for auth');
-
-  const db = createDb(env.DATABASE_URL);
 
   // Better-Auth's endpoints live on the API worker, so baseURL has to point
   // there — otherwise the magic-link URL is rendered against the web origin

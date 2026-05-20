@@ -90,7 +90,7 @@ stripeWebhookRoute.post('/', async (c) => {
     return c.json({ received: true, handled: false });
   }
 
-  const dbc = db(c.env);
+  const dbc = db(c);
 
   // Idempotency: claim the event id before the side-effecting write so a
   // duplicate Stripe delivery is acknowledged without re-running it (and
