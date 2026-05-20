@@ -27,7 +27,7 @@ Native is retained for iOS and Android (not replaced by cross-platform) **becaus
 
 ## Alternatives considered
 
-- **Two native codebases in parallel (ARCHITECTURE §3 as written).** Best end-state UX, but the highest-risk path for a solo founder — exactly the risk the register flags. Rejected as a *starting* posture; retained as the *end* state, staged.
+- **Two native codebases in parallel (ARCHITECTURE §3 as written).** Best end-state UX, but the highest-risk path for a solo founder — exactly the risk the register flags. Rejected as a _starting_ posture; retained as the _end_ state, staged.
 - **Cross-platform single codebase (Flutter / React Native / Kotlin Multiplatform).** Roughly halves native effort. Rejected because it still introduces a new language/runtime, still needs Xcode for iOS signing, and — given Kim already does iOS natively — it would trade his existing strength for a new dependency. Would also require its own ADR (new runtime).
 - **PWA only, indefinitely.** Cheapest, but no App Store / Play Store presence and iOS PWA platform gaps cap the ceiling. Rejected as an end state; adopted as Stage 1.
 
@@ -36,7 +36,7 @@ Native is retained for iOS and Android (not replaced by cross-platform) **becaus
 - **Amends ARCHITECTURE §3** — mobile is staged, not a flat native commitment. §3 should be updated to point here.
 - **Amends the Phase 1 exit criterion.** "iOS and Android apps approved in respective stores" no longer gates Phase 1. Proposed replacement: Phase 1 = "mobile experience shipped (installable PWA with push)"; native iOS and Android move to a later slot (Phase 1.6 / Phase 2), gated on PWA adoption data. ROADMAP edit to follow.
 - **Stage 1 is not a pure `apps/web` change.** Web Push needs a backend: a new spec endpoint to register push subscriptions, a `push_subscriptions` table, and the first real consumer of the `QUEUE_PUSH` binding. The push backend is greenfield.
-- **Design the notification layer once.** The `push_subscriptions` table carries a `transport` discriminator (`webpush` | `apns` | `fcm`) so Stages 2 and 3 add transport adapters rather than reworking the schema. Subscriptions bind to `user_id` *or* `event_id`, preserving no-account-first (anonymous creators can still get RSVP push).
+- **Design the notification layer once.** The `push_subscriptions` table carries a `transport` discriminator (`webpush` | `apns` | `fcm`) so Stages 2 and 3 add transport adapters rather than reworking the schema. Subscriptions bind to `user_id` _or_ `event_id`, preserving no-account-first (anonymous creators can still get RSVP push).
 - **Resolves the Swift half of ADR 0004 / ARCHITECTURE §15.5** in direction: the iOS SDK will be generated with `swift-openapi-generator` (Apple-official, SPM build plugin, async/await + URLSession — matches §3). Kotlin SDK choice stays deferred to Stage 3. To be confirmed in its own note when Stage 2 begins.
 - The mobile repos `vite-in-ios` and `vite-in-android` already exist (private, empty).
 
