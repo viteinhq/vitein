@@ -1,0 +1,28 @@
+{
+  "not_found": "ਨਹੀਂ ਮਿਲਿਆ",
+  "unauthorized": "ਅਣਅਧਿਕਾਰਤ",
+  "validation_error": "ਪੁਸ਼ਟੀ ਅਸਫਲ",
+  "conflict": "ਮੌਜੂਦਾ ਸਥਿਤੀ ਨਾਲ ਟਕਰਾਅ",
+  "internal_error": "ਅੰਦਰੂਨੀ ਸਰਵਰ ਗਲਤੀ",
+  "rate_limited": "ਬਹੁਤ ਜ਼ਿਆਦਾ ਬੇਨਤੀਆਂ — ਕਿਰਪਾ ਕਰਕੇ ਹੌਲੀ ਚੱਲੋ",
+
+  "event.not_found": "ਇਵੈਂਟ ਨਹੀਂ ਮਿਲਿਆ",
+  "event.unauthorized": "ਇਹ ਨਿਰਮਾਤਾ ਟੋਕਨ ਇਸ ਇਵੈਂਟ ਨਾਲ ਮੇਲ ਨਹੀਂ ਖਾਂਦਾ",
+  "event.no_password": "ਇਵੈਂਟ ਪਾਸਵਰਡ-ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਹੈ",
+  "event.password_invalid": "ਗਲਤ ਪਾਸਵਰਡ",
+  "event.feature_gated": "ਇਸ ਵਿਸ਼ੇਸ਼ਤਾ ਲਈ Plus ਪੱਧਰ ਚਾਹੀਦਾ ਹੈ",
+  "event.already_paid": "ਇਵੈਂਟ ਪਹਿਲਾਂ ਹੀ ਪ੍ਰੀਮੀਅਮ ਹੈ",
+
+  "user.not_found": "ਵਰਤੋਂਕਾਰ ਨਹੀਂ ਮਿਲਿਆ",
+  "user.unauthorized": "ਜਾਰੀ ਰੱਖਣ ਲਈ ਕਿਰਪਾ ਕਰਕੇ ਸਾਈਨ ਇਨ ਕਰੋ",
+
+  "media.not_found": "ਮੀਡੀਆ ਨਹੀਂ ਮਿਲਿਆ",
+  "media.quota_exceeded": "ਇਸ ਇਵੈਂਟ ਲਈ ਮੀਡੀਆ ਸੀਮਾ ਪੂਰੀ ਹੋ ਗਈ",
+
+  "announcement.too_many_recipients": "ਮਹਿਮਾਨ ਸੂਚੀ ਤੁਰੰਤ-ਭੇਜਣ ਦੀ ਸੀਮਾ ਤੋਂ ਵੱਧ ਹੈ",
+  "announcement.already_sent": "ਇਸ ਪੜਾਅ ਲਈ ਇੱਕ ਐਲਾਨ ਪਹਿਲਾਂ ਹੀ ਭੇਜਿਆ ਜਾ ਚੁੱਕਾ ਹੈ",
+
+  "stripe.not_configured": "ਇਸ ਵਾਤਾਵਰਣ ਲਈ Stripe ਕੌਨਫਿਗਰ ਨਹੀਂ ਹੈ",
+  "stripe.price_not_configured": "ਇਸ ਪੱਧਰ ਅਤੇ ਮੁਦਰਾ ਲਈ Stripe ਕੌਨਫਿਗਰ ਨਹੀਂ ਹੈ",
+  "stripe.api_error": "Stripe ਨੇ ਬੇਨਤੀ ਰੱਦ ਕਰ ਦਿੱਤੀ"
+}

@@ -7,8 +7,33 @@ import pt from './locales/pt.json';
 import nl from './locales/nl.json';
 import pl from './locales/pl.json';
 import hi from './locales/hi.json';
+import bn from './locales/bn.json';
+import ta from './locales/ta.json';
+import te from './locales/te.json';
+import mr from './locales/mr.json';
+import gu from './locales/gu.json';
+import kn from './locales/kn.json';
+import ml from './locales/ml.json';
+import pa from './locales/pa.json';
 
-export type Locale = 'en' | 'de' | 'fr' | 'es' | 'it' | 'pt' | 'nl' | 'pl' | 'hi';
+export type Locale =
+  | 'en'
+  | 'de'
+  | 'fr'
+  | 'es'
+  | 'it'
+  | 'pt'
+  | 'nl'
+  | 'pl'
+  | 'hi'
+  | 'bn'
+  | 'ta'
+  | 'te'
+  | 'mr'
+  | 'gu'
+  | 'kn'
+  | 'ml'
+  | 'pa';
 export const SUPPORTED_LOCALES: readonly Locale[] = [
   'en',
   'de',
@@ -19,6 +44,14 @@ export const SUPPORTED_LOCALES: readonly Locale[] = [
   'nl',
   'pl',
   'hi',
+  'bn',
+  'ta',
+  'te',
+  'mr',
+  'gu',
+  'kn',
+  'ml',
+  'pa',
 ] as const;
 export const DEFAULT_LOCALE: Locale = 'en';
 
@@ -32,6 +65,14 @@ const dictionaries: Record<Locale, Record<string, string>> = {
   nl,
   pl,
   hi,
+  bn,
+  ta,
+  te,
+  mr,
+  gu,
+  kn,
+  ml,
+  pa,
 };
 
 /**

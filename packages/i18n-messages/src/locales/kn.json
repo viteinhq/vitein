@@ -1,0 +1,28 @@
+{
+  "not_found": "ಕಂಡುಬಂದಿಲ್ಲ",
+  "unauthorized": "ಅನಧಿಕೃತ",
+  "validation_error": "ಪರಿಶೀಲನೆ ವಿಫಲವಾಗಿದೆ",
+  "conflict": "ಪ್ರಸ್ತುತ ಸ್ಥಿತಿಯೊಂದಿಗೆ ಸಂಘರ್ಷ",
+  "internal_error": "ಆಂತರಿಕ ಸರ್ವರ್ ದೋಷ",
+  "rate_limited": "ತುಂಬಾ ಹೆಚ್ಚು ವಿನಂತಿಗಳು — ದಯವಿಟ್ಟು ನಿಧಾನವಾಗಿ ಹೋಗಿ",
+
+  "event.not_found": "ಈವೆಂಟ್ ಕಂಡುಬಂದಿಲ್ಲ",
+  "event.unauthorized": "ಈ ರಚನೆಕಾರ ಟೋಕನ್ ಈ ಈವೆಂಟ್‌ಗೆ ಹೊಂದಿಕೆಯಾಗುವುದಿಲ್ಲ",
+  "event.no_password": "ಈವೆಂಟ್ ಪಾಸ್‌ವರ್ಡ್-ರಕ್ಷಿತವಾಗಿಲ್ಲ",
+  "event.password_invalid": "ತಪ್ಪು ಪಾಸ್‌ವರ್ಡ್",
+  "event.feature_gated": "ಈ ವೈಶಿಷ್ಟ್ಯಕ್ಕೆ Plus ಹಂತ ಅಗತ್ಯ",
+  "event.already_paid": "ಈವೆಂಟ್ ಈಗಾಗಲೇ ಪ್ರೀಮಿಯಂ",
+
+  "user.not_found": "ಬಳಕೆದಾರ ಕಂಡುಬಂದಿಲ್ಲ",
+  "user.unauthorized": "ಮುಂದುವರಿಸಲು ದಯವಿಟ್ಟು ಸೈನ್ ಇನ್ ಮಾಡಿ",
+
+  "media.not_found": "ಮಾಧ್ಯಮ ಕಂಡುಬಂದಿಲ್ಲ",
+  "media.quota_exceeded": "ಈ ಈವೆಂಟ್‌ಗೆ ಮಾಧ್ಯಮ ಮಿತಿ ತಲುಪಿದೆ",
+
+  "announcement.too_many_recipients": "ಅತಿಥಿ ಪಟ್ಟಿ ತಕ್ಷಣ-ಕಳುಹಿಸುವ ಮಿತಿಯನ್ನು ಮೀರಿದೆ",
+  "announcement.already_sent": "ಈ ಹಂತಕ್ಕೆ ಒಂದು ಪ್ರಕಟಣೆ ಈಗಾಗಲೇ ಕಳುಹಿಸಲಾಗಿದೆ",
+
+  "stripe.not_configured": "ಈ ಪರಿಸರಕ್ಕೆ Stripe ಕಾನ್ಫಿಗರ್ ಆಗಿಲ್ಲ",
+  "stripe.price_not_configured": "ಈ ಹಂತ ಮತ್ತು ಕರೆನ್ಸಿಗೆ Stripe ಕಾನ್ಫಿಗರ್ ಆಗಿಲ್ಲ",
+  "stripe.api_error": "Stripe ವಿನಂತಿಯನ್ನು ತಿರಸ್ಕರಿಸಿದೆ"
+}

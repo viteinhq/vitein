@@ -1,0 +1,28 @@
+{
+  "not_found": "കണ്ടെത്തിയില്ല",
+  "unauthorized": "അനധികൃതം",
+  "validation_error": "സ്ഥിരീകരണം പരാജയപ്പെട്ടു",
+  "conflict": "നിലവിലെ അവസ്ഥയുമായി വൈരുദ്ധ്യം",
+  "internal_error": "ആന്തരിക സെർവർ പിശക്",
+  "rate_limited": "വളരെയധികം അഭ്യർത്ഥനകൾ — ദയവായി പതുക്കെ പോകുക",
+
+  "event.not_found": "ഇവന്റ് കണ്ടെത്തിയില്ല",
+  "event.unauthorized": "ഈ സ്രഷ്ടാവ് ടോക്കൺ ഈ ഇവന്റുമായി പൊരുത്തപ്പെടുന്നില്ല",
+  "event.no_password": "ഇവന്റ് പാസ്‌വേഡ്-സംരക്ഷിതമല്ല",
+  "event.password_invalid": "തെറ്റായ പാസ്‌വേഡ്",
+  "event.feature_gated": "ഈ സവിശേഷതയ്ക്ക് Plus ലെവൽ ആവശ്യമാണ്",
+  "event.already_paid": "ഇവന്റ് ഇതിനകം പ്രീമിയം ആണ്",
+
+  "user.not_found": "ഉപയോക്താവിനെ കണ്ടെത്തിയില്ല",
+  "user.unauthorized": "തുടരാൻ ദയവായി സൈൻ ഇൻ ചെയ്യുക",
+
+  "media.not_found": "മീഡിയ കണ്ടെത്തിയില്ല",
+  "media.quota_exceeded": "ഈ ഇവന്റിനുള്ള മീഡിയ പരിധി എത്തി",
+
+  "announcement.too_many_recipients": "അതിഥി പട്ടിക തൽക്ഷണ-അയയ്ക്കൽ പരിധി കവിയുന്നു",
+  "announcement.already_sent": "ഈ ഘട്ടത്തിനുള്ള ഒരു അറിയിപ്പ് ഇതിനകം അയച്ചു",
+
+  "stripe.not_configured": "ഈ പരിതസ്ഥിതിക്ക് Stripe കോൺഫിഗർ ചെയ്തിട്ടില്ല",
+  "stripe.price_not_configured": "ഈ ലെവലിനും കറൻസിക്കും Stripe കോൺഫിഗർ ചെയ്തിട്ടില്ല",
+  "stripe.api_error": "Stripe അഭ്യർത്ഥന നിരസിച്ചു"
+}

@@ -1,0 +1,28 @@
+{
+  "not_found": "கிடைக்கவில்லை",
+  "unauthorized": "அங்கீகரிக்கப்படவில்லை",
+  "validation_error": "சரிபார்ப்பு தோல்வியடைந்தது",
+  "conflict": "தற்போதைய நிலையுடன் முரண்பாடு",
+  "internal_error": "உள் சர்வர் பிழை",
+  "rate_limited": "அதிகமான கோரிக்கைகள் — மெதுவாகச் செல்லுங்கள்",
+
+  "event.not_found": "நிகழ்வு கிடைக்கவில்லை",
+  "event.unauthorized": "இந்த உருவாக்கியவர் டோக்கன் இந்த நிகழ்வுடன் பொருந்தவில்லை",
+  "event.no_password": "நிகழ்வு கடவுச்சொல்-பாதுகாக்கப்படவில்லை",
+  "event.password_invalid": "தவறான கடவுச்சொல்",
+  "event.feature_gated": "இந்த அம்சத்திற்கு Plus நிலை தேவை",
+  "event.already_paid": "நிகழ்வு ஏற்கனவே பிரீமியம்",
+
+  "user.not_found": "பயனர் கிடைக்கவில்லை",
+  "user.unauthorized": "தொடர அங்கீகாரம் இல்லை — உள்நுழையவும்",
+
+  "media.not_found": "ஊடகம் கிடைக்கவில்லை",
+  "media.quota_exceeded": "இந்த நிகழ்வுக்கான ஊடக வரம்பு எட்டப்பட்டது",
+
+  "announcement.too_many_recipients": "விருந்தினர் பட்டியல் உடனடி-அனுப்புதல் வரம்பை மீறுகிறது",
+  "announcement.already_sent": "இந்த கட்டத்திற்கான அறிவிப்பு ஏற்கனவே அனுப்பப்பட்டது",
+
+  "stripe.not_configured": "இந்தச் சூழலுக்கு Stripe கட்டமைக்கப்படவில்லை",
+  "stripe.price_not_configured": "இந்த நிலை மற்றும் நாணயத்திற்கு Stripe கட்டமைக்கப்படவில்லை",
+  "stripe.api_error": "Stripe கோரிக்கையை நிராகரித்தது"
+}
