@@ -1,0 +1,28 @@
+{
+  "not_found": "కనుగొనబడలేదు",
+  "unauthorized": "అనధికృతం",
+  "validation_error": "ధ్రువీకరణ విఫలమైంది",
+  "conflict": "ప్రస్తుత స్థితితో విభేదం",
+  "internal_error": "అంతర్గత సర్వర్ లోపం",
+  "rate_limited": "చాలా ఎక్కువ అభ్యర్థనలు — దయచేసి నెమ్మదిగా వెళ్లండి",
+
+  "event.not_found": "ఈవెంట్ కనుగొనబడలేదు",
+  "event.unauthorized": "ఈ సృష్టికర్త టోకెన్ ఈ ఈవెంట్‌తో సరిపోలడం లేదు",
+  "event.no_password": "ఈవెంట్ పాస్‌వర్డ్-రక్షితం కాదు",
+  "event.password_invalid": "తప్పు పాస్‌వర్డ్",
+  "event.feature_gated": "ఈ ఫీచర్‌కు Plus స్థాయి అవసరం",
+  "event.already_paid": "ఈవెంట్ ఇప్పటికే ప్రీమియం",
+
+  "user.not_found": "వినియోగదారు కనుగొనబడలేదు",
+  "user.unauthorized": "కొనసాగించడానికి దయచేసి సైన్ ఇన్ చేయండి",
+
+  "media.not_found": "మీడియా కనుగొనబడలేదు",
+  "media.quota_exceeded": "ఈ ఈవెంట్‌కు మీడియా పరిమితి చేరుకుంది",
+
+  "announcement.too_many_recipients": "అతిథి జాబితా తక్షణ-పంపే పరిమితిని మించింది",
+  "announcement.already_sent": "ఈ దశకు ప్రకటన ఇప్పటికే పంపబడింది",
+
+  "stripe.not_configured": "ఈ వాతావరణానికి Stripe కాన్ఫిగర్ చేయబడలేదు",
+  "stripe.price_not_configured": "ఈ స్థాయి మరియు కరెన్సీకి Stripe కాన్ఫిగర్ చేయబడలేదు",
+  "stripe.api_error": "Stripe అభ్యర్థనను తిరస్కరించింది"
+}

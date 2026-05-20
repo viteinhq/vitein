@@ -27,6 +27,14 @@ export const LOCALE_ENDONYMS: Record<AvailableLanguageTag, string> = {
   nl: 'Nederlands',
   pl: 'Polski',
   hi: 'हिन्दी',
+  bn: 'বাংলা',
+  ta: 'தமிழ்',
+  te: 'తెలుగు',
+  mr: 'मराठी',
+  gu: 'ગુજરાતી',
+  kn: 'ಕನ್ನಡ',
+  ml: 'മലയാളം',
+  pa: 'ਪੰਜਾਬੀ',
 };
 
 /** Human-readable endonym for a locale, with a safe fallback to the tag. */

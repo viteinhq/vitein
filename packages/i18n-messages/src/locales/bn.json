@@ -1,0 +1,28 @@
+{
+  "not_found": "পাওয়া যায়নি",
+  "unauthorized": "অননুমোদিত",
+  "validation_error": "যাচাইকরণ ব্যর্থ",
+  "conflict": "বর্তমান অবস্থার সাথে দ্বন্দ্ব",
+  "internal_error": "অভ্যন্তরীণ সার্ভার ত্রুটি",
+  "rate_limited": "অনেক বেশি অনুরোধ — অনুগ্রহ করে ধীরে চলুন",
+
+  "event.not_found": "ইভেন্ট পাওয়া যায়নি",
+  "event.unauthorized": "এই নির্মাতা টোকেন এই ইভেন্টের সাথে মেলে না",
+  "event.no_password": "ইভেন্টটি পাসওয়ার্ড-সুরক্ষিত নয়",
+  "event.password_invalid": "ভুল পাসওয়ার্ড",
+  "event.feature_gated": "এই বৈশিষ্ট্যের জন্য Plus স্তর প্রয়োজন",
+  "event.already_paid": "ইভেন্টটি ইতিমধ্যে প্রিমিয়াম",
+
+  "user.not_found": "ব্যবহারকারী পাওয়া যায়নি",
+  "user.unauthorized": "চালিয়ে যেতে অনুগ্রহ করে সাইন ইন করুন",
+
+  "media.not_found": "মিডিয়া পাওয়া যায়নি",
+  "media.quota_exceeded": "এই ইভেন্টের জন্য মিডিয়া সীমা পূর্ণ হয়েছে",
+
+  "announcement.too_many_recipients": "অতিথি তালিকা তাৎক্ষণিক-পাঠানোর সীমা ছাড়িয়ে গেছে",
+  "announcement.already_sent": "এই ধাপের জন্য একটি ঘোষণা ইতিমধ্যে পাঠানো হয়েছে",
+
+  "stripe.not_configured": "এই পরিবেশের জন্য Stripe কনফিগার করা নেই",
+  "stripe.price_not_configured": "এই স্তর ও মুদ্রার জন্য Stripe কনফিগার করা নেই",
+  "stripe.api_error": "Stripe অনুরোধটি প্রত্যাখ্যান করেছে"
+}
