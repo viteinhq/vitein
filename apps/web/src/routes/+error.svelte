@@ -15,7 +15,7 @@
 </svelte:head>
 
 <section class="mx-auto max-w-md px-6 py-24 text-center">
-  <p class="font-display text-7xl leading-none font-bold tracking-tighter text-coral">
+  <p class="font-display text-7xl leading-none font-bold tracking-tighter text-coral-deep">
     {status}
   </p>
   <h1 class="font-display mt-4 text-2xl font-bold tracking-tight">{m.err_page_title()}</h1>

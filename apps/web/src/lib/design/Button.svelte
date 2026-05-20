@@ -46,7 +46,7 @@
     primary: 'bg-ink text-paper hover:opacity-90',
     accent: 'bg-accent text-accent-ink hover:brightness-105',
     secondary: 'border-[1.5px] border-ink bg-transparent text-ink hover:bg-ink hover:text-paper',
-    danger: 'bg-coral text-white hover:brightness-105',
+    danger: 'bg-coral-deep text-white hover:brightness-110',
   };
 
   const sizes: Record<Size, string> = {

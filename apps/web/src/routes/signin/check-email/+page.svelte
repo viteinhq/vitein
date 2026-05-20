@@ -12,7 +12,7 @@
   </div>
   <h1 class="font-display mt-6 text-3xl font-bold tracking-tighter">{m.signin_check_title()}</h1>
   <p class="mt-3 leading-relaxed text-ink-muted">{m.signin_check_body()}</p>
-  <p class="mt-5 text-sm text-ink-muted/70">
+  <p class="mt-5 text-sm text-ink-muted">
     {m.signin_check_wrong_email()}
     <a href="/signin" class="font-medium text-ink underline">{m.signin_check_try_again()}</a>.
   </p>

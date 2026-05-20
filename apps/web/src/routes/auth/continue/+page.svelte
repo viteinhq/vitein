@@ -17,5 +17,5 @@
       <ArrowRight size={15} />
     </Button>
   </form>
-  <p class="mt-4 text-xs leading-relaxed text-ink-muted/60">{m.auth_continue_note()}</p>
+  <p class="mt-4 text-xs leading-relaxed text-ink-muted">{m.auth_continue_note()}</p>
 </section>

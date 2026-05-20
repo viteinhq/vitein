@@ -39,9 +39,9 @@
   </span>
   <input {...rest} bind:value class="{inputBase} {borderTone} {classes}" />
   {#if error}
-    <span class="mt-1 block text-xs text-coral">{error}</span>
+    <span class="mt-1 block text-xs text-coral-deep">{error}</span>
   {:else if hint}
-    <span class="mt-1 block font-mono text-[10px] tracking-wide text-ink-muted/70">
+    <span class="mt-1 block font-mono text-[10px] tracking-wide text-ink-muted">
       {hint}
     </span>
   {/if}

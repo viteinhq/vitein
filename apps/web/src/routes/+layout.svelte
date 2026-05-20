@@ -44,7 +44,7 @@
       <div class="mx-auto max-w-5xl px-6 py-12">
         <div class="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
           <div class="max-w-xs">
-            <Wordmark href="/" size={26} class="text-paper" />
+            <Wordmark href="/" size={26} onDark class="text-paper" />
             <p class="mt-3 text-sm leading-relaxed text-paper/55">{m.footer_tagline()}</p>
           </div>
           <nav class="flex gap-12 text-sm">

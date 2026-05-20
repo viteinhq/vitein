@@ -184,7 +184,7 @@
             rows="3"
             class={textareaClass}>{form?.values?.description ?? ''}</textarea
           >
-          <span class="mt-1 block font-mono text-[10px] tracking-wide text-ink-muted/70">
+          <span class="mt-1 block font-mono text-[10px] tracking-wide text-ink-muted">
             {m.create_field_description_hint()}
           </span>
         </label>
