@@ -8,6 +8,7 @@ import {
   isNull,
   type Db,
 } from '@vitein/db-schema';
+import { isUniqueViolation } from '../db-errors.js';
 import { ConflictError, DomainError, NotFoundError, ValidationError } from '../errors.js';
 
 export type AnnouncementStage = 'save_the_date' | 'invitation';
@@ -107,7 +108,7 @@ export async function insertAnnouncement(
     if (!inserted) throw new Error('Announcement insert returned no row');
     return inserted;
   } catch (err) {
-    if (isUniqueAnnouncementError(err)) {
+    if (isUniqueViolation(err)) {
       throw new ConflictError(
         'announcement.already_sent',
         `A ${stage} announcement has already been sent for this event`,
@@ -136,12 +137,4 @@ export async function markAnnouncementSent(
     action: `announcement.${stage}.sent`,
     metadata,
   });
-}
-
-function isUniqueAnnouncementError(err: unknown): boolean {
-  if (!err || typeof err !== 'object') return false;
-  const message = 'message' in err && typeof err.message === 'string' ? err.message : '';
-  return (
-    message.includes('event_announcements_event_stage_idx') || message.includes('duplicate key')
-  );
 }
