@@ -421,6 +421,7 @@
   "push_disable": "Turn off",
   "push_working": "Just a sec…",
   "push_denied": "Notifications are blocked in your browser settings.",
+  "push_ios_hint": "Push notifications work in the installed app. Until then, every RSVP still reaches you by email.",
   "install_prompt": "Add vite.in to your home screen.",
   "install_action": "Install",
   "install_dismiss": "Dismiss",
