@@ -45,3 +45,16 @@ export interface AnnouncementInput {
   eventUrl: string;
   stage: 'save_the_date' | 'invitation';
 }
+
+/**
+ * A rendered email ready for delivery. This is the message body carried on
+ * the `QUEUE_EMAIL` Cloudflare Queue — the producer renders the template,
+ * the queue consumer performs the Resend call.
+ */
+export interface EmailJob {
+  to: string;
+  subject: string;
+  text: string;
+  /** Free-form context for structured logging on the consumer side. */
+  logHint?: Record<string, string>;
+}

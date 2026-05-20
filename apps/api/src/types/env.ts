@@ -28,6 +28,12 @@ export interface Env {
   /** Base URL where R2 objects become publicly readable, e.g. https://media-staging.vite.in */
   MEDIA_PUBLIC_BASE_URL?: string;
 
+  /**
+   * Email delivery queue. Bound on staging + production; absent in local
+   * dev, where `infra/email.ts` falls back to a synchronous Resend call.
+   */
+  QUEUE_EMAIL?: Queue<EmailJob>;
+
   // Stripe (Phase 1 premium upgrade — two tiers × four currencies = 8 Price IDs)
   STRIPE_SECRET_KEY?: string;
   STRIPE_WEBHOOK_SECRET?: string;
@@ -44,12 +50,13 @@ export interface Env {
   STRIPE_PRICE_BASIC_INR?: string;
   STRIPE_PRICE_PLUS_INR?: string;
 
-  // Bindings added later (KV, Queues) go here:
+  // Bindings added later go here:
   // KV_CACHE: KVNamespace;
-  // QUEUE_EMAIL: Queue;
+  // QUEUE_PUSH: Queue — added with the PWA Web Push stage.
 }
 
 import type { AuthContext } from '../domain/auth/context.js';
+import type { EmailJob } from '../infra/email-types.js';
 import type { Logger } from '../infra/logger.js';
 
 export type AppVariables = {

@@ -3,6 +3,8 @@ import * as Sentry from '@sentry/cloudflare';
 import { Hono } from 'hono';
 import { runScheduled } from './cron.js';
 import { createAuth } from './infra/auth.js';
+import { consumeEmailBatch } from './infra/email.js';
+import type { EmailJob } from './infra/email-types.js';
 import { authMiddleware } from './middleware/auth.js';
 import { errorHandler } from './middleware/error.js';
 import { rateLimit } from './middleware/rate-limit.js';
@@ -63,11 +65,17 @@ app.notFound((c) => c.json({ error: { code: 'not_found', message: 'Route not fou
 
 app.onError(errorHandler);
 
-const handler: ExportedHandler<Env> = {
+const handler: ExportedHandler<Env, EmailJob> = {
   fetch: app.fetch,
   scheduled(_event, env, ctx) {
     ctx.waitUntil(runScheduled(env));
   },
+  async queue(batch, env) {
+    await consumeEmailBatch(batch, env);
+  },
 };
 
-export default Sentry.withSentry(sentryOptions, handler);
+// `withSentry` is typed for the generic `ExportedHandler<Env>`; our handler
+// narrows the queue message to `EmailJob`. The wrapper only forwards the
+// batch, so widening it back at this boundary is sound.
+export default Sentry.withSentry(sentryOptions, handler as ExportedHandler<Env>);

@@ -3,6 +3,7 @@ import { templatesFor } from './email-templates.js';
 import type {
   AnnouncementInput,
   CreatorMagicLinkInput,
+  EmailJob,
   ReminderInput,
   RsvpConfirmationInput,
   RsvpNotificationInput,
@@ -12,10 +13,15 @@ import type { Env } from '../types/env.js';
 import { rootLogger } from './logger.js';
 
 /**
- * Thin Resend wrapper. When `RESEND_API_KEY` is unset (local dev without an
- * account), this is a no-op that logs the intended send and reports
- * `sent: false`. That keeps `/v1/events` working end-to-end without external
- * accounts, so UI and integration tests can drive the flow in dev.
+ * Email dispatch. Each `send*` function renders a localized template and
+ * hands the result to `sendEmail`, which prefers the `QUEUE_EMAIL` Cloudflare
+ * Queue: the request returns immediately and the queue consumer
+ * (`consumeEmailBatch` → `deliverEmail`) performs the Resend call with
+ * retries. Without the queue binding (local dev) it falls back to a
+ * synchronous Resend call, or a logged no-op when `RESEND_API_KEY` is unset.
+ *
+ * `SendResult.sent` therefore means "dispatched" (enqueued or sent), not
+ * "delivered" — actual delivery failures surface on the consumer.
  *
  * Locale plumbing: every send function takes a `locale: Locale | undefined`
  * and looks up the matching template bundle in `email-templates.ts`. Caller
@@ -138,12 +144,44 @@ interface SendEmailInput {
 }
 
 async function sendEmail(env: Env, input: SendEmailInput): Promise<SendResult> {
+  const job: EmailJob = {
+    to: input.to,
+    subject: input.subject,
+    text: input.text,
+    ...(input.logHint ? { logHint: input.logHint } : {}),
+  };
+
+  // Preferred path: hand the rendered email to the queue and return now.
+  // The consumer performs the Resend call, with the queue's retry semantics.
+  if (env.QUEUE_EMAIL) {
+    await env.QUEUE_EMAIL.send(job);
+    return { sent: true };
+  }
+
+  // No queue (local dev): send synchronously, or no-op when Resend is unset.
   if (!env.RESEND_API_KEY) {
     rootLogger.warn('email_skipped_resend_api_key_unset', {
       to: input.to,
       ...(input.logHint ?? {}),
     });
     return { sent: false };
+  }
+  await deliverEmail(env, job);
+  return { sent: true };
+}
+
+/**
+ * Perform the actual Resend API call for one rendered email job. Used by the
+ * `QUEUE_EMAIL` consumer and by `sendEmail`'s synchronous local-dev fallback.
+ * Throws on a non-OK Resend response so the queue retries the message.
+ */
+export async function deliverEmail(env: Env, job: EmailJob): Promise<void> {
+  if (!env.RESEND_API_KEY) {
+    rootLogger.warn('email_skipped_resend_api_key_unset', {
+      to: job.to,
+      ...(job.logHint ?? {}),
+    });
+    return;
   }
 
   const res = await fetch('https://api.resend.com/emails', {
@@ -154,9 +192,9 @@ async function sendEmail(env: Env, input: SendEmailInput): Promise<SendResult> {
     },
     body: JSON.stringify({
       from: FROM_ADDRESS,
-      to: input.to,
-      subject: input.subject,
-      text: input.text,
+      to: job.to,
+      subject: job.subject,
+      text: job.text,
     }),
   });
 
@@ -164,6 +202,25 @@ async function sendEmail(env: Env, input: SendEmailInput): Promise<SendResult> {
     const body = await res.text();
     throw new Error(`Resend returned ${String(res.status)}: ${body}`);
   }
+}
 
-  return { sent: true };
+/**
+ * `QUEUE_EMAIL` consumer. Delivers each queued email via Resend; a failed
+ * message is retried by the queue and dropped after `max_retries`.
+ */
+export async function consumeEmailBatch(batch: MessageBatch<EmailJob>, env: Env): Promise<void> {
+  for (const msg of batch.messages) {
+    try {
+      await deliverEmail(env, msg.body);
+      msg.ack();
+    } catch (err) {
+      rootLogger.warn('email_delivery_failed', {
+        to: msg.body.to,
+        attempt: String(msg.attempts),
+        ...(msg.body.logHint ?? {}),
+        err: err as Error,
+      });
+      msg.retry();
+    }
+  }
 }
