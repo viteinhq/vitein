@@ -27,8 +27,16 @@ const CLIENT_DIR = path.join(REPO_ROOT, 'apps/web/.svelte-kit/output/client/_app
 // Note: this is the total across every client JS file. A given route
 // only downloads a small subset (typically the route node + two
 // shared chunks). Lighthouse asserts the per-page budgets.
-const RAW_TOTAL_BUDGET = 600 * 1024; // 600 KB
-const GZ_TOTAL_BUDGET = 150 * 1024; // 150 KB
+//
+// Recalibrated 2026-05-20 for the 8 → 20 locale expansion. Paraglide
+// v1 compiles every locale's message catalogue into one shared client
+// chunk — ~180 KB gz of the total, and the dominant cost here. Proper
+// per-locale code-splitting comes with the Paraglide v2 migration
+// (tracked as Dependabot #57); bring this budget back down once that
+// lands. This check stays a gross-regression catch; per-page transfer
+// is a fraction of the total and is gated by Lighthouse separately.
+const RAW_TOTAL_BUDGET = 1100 * 1024; // 1.1 MB
+const GZ_TOTAL_BUDGET = 320 * 1024; // 320 KB
 
 const fmt = (n) => (n >= 1024 ? `${(n / 1024).toFixed(1)} KB` : `${n} B`);
 
