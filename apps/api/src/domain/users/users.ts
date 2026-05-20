@@ -1,4 +1,4 @@
-import { and, desc, eq, events, isNull, rsvps, users, type Db } from '@vitein/db-schema';
+import { and, desc, eq, events, isNull, rsvps, sql, users, type Db } from '@vitein/db-schema';
 import { NotFoundError } from '../errors.js';
 
 export async function getMe(db: Db, userId: string): Promise<typeof users.$inferSelect> {
@@ -63,6 +63,58 @@ export async function getMyEvents(db: Db, userId: string): Promise<(typeof event
  */
 export async function softDeleteMe(db: Db, userId: string): Promise<void> {
   await db.update(users).set({ deletedAt: new Date() }).where(eq(users.id, userId));
+}
+
+export interface UserStats {
+  events: { total: number; upcoming: number; past: number };
+  rsvps: { total: number; yes: number; maybe: number; no: number; plusOnes: number };
+}
+
+/**
+ * Aggregate counts for the account dashboard summary strip.
+ *
+ * Two grouped queries rather than the Drizzle query builder: conditional
+ * `count(*) filter (where …)` and the rsvp/event join with status
+ * buckets don't express cleanly through the fluent API. Both are
+ * single-row aggregates — cheap, indexed on `creator_user_id`.
+ */
+export async function getMyStats(db: Db, userId: string): Promise<UserStats> {
+  const num = (v: unknown): number => Number(v ?? 0);
+
+  const [eventAgg, rsvpAgg] = await Promise.all([
+    db
+      .select({
+        total: sql<number>`count(*)`,
+        upcoming: sql<number>`count(*) filter (where ${events.startsAt} >= now())`,
+        past: sql<number>`count(*) filter (where ${events.startsAt} < now())`,
+      })
+      .from(events)
+      .where(and(eq(events.creatorUserId, userId), isNull(events.deletedAt))),
+    db
+      .select({
+        total: sql<number>`count(*)`,
+        yes: sql<number>`count(*) filter (where ${rsvps.status} = 'yes')`,
+        maybe: sql<number>`count(*) filter (where ${rsvps.status} = 'maybe')`,
+        no: sql<number>`count(*) filter (where ${rsvps.status} = 'no')`,
+        plusOnes: sql<number>`coalesce(sum(${rsvps.plusOnes}), 0)`,
+      })
+      .from(rsvps)
+      .innerJoin(events, eq(events.id, rsvps.eventId))
+      .where(and(eq(events.creatorUserId, userId), isNull(events.deletedAt))),
+  ]);
+
+  const e = eventAgg[0];
+  const r = rsvpAgg[0];
+  return {
+    events: { total: num(e?.total), upcoming: num(e?.upcoming), past: num(e?.past) },
+    rsvps: {
+      total: num(r?.total),
+      yes: num(r?.yes),
+      maybe: num(r?.maybe),
+      no: num(r?.no),
+      plusOnes: num(r?.plusOnes),
+    },
+  };
 }
 
 export interface UserExport {

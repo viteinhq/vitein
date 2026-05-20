@@ -226,6 +226,30 @@ export type UserUpdateInput = {
   timezone?: string;
 };
 
+export type UserStats = {
+  events: {
+    total: number;
+    /**
+     * Events whose start time is now or in the future.
+     */
+    upcoming: number;
+    /**
+     * Events whose start time has passed.
+     */
+    past: number;
+  };
+  rsvps: {
+    total: number;
+    yes: number;
+    maybe: number;
+    no: number;
+    /**
+     * Sum of plus-one counts across all RSVPs.
+     */
+    plusOnes: number;
+  };
+};
+
 export type UserExport = {
   exportedAt: string;
   user: UserProfile;
@@ -1294,6 +1318,31 @@ export type GetMyEventsResponses = {
 };
 
 export type GetMyEventsResponse = GetMyEventsResponses[keyof GetMyEventsResponses];
+
+export type GetMyStatsData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/v1/users/me/stats';
+};
+
+export type GetMyStatsErrors = {
+  /**
+   * Missing or invalid creator token.
+   */
+  401: Error;
+};
+
+export type GetMyStatsError = GetMyStatsErrors[keyof GetMyStatsErrors];
+
+export type GetMyStatsResponses = {
+  /**
+   * Aggregate stats.
+   */
+  200: UserStats;
+};
+
+export type GetMyStatsResponse = GetMyStatsResponses[keyof GetMyStatsResponses];
 
 export type GetMyAuditData = {
   body?: never;

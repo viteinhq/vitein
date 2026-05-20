@@ -50,6 +50,9 @@ import type {
   GetMyEventsData,
   GetMyEventsErrors,
   GetMyEventsResponses,
+  GetMyStatsData,
+  GetMyStatsErrors,
+  GetMyStatsResponses,
   ListAnnouncementsData,
   ListAnnouncementsErrors,
   ListAnnouncementsResponses,
@@ -491,6 +494,24 @@ export const getMyEvents = <ThrowOnError extends boolean = false>(
 ) =>
   (options?.client ?? client).get<GetMyEventsResponses, GetMyEventsErrors, ThrowOnError>({
     url: '/v1/users/me/events',
+    ...options,
+  });
+
+/**
+ * Aggregate event + RSVP counts for the authenticated user
+ *
+ * Lightweight dashboard summary — total / upcoming / past events
+ * owned by the user, plus RSVP totals (by status, with the
+ * plus-ones sum) across all of those events. Scoped by event
+ * ownership, so RSVPs on the user's events count even if the
+ * responder is a different person.
+ *
+ */
+export const getMyStats = <ThrowOnError extends boolean = false>(
+  options?: Options<GetMyStatsData, ThrowOnError>,
+) =>
+  (options?.client ?? client).get<GetMyStatsResponses, GetMyStatsErrors, ThrowOnError>({
+    url: '/v1/users/me/stats',
     ...options,
   });
 

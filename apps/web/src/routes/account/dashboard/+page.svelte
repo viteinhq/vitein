@@ -7,6 +7,9 @@
 
   let { data, form }: PageProps = $props();
 
+  // Stats strip only earns its space once there's something to count.
+  const showStats = $derived(data.stats.events.total > 0);
+
   function formatStart(iso: string, tz: string) {
     return new Intl.DateTimeFormat(undefined, {
       dateStyle: 'medium',
@@ -25,6 +28,47 @@
     <h1 class="text-2xl font-semibold tracking-tight">{m.dashboard_title()}</h1>
     <Button href="/create" size="sm">{m.dashboard_new_event()}</Button>
   </div>
+
+  {#if showStats}
+    <div class="space-y-2">
+      <dl class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div class="rounded-md border border-slate-200 p-4">
+          <dt class="text-xs uppercase tracking-wider text-slate-500">
+            {m.dashboard_stats_events()}
+          </dt>
+          <dd class="mt-1 text-2xl font-bold tabular-nums">{data.stats.events.total}</dd>
+        </div>
+        <div class="rounded-md border border-slate-200 p-4">
+          <dt class="text-xs uppercase tracking-wider text-slate-500">
+            {m.dashboard_stats_upcoming()}
+          </dt>
+          <dd class="mt-1 text-2xl font-bold tabular-nums">{data.stats.events.upcoming}</dd>
+        </div>
+        <div class="rounded-md border border-slate-200 p-4">
+          <dt class="text-xs uppercase tracking-wider text-slate-500">
+            {m.dashboard_stats_rsvps()}
+          </dt>
+          <dd class="mt-1 text-2xl font-bold tabular-nums">{data.stats.rsvps.total}</dd>
+        </div>
+        <div class="rounded-md border border-slate-200 p-4">
+          <dt class="text-xs uppercase tracking-wider text-slate-500">
+            {m.dashboard_stats_attending()}
+          </dt>
+          <dd class="mt-1 text-2xl font-bold tabular-nums">{data.stats.rsvps.yes}</dd>
+        </div>
+      </dl>
+      {#if data.stats.rsvps.total > 0}
+        <p class="text-xs text-slate-500">
+          {m.dashboard_stats_rsvp_breakdown({
+            yes: data.stats.rsvps.yes,
+            maybe: data.stats.rsvps.maybe,
+            no: data.stats.rsvps.no,
+            plus: data.stats.rsvps.plusOnes,
+          })}
+        </p>
+      {/if}
+    </div>
+  {/if}
 
   {#if form && 'claimed' in form && typeof form.claimed === 'number'}
     <Banner tone="success">

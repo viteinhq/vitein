@@ -7,6 +7,7 @@ import {
   exportMe,
   getMe,
   getMyEvents,
+  getMyStats,
   softDeleteMe,
   updateMe,
 } from '../domain/users/users.js';
@@ -76,6 +77,11 @@ usersRoute.get('/me/events', requireScope('events:read'), async (c) => {
       defaultLocale: e.defaultLocale,
     })),
   });
+});
+
+usersRoute.get('/me/stats', async (c) => {
+  const stats = await getMyStats(db(c.env), userIdFromAuth(c.var.auth));
+  return c.json(stats);
 });
 
 usersRoute.get('/me/audit', async (c) => {
