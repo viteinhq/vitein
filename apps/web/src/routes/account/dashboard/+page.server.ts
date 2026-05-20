@@ -12,10 +12,30 @@ interface EventListItem {
   visibility: string;
 }
 
+interface UserStats {
+  events: { total: number; upcoming: number; past: number };
+  rsvps: { total: number; yes: number; maybe: number; no: number; plusOnes: number };
+}
+
+const EMPTY_STATS: UserStats = {
+  events: { total: 0, upcoming: 0, past: 0 },
+  rsvps: { total: 0, yes: 0, maybe: 0, no: 0, plusOnes: 0 },
+};
+
 export const load: PageServerLoad = async (event) => {
-  const res = await apiFetch(event, '/v1/users/me/events');
-  if (!res.ok) return { upcoming: [] as EventListItem[], past: [] as EventListItem[] };
-  const body = (await res.json()) as unknown as { items: EventListItem[] };
+  const [eventsRes, statsRes] = await Promise.all([
+    apiFetch(event, '/v1/users/me/events'),
+    apiFetch(event, '/v1/users/me/stats'),
+  ]);
+
+  const stats: UserStats = statsRes.ok
+    ? ((await statsRes.json()) as unknown as UserStats)
+    : EMPTY_STATS;
+
+  if (!eventsRes.ok) {
+    return { upcoming: [] as EventListItem[], past: [] as EventListItem[], stats };
+  }
+  const body = (await eventsRes.json()) as unknown as { items: EventListItem[] };
 
   // The API returns newest-startsAt first. We split into "upcoming or
   // happening now" vs "already happened" so the dashboard can show
@@ -30,7 +50,7 @@ export const load: PageServerLoad = async (event) => {
     else past.push(it);
   }
   upcoming.reverse();
-  return { upcoming, past };
+  return { upcoming, past, stats };
 };
 
 export const actions: Actions = {

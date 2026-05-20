@@ -680,6 +680,26 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
 
+  /v1/users/me/stats:
+    get:
+      operationId: getMyStats
+      summary: Aggregate event + RSVP counts for the authenticated user
+      description: |
+        Lightweight dashboard summary — total / upcoming / past events
+        owned by the user, plus RSVP totals (by status, with the
+        plus-ones sum) across all of those events. Scoped by event
+        ownership, so RSVPs on the user's events count even if the
+        responder is a different person.
+      tags: [users]
+      responses:
+        '200':
+          description: Aggregate stats.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/UserStats' }
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
   /v1/users/me/audit:
     get:
       operationId: getMyAudit
@@ -1021,6 +1041,33 @@ components:
           minLength: 1
           maxLength: 64
           description: IANA timezone (e.g. `Europe/Zurich`).
+
+    UserStats:
+      type: object
+      required: [events, rsvps]
+      properties:
+        events:
+          type: object
+          required: [total, upcoming, past]
+          properties:
+            total: { type: integer }
+            upcoming:
+              type: integer
+              description: Events whose start time is now or in the future.
+            past:
+              type: integer
+              description: Events whose start time has passed.
+        rsvps:
+          type: object
+          required: [total, yes, maybe, no, plusOnes]
+          properties:
+            total: { type: integer }
+            yes: { type: integer }
+            maybe: { type: integer }
+            no: { type: integer }
+            plusOnes:
+              type: integer
+              description: Sum of plus-one counts across all RSVPs.
 
     UserExport:
       type: object

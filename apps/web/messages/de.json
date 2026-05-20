@@ -392,5 +392,10 @@
   "pricing_plus_price": "€9 / $9 / CHF 9 / £7",
   "pricing_per_event": "einmalig, pro Event",
   "tier_basic_item_cover": "Coverbild",
-  "manage_media_premium_locked": "Coverbild-Upload ist ein Premium-Feature. Werte dieses Event oben auf (Basic oder Plus), um es freizuschalten."
+  "manage_media_premium_locked": "Coverbild-Upload ist ein Premium-Feature. Werte dieses Event oben auf (Basic oder Plus), um es freizuschalten.",
+  "dashboard_stats_events": "Events",
+  "dashboard_stats_upcoming": "Demnächst",
+  "dashboard_stats_rsvps": "Zusagen gesamt",
+  "dashboard_stats_attending": "Kommen",
+  "dashboard_stats_rsvp_breakdown": "{yes} ja · {maybe} vielleicht · {no} nein · {plus} Begleitpersonen"
 }
