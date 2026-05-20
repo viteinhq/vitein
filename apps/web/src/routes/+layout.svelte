@@ -49,7 +49,7 @@
           </div>
           <nav class="flex gap-12 text-sm">
             <div class="flex flex-col gap-2.5">
-              <span class="font-mono text-[10px] tracking-[0.12em] text-paper/40 uppercase">
+              <span class="font-mono text-[10px] tracking-[0.12em] text-paper/55 uppercase">
                 vite.in
               </span>
               <a href="/create" class="text-paper/75 hover:text-paper">{m.nav_create()}</a>
@@ -63,7 +63,7 @@
               </a>
             </div>
             <div class="flex flex-col gap-2.5">
-              <span class="font-mono text-[10px] tracking-[0.12em] text-paper/40 uppercase">
+              <span class="font-mono text-[10px] tracking-[0.12em] text-paper/55 uppercase">
                 Legal
               </span>
               <a href="/legal/impressum" class="text-paper/75 hover:text-paper">
@@ -84,9 +84,9 @@
         >
           <div class="flex items-center gap-3">
             <LanguageSwitcher />
-            <span class="font-mono text-[10px] text-paper/45">AGPL-3.0 · open source</span>
+            <span class="font-mono text-[10px] text-paper/55">AGPL-3.0 · open source</span>
           </div>
-          <span class="font-mono text-[10px] text-paper/35" aria-hidden="true" title="build">
+          <span class="font-mono text-[10px] text-paper/55" aria-hidden="true" title="build">
             {version}
           </span>
         </div>

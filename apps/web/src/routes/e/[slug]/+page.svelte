@@ -292,7 +292,7 @@
               name="name"
               required
               maxlength="200"
-              class="mt-1.5 block w-full rounded-xl border border-paper/20 bg-paper/5 px-4 py-3 text-[15px] text-paper placeholder:text-paper/40 focus:outline-none focus:ring-2 focus:ring-accent"
+              class="mt-1.5 block w-full rounded-xl border border-paper/20 bg-paper/5 px-4 py-3 text-[15px] text-paper placeholder:text-paper/55 focus:outline-none focus:ring-2 focus:ring-accent"
             />
           </label>
 
@@ -303,9 +303,9 @@
             <input
               type="email"
               name="email"
-              class="mt-1.5 block w-full rounded-xl border border-paper/20 bg-paper/5 px-4 py-3 text-[15px] text-paper placeholder:text-paper/40 focus:outline-none focus:ring-2 focus:ring-accent"
+              class="mt-1.5 block w-full rounded-xl border border-paper/20 bg-paper/5 px-4 py-3 text-[15px] text-paper placeholder:text-paper/55 focus:outline-none focus:ring-2 focus:ring-accent"
             />
-            <span class="mt-1 block font-mono text-[10px] text-paper/40">
+            <span class="mt-1 block font-mono text-[10px] text-paper/55">
               {m.event_rsvp_email_hint()}
             </span>
           </label>
@@ -336,7 +336,7 @@
                   name="plusOneName"
                   maxlength="200"
                   placeholder={m.event_rsvp_plus_one_placeholder()}
-                  class="block w-full rounded-lg border border-paper/20 bg-paper/5 px-3 py-2 text-sm text-paper placeholder:text-paper/40 focus:outline-none focus:ring-2 focus:ring-accent"
+                  class="block w-full rounded-lg border border-paper/20 bg-paper/5 px-3 py-2 text-sm text-paper placeholder:text-paper/55 focus:outline-none focus:ring-2 focus:ring-accent"
                 />
               {/each}
             </fieldset>
@@ -350,7 +350,7 @@
               name="message"
               rows="2"
               maxlength="2000"
-              class="mt-1.5 block w-full rounded-xl border border-paper/20 bg-paper/5 px-4 py-3 text-[15px] text-paper placeholder:text-paper/40 focus:outline-none focus:ring-2 focus:ring-accent"
+              class="mt-1.5 block w-full rounded-xl border border-paper/20 bg-paper/5 px-4 py-3 text-[15px] text-paper placeholder:text-paper/55 focus:outline-none focus:ring-2 focus:ring-accent"
             ></textarea>
           </label>
 
