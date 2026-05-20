@@ -3,6 +3,7 @@
   import { page } from '$app/state';
   import { Banner, Button, Heading, Section, Text, TextField, TimezonePicker } from '$lib/design';
   import { localizeError } from '$lib/errors';
+  import PushNotifications from '$lib/pwa/PushNotifications.svelte';
   import * as m from '$lib/paraglide/messages.js';
   import type { PageProps } from './$types';
 
@@ -140,6 +141,9 @@
       {copied ? m.event_copied() : m.event_copy_link()}
     </button>
   </div>
+
+  <!-- push opt-in -->
+  <PushNotifications creatorToken={data.token} />
 
   <!-- RSVP overview -->
   <Section>

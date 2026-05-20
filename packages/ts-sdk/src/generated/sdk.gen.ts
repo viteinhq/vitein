@@ -24,6 +24,9 @@ import type {
   DeleteMediaResponses,
   DeleteMeErrors,
   DeleteMeResponses,
+  DeletePushSubscriptionData,
+  DeletePushSubscriptionErrors,
+  DeletePushSubscriptionResponses,
   ExportMeData,
   ExportMeErrors,
   ExportMeResponses,
@@ -53,6 +56,9 @@ import type {
   GetMyStatsData,
   GetMyStatsErrors,
   GetMyStatsResponses,
+  GetVapidKeyData,
+  GetVapidKeyErrors,
+  GetVapidKeyResponses,
   ListAnnouncementsData,
   ListAnnouncementsErrors,
   ListAnnouncementsResponses,
@@ -65,6 +71,9 @@ import type {
   ListRsvpsData,
   ListRsvpsErrors,
   ListRsvpsResponses,
+  RegisterPushSubscriptionData,
+  RegisterPushSubscriptionErrors,
+  RegisterPushSubscriptionResponses,
   SendAnnouncementData,
   SendAnnouncementErrors,
   SendAnnouncementResponses,
@@ -557,4 +566,70 @@ export const claimEvents = <ThrowOnError extends boolean = false>(
   (options?.client ?? client).post<ClaimEventsResponses, ClaimEventsErrors, ThrowOnError>({
     url: '/v1/auth/claim',
     ...options,
+  });
+
+/**
+ * Get the VAPID public key for Web Push
+ *
+ * Public endpoint. Returns the application-server (VAPID) public key
+ * the browser passes as `applicationServerKey` when subscribing to
+ * push. Stable per environment.
+ *
+ */
+export const getVapidKey = <ThrowOnError extends boolean = false>(
+  options?: Options<GetVapidKeyData, ThrowOnError>,
+) =>
+  (options?.client ?? client).get<GetVapidKeyResponses, GetVapidKeyErrors, ThrowOnError>({
+    url: '/v1/push/vapid-key',
+    ...options,
+  });
+
+/**
+ * Remove a Web Push subscription
+ *
+ * Deletes the subscription identified by its `endpoint`. Called when
+ * the user disables notifications or the browser rotates the
+ * subscription.
+ *
+ */
+export const deletePushSubscription = <ThrowOnError extends boolean = false>(
+  options: Options<DeletePushSubscriptionData, ThrowOnError>,
+) =>
+  (options.client ?? client).delete<
+    DeletePushSubscriptionResponses,
+    DeletePushSubscriptionErrors,
+    ThrowOnError
+  >({
+    url: '/v1/push/subscriptions',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+/**
+ * Register a Web Push subscription
+ *
+ * Stores a browser Web Push subscription. The subscription is bound
+ * to the caller's identity: a signed-in user binds it to their
+ * account; an anonymous creator (via `X-Creator-Token`) binds it to
+ * that event, so they can be notified about it without an account.
+ * Re-registering the same `endpoint` updates it (idempotent).
+ *
+ */
+export const registerPushSubscription = <ThrowOnError extends boolean = false>(
+  options: Options<RegisterPushSubscriptionData, ThrowOnError>,
+) =>
+  (options.client ?? client).post<
+    RegisterPushSubscriptionResponses,
+    RegisterPushSubscriptionErrors,
+    ThrowOnError
+  >({
+    url: '/v1/push/subscriptions',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
   });

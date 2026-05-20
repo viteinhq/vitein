@@ -9,6 +9,7 @@ import {
   sendRsvpConfirmation,
   sendRsvpNotification,
 } from '../infra/email.js';
+import { rsvpPushText } from '../infra/push-templates.js';
 import { requireEventOwnership } from '../middleware/require-event-ownership.js';
 import type { AppVariables, Env } from '../types/env.js';
 
@@ -80,6 +81,23 @@ rsvpsRoute.post(
     ).catch((err: unknown) => {
       c.var.logger.warn('rsvp_notification_email_failed', { err: err as Error });
     });
+
+    // Web Push to whoever subscribed for this event (the creator).
+    if (c.env.QUEUE_PUSH) {
+      const push = rsvpPushText(creatorLocale, {
+        guestName: input.name,
+        status: input.status,
+        eventTitle: event.title,
+      });
+      await c.env.QUEUE_PUSH.send({
+        eventId: event.id,
+        title: push.title,
+        body: push.body,
+        url: `/e/${event.slug}/manage`,
+      }).catch((err: unknown) => {
+        c.var.logger.warn('rsvp_push_enqueue_failed', { err: err as Error });
+      });
+    }
 
     return c.json(toRsvp(rsvp), 201);
   },

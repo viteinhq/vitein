@@ -6,6 +6,8 @@ import { createAuth } from './infra/auth.js';
 import { db } from './infra/db.js';
 import { consumeEmailBatch } from './infra/email.js';
 import type { EmailJob } from './infra/email-types.js';
+import { consumePushBatch } from './infra/push.js';
+import type { PushJob } from './infra/push-types.js';
 import { authMiddleware } from './middleware/auth.js';
 import { dbMiddleware } from './middleware/db.js';
 import { errorHandler } from './middleware/error.js';
@@ -15,6 +17,7 @@ import { authRoute } from './routes/auth.js';
 import { claimRoute } from './routes/claim.js';
 import { eventsRoute } from './routes/events.js';
 import { healthRoute } from './routes/health.js';
+import { pushRoute } from './routes/push.js';
 import { usersRoute } from './routes/users.js';
 import { stripeWebhookRoute } from './routes/webhooks/stripe.js';
 import { sentryOptions } from './infra/sentry.js';
@@ -60,19 +63,24 @@ app.route('/v1/auth', authRoute);
 app.route('/v1/health', healthRoute);
 app.route('/v1/events', eventsRoute);
 app.route('/v1/users', usersRoute);
+app.route('/v1/push', pushRoute);
 app.route('/v1/webhooks/stripe', stripeWebhookRoute);
 
 app.notFound((c) => c.json({ error: { code: 'not_found', message: 'Route not found' } }, 404));
 
 app.onError(errorHandler);
 
-const handler: ExportedHandler<Env, EmailJob> = {
+const handler: ExportedHandler<Env, EmailJob | PushJob> = {
   fetch: app.fetch,
   scheduled(_event, env, ctx) {
     ctx.waitUntil(runScheduled(env));
   },
   async queue(batch, env) {
-    await consumeEmailBatch(batch, env);
+    if (batch.queue.startsWith('vitein-push')) {
+      await consumePushBatch(batch as MessageBatch<PushJob>, env);
+    } else {
+      await consumeEmailBatch(batch as MessageBatch<EmailJob>, env);
+    }
   },
 };
 

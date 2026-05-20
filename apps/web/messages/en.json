@@ -414,5 +414,14 @@
   "dashboard_stats_attending": "Attending",
   "dashboard_stats_rsvp_breakdown": "{yes} yes · {maybe} maybe · {no} no · {plus} plus-ones",
   "tier_basic_price_inr": "₹149",
-  "tier_plus_price_inr": "₹299"
+  "tier_plus_price_inr": "₹299",
+  "push_title": "Get notified",
+  "push_subtitle": "We'll send a push notification when a guest replies.",
+  "push_enable": "Enable",
+  "push_disable": "Turn off",
+  "push_working": "Just a sec…",
+  "push_denied": "Notifications are blocked in your browser settings.",
+  "install_prompt": "Add vite.in to your home screen.",
+  "install_action": "Install",
+  "install_dismiss": "Dismiss"
 }
