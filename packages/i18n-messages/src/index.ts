@@ -15,6 +15,9 @@ import gu from './locales/gu.json';
 import kn from './locales/kn.json';
 import ml from './locales/ml.json';
 import pa from './locales/pa.json';
+import zh from './locales/zh.json';
+import ja from './locales/ja.json';
+import ko from './locales/ko.json';
 
 export type Locale =
   | 'en'
@@ -33,7 +36,10 @@ export type Locale =
   | 'gu'
   | 'kn'
   | 'ml'
-  | 'pa';
+  | 'pa'
+  | 'zh'
+  | 'ja'
+  | 'ko';
 export const SUPPORTED_LOCALES: readonly Locale[] = [
   'en',
   'de',
@@ -52,6 +58,9 @@ export const SUPPORTED_LOCALES: readonly Locale[] = [
   'kn',
   'ml',
   'pa',
+  'zh',
+  'ja',
+  'ko',
 ] as const;
 export const DEFAULT_LOCALE: Locale = 'en';
 
@@ -73,6 +82,9 @@ const dictionaries: Record<Locale, Record<string, string>> = {
   kn,
   ml,
   pa,
+  zh,
+  ja,
+  ko,
 };
 
 /**

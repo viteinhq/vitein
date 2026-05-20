@@ -35,6 +35,9 @@ export const LOCALE_ENDONYMS: Record<AvailableLanguageTag, string> = {
   kn: 'ಕನ್ನಡ',
   ml: 'മലയാളം',
   pa: 'ਪੰਜਾਬੀ',
+  zh: '中文',
+  ja: '日本語',
+  ko: '한국어',
 };
 
 /** Human-readable endonym for a locale, with a safe fallback to the tag. */

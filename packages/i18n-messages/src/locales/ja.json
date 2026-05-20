@@ -1,0 +1,28 @@
+{
+  "not_found": "見つかりません",
+  "unauthorized": "認証されていません",
+  "validation_error": "検証に失敗しました",
+  "conflict": "現在の状態と競合しています",
+  "internal_error": "内部サーバーエラー",
+  "rate_limited": "リクエストが多すぎます — 速度を落としてください",
+
+  "event.not_found": "イベントが見つかりません",
+  "event.unauthorized": "この作成者トークンはこのイベントと一致しません",
+  "event.no_password": "イベントはパスワード保護されていません",
+  "event.password_invalid": "パスワードが違います",
+  "event.feature_gated": "この機能には Plus レベルが必要です",
+  "event.already_paid": "イベントはすでにプレミアムです",
+
+  "user.not_found": "ユーザーが見つかりません",
+  "user.unauthorized": "続けるにはサインインしてください",
+
+  "media.not_found": "メディアが見つかりません",
+  "media.quota_exceeded": "このイベントのメディア上限に達しました",
+
+  "announcement.too_many_recipients": "ゲストリストが即時送信の上限を超えています",
+  "announcement.already_sent": "この段階の告知はすでに送信されています",
+
+  "stripe.not_configured": "この環境では Stripe が設定されていません",
+  "stripe.price_not_configured": "このレベルと通貨では Stripe が設定されていません",
+  "stripe.api_error": "Stripe がリクエストを拒否しました"
+}
