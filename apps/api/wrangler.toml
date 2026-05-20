@@ -22,6 +22,7 @@ new_sqlite_classes = ["RateLimiter"]
 
 [vars]
 ENVIRONMENT = "dev"
+VAPID_PUBLIC_KEY = "BIz6XBXWf_mMPFa-QOSjPkX2qQgY-dZCeqiDtLppStD3qMRg-OlUX5sRwPNYUziWUEvj1KkDBI4gPADO1h2wgSM"
 
 # Staging: deployed from main branch
 [env.staging]
@@ -32,6 +33,7 @@ routes = [{ pattern = "api-staging.vite.in", custom_domain = true }]
 ENVIRONMENT = "staging"
 WEB_BASE_URL = "https://next.vite.in"
 MEDIA_PUBLIC_BASE_URL = "https://media-staging.vite.in"
+VAPID_PUBLIC_KEY = "BIz6XBXWf_mMPFa-QOSjPkX2qQgY-dZCeqiDtLppStD3qMRg-OlUX5sRwPNYUziWUEvj1KkDBI4gPADO1h2wgSM"
 
 [[env.staging.durable_objects.bindings]]
 name = "RATE_LIMITER"
@@ -55,6 +57,15 @@ queue = "vitein-email-staging"
 queue = "vitein-email-staging"
 max_retries = 3
 
+# Web Push delivery queue.
+[[env.staging.queues.producers]]
+binding = "QUEUE_PUSH"
+queue = "vitein-push-staging"
+
+[[env.staging.queues.consumers]]
+queue = "vitein-push-staging"
+max_retries = 3
+
 [env.staging.triggers]
 crons = ["0 * * * *"]
 
@@ -67,6 +78,7 @@ routes = [{ pattern = "api.vite.in", custom_domain = true }]
 ENVIRONMENT = "production"
 WEB_BASE_URL = "https://vite.in"
 MEDIA_PUBLIC_BASE_URL = "https://media.vite.in"
+VAPID_PUBLIC_KEY = "BIz6XBXWf_mMPFa-QOSjPkX2qQgY-dZCeqiDtLppStD3qMRg-OlUX5sRwPNYUziWUEvj1KkDBI4gPADO1h2wgSM"
 
 [[env.production.durable_objects.bindings]]
 name = "RATE_LIMITER"
@@ -88,6 +100,15 @@ queue = "vitein-email"
 
 [[env.production.queues.consumers]]
 queue = "vitein-email"
+max_retries = 3
+
+# Web Push delivery queue.
+[[env.production.queues.producers]]
+binding = "QUEUE_PUSH"
+queue = "vitein-push"
+
+[[env.production.queues.consumers]]
+queue = "vitein-push"
 max_retries = 3
 
 [env.production.triggers]

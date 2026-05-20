@@ -34,6 +34,8 @@ tags:
     description: Authenticated user profile, event list, export, deletion.
   - name: auth
     description: Authentication — Better-Auth endpoints and event claim.
+  - name: push
+    description: Web Push notification subscriptions (PWA).
 
 paths:
   /v1/health:
@@ -765,6 +767,85 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
 
+  /v1/push/vapid-key:
+    get:
+      operationId: getVapidKey
+      summary: Get the VAPID public key for Web Push
+      description: |
+        Public endpoint. Returns the application-server (VAPID) public key
+        the browser passes as `applicationServerKey` when subscribing to
+        push. Stable per environment.
+      tags: [push]
+      responses:
+        '200':
+          description: VAPID public key.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [key]
+                properties:
+                  key:
+                    type: string
+                    description: base64url-encoded VAPID public key.
+        '503':
+          description: Web Push is not configured in this environment.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  /v1/push/subscriptions:
+    post:
+      operationId: registerPushSubscription
+      summary: Register a Web Push subscription
+      description: |
+        Stores a browser Web Push subscription. The subscription is bound
+        to the caller's identity: a signed-in user binds it to their
+        account; an anonymous creator (via `X-Creator-Token`) binds it to
+        that event, so they can be notified about it without an account.
+        Re-registering the same `endpoint` updates it (idempotent).
+      tags: [push]
+      parameters:
+        - $ref: '#/components/parameters/CreatorTokenHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PushSubscriptionInput' }
+      responses:
+        '204':
+          description: Subscription stored.
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    delete:
+      operationId: deletePushSubscription
+      summary: Remove a Web Push subscription
+      description: |
+        Deletes the subscription identified by its `endpoint`. Called when
+        the user disables notifications or the browser rotates the
+        subscription.
+      tags: [push]
+      parameters:
+        - $ref: '#/components/parameters/CreatorTokenHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [endpoint]
+              properties:
+                endpoint: { type: string, format: uri }
+      responses:
+        '204':
+          description: Subscription removed (or already absent).
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
 components:
   parameters:
     EventId:
@@ -1098,6 +1179,26 @@ components:
         claimed:
           type: integer
           description: Number of events newly linked to this user.
+
+    PushSubscriptionInput:
+      type: object
+      required: [endpoint, keys]
+      description: A browser Web Push subscription, as produced by `PushSubscription.toJSON()`.
+      properties:
+        endpoint:
+          type: string
+          format: uri
+          description: The Web Push service endpoint URL.
+        keys:
+          type: object
+          required: [p256dh, auth]
+          properties:
+            p256dh:
+              type: string
+              description: Client public key (base64url).
+            auth:
+              type: string
+              description: Client auth secret (base64url).
 
     Media:
       type: object

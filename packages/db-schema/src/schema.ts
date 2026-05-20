@@ -428,6 +428,35 @@ export const stripeEvents = pgTable('stripe_events', {
   processedAt: nowTs(),
 });
 
+/**
+ * Push-notification subscriptions. Phase 1 ships Web Push for the PWA;
+ * APNs / FCM transports land with the native apps (ADR 0006). A
+ * subscription binds to a `user_id` OR an `event_id` — the latter lets an
+ * anonymous creator be notified about their own event, keeping
+ * no-account-first intact. `transport` discriminates the channel;
+ * `endpoint` holds the Web Push endpoint URL (or a device token for the
+ * native transports). `p256dh` / `auth` are the Web Push encryption keys
+ * and stay null for native.
+ */
+export const pushSubscriptions = pgTable(
+  'push_subscriptions',
+  {
+    id: uuid().primaryKey().$defaultFn(genId),
+    userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }),
+    eventId: uuid('event_id').references(() => events.id, { onDelete: 'cascade' }),
+    transport: text().notNull().default('webpush'),
+    endpoint: text().notNull(),
+    p256dh: text(),
+    auth: text(),
+    createdAt: nowTs(),
+  },
+  (t) => [
+    uniqueIndex('push_subscriptions_endpoint_idx').on(t.endpoint),
+    index('push_subscriptions_user_idx').on(t.userId),
+    index('push_subscriptions_event_idx').on(t.eventId),
+  ],
+);
+
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Session = typeof sessions.$inferSelect;
@@ -464,6 +493,8 @@ export type Jwks = typeof jwks.$inferSelect;
 export type NewJwks = typeof jwks.$inferInsert;
 export type StripeEvent = typeof stripeEvents.$inferSelect;
 export type NewStripeEvent = typeof stripeEvents.$inferInsert;
+export type PushSubscription = typeof pushSubscriptions.$inferSelect;
+export type NewPushSubscription = typeof pushSubscriptions.$inferInsert;
 
 export const schema = {
   users,
@@ -484,4 +515,5 @@ export const schema = {
   oauthConsents,
   jwks,
   stripeEvents,
+  pushSubscriptions,
 };

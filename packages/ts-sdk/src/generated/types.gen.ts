@@ -264,6 +264,26 @@ export type ClaimResponse = {
   claimed: number;
 };
 
+/**
+ * A browser Web Push subscription, as produced by `PushSubscription.toJSON()`.
+ */
+export type PushSubscriptionInput = {
+  /**
+   * The Web Push service endpoint URL.
+   */
+  endpoint: string;
+  keys: {
+    /**
+     * Client public key (base64url).
+     */
+    p256dh: string;
+    /**
+     * Client auth secret (base64url).
+     */
+    auth: string;
+  };
+};
+
 export type Media = {
   id: string;
   eventId: string;
@@ -1428,3 +1448,125 @@ export type ClaimEventsResponses = {
 };
 
 export type ClaimEventsResponse = ClaimEventsResponses[keyof ClaimEventsResponses];
+
+export type GetVapidKeyData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/v1/push/vapid-key';
+};
+
+export type GetVapidKeyErrors = {
+  /**
+   * Web Push is not configured in this environment.
+   */
+  503: Error;
+};
+
+export type GetVapidKeyError = GetVapidKeyErrors[keyof GetVapidKeyErrors];
+
+export type GetVapidKeyResponses = {
+  /**
+   * VAPID public key.
+   */
+  200: {
+    /**
+     * base64url-encoded VAPID public key.
+     */
+    key: string;
+  };
+};
+
+export type GetVapidKeyResponse = GetVapidKeyResponses[keyof GetVapidKeyResponses];
+
+export type DeletePushSubscriptionData = {
+  body: {
+    endpoint: string;
+  };
+  headers?: {
+    /**
+     * Plaintext creator token (the value delivered by the magic-link email).
+     * The server hashes it and compares against `event_tokens.token_hash`.
+     *
+     * Optional: signed-in users whose `users.id` matches the event's
+     * `creator_user_id` can call the same endpoints with the
+     * Better-Auth session cookie instead of this header. OAuth bearers
+     * with the appropriate scope are accepted too. See
+     * `apps/api/src/middleware/require-event-ownership.ts`.
+     *
+     */
+    'X-Creator-Token'?: string;
+  };
+  path?: never;
+  query?: never;
+  url: '/v1/push/subscriptions';
+};
+
+export type DeletePushSubscriptionErrors = {
+  /**
+   * Request body or query parameters failed validation.
+   */
+  400: Error;
+  /**
+   * Missing or invalid creator token.
+   */
+  401: Error;
+};
+
+export type DeletePushSubscriptionError =
+  DeletePushSubscriptionErrors[keyof DeletePushSubscriptionErrors];
+
+export type DeletePushSubscriptionResponses = {
+  /**
+   * Subscription removed (or already absent).
+   */
+  204: void;
+};
+
+export type DeletePushSubscriptionResponse =
+  DeletePushSubscriptionResponses[keyof DeletePushSubscriptionResponses];
+
+export type RegisterPushSubscriptionData = {
+  body: PushSubscriptionInput;
+  headers?: {
+    /**
+     * Plaintext creator token (the value delivered by the magic-link email).
+     * The server hashes it and compares against `event_tokens.token_hash`.
+     *
+     * Optional: signed-in users whose `users.id` matches the event's
+     * `creator_user_id` can call the same endpoints with the
+     * Better-Auth session cookie instead of this header. OAuth bearers
+     * with the appropriate scope are accepted too. See
+     * `apps/api/src/middleware/require-event-ownership.ts`.
+     *
+     */
+    'X-Creator-Token'?: string;
+  };
+  path?: never;
+  query?: never;
+  url: '/v1/push/subscriptions';
+};
+
+export type RegisterPushSubscriptionErrors = {
+  /**
+   * Request body or query parameters failed validation.
+   */
+  400: Error;
+  /**
+   * Missing or invalid creator token.
+   */
+  401: Error;
+};
+
+export type RegisterPushSubscriptionError =
+  RegisterPushSubscriptionErrors[keyof RegisterPushSubscriptionErrors];
+
+export type RegisterPushSubscriptionResponses = {
+  /**
+   * Subscription stored.
+   */
+  204: void;
+};
+
+export type RegisterPushSubscriptionResponse =
+  RegisterPushSubscriptionResponses[keyof RegisterPushSubscriptionResponses];

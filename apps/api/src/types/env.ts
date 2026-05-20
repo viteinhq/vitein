@@ -44,6 +44,16 @@ export interface Env {
    * dev, where `infra/email.ts` falls back to a synchronous Resend call.
    */
   QUEUE_EMAIL?: Queue<EmailJob>;
+  /** Web Push delivery queue — consumer sends to push_subscriptions. */
+  QUEUE_PUSH?: Queue<PushJob>;
+
+  /**
+   * VAPID keypair for Web Push. The public key is non-secret (handed to
+   * browsers as the applicationServerKey) and lives in wrangler vars; the
+   * private key signs the VAPID JWT and is a `wrangler secret`.
+   */
+  VAPID_PUBLIC_KEY?: string;
+  VAPID_PRIVATE_KEY?: string;
 
   // Stripe (Phase 1 premium upgrade — two tiers × four currencies = 8 Price IDs)
   STRIPE_SECRET_KEY?: string;
@@ -70,6 +80,7 @@ import type { AuthContext } from '../domain/auth/context.js';
 import type { DbHolder } from '../infra/db.js';
 import type { EmailJob } from '../infra/email-types.js';
 import type { Logger } from '../infra/logger.js';
+import type { PushJob } from '../infra/push-types.js';
 
 export type AppVariables = {
   requestId: string;

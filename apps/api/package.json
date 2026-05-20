@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@better-auth/oauth-provider": "^1.6.11",
+    "@block65/webcrypto-web-push": "^1.0.2",
     "@hono/zod-validator": "^0.8.0",
     "@sentry/cloudflare": "^10.53.1",
     "@vitein/db-schema": "workspace:*",

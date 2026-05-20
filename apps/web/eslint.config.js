@@ -19,6 +19,12 @@ export default [
         navigator: 'readonly',
         setTimeout: 'readonly',
         clearTimeout: 'readonly',
+        fetch: 'readonly',
+        localStorage: 'readonly',
+        sessionStorage: 'readonly',
+        atob: 'readonly',
+        btoa: 'readonly',
+        Notification: 'readonly',
       },
     },
   },
@@ -47,6 +53,10 @@ export default [
     },
   },
   {
-    ignores: ['.svelte-kit/**', 'build/**', 'dist/**'],
+    // SvelteKit deliberately excludes the service worker from the app
+    // tsconfig (it runs in a worker scope, not the DOM), so eslint's
+    // type-aware project service can't resolve it. `svelte-check` still
+    // type-checks it against `tsconfig` lib settings.
+    ignores: ['.svelte-kit/**', 'build/**', 'dist/**', 'src/service-worker.ts'],
   },
 ];

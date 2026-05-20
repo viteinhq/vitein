@@ -1,6 +1,7 @@
 <script lang="ts">
   import { version } from '$app/environment';
   import { ArrowRight, Button, CookieConsent, LanguageSwitcher, Wordmark } from '$lib/design';
+  import InstallPrompt from '$lib/pwa/InstallPrompt.svelte';
   import * as m from '$lib/paraglide/messages.js';
   import type { Snippet } from 'svelte';
   import type { LayoutProps } from './$types';
@@ -94,3 +95,4 @@
     </footer>
   </div>
 <CookieConsent initialShown={showCookieBanner} />
+<InstallPrompt />

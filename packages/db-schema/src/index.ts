@@ -19,6 +19,7 @@ export {
   oauthConsents,
   jwks,
   stripeEvents,
+  pushSubscriptions,
   schema,
   type User,
   type NewUser,
@@ -56,4 +57,6 @@ export {
   type NewJwks,
   type StripeEvent,
   type NewStripeEvent,
+  type PushSubscription,
+  type NewPushSubscription,
 } from './schema.js';
