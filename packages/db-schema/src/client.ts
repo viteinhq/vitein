@@ -1,19 +1,35 @@
-import { neon } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-http';
+import { drizzle, type NodePgDatabase } from 'drizzle-orm/node-postgres';
+import pg from 'pg';
 import { schema } from './schema.js';
 
 /**
- * Build a Drizzle client bound to the Neon HTTP driver and the full schema.
+ * Drizzle client bound to the full schema.
  *
- * The HTTP driver is the right choice from Cloudflare Workers: each query is
- * a single HTTPS round-trip, so there are no connection pools to manage and
- * no per-isolate state to worry about. If you need transactions spanning
- * multiple statements, use `@neondatabase/serverless`'s `neonConfig.transport`
- * or migrate to the WebSocket driver.
+ * The Core API Worker connects through Cloudflare Hyperdrive: Hyperdrive
+ * speaks the Postgres wire protocol and pools connections at the edge, so
+ * the Worker hands it a plain connection string. See ADR 0008 — this
+ * replaced the Neon HTTP `/sql` driver, whose endpoint was being
+ * edge-blocked under load.
+ *
+ * The wire-protocol driver is NOT stateless: every `openDb` owns a `pg`
+ * pool that the caller must `close()` when the request or invocation
+ * finishes (e.g. via `ctx.waitUntil`).
  */
-export function createDb(databaseUrl: string) {
-  const sql = neon(databaseUrl);
-  return drizzle(sql, { schema, casing: 'snake_case' });
+export type Db = NodePgDatabase<typeof schema>;
+
+export interface DbHandle {
+  db: Db;
+  /** Drain the underlying pool. Call once per request/invocation. */
+  close(): Promise<void>;
 }
 
-export type Db = ReturnType<typeof createDb>;
+export function openDb(connectionString: string): DbHandle {
+  const pool = new pg.Pool({ connectionString, max: 5 });
+  const db = drizzle(pool, { schema, casing: 'snake_case' });
+  return {
+    db,
+    close: async () => {
+      await pool.end();
+    },
+  };
+}

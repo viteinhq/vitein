@@ -40,7 +40,7 @@ rsvpsRoute.post(
   async (c) => {
     const { id } = c.req.valid('param');
     const input = c.req.valid('json');
-    const { rsvp, event } = await submitRsvp(db(c.env), id, input);
+    const { rsvp, event } = await submitRsvp(db(c), id, input);
 
     const webBase = c.env.WEB_BASE_URL ?? 'https://vite.in';
     const eventUrl = `${webBase}/e/${event.slug}`;
@@ -93,7 +93,7 @@ rsvpsRoute.get(
   requireEventOwnership('id', { scope: 'rsvps:read' }),
   async (c) => {
     const { id } = c.req.valid('param');
-    const items = await listRsvps(db(c.env), id);
+    const items = await listRsvps(db(c), id);
     return c.json({ items: items.map(toRsvp) });
   },
 );

@@ -57,7 +57,7 @@ export function requireEventOwnership(idParam: string, opts?: { scope?: string }
         }
       }
 
-      const [row] = await db(c.env)
+      const [row] = await db(c)
         .select({ creatorUserId: events.creatorUserId })
         .from(events)
         .where(eq(events.id, eventId))

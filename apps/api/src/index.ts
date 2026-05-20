@@ -3,9 +3,11 @@ import * as Sentry from '@sentry/cloudflare';
 import { Hono } from 'hono';
 import { runScheduled } from './cron.js';
 import { createAuth } from './infra/auth.js';
+import { db } from './infra/db.js';
 import { consumeEmailBatch } from './infra/email.js';
 import type { EmailJob } from './infra/email-types.js';
 import { authMiddleware } from './middleware/auth.js';
+import { dbMiddleware } from './middleware/db.js';
 import { errorHandler } from './middleware/error.js';
 import { rateLimit } from './middleware/rate-limit.js';
 import { requestId } from './middleware/request-id.js';
@@ -26,6 +28,10 @@ export const app = new Hono<{ Bindings: Env; Variables: AppVariables }>();
 // anything else can log.
 app.use('*', requestId);
 
+// Install the per-request DB holder before anything that may query —
+// auth middleware included.
+app.use('*', dbMiddleware);
+
 // Auth middleware runs next so every handler can read c.var.auth.
 app.use('*', authMiddleware);
 
@@ -41,7 +47,7 @@ app.use('*', rateLimit);
 // but the MCP Inspector and most spec-conformant clients hit the RFC 8414
 // form — we expose it here. Same handler powers both.
 app.get('/.well-known/oauth-authorization-server/v1/auth', async (c) => {
-  const auth = createAuth(c.env);
+  const auth = createAuth(c.env, db(c));
   const handler = oauthProviderAuthServerMetadata(auth);
   return handler(c.req.raw);
 });

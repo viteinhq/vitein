@@ -42,7 +42,7 @@ checkoutRoute.post(
     const { id } = c.req.valid('param');
     const { tier, currency = 'EUR' } = c.req.valid('json');
 
-    const event = await getEventForCreator(db(c.env), id);
+    const event = await getEventForCreator(db(c), id);
     if (event.isPaid) {
       throw new ConflictError('event.already_paid', 'Event is already premium');
     }

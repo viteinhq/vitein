@@ -39,7 +39,7 @@ mediaRoute.post(
     // sold on both Basic and Plus). Free events can't attach a cover —
     // gate before touching R2. Deleting existing media stays ungated so
     // an event that uploaded before this gate landed can still clean up.
-    const event = await getEventForCreator(db(c.env), id);
+    const event = await getEventForCreator(db(c), id);
     if (!tierOf(event)) {
       throw new DomainError(
         'event.feature_gated',
@@ -55,7 +55,7 @@ mediaRoute.post(
     const buffer = await c.req.raw.arrayBuffer();
     const bytes = new Uint8Array(buffer);
 
-    const row = await uploadMedia(db(c.env), c.env.R2_MEDIA, {
+    const row = await uploadMedia(db(c), c.env.R2_MEDIA, {
       eventId: id,
       kind,
       bytes,
@@ -76,14 +76,14 @@ mediaRoute.get(
     // A password-protected event shouldn't leak its cover image before the
     // guest has unlocked it. We hide the media list (empty items) rather
     // than 401'ing so the event-view page can still call this safely.
-    const event = await getEventPublic(db(c.env), id);
+    const event = await getEventPublic(db(c), id);
     if (event.passwordHash) {
       const token = c.req.header('X-Event-View-Token');
-      if (!token || !(await isViewTokenValid(db(c.env), event.id, token))) {
+      if (!token || !(await isViewTokenValid(db(c), event.id, token))) {
         return c.json({ items: [] });
       }
     }
-    const rows = await listMedia(db(c.env), id);
+    const rows = await listMedia(db(c), id);
     return c.json({ items: rows.map((r) => toMedia(r, c.env)) });
   },
 );
@@ -99,7 +99,7 @@ mediaRoute.delete(
       throw new ValidationError('Media storage is not configured in this environment.');
     }
     const { id, mediaId } = c.req.valid('param');
-    await deleteMedia(db(c.env), c.env.R2_MEDIA, id, mediaId);
+    await deleteMedia(db(c), c.env.R2_MEDIA, id, mediaId);
     return c.body(null, 204);
   },
 );

@@ -34,7 +34,7 @@ guestsRoute.post(
   async (c) => {
     const { id } = c.req.valid('param');
     const input = c.req.valid('json');
-    const row = await addGuest(db(c.env), id, input);
+    const row = await addGuest(db(c), id, input);
     return c.json(toGuest(row), 201);
   },
 );
@@ -47,7 +47,7 @@ guestsRoute.get(
   requireEventOwnership('id', { scope: 'guests:read' }),
   async (c) => {
     const { id } = c.req.valid('param');
-    const items = await listGuests(db(c.env), id);
+    const items = await listGuests(db(c), id);
     return c.json({ items: items.map(toGuest) });
   },
 );

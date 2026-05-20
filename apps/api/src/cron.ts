@@ -1,6 +1,7 @@
+import { type Db } from '@vitein/db-schema';
 import { findDueReminders, markReminderSent } from './domain/reminders/reminders.js';
 import { purgeSoftDeleted } from './domain/retention/purge.js';
-import { db } from './infra/db.js';
+import { dbConnectionString, withDb } from './infra/db.js';
 import { localeFromAcceptLanguage, sendReminder } from './infra/email.js';
 import { createLogger, type Logger } from './infra/logger.js';
 import type { Env } from './types/env.js';
@@ -23,37 +24,33 @@ export async function runScheduled(env: Env): Promise<void> {
     requestId: `cron:${Date.now().toString()}`,
   });
 
-  if (!env.DATABASE_URL) {
-    log.warn('cron_skipped_database_url_unset');
+  if (!dbConnectionString(env)) {
+    log.warn('cron_skipped_no_database');
     return;
   }
 
-  const client = db(env);
-
-  try {
-    await sendDueReminders(env, client, log);
-  } catch (err) {
-    log.error('cron_reminder_job_failed', { err: err as Error });
-  }
-
-  try {
-    const result = await purgeSoftDeleted(client);
-    if (result.eventsDeleted > 0 || result.usersDeleted > 0) {
-      log.info('cron_purge_complete', {
-        events_deleted: result.eventsDeleted,
-        users_deleted: result.usersDeleted,
-      });
+  await withDb(env, async (client) => {
+    try {
+      await sendDueReminders(env, client, log);
+    } catch (err) {
+      log.error('cron_reminder_job_failed', { err: err as Error });
     }
-  } catch (err) {
-    log.error('cron_purge_job_failed', { err: err as Error });
-  }
+
+    try {
+      const result = await purgeSoftDeleted(client);
+      if (result.eventsDeleted > 0 || result.usersDeleted > 0) {
+        log.info('cron_purge_complete', {
+          events_deleted: result.eventsDeleted,
+          users_deleted: result.usersDeleted,
+        });
+      }
+    } catch (err) {
+      log.error('cron_purge_job_failed', { err: err as Error });
+    }
+  });
 }
 
-async function sendDueReminders(
-  env: Env,
-  client: ReturnType<typeof db>,
-  log: Logger,
-): Promise<void> {
+async function sendDueReminders(env: Env, client: Db, log: Logger): Promise<void> {
   const due = await findDueReminders(client);
   if (due.length === 0) return;
 

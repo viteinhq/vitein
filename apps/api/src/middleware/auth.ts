@@ -6,11 +6,11 @@ interface JsonWebKeySetLike {
   keys: Array<Record<string, unknown>>;
 }
 import { and, eq, eventTokens } from '@vitein/db-schema';
-import type { MiddlewareHandler } from 'hono';
+import type { Context, MiddlewareHandler } from 'hono';
 import type { AuthContext } from '../domain/auth/context.js';
 import { hashToken } from '../domain/auth/tokens.js';
 import { createAuth } from '../infra/auth.js';
-import { db } from '../infra/db.js';
+import { db, dbConnectionString } from '../infra/db.js';
 import { rootLogger } from '../infra/logger.js';
 import type { AppVariables, Env } from '../types/env.js';
 
@@ -36,14 +36,14 @@ export const authMiddleware: MiddlewareHandler<{
 }> = async (c, next) => {
   const creatorToken = c.req.header('X-Creator-Token');
   if (creatorToken) {
-    c.set('auth', await resolveCreatorToken(c.env, creatorToken));
+    c.set('auth', await resolveCreatorToken(c, creatorToken));
     await next();
     return;
   }
 
   const bearer = extractBearer(c.req.header('Authorization'));
   if (bearer) {
-    const oauth = await resolveOAuthBearer(c.env, bearer);
+    const oauth = await resolveOAuthBearer(c, bearer);
     if (oauth) {
       c.set('auth', oauth);
       await next();
@@ -57,10 +57,12 @@ export const authMiddleware: MiddlewareHandler<{
     return;
   }
 
-  const userAuth = await resolveUserSession(c.env, c.req.raw);
+  const userAuth = await resolveUserSession(c, c.req.raw);
   c.set('auth', userAuth ?? anonymous());
   await next();
 };
+
+type AppContext = Context<{ Bindings: Env; Variables: AppVariables }>;
 
 function anonymous(): AuthContext {
   return { kind: 'anonymous' };
@@ -72,11 +74,11 @@ function extractBearer(header: string | undefined): string | null {
   return match?.[1] ?? null;
 }
 
-async function resolveCreatorToken(env: Env, token: string): Promise<AuthContext> {
-  if (!env.DATABASE_URL) return anonymous();
+async function resolveCreatorToken(c: AppContext, token: string): Promise<AuthContext> {
+  if (!dbConnectionString(c.env)) return anonymous();
 
   const hash = await hashToken(token);
-  const [row] = await db(env)
+  const [row] = await db(c)
     .select({
       id: eventTokens.id,
       eventId: eventTokens.eventId,
@@ -93,10 +95,10 @@ async function resolveCreatorToken(env: Env, token: string): Promise<AuthContext
   return { kind: 'creator', eventId: row.eventId, tokenId: row.id };
 }
 
-async function resolveUserSession(env: Env, request: Request): Promise<AuthContext | null> {
-  if (!env.DATABASE_URL || !env.AUTH_SECRET) return null;
+async function resolveUserSession(c: AppContext, request: Request): Promise<AuthContext | null> {
+  if (!dbConnectionString(c.env) || !c.env.AUTH_SECRET) return null;
   try {
-    const auth = createAuth(env);
+    const auth = createAuth(c.env, db(c));
     const session = await auth.api.getSession({ headers: request.headers });
     if (!session?.user.id) return null;
     return { kind: 'user', userId: session.user.id, scopes: ['*'] };
@@ -118,10 +120,10 @@ async function resolveUserSession(env: Env, request: Request): Promise<AuthConte
  * claim, and the issuing client from `client_id`. Returns null on any
  * verification failure — caller falls through to anonymous.
  */
-async function resolveOAuthBearer(env: Env, token: string): Promise<AuthContext | null> {
-  if (!env.DATABASE_URL || !env.AUTH_SECRET) return null;
+async function resolveOAuthBearer(c: AppContext, token: string): Promise<AuthContext | null> {
+  if (!dbConnectionString(c.env) || !c.env.AUTH_SECRET) return null;
 
-  const apiBaseURL = deriveApiBaseURL(env);
+  const apiBaseURL = deriveApiBaseURL(c.env);
   // Better-Auth's JWT issuer matches the discovery doc's `issuer`,
   // which is `<api-base>/v1/auth` (baseURL + basePath), not `<api-base>`.
   const issuer = `${apiBaseURL}/v1/auth`;
@@ -139,7 +141,7 @@ async function resolveOAuthBearer(env: Env, token: string): Promise<AuthContext 
     // with `Jwks failed: <none>` even though the same URL responds
     // from the outside. Reading directly off the Auth instance is
     // simpler and faster (no HTTP, no edge round-trip).
-    const auth = createAuth(env);
+    const auth = createAuth(c.env, db(c));
     const jwksFetch = async () => {
       const result = (await auth.api.getJwks()) as JsonWebKeySetLike;
       return result;

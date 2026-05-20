@@ -14,7 +14,18 @@ export interface Env {
 
   // Secrets (set via `wrangler secret put ...`)
   SENTRY_DSN?: string;
+  /**
+   * Direct Postgres connection string. Used in local dev and by
+   * `drizzle-kit`. In deployed environments the Worker connects through
+   * `HYPERDRIVE` instead — see ADR 0008.
+   */
   DATABASE_URL?: string;
+  /**
+   * Cloudflare Hyperdrive binding — pools the Postgres connection at the
+   * edge over the wire protocol. Bound on staging + production; absent in
+   * local dev, where the Worker falls back to `DATABASE_URL`.
+   */
+  HYPERDRIVE?: Hyperdrive;
   RESEND_API_KEY?: string;
   WEB_BASE_URL?: string;
   /**
@@ -56,6 +67,7 @@ export interface Env {
 }
 
 import type { AuthContext } from '../domain/auth/context.js';
+import type { DbHolder } from '../infra/db.js';
 import type { EmailJob } from '../infra/email-types.js';
 import type { Logger } from '../infra/logger.js';
 
@@ -63,4 +75,5 @@ export type AppVariables = {
   requestId: string;
   logger: Logger;
   auth: AuthContext;
+  dbHolder: DbHolder;
 };
