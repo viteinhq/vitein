@@ -56,11 +56,6 @@ app.route('/v1/events', eventsRoute);
 app.route('/v1/users', usersRoute);
 app.route('/v1/webhooks/stripe', stripeWebhookRoute);
 
-// Intentional throw for Sentry-wiring verification. Cheap and useful.
-app.get('/_debug/boom', () => {
-  throw new Error('api_debug_boom — intentional Sentry canary');
-});
-
 app.notFound((c) => c.json({ error: { code: 'not_found', message: 'Route not found' } }, 404));
 
 app.onError(errorHandler);

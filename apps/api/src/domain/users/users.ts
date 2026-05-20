@@ -55,8 +55,8 @@ export async function getMyEvents(db: Db, userId: string): Promise<(typeof event
 }
 
 /**
- * Soft-delete the user. 30-day grace period before hard delete is enforced
- * by a separate cron worker (not implemented yet — tracked as follow-up).
+ * Soft-delete the user. The 30-day grace period before hard delete is
+ * enforced by the `purgeSoftDeleted` cron job (`domain/retention/purge.ts`).
  * The existing events keep working via creator tokens even while the user
  * is soft-deleted; the FK on `events.creator_user_id` uses SET NULL on the
  * hard delete, so event ownership disconnects cleanly.
