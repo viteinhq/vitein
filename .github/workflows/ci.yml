@@ -37,6 +37,12 @@ jobs:
       - name: Lint OpenAPI spec
         run: pnpm -F @vitein/openapi-spec lint
 
+      - name: i18n key parity
+        # Every locale must carry the same key set as `en` — a missing
+        # key ships a silent English fallback. Catches half-translated
+        # locales before merge.
+        run: node scripts/check-i18n-completeness.mjs
+
       - name: SDK drift check (spec vs generated)
         run: pnpm gen:sdk:check
 

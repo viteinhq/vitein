@@ -3,4 +3,22 @@
 /* Design tokens — pull palette/fonts into named tokens as B.1 progresses. */
 @theme {
   --color-vite-accent: oklch(0.7 0.19 160);
+
+  /*
+   * Cross-script sans stack. system-ui first so every OS uses its
+   * native UI font (San Francisco, Segoe, Roboto). The browser's
+   * per-glyph fallback then renders Devanagari / Tamil / Bengali /
+   * CJK from the OS's bundled Noto / system fonts — every modern OS
+   * (Win 10+, macOS, iOS 15+, Android) ships coverage for the scripts
+   * we localise into, so we deliberately do NOT bundle webfonts:
+   * Noto Sans CJK alone is multi-megabyte and would wreck the
+   * 100 KB homepage budget.
+   *
+   * If a specific script renders poorly on a real device (contractor
+   * QA during each language wave), add a targeted, subsetted webfont
+   * for that script only — never a blanket CJK bundle.
+   */
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
 }
