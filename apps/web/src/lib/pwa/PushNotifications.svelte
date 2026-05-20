@@ -2,6 +2,7 @@
   import { browser } from '$app/environment';
   import { Button } from '$lib/design';
   import * as m from '$lib/paraglide/messages.js';
+  import { decodeVapidKey } from '$lib/pwa/vapid';
 
   // Creator token from the magic-link URL; null for signed-in owners
   // (the session cookie carries their auth instead).
@@ -32,17 +33,6 @@
     }
   }
 
-  /** Decode a base64url VAPID key into the byte array `subscribe()` expects. */
-  function decodeKey(b64: string): Uint8Array<ArrayBuffer> {
-    const padded = (b64 + '='.repeat((4 - (b64.length % 4)) % 4))
-      .replace(/-/g, '+')
-      .replace(/_/g, '/');
-    const raw = atob(padded);
-    const bytes = new Uint8Array(raw.length);
-    for (let i = 0; i < raw.length; i += 1) bytes[i] = raw.charCodeAt(i);
-    return bytes;
-  }
-
   async function enable(): Promise<void> {
     status = 'working';
     try {
@@ -58,7 +48,7 @@
       const reg = await navigator.serviceWorker.ready;
       const subscription = await reg.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: decodeKey(key),
+        applicationServerKey: decodeVapidKey(key),
       });
 
       const res = await fetch('/api/push', {

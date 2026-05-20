@@ -71,6 +71,9 @@ import type {
   ListRsvpsData,
   ListRsvpsErrors,
   ListRsvpsResponses,
+  RefreshPushSubscriptionData,
+  RefreshPushSubscriptionErrors,
+  RefreshPushSubscriptionResponses,
   RegisterPushSubscriptionData,
   RegisterPushSubscriptionErrors,
   RegisterPushSubscriptionResponses,
@@ -627,6 +630,38 @@ export const registerPushSubscription = <ThrowOnError extends boolean = false>(
     ThrowOnError
   >({
     url: '/v1/push/subscriptions',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+/**
+ * Re-bind a Web Push subscription after the browser rotates it
+ *
+ * Public endpoint — no auth. When a browser fires
+ * `pushsubscriptionchange` (it periodically rotates or expires push
+ * subscriptions), the service worker re-subscribes and calls this to
+ * migrate the stored record: the row matching `oldEndpoint` keeps
+ * its owner binding (user account or event) and adopts the new
+ * `endpoint` and keys.
+ *
+ * The old endpoint is the capability — an unguessable, secret
+ * push-service URL — so no creator token or session is required
+ * (the service worker has access to neither). An unknown
+ * `oldEndpoint` is a no-op.
+ *
+ */
+export const refreshPushSubscription = <ThrowOnError extends boolean = false>(
+  options: Options<RefreshPushSubscriptionData, ThrowOnError>,
+) =>
+  (options.client ?? client).post<
+    RefreshPushSubscriptionResponses,
+    RefreshPushSubscriptionErrors,
+    ThrowOnError
+  >({
+    url: '/v1/push/subscriptions/refresh',
     ...options,
     headers: {
       'Content-Type': 'application/json',

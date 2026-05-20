@@ -1,4 +1,5 @@
 import { type Db, eq, or, pushSubscriptions } from '@vitein/db-schema';
+import { isUniqueViolation } from '../db-errors.js';
 
 /**
  * Who a push subscription belongs to. A signed-in user binds it to their
@@ -38,6 +39,32 @@ export async function registerPushSubscription(db: Db, input: RegisterPushInput)
 /** Remove a subscription by its endpoint. A no-op if it is already gone. */
 export async function deletePushSubscription(db: Db, endpoint: string): Promise<void> {
   await db.delete(pushSubscriptions).where(eq(pushSubscriptions.endpoint, endpoint));
+}
+
+export interface RefreshPushInput {
+  oldEndpoint: string;
+  endpoint: string;
+  p256dh: string;
+  auth: string;
+}
+
+/**
+ * Migrate a subscription the browser has rotated (`pushsubscriptionchange`).
+ * The row matching `oldEndpoint` keeps its owner binding (user or event)
+ * and adopts the new endpoint and keys. An unknown `oldEndpoint` is a
+ * no-op. If the new endpoint is already stored — a concurrent re-register
+ * raced ahead — the unique-constraint violation is swallowed: that browser
+ * is already subscribed, so there is nothing left to migrate.
+ */
+export async function refreshPushSubscription(db: Db, input: RefreshPushInput): Promise<void> {
+  try {
+    await db
+      .update(pushSubscriptions)
+      .set({ endpoint: input.endpoint, p256dh: input.p256dh, auth: input.auth })
+      .where(eq(pushSubscriptions.endpoint, input.oldEndpoint));
+  } catch (err) {
+    if (!isUniqueViolation(err)) throw err;
+  }
 }
 
 /**
