@@ -18,6 +18,7 @@ export {
   oauthRefreshTokens,
   oauthConsents,
   jwks,
+  stripeEvents,
   schema,
   type User,
   type NewUser,
@@ -53,4 +54,6 @@ export {
   type NewOauthConsent,
   type Jwks,
   type NewJwks,
+  type StripeEvent,
+  type NewStripeEvent,
 } from './schema.js';

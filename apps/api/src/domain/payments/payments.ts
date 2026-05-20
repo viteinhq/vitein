@@ -1,4 +1,4 @@
-import { and, auditLog, eq, events, isNull, type Db } from '@vitein/db-schema';
+import { and, auditLog, eq, events, isNull, stripeEvents, type Db } from '@vitein/db-schema';
 import { NotFoundError, ValidationError } from '../errors.js';
 
 export type PremiumTier = 'basic' | 'plus';
@@ -95,4 +95,32 @@ export function tierOf(event: { isPaid: boolean; paidFeatures: unknown }): Premi
   const tier = (pf as Record<string, unknown>)['tier'];
   if (tier === 'basic' || tier === 'plus') return tier;
   return null;
+}
+
+/**
+ * Claim a Stripe webhook event id for processing. Inserts the id into the
+ * idempotency ledger; returns `true` on the first delivery, `false` if the
+ * event was already processed (Stripe re-delivery). On a downstream failure
+ * the caller must `releaseStripeEvent` so Stripe's retry can re-run.
+ */
+export async function claimStripeEvent(db: Db, id: string, type: string): Promise<boolean> {
+  try {
+    await db.insert(stripeEvents).values({ id, type });
+    return true;
+  } catch (err) {
+    if (isDuplicateKeyError(err)) return false;
+    throw err;
+  }
+}
+
+/** Release a claim made by `claimStripeEvent` after a processing failure. */
+export async function releaseStripeEvent(db: Db, id: string): Promise<void> {
+  await db.delete(stripeEvents).where(eq(stripeEvents.id, id));
+}
+
+function isDuplicateKeyError(err: unknown): boolean {
+  if (!err || typeof err !== 'object') return false;
+  if ('code' in err && err.code === '23505') return true;
+  const message = 'message' in err && typeof err.message === 'string' ? err.message : '';
+  return message.includes('duplicate key');
 }
