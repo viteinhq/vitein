@@ -1,11 +1,12 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import { i18n } from '$lib/i18n';
   import { endonym } from '$lib/i18n-locales';
   import {
-    availableLanguageTags,
-    languageTag,
-    type AvailableLanguageTag,
+    deLocalizeHref,
+    getLocale,
+    localizeHref,
+    locales,
+    type Locale,
   } from '$lib/paraglide/runtime.js';
 
   /**
@@ -26,12 +27,12 @@
   let inputEl: HTMLInputElement | null = $state(null);
   let focused = $state(0);
 
-  const current = $derived(languageTag());
-  const canonicalPath = $derived(i18n.route(page.url.pathname));
+  const current = $derived(getLocale());
+  const canonicalPath = $derived(deLocalizeHref(page.url.pathname));
 
   const filtered = $derived.by(() => {
     const q = query.trim().toLowerCase();
-    const tags = [...availableLanguageTags] as AvailableLanguageTag[];
+    const tags = [...locales] as Locale[];
     if (!q) return tags;
     return tags.filter((tag) => {
       const name = endonym(tag).toLowerCase();
@@ -42,10 +43,7 @@
   function toggle() {
     open = !open;
     query = '';
-    focused = Math.max(
-      0,
-      (availableLanguageTags as readonly AvailableLanguageTag[]).indexOf(current),
-    );
+    focused = Math.max(0, (locales as readonly Locale[]).indexOf(current));
     if (open) {
       // Defer focus so the input exists.
       void Promise.resolve().then(() => inputEl?.focus());
@@ -79,7 +77,7 @@
       const tag = filtered[focused];
       if (!tag) return;
       e.preventDefault();
-      window.location.href = i18n.resolveRoute(canonicalPath, tag);
+      window.location.href = localizeHref(canonicalPath, { locale: tag });
     }
   }
 
@@ -133,7 +131,7 @@
       {:else}
         <ul role="listbox" aria-label="Languages" class="max-h-64 overflow-y-auto py-1">
           {#each filtered as tag, i (tag)}
-            {@const href = i18n.resolveRoute(canonicalPath, tag)}
+            {@const href = localizeHref(canonicalPath, { locale: tag })}
             <li>
               <a
                 {href}

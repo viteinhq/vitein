@@ -1,8 +1,6 @@
 <script lang="ts">
   import { version } from '$app/environment';
-  import { ParaglideJS } from '@inlang/paraglide-sveltekit';
   import { ArrowRight, Button, CookieConsent, LanguageSwitcher, Wordmark } from '$lib/design';
-  import { i18n } from '$lib/i18n';
   import * as m from '$lib/paraglide/messages.js';
   import type { Snippet } from 'svelte';
   import type { LayoutProps } from './$types';
@@ -17,9 +15,8 @@
   const navLink = 'rounded-full px-3 py-2 text-sm font-medium text-ink/70 transition hover:text-ink';
 </script>
 
-<ParaglideJS {i18n}>
-  <div class="flex min-h-screen flex-col">
-    <header class="border-b border-rule">
+<div class="flex min-h-screen flex-col">
+  <header class="border-b border-rule">
       <div class="mx-auto flex max-w-5xl items-center justify-between px-5 py-3.5 sm:px-6">
         <Wordmark href="/" size={23} />
         <nav class="flex items-center gap-1">
@@ -96,5 +93,4 @@
       </div>
     </footer>
   </div>
-  <CookieConsent initialShown={showCookieBanner} />
-</ParaglideJS>
+<CookieConsent initialShown={showCookieBanner} />

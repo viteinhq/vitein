@@ -1,4 +1,5 @@
-import { i18n } from '$lib/i18n';
+import { paraglideMiddleware } from '$lib/paraglide/server';
+import { getTextDirection } from '$lib/paraglide/runtime';
 import { captureToSentry } from '$lib/server/sentry';
 import { sequence } from '@sveltejs/kit/hooks';
 import type { Handle, HandleServerError } from '@sveltejs/kit';
@@ -11,8 +12,10 @@ const BUILD_SHA = __BUILD_SHA__ || undefined;
 
 /**
  * Server-side hook chain:
- *  1. `i18n.handle()` — detects the locale from cookie + Accept-Language
- *     and sets Paraglide's runtime tag for this request.
+ *  1. `paraglideHandle` — Paraglide v2 middleware. Resolves the request
+ *     locale (URL prefix → cookie → Accept-Language → baseLocale) and
+ *     runs the render inside that locale context; stamps `<html lang>`
+ *     and `dir` via `transformPageChunk`.
  *  2. `withHeaders` — request id, security headers, CSP/HSTS in production.
  *
  * `handleError` forwards uncaught server errors to Sentry via a minimal
@@ -20,6 +23,15 @@ const BUILD_SHA = __BUILD_SHA__ || undefined;
  * `@sentry/cloudflare` both have edges on the Pages runtime — this is the
  * reliable path.
  */
+
+const paraglideHandle: Handle = ({ event, resolve }) =>
+  paraglideMiddleware(event.request, ({ request, locale }) => {
+    event.request = request;
+    return resolve(event, {
+      transformPageChunk: ({ html }) =>
+        html.replace('%lang%', locale).replace('%dir%', getTextDirection(locale)),
+    });
+  });
 
 const withHeaders: Handle = async ({ event, resolve }) => {
   const inboundId = event.request.headers.get('x-request-id');
@@ -42,7 +54,7 @@ const withHeaders: Handle = async ({ event, resolve }) => {
   return response;
 };
 
-export const handle: Handle = sequence(i18n.handle(), withHeaders);
+export const handle: Handle = sequence(paraglideHandle, withHeaders);
 
 export const handleError: HandleServerError = async ({ error, event }) => {
   const dsn = event.platform?.env?.SENTRY_DSN;

@@ -1,4 +1,4 @@
-import type { AvailableLanguageTag } from './paraglide/runtime.js';
+import type { Locale } from './paraglide/runtime.js';
 
 /**
  * Endonym (native-name) for each locale we serve.
@@ -17,7 +17,7 @@ import type { AvailableLanguageTag } from './paraglide/runtime.js';
  * Adding a new locale = one entry here + one tag in
  * `apps/web/project.inlang/settings.json` + the matching `messages/<tag>.json`.
  */
-export const LOCALE_ENDONYMS: Record<AvailableLanguageTag, string> = {
+export const LOCALE_ENDONYMS: Record<Locale, string> = {
   en: 'English',
   de: 'Deutsch',
   fr: 'Français',
@@ -41,6 +41,6 @@ export const LOCALE_ENDONYMS: Record<AvailableLanguageTag, string> = {
 };
 
 /** Human-readable endonym for a locale, with a safe fallback to the tag. */
-export function endonym(tag: AvailableLanguageTag): string {
+export function endonym(tag: Locale): string {
   return LOCALE_ENDONYMS[tag] ?? tag;
 }
