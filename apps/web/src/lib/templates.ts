@@ -1,4 +1,8 @@
-import { createTemplateRegistry, type TemplateTokens } from '@vitein/template-engine';
+import {
+  createTemplateRegistry,
+  type Template,
+  type TemplateTokens,
+} from '@vitein/template-engine';
 
 /**
  * Community-only template registry for the open-source web build. The
@@ -15,6 +19,15 @@ export const templateRegistry = createTemplateRegistry();
  */
 export function templateStyle(templateId: string): string {
   return cssVars(templateRegistry.resolve(templateId).tokens);
+}
+
+/**
+ * Resolve a template id to its layout variant — the structural arrangement
+ * the event page renders (ADR 0009 M2). Unknown ids fall back to the
+ * baseline's layout.
+ */
+export function templateLayout(templateId: string): Template['layout'] {
+  return templateRegistry.resolve(templateId).layout;
 }
 
 function cssVars(t: TemplateTokens): string {

@@ -445,6 +445,7 @@
   "template_noir_name": "Noir",
   "template_paper_name": "Paper",
   "template_serif_name": "Serif",
+  "template_ticket_name": "Ticket",
   "create_timezone_note": "시간은 {timezone} 기준입니다.",
   "create_timezone_change": "변경",
   "event_directions": "지도에서 열기"

@@ -53,8 +53,12 @@ export interface Template {
   tier: TemplateTier;
   origin: TemplateOrigin;
   tokens: TemplateTokens;
-  /** Layout variant. Only `standard` exists in M1; M2 adds more. */
-  layout: 'standard';
+  /**
+   * Layout variant — the structural arrangement of the event page, distinct
+   * from the visual `tokens`. `standard` is the baseline; `ticket` (M2)
+   * renders the hero as a two-panel ticket card. See ADR 0009.
+   */
+  layout: 'standard' | 'ticket';
   /**
    * Phase-3 hook: a template may later declare extra structured content
    * fields (e.g. an Indian-wedding template's multi-day functions).

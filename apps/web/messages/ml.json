@@ -445,6 +445,7 @@
   "template_noir_name": "Noir",
   "template_paper_name": "Paper",
   "template_serif_name": "Serif",
+  "template_ticket_name": "Ticket",
   "create_timezone_note": "സമയങ്ങൾ {timezone} അനുസരിച്ചാണ്.",
   "create_timezone_change": "മാറ്റുക",
   "event_directions": "മാപ്സിൽ തുറക്കുക"
