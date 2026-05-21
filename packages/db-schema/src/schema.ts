@@ -135,6 +135,7 @@ export const events = pgTable(
     coverMediaId: uuid('cover_media_id'),
     defaultLocale: text('default_locale').notNull().default('en'),
     visibility: text().notNull().default('link_only'),
+    templateId: text('template_id').notNull().default('classic'),
     deletedAt: timestamp('deleted_at', { withTimezone: true }),
     createdAt: nowTs(),
     updatedAt: nowTs(),

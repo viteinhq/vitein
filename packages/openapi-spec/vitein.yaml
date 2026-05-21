@@ -967,6 +967,13 @@ components:
           type: string
           enum: [link_only, public]
           default: link_only
+        templateId:
+          type: string
+          default: classic
+          description: |
+            Theme template id (ADR 0009). Defaults to `classic`. Only free
+            templates may be set at creation; premium templates are chosen
+            after upgrading.
 
     EventUpdateInput:
       type: object
@@ -980,6 +987,12 @@ components:
         locationText: { type: [string, 'null'], maxLength: 500 }
         defaultLocale: { type: string, minLength: 2, maxLength: 10 }
         visibility: { type: string, enum: [link_only, public] }
+        templateId:
+          type: string
+          description: |
+            Theme template id (ADR 0009). Setting a premium template
+            requires the event to be on a paid tier — the server returns
+            403 `event.feature_gated` otherwise.
         password:
           type: [string, 'null']
           minLength: 4
@@ -991,7 +1004,7 @@ components:
 
     EventPublic:
       type: object
-      required: [id, slug, title, startsAt, timezone, visibility, hasPassword, locked]
+      required: [id, slug, title, startsAt, timezone, visibility, hasPassword, locked, templateId]
       properties:
         id: { type: string, format: uuid }
         slug: { type: string }
@@ -1003,6 +1016,9 @@ components:
         locationText: { type: [string, 'null'] }
         visibility: { type: string, enum: [link_only, public] }
         defaultLocale: { type: string }
+        templateId:
+          type: string
+          description: Theme template id (ADR 0009); `classic` by default.
         tier:
           type: [string, 'null']
           enum: [basic, plus, null]
