@@ -26,7 +26,7 @@
   }
 </script>
 
-<div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+<div class="grid grid-cols-2 gap-3">
   {#each templates as t (t.id)}
     <label
       class="cursor-pointer rounded-xl border-[1.5px] border-rule p-2 transition has-[:checked]:border-ink has-[:checked]:bg-paper-2"
