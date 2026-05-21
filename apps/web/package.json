@@ -25,6 +25,7 @@
     "@fontsource-variable/geist-mono": "^5.2.8",
     "@fontsource/instrument-serif": "^5.2.8",
     "@hey-api/client-fetch": "^0.13.1",
+    "@vitein/template-engine": "workspace:*",
     "@vitein/ts-sdk": "workspace:*"
   },
   "devDependencies": {

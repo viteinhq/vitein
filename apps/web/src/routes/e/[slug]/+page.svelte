@@ -3,6 +3,7 @@
   import { page } from '$app/state';
   import { ArrowRight, Banner, Button, Eyebrow, TextField } from '$lib/design';
   import { localizeError } from '$lib/errors';
+  import { templateStyle } from '$lib/templates';
   import * as m from '$lib/paraglide/messages.js';
   import type { PageProps } from './$types';
 
@@ -81,7 +82,13 @@
   <meta name="description" content={data.event.description ?? data.event.title} />
 </svelte:head>
 
-<section class="mx-auto max-w-2xl px-6 py-10">
+<!-- The event's chosen template themes this section: `templateStyle` emits
+     the `@theme` CSS variables, so the token-classed markup below restyles
+     itself. The site header/footer stay on the default theme. -->
+<section
+  class="mx-auto max-w-2xl bg-paper px-6 py-10 text-ink"
+  style={templateStyle(data.event.templateId)}
+>
   {#if isLocked}
     <div class="rounded-card border border-rule bg-card p-7">
       <Eyebrow num="✦" label="vite.in" />
@@ -270,7 +277,7 @@
                 {m.event_rsvp_yes()}
               </label>
               <label
-                class="flex cursor-pointer items-center justify-center rounded-xl border-[1.5px] border-paper/25 px-3 py-3 text-sm font-semibold text-paper transition has-[:checked]:border-transparent has-[:checked]:bg-amber-300 has-[:checked]:text-ink"
+                class="flex cursor-pointer items-center justify-center rounded-xl border-[1.5px] border-paper/25 px-3 py-3 text-sm font-semibold text-paper transition has-[:checked]:border-transparent has-[:checked]:bg-amber-300 has-[:checked]:text-amber-950"
               >
                 <input type="radio" name="status" value="maybe" class="sr-only" />
                 {m.event_rsvp_maybe()}
