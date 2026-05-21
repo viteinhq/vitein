@@ -95,4 +95,4 @@
     </footer>
   </div>
 <CookieConsent initialShown={showCookieBanner} />
-<InstallPrompt />
+<InstallPrompt suppressed={showCookieBanner} />

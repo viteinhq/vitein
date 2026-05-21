@@ -11,6 +11,12 @@
     userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
   }
 
+  // Suppressed while the cookie-consent banner is up — both are bottom-fixed,
+  // so showing them together would overlap. The consent gate wins; the
+  // install prompt reappears once consent is resolved. The
+  // `beforeinstallprompt` listener still attaches, so the event isn't missed.
+  const { suppressed = false }: { suppressed?: boolean } = $props();
+
   const DISMISS_KEY = 'vitein-install-dismissed';
 
   let deferred = $state<InstallEvent | null>(null);
@@ -59,7 +65,7 @@
   }
 </script>
 
-{#if !dismissed && deferred}
+{#if !suppressed && !dismissed && deferred}
   <div
     class="fixed inset-x-3 bottom-3 z-50 mx-auto flex max-w-md items-center gap-3 rounded-card border border-rule bg-card p-3 shadow-lg"
   >
@@ -74,7 +80,7 @@
       ✕
     </button>
   </div>
-{:else if !dismissed && iosHint}
+{:else if !suppressed && !dismissed && iosHint}
   <div
     class="fixed inset-x-3 bottom-3 z-50 mx-auto flex max-w-md items-center gap-3 rounded-card border border-rule bg-card p-3 shadow-lg"
   >
