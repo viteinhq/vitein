@@ -148,32 +148,6 @@
     </h1>
     <p class="mt-3 text-base leading-relaxed text-ink-muted">{m.create_subtitle()}</p>
 
-    <!-- live preview — themed by the chosen template, so picking a style
-         visibly restyles it -->
-    <div class="mt-8 flex justify-center">
-      <div
-        style={templateStyle(templateId)}
-        class="flex aspect-[3/4] w-56 flex-col overflow-hidden rounded-card bg-paper text-ink shadow-[0_24px_40px_-16px_rgba(0,0,0,0.25)]"
-      >
-        <div class="bg-accent px-5 py-5 text-accent-ink">
-          <span class="font-mono text-[9px] tracking-[0.16em] uppercase opacity-70">
-            {m.invite_eyebrow()}
-          </span>
-          <div
-            class="font-display mt-3 text-2xl leading-[0.95] font-bold tracking-[var(--tracking-display)]"
-          >
-            {titleValue || m.create_field_title()}
-          </div>
-        </div>
-        {#if previewDate || locationValue}
-          <div class="space-y-0.5 px-5 py-4 font-mono text-[10px] text-ink-muted">
-            {#if previewDate}<span class="block">{previewDate}</span>{/if}
-            {#if locationValue}<span class="block">{locationValue}</span>{/if}
-          </div>
-        {/if}
-      </div>
-    </div>
-
     <form
       method="POST"
       use:enhance={() => {
@@ -188,6 +162,36 @@
       {#if form?.error}
         <Banner tone="error">{localizeError(form.error)}</Banner>
       {/if}
+
+      <!-- Style first: preview + picker sit together so changing a theme
+           is visible without scrolling, on desktop and mobile alike. -->
+      <fieldset class="space-y-4">
+        <legend class={legendClass}>{m.create_style_label()}</legend>
+        <div class="flex justify-center">
+          <div
+            style={templateStyle(templateId)}
+            class="flex aspect-[3/4] w-52 flex-col overflow-hidden rounded-card bg-paper text-ink shadow-[0_24px_40px_-16px_rgba(0,0,0,0.25)]"
+          >
+            <div class="bg-accent px-5 py-5 text-accent-ink">
+              <span class="font-mono text-[9px] tracking-[0.16em] uppercase opacity-70">
+                {m.invite_eyebrow()}
+              </span>
+              <div
+                class="font-display mt-3 text-2xl leading-[0.95] font-bold tracking-[var(--tracking-display)]"
+              >
+                {titleValue || m.create_field_title()}
+              </div>
+            </div>
+            {#if previewDate || locationValue}
+              <div class="space-y-0.5 px-5 py-4 font-mono text-[10px] text-ink-muted">
+                {#if previewDate}<span class="block">{previewDate}</span>{/if}
+                {#if locationValue}<span class="block">{locationValue}</span>{/if}
+              </div>
+            {/if}
+          </div>
+        </div>
+        <TemplatePicker bind:value={templateId} />
+      </fieldset>
 
       <fieldset class="space-y-4">
         <legend class={legendClass}>{m.create_section_basics()}</legend>
@@ -251,11 +255,6 @@
           bind:value={locationValue}
           label={m.create_field_location_optional()}
         />
-      </fieldset>
-
-      <fieldset class="space-y-3">
-        <legend class={legendClass}>{m.create_style_label()}</legend>
-        <TemplatePicker bind:value={templateId} />
       </fieldset>
 
       <fieldset class="space-y-3">
