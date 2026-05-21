@@ -20,6 +20,7 @@ export { default as Eyebrow } from './Eyebrow.svelte';
 export { default as Heading } from './Heading.svelte';
 export { default as InviteCard } from './InviteCard.svelte';
 export { default as LanguageSwitcher } from './LanguageSwitcher.svelte';
+export { default as LocationField } from './LocationField.svelte';
 export { default as Pill } from './Pill.svelte';
 export { default as Section } from './Section.svelte';
 export { default as Text } from './Text.svelte';
