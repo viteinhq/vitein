@@ -71,6 +71,9 @@ import type {
   ListRsvpsData,
   ListRsvpsErrors,
   ListRsvpsResponses,
+  RecoverEventsData,
+  RecoverEventsErrors,
+  RecoverEventsResponses,
   RefreshPushSubscriptionData,
   RefreshPushSubscriptionErrors,
   RefreshPushSubscriptionResponses,
@@ -569,6 +572,32 @@ export const claimEvents = <ThrowOnError extends boolean = false>(
   (options?.client ?? client).post<ClaimEventsResponses, ClaimEventsErrors, ThrowOnError>({
     url: '/v1/auth/claim',
     ...options,
+  });
+
+/**
+ * Email fresh management links for events tied to an address
+ *
+ * Public endpoint — no auth. A creator who lost their magic link
+ * enters their email here; the API mints a fresh `manage`-purpose
+ * token for every non-deleted event whose `creatorEmail` matches
+ * and emails the management links to that address.
+ *
+ * Always returns 204 whether or not any events matched — the
+ * response never reveals whether an address has events (enumeration
+ * protection). When nothing matches, no email is sent. Rate-limited
+ * per IP-hash via the standard anonymous bucket.
+ *
+ */
+export const recoverEvents = <ThrowOnError extends boolean = false>(
+  options: Options<RecoverEventsData, ThrowOnError>,
+) =>
+  (options.client ?? client).post<RecoverEventsResponses, RecoverEventsErrors, ThrowOnError>({
+    url: '/v1/auth/recover',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
   });
 
 /**

@@ -22,6 +22,12 @@ export function localizeError(code: unknown, params?: { status?: unknown }): str
       return m.err_signin_email_required();
     case 'signin_magic_link_http':
       return m.err_signin_magic_link_http({ status: statusStr });
+    case 'recover_email_required':
+      return m.err_recover_email_required();
+    case 'recover_email_invalid':
+      return m.err_recover_email_invalid();
+    case 'recover_http':
+      return m.err_recover_http({ status: statusStr });
     case 'rsvp_name_required':
       return m.err_rsvp_name_required();
     case 'rsvp_event_not_found':

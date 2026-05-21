@@ -90,10 +90,10 @@ export const load: PageServerLoad = async ({ params, url, platform, request }) =
   ]);
 
   if (manage.error || !manage.data) {
-    // No valid auth — push the user to sign in. The dashboard can
-    // get them back to /manage with session auth. The creator-token
-    // path goes through the magic-link email, not this redirect.
-    throw redirect(303, `/signin?next=${encodeURIComponent(url.pathname)}`);
+    // No valid auth. An anonymous creator who lost (or never had) their
+    // magic-link token recovers fresh management links by email at
+    // /recover — that page also links to /signin for account holders.
+    throw redirect(303, '/recover');
   }
 
   return {

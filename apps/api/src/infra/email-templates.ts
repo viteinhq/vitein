@@ -2,6 +2,7 @@ import { DEFAULT_LOCALE, type Locale } from '@vitein/i18n-messages';
 import type {
   AnnouncementInput,
   CreatorMagicLinkInput,
+  CreatorRecoveryInput,
   ReminderInput,
   RsvpConfirmationInput,
   RsvpNotificationInput,
@@ -27,6 +28,7 @@ interface EmailTemplate<Input> {
 
 export interface TemplateBundle {
   creatorMagicLink: EmailTemplate<CreatorMagicLinkInput>;
+  creatorRecovery: EmailTemplate<CreatorRecoveryInput>;
   signInMagicLink: EmailTemplate<SignInMagicLinkInput>;
   rsvpConfirmation: EmailTemplate<RsvpConfirmationInput>;
   rsvpNotification: EmailTemplate<RsvpNotificationInput>;
@@ -45,6 +47,19 @@ const en: TemplateBundle = {
         manageUrl,
         '',
         'Keep this link private. Anyone with the link can manage the event.',
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  creatorRecovery: {
+    subject: () => 'Your vite.in event management links',
+    body: ({ events }) =>
+      [
+        'Here are management links for your events on vite.in:',
+        '',
+        ...events.flatMap((e) => [e.title, e.manageUrl, '']),
+        'Keep these links private. Anyone with a link can manage that event.',
+        'If you did not request this email, you can ignore it.',
         '',
         '— vite.in',
       ].join('\n'),
@@ -147,6 +162,19 @@ const de: TemplateBundle = {
         '— vite.in',
       ].join('\n'),
   },
+  creatorRecovery: {
+    subject: () => 'Deine vite.in Event-Verwaltungslinks',
+    body: ({ events }) =>
+      [
+        'Hier sind die Verwaltungslinks für deine Events auf vite.in:',
+        '',
+        ...events.flatMap((e) => [e.title, e.manageUrl, '']),
+        'Behalte diese Links für dich. Wer einen Link hat, kann das jeweilige Event verwalten.',
+        'Wenn du diese E-Mail nicht angefordert hast, kannst du sie ignorieren.',
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
   signInMagicLink: {
     subject: () => 'Dein vite.in Anmelde-Link',
     body: ({ url }) =>
@@ -241,6 +269,19 @@ const fr: TemplateBundle = {
         manageUrl,
         '',
         "Gardez ce lien privé. Toute personne qui le possède peut gérer l'événement.",
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  creatorRecovery: {
+    subject: () => "Vos liens de gestion d'événements vite.in",
+    body: ({ events }) =>
+      [
+        'Voici les liens de gestion de vos événements sur vite.in :',
+        '',
+        ...events.flatMap((e) => [e.title, e.manageUrl, '']),
+        "Gardez ces liens privés. Toute personne qui possède un lien peut gérer l'événement correspondant.",
+        "Si vous n'avez pas demandé cet e-mail, vous pouvez l'ignorer.",
         '',
         '— vite.in',
       ].join('\n'),
@@ -349,6 +390,19 @@ const es: TemplateBundle = {
         '— vite.in',
       ].join('\n'),
   },
+  creatorRecovery: {
+    subject: () => 'Tus enlaces de gestión de eventos de vite.in',
+    body: ({ events }) =>
+      [
+        'Aquí tienes los enlaces de gestión de tus eventos en vite.in:',
+        '',
+        ...events.flatMap((e) => [e.title, e.manageUrl, '']),
+        'Mantén estos enlaces privados. Cualquier persona con un enlace puede gestionar ese evento.',
+        'Si no solicitaste este correo, puedes ignorarlo.',
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
   signInMagicLink: {
     subject: () => 'Tu enlace de inicio de sesión en vite.in',
     body: ({ url }) =>
@@ -449,6 +503,19 @@ const it: TemplateBundle = {
         manageUrl,
         '',
         "Mantieni questo link privato. Chiunque lo possieda può gestire l'evento.",
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  creatorRecovery: {
+    subject: () => 'I tuoi link di gestione eventi vite.in',
+    body: ({ events }) =>
+      [
+        'Ecco i link di gestione dei tuoi eventi su vite.in:',
+        '',
+        ...events.flatMap((e) => [e.title, e.manageUrl, '']),
+        "Mantieni questi link privati. Chiunque possieda un link può gestire quell'evento.",
+        'Se non hai richiesto questa email, puoi ignorarla.',
         '',
         '— vite.in',
       ].join('\n'),
@@ -555,6 +622,19 @@ const pt: TemplateBundle = {
         '— vite.in',
       ].join('\n'),
   },
+  creatorRecovery: {
+    subject: () => 'Seus links de gerenciamento de eventos vite.in',
+    body: ({ events }) =>
+      [
+        'Aqui estão os links de gerenciamento dos seus eventos em vite.in:',
+        '',
+        ...events.flatMap((e) => [e.title, e.manageUrl, '']),
+        'Mantenha estes links privados. Qualquer pessoa com um link pode gerenciar esse evento.',
+        'Se você não solicitou este e-mail, pode ignorá-lo.',
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
   signInMagicLink: {
     subject: () => 'Seu link de entrada no vite.in',
     body: ({ url }) =>
@@ -650,6 +730,19 @@ const nl: TemplateBundle = {
         manageUrl,
         '',
         'Houd deze link privé. Iedereen met de link kan het evenement beheren.',
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  creatorRecovery: {
+    subject: () => 'Je vite.in-links voor evenementbeheer',
+    body: ({ events }) =>
+      [
+        'Hier zijn de beheerlinks voor je evenementen op vite.in:',
+        '',
+        ...events.flatMap((e) => [e.title, e.manageUrl, '']),
+        'Houd deze links privé. Iedereen met een link kan dat evenement beheren.',
+        'Als je deze e-mail niet hebt aangevraagd, kun je hem negeren.',
         '',
         '— vite.in',
       ].join('\n'),
@@ -758,6 +851,19 @@ const pl: TemplateBundle = {
         '— vite.in',
       ].join('\n'),
   },
+  creatorRecovery: {
+    subject: () => 'Twoje linki do zarządzania wydarzeniami vite.in',
+    body: ({ events }) =>
+      [
+        'Oto linki do zarządzania Twoimi wydarzeniami na vite.in:',
+        '',
+        ...events.flatMap((e) => [e.title, e.manageUrl, '']),
+        'Zachowaj te linki prywatne. Każda osoba z linkiem może zarządzać danym wydarzeniem.',
+        'Jeśli nie prosiłeś o tę wiadomość, możesz ją zignorować.',
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
   signInMagicLink: {
     subject: () => 'Twój link logowania vite.in',
     body: ({ url }) =>
@@ -858,6 +964,19 @@ const hi: TemplateBundle = {
         manageUrl,
         '',
         'यह लिंक निजी रखें। जिसके पास यह लिंक है, वह इवेंट प्रबंधित कर सकता है।',
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  creatorRecovery: {
+    subject: () => 'आपके vite.in इवेंट प्रबंधन लिंक',
+    body: ({ events }) =>
+      [
+        'vite.in पर आपके इवेंट्स के लिए प्रबंधन लिंक यहाँ हैं:',
+        '',
+        ...events.flatMap((e) => [e.title, e.manageUrl, '']),
+        'ये लिंक निजी रखें। जिसके पास लिंक है, वह उस इवेंट को प्रबंधित कर सकता है।',
+        'यदि आपने यह ईमेल अनुरोधित नहीं किया है, तो आप इसे अनदेखा कर सकते हैं।',
         '',
         '— vite.in',
       ].join('\n'),
@@ -966,6 +1085,19 @@ const bn: TemplateBundle = {
         '— vite.in',
       ].join('\n'),
   },
+  creatorRecovery: {
+    subject: () => 'আপনার vite.in ইভেন্ট পরিচালনার লিঙ্ক',
+    body: ({ events }) =>
+      [
+        'vite.in-এ আপনার ইভেন্টগুলির পরিচালনা লিঙ্ক এখানে রয়েছে:',
+        '',
+        ...events.flatMap((e) => [e.title, e.manageUrl, '']),
+        'এই লিঙ্কগুলি গোপন রাখুন। যার কাছে লিঙ্ক আছে সে সেই ইভেন্ট পরিচালনা করতে পারে।',
+        'আপনি যদি এই ইমেলের অনুরোধ না করে থাকেন, তবে এটি উপেক্ষা করতে পারেন।',
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
   signInMagicLink: {
     subject: () => 'আপনার vite.in সাইন-ইন লিঙ্ক',
     body: ({ url }) =>
@@ -1066,6 +1198,19 @@ const ta: TemplateBundle = {
         manageUrl,
         '',
         'இந்த இணைப்பை தனிப்பட்டதாக வைத்திருங்கள். இணைப்பு உள்ள எவரும் நிகழ்வை நிர்வகிக்க முடியும்.',
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  creatorRecovery: {
+    subject: () => 'உங்கள் vite.in நிகழ்வு நிர்வாக இணைப்புகள்',
+    body: ({ events }) =>
+      [
+        'vite.in-இல் உங்கள் நிகழ்வுகளுக்கான நிர்வாக இணைப்புகள் இங்கே:',
+        '',
+        ...events.flatMap((e) => [e.title, e.manageUrl, '']),
+        'இந்த இணைப்புகளை தனிப்பட்டதாக வைத்திருங்கள். இணைப்பு உள்ள எவரும் அந்த நிகழ்வை நிர்வகிக்க முடியும்.',
+        'இந்த மின்னஞ்சலை நீங்கள் கோரவில்லை என்றால், அதைப் புறக்கணிக்கலாம்.',
         '',
         '— vite.in',
       ].join('\n'),
@@ -1174,6 +1319,19 @@ const te: TemplateBundle = {
         '— vite.in',
       ].join('\n'),
   },
+  creatorRecovery: {
+    subject: () => 'మీ vite.in ఈవెంట్ నిర్వహణ లింక్‌లు',
+    body: ({ events }) =>
+      [
+        'vite.inలో మీ ఈవెంట్‌ల నిర్వహణ లింక్‌లు ఇక్కడ ఉన్నాయి:',
+        '',
+        ...events.flatMap((e) => [e.title, e.manageUrl, '']),
+        'ఈ లింక్‌లను గోప్యంగా ఉంచండి. లింక్ ఉన్న ఎవరైనా ఆ ఈవెంట్‌ను నిర్వహించగలరు.',
+        'మీరు ఈ ఇమెయిల్‌ను అభ్యర్థించకపోతే, దాన్ని విస్మరించవచ్చు.',
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
   signInMagicLink: {
     subject: () => 'మీ vite.in సైన్-ఇన్ లింక్',
     body: ({ url }) =>
@@ -1274,6 +1432,19 @@ const mr: TemplateBundle = {
         manageUrl,
         '',
         'ही लिंक खाजगी ठेवा. ज्याच्याकडे लिंक आहे तो इव्हेंट व्यवस्थापित करू शकतो.',
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  creatorRecovery: {
+    subject: () => 'तुमचे vite.in इव्हेंट व्यवस्थापन लिंक',
+    body: ({ events }) =>
+      [
+        'vite.in वर तुमच्या इव्हेंट्ससाठी व्यवस्थापन लिंक येथे आहेत:',
+        '',
+        ...events.flatMap((e) => [e.title, e.manageUrl, '']),
+        'या लिंक खाजगी ठेवा. ज्याच्याकडे लिंक आहे तो तो इव्हेंट व्यवस्थापित करू शकतो.',
+        'तुम्ही हा ईमेल विनंती केला नसेल, तर तुम्ही त्याकडे दुर्लक्ष करू शकता.',
         '',
         '— vite.in',
       ].join('\n'),
@@ -1382,6 +1553,19 @@ const gu: TemplateBundle = {
         '— vite.in',
       ].join('\n'),
   },
+  creatorRecovery: {
+    subject: () => 'તમારી vite.in ઇવેન્ટ મેનેજમેન્ટ લિંક્સ',
+    body: ({ events }) =>
+      [
+        'vite.in પર તમારી ઇવેન્ટ્સ માટેની મેનેજમેન્ટ લિંક્સ અહીં છે:',
+        '',
+        ...events.flatMap((e) => [e.title, e.manageUrl, '']),
+        'આ લિંક્સ ખાનગી રાખો. જેની પાસે લિંક છે તે તે ઇવેન્ટ મેનેજ કરી શકે છે.',
+        'જો તમે આ ઇમેઇલની વિનંતી ન કરી હોય, તો તમે તેને અવગણી શકો છો.',
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
   signInMagicLink: {
     subject: () => 'તમારી vite.in સાઇન-ઇન લિંક',
     body: ({ url }) =>
@@ -1482,6 +1666,19 @@ const kn: TemplateBundle = {
         manageUrl,
         '',
         'ಈ ಲಿಂಕ್ ಅನ್ನು ಖಾಸಗಿಯಾಗಿ ಇರಿಸಿ. ಲಿಂಕ್ ಹೊಂದಿರುವ ಯಾರಾದರೂ ಈವೆಂಟ್ ಅನ್ನು ನಿರ್ವಹಿಸಬಹುದು.',
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  creatorRecovery: {
+    subject: () => 'ನಿಮ್ಮ vite.in ಈವೆಂಟ್ ನಿರ್ವಹಣಾ ಲಿಂಕ್‌ಗಳು',
+    body: ({ events }) =>
+      [
+        'vite.inನಲ್ಲಿ ನಿಮ್ಮ ಈವೆಂಟ್‌ಗಳ ನಿರ್ವಹಣಾ ಲಿಂಕ್‌ಗಳು ಇಲ್ಲಿವೆ:',
+        '',
+        ...events.flatMap((e) => [e.title, e.manageUrl, '']),
+        'ಈ ಲಿಂಕ್‌ಗಳನ್ನು ಖಾಸಗಿಯಾಗಿ ಇರಿಸಿ. ಲಿಂಕ್ ಹೊಂದಿರುವ ಯಾರಾದರೂ ಆ ಈವೆಂಟ್ ಅನ್ನು ನಿರ್ವಹಿಸಬಹುದು.',
+        'ನೀವು ಈ ಇಮೇಲ್ ಅನ್ನು ವಿನಂತಿಸದಿದ್ದರೆ, ಅದನ್ನು ನಿರ್ಲಕ್ಷಿಸಬಹುದು.',
         '',
         '— vite.in',
       ].join('\n'),
@@ -1590,6 +1787,19 @@ const ml: TemplateBundle = {
         '— vite.in',
       ].join('\n'),
   },
+  creatorRecovery: {
+    subject: () => 'നിങ്ങളുടെ vite.in ഇവന്റ് മാനേജ്മെന്റ് ലിങ്കുകൾ',
+    body: ({ events }) =>
+      [
+        'vite.in-ൽ നിങ്ങളുടെ ഇവന്റുകളുടെ മാനേജ്മെന്റ് ലിങ്കുകൾ ഇതാ:',
+        '',
+        ...events.flatMap((e) => [e.title, e.manageUrl, '']),
+        'ഈ ലിങ്കുകൾ സ്വകാര്യമായി സൂക്ഷിക്കുക. ലിങ്ക് ഉള്ള ആർക്കും ആ ഇവന്റ് കൈകാര്യം ചെയ്യാം.',
+        'നിങ്ങൾ ഈ ഇമെയിൽ അഭ്യർത്ഥിച്ചിട്ടില്ലെങ്കിൽ, അത് അവഗണിക്കാം.',
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
   signInMagicLink: {
     subject: () => 'നിങ്ങളുടെ vite.in സൈൻ-ഇൻ ലിങ്ക്',
     body: ({ url }) =>
@@ -1690,6 +1900,19 @@ const pa: TemplateBundle = {
         manageUrl,
         '',
         'ਇਹ ਲਿੰਕ ਨਿੱਜੀ ਰੱਖੋ। ਜਿਸ ਕੋਲ ਲਿੰਕ ਹੈ ਉਹ ਇਵੈਂਟ ਪ੍ਰਬੰਧਿਤ ਕਰ ਸਕਦਾ ਹੈ।',
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  creatorRecovery: {
+    subject: () => 'ਤੁਹਾਡੇ vite.in ਇਵੈਂਟ ਪ੍ਰਬੰਧਨ ਲਿੰਕ',
+    body: ({ events }) =>
+      [
+        'vite.in ਉੱਤੇ ਤੁਹਾਡੇ ਇਵੈਂਟਾਂ ਲਈ ਪ੍ਰਬੰਧਨ ਲਿੰਕ ਇੱਥੇ ਹਨ:',
+        '',
+        ...events.flatMap((e) => [e.title, e.manageUrl, '']),
+        'ਇਹ ਲਿੰਕ ਨਿੱਜੀ ਰੱਖੋ। ਜਿਸ ਕੋਲ ਲਿੰਕ ਹੈ ਉਹ ਉਸ ਇਵੈਂਟ ਨੂੰ ਪ੍ਰਬੰਧਿਤ ਕਰ ਸਕਦਾ ਹੈ।',
+        'ਜੇ ਤੁਸੀਂ ਇਸ ਈਮੇਲ ਦੀ ਬੇਨਤੀ ਨਹੀਂ ਕੀਤੀ, ਤਾਂ ਤੁਸੀਂ ਇਸਨੂੰ ਅਣਡਿੱਠਾ ਕਰ ਸਕਦੇ ਹੋ।',
         '',
         '— vite.in',
       ].join('\n'),
@@ -1798,6 +2021,19 @@ const zh: TemplateBundle = {
         '— vite.in',
       ].join('\n'),
   },
+  creatorRecovery: {
+    subject: () => '您的 vite.in 活动管理链接',
+    body: ({ events }) =>
+      [
+        '以下是您在 vite.in 上活动的管理链接：',
+        '',
+        ...events.flatMap((e) => [e.title, e.manageUrl, '']),
+        '请妥善保管这些链接。任何拥有链接的人都可以管理对应的活动。',
+        '如果您没有请求此邮件，可以忽略它。',
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
   signInMagicLink: {
     subject: () => '您的 vite.in 登录链接',
     body: ({ url }) =>
@@ -1900,6 +2136,19 @@ const ja: TemplateBundle = {
         '— vite.in',
       ].join('\n'),
   },
+  creatorRecovery: {
+    subject: () => 'vite.in イベント管理リンク',
+    body: ({ events }) =>
+      [
+        'vite.in でのあなたのイベントの管理リンクは次のとおりです：',
+        '',
+        ...events.flatMap((e) => [e.title, e.manageUrl, '']),
+        'これらのリンクは非公開にしてください。リンクを持つ人は誰でもそのイベントを管理できます。',
+        'このメールに心当たりがない場合は、無視していただいて構いません。',
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
   signInMagicLink: {
     subject: () => 'vite.in サインインリンク',
     body: ({ url }) =>
@@ -1998,6 +2247,19 @@ const ko: TemplateBundle = {
         manageUrl,
         '',
         '이 링크는 비공개로 유지하세요. 링크를 가진 사람은 누구나 이벤트를 관리할 수 있습니다.',
+        '',
+        '— vite.in',
+      ].join('\n'),
+  },
+  creatorRecovery: {
+    subject: () => 'vite.in 이벤트 관리 링크',
+    body: ({ events }) =>
+      [
+        'vite.in의 이벤트 관리 링크는 다음과 같습니다:',
+        '',
+        ...events.flatMap((e) => [e.title, e.manageUrl, '']),
+        '이 링크는 비공개로 유지하세요. 링크를 가진 사람은 누구나 해당 이벤트를 관리할 수 있습니다.',
+        '이 이메일을 요청하지 않으셨다면 무시하셔도 됩니다.',
         '',
         '— vite.in',
       ].join('\n'),
