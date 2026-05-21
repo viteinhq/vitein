@@ -20,6 +20,7 @@
     noir: m.template_noir_name,
     paper: m.template_paper_name,
     serif: m.template_serif_name,
+    ticket: m.template_ticket_name,
   };
   function label(id: string): string {
     return (labels[id] ?? (() => id))();

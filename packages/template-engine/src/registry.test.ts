@@ -2,9 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { BASELINE_TEMPLATE_ID, createTemplateRegistry } from './index.js';
 
 describe('TemplateRegistry', () => {
-  it('loads the four community templates', () => {
+  it('loads the five community templates', () => {
     const registry = createTemplateRegistry();
-    expect(registry.list()).toHaveLength(4);
+    expect(registry.list()).toHaveLength(5);
     expect(registry.has(BASELINE_TEMPLATE_ID)).toBe(true);
   });
 
@@ -19,7 +19,11 @@ describe('TemplateRegistry', () => {
 
   it('filters by tier', () => {
     const registry = createTemplateRegistry();
-    expect(registry.list({ tier: 'free' })).toHaveLength(4);
+    expect(registry.list({ tier: 'free' })).toHaveLength(5);
     expect(registry.list({ tier: 'basic' })).toHaveLength(0);
+  });
+
+  it('exposes the ticket template on the ticket layout', () => {
+    expect(createTemplateRegistry().resolve('ticket').layout).toBe('ticket');
   });
 });

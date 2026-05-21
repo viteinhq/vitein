@@ -3,8 +3,10 @@
   import { page } from '$app/state';
   import { ArrowRight, Banner, Button, Eyebrow, TextField } from '$lib/design';
   import { localizeError } from '$lib/errors';
-  import { templateStyle } from '$lib/templates';
+  import { templateLayout, templateStyle } from '$lib/templates';
   import * as m from '$lib/paraglide/messages.js';
+  import StandardHero from './StandardHero.svelte';
+  import TicketHero from './TicketHero.svelte';
   import type { PageProps } from './$types';
 
   let { data, form }: PageProps = $props();
@@ -73,8 +75,8 @@
   const isLocked = $derived(Boolean(data.event.locked));
   let pwdSubmitting = $state(false);
 
-  const kvLabel = 'font-mono text-[10px] tracking-[0.12em] uppercase opacity-60';
-  const kvValue = 'mt-1 font-display text-xl font-bold tracking-tight leading-tight';
+  // The chosen template's layout decides which hero the event page renders.
+  const layout = $derived(templateLayout(data.event.templateId));
 </script>
 
 <svelte:head>
@@ -126,82 +128,25 @@
       </form>
     </div>
   {:else}
-    {#if data.cover?.url}
-      <img
-        src={data.cover.url}
-        alt=""
-        width="1200"
-        height="630"
-        class="mb-6 h-56 w-full rounded-card object-cover sm:h-72"
+    {#if layout === 'ticket'}
+      <TicketHero
+        event={data.event}
+        cover={data.cover}
+        {startsInEventTz}
+        {endsInEventTz}
+        {showLocalTime}
+        {startsInViewerTz}
+      />
+    {:else}
+      <StandardHero
+        event={data.event}
+        cover={data.cover}
+        {startsInEventTz}
+        {endsInEventTz}
+        {showLocalTime}
+        {startsInViewerTz}
       />
     {/if}
-
-    <!-- invitation hero -->
-    <div class="rounded-card bg-accent p-7 text-accent-ink sm:p-10">
-      <span class="font-mono text-[10px] tracking-[0.18em] uppercase opacity-70">
-        {m.invite_eyebrow()}
-      </span>
-      <h1
-        class="font-display mt-4 text-5xl leading-[0.92] font-bold tracking-[var(--tracking-display)] text-balance sm:text-6xl"
-      >
-        {data.event.title}
-      </h1>
-
-      <dl class="mt-8 grid gap-6 sm:grid-cols-2">
-        <div>
-          <dt class={kvLabel}>{m.event_when_label()}</dt>
-          <dd class={kvValue}>
-            <time datetime={data.event.startsAt}>{startsInEventTz}</time>
-            {#if endsInEventTz}
-              <span class="opacity-60"> {m.event_until()} </span>
-              <time datetime={data.event.endsAt}>{endsInEventTz}</time>
-            {/if}
-          </dd>
-          <dd class="mt-1 font-mono text-[11px] opacity-55">{data.event.timezone}</dd>
-          {#if showLocalTime}
-            <dd class="mt-0.5 font-mono text-[11px] opacity-55">
-              {m.event_your_local_time()}
-              {startsInViewerTz}
-            </dd>
-          {/if}
-        </div>
-
-        {#if data.event.locationText}
-          {@const mapsQuery = encodeURIComponent(data.event.locationText)}
-          <div>
-            <dt class={kvLabel}>{m.event_where_label()}</dt>
-            <dd class={kvValue}>{data.event.locationText}</dd>
-            <dd class="mt-2 flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-[11px]">
-              <span class="opacity-55">{m.event_directions()}</span>
-              <a
-                href="https://www.google.com/maps/dir/?api=1&destination={mapsQuery}"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="underline underline-offset-2 opacity-75 hover:opacity-100"
-              >
-                Google Maps
-              </a>
-              <a
-                href="https://maps.apple.com/?daddr={mapsQuery}"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="underline underline-offset-2 opacity-75 hover:opacity-100"
-              >
-                Apple Maps
-              </a>
-              <a
-                href="https://www.openstreetmap.org/search?query={mapsQuery}"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="underline underline-offset-2 opacity-75 hover:opacity-100"
-              >
-                OpenStreetMap
-              </a>
-            </dd>
-          </div>
-        {/if}
-      </dl>
-    </div>
 
     {#if data.event.description}
       <p class="mt-6 text-base leading-relaxed whitespace-pre-line text-ink">

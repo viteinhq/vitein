@@ -119,4 +119,32 @@ export const communityTemplates: Template[] = [
       displayTracking: 'normal',
     },
   },
+  {
+    // M2: the first non-`standard` layout. Renders the event hero as a
+    // two-panel ticket card. Deep-coral accent (white ink — the contrast
+    // pairing already proven by `paper`), on a cooler neutral base so it
+    // reads distinct from `paper` in the picker.
+    id: 'ticket',
+    name: 'template_ticket_name',
+    tier: 'free',
+    origin: 'community',
+    layout: 'ticket',
+    tokens: {
+      colors: {
+        paper: '#e7e3da',
+        paper2: '#dcd7ca',
+        ink: '#15120d',
+        inkMuted: 'rgba(21, 18, 13, 0.6)',
+        rule: 'rgba(21, 18, 13, 0.14)',
+        card: '#f8f6f0',
+        accent: '#bf3413',
+        accentInk: '#ffffff',
+        coral: '#ff5436',
+        coralDeep: '#bf3413',
+      },
+      fonts: FONTS,
+      radiusCard: '18px',
+      displayTracking: '-0.05em',
+    },
+  },
 ];

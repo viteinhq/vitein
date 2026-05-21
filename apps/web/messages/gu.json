@@ -445,6 +445,7 @@
   "template_noir_name": "Noir",
   "template_paper_name": "Paper",
   "template_serif_name": "Serif",
+  "template_ticket_name": "Ticket",
   "create_timezone_note": "સમય {timezone} મુજબ છે.",
   "create_timezone_change": "બદલો",
   "event_directions": "નકશામાં ખોલો"

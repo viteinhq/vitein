@@ -445,6 +445,7 @@
   "template_noir_name": "Noir",
   "template_paper_name": "Paper",
   "template_serif_name": "Serif",
+  "template_ticket_name": "Ticket",
   "create_timezone_note": "ಸಮಯಗಳು {timezone} ವಲಯದಲ್ಲಿವೆ.",
   "create_timezone_change": "ಬದಲಾಯಿಸಿ",
   "event_directions": "ನಕ್ಷೆಯಲ್ಲಿ ತೆರೆಯಿರಿ"

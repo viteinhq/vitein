@@ -445,6 +445,7 @@
   "template_noir_name": "Noir",
   "template_paper_name": "Paper",
   "template_serif_name": "Serif",
+  "template_ticket_name": "Ticket",
   "create_timezone_note": "সময় {timezone}-এ দেখানো হচ্ছে।",
   "create_timezone_change": "পরিবর্তন করুন",
   "event_directions": "মানচিত্রে খুলুন"
