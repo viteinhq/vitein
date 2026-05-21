@@ -56,9 +56,12 @@ const withHeaders: Handle = async ({ event, resolve }) => {
 
 export const handle: Handle = sequence(paraglideHandle, withHeaders);
 
-export const handleError: HandleServerError = async ({ error, event }) => {
+export const handleError: HandleServerError = async ({ error, event, status }) => {
   const dsn = event.platform?.env?.SENTRY_DSN;
-  if (dsn) {
+  // 404s are routine noise — automated bot scans probe every site for
+  // /wp-login.php, xmlrpc.php and the like. Only real (5xx) failures are
+  // worth a Sentry alert; an expected "not found" is not.
+  if (dsn && status !== 404) {
     // Must await: Cloudflare Worker isolates can terminate before a
     // fire-and-forget fetch completes, swallowing the Sentry event.
     await captureToSentry({
