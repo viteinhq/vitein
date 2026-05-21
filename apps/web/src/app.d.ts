@@ -13,6 +13,7 @@ declare global {
         API_BASE_URL?: string;
         SENTRY_DSN?: string;
         PUBLIC_SENTRY_DSN?: string;
+        GEOAPIFY_API_KEY?: string;
       };
     }
   }

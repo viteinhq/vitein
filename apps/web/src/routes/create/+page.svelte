@@ -6,6 +6,7 @@
     Banner,
     Button,
     Eyebrow,
+    LocationField,
     TemplatePicker,
     TextField,
     TimezonePicker,
@@ -254,7 +255,7 @@
       <fieldset class="space-y-4">
         <legend class={legendClass}>{m.create_section_where()}</legend>
 
-        <TextField
+        <LocationField
           name="locationText"
           maxlength={500}
           bind:value={locationValue}

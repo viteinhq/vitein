@@ -170,6 +170,18 @@
           <div>
             <dt class={kvLabel}>{m.event_where_label()}</dt>
             <dd class={kvValue}>{data.event.locationText}</dd>
+            <dd class="mt-1.5">
+              <a
+                href="https://www.openstreetmap.org/search?query={encodeURIComponent(
+                  data.event.locationText,
+                )}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="font-mono text-[11px] underline underline-offset-2 opacity-70 hover:opacity-100"
+              >
+                {m.event_directions()}
+              </a>
+            </dd>
           </div>
         {/if}
       </dl>
