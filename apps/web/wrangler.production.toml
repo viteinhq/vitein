@@ -5,9 +5,13 @@
 # project's [vars] to whatever project a deploy lands on, so production
 # needs its own config file rather than a shared one with env blocks.
 #
-# Deploy with:
-#   pnpm -F @vitein/web exec wrangler pages deploy .svelte-kit/cloudflare \
-#     --config wrangler.production.toml --branch main
+# `wrangler pages deploy` rejects a custom --config path, so production
+# deploys swap this file in as wrangler.toml, deploy, then restore:
+#   pnpm -F @vitein/web build
+#   cd apps/web
+#   cp wrangler.production.toml wrangler.toml
+#   pnpm exec wrangler pages deploy .svelte-kit/cloudflare --branch main
+#   git checkout wrangler.toml
 name = "vitein-web"
 pages_build_output_dir = ".svelte-kit/cloudflare"
 compatibility_date = "2026-04-19"
