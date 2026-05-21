@@ -38,6 +38,11 @@ export interface TemplateTokens {
     mono: string;
   };
   radiusCard: string;
+  /**
+   * `letter-spacing` for display headings. A geometric display sans wants
+   * it tight; a display serif wants it relaxed — so it is per-template.
+   */
+  displayTracking: string;
 }
 
 export interface Template {

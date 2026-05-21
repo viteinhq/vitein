@@ -34,5 +34,6 @@ function cssVars(t: TemplateTokens): string {
     `--font-serif:${t.fonts.serif}`,
     `--font-mono:${t.fonts.mono}`,
     `--radius-card:${t.radiusCard}`,
+    `--tracking-display:${t.displayTracking}`,
   ].join(';');
 }

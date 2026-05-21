@@ -44,6 +44,7 @@ export const communityTemplates: Template[] = [
       },
       fonts: FONTS,
       radiusCard: '22px',
+      displayTracking: '-0.05em',
     },
   },
   {
@@ -67,6 +68,7 @@ export const communityTemplates: Template[] = [
       },
       fonts: FONTS,
       radiusCard: '22px',
+      displayTracking: '-0.05em',
     },
   },
   {
@@ -90,6 +92,7 @@ export const communityTemplates: Template[] = [
       },
       fonts: FONTS,
       radiusCard: '22px',
+      displayTracking: '-0.05em',
     },
   },
   {
@@ -113,6 +116,7 @@ export const communityTemplates: Template[] = [
       },
       fonts: { ...FONTS, display: FONTS.serif },
       radiusCard: '14px',
+      displayTracking: 'normal',
     },
   },
 ];

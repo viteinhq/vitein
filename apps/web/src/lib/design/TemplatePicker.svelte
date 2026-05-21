@@ -9,7 +9,7 @@
   import * as m from '$lib/paraglide/messages.js';
   import { templateRegistry, templateStyle } from '$lib/templates';
 
-  let { selected = 'classic', name = 'templateId' }: { selected?: string; name?: string } =
+  let { value = $bindable('classic'), name = 'templateId' }: { value?: string; name?: string } =
     $props();
 
   const templates = templateRegistry.list();
@@ -31,13 +31,7 @@
     <label
       class="cursor-pointer rounded-xl border-[1.5px] border-rule p-2 transition has-[:checked]:border-ink has-[:checked]:bg-paper-2"
     >
-      <input
-        type="radio"
-        {name}
-        value={t.id}
-        checked={t.id === selected}
-        class="sr-only"
-      />
+      <input type="radio" {name} value={t.id} bind:group={value} class="sr-only" />
       <div style={templateStyle(t.id)} class="overflow-hidden rounded-lg border border-rule">
         <div class="bg-accent px-2.5 py-3 font-display text-base font-bold text-accent-ink">Aa</div>
         <div class="space-y-1.5 bg-paper px-2.5 py-2.5">
