@@ -425,5 +425,11 @@
   "install_prompt": "vite.in നിങ്ങളുടെ ഹോം സ്ക്രീനിലേക്ക് ചേർക്കുക.",
   "install_action": "ഇൻസ്റ്റാൾ ചെയ്യുക",
   "install_dismiss": "ഒഴിവാക്കുക",
-  "ios_install_hint": "അറിയിപ്പുകൾ ലഭിക്കാൻ, vite.in നിങ്ങളുടെ ഹോം സ്ക്രീനിലേക്ക് ചേർക്കുക: പങ്കിടൽ ബട്ടൺ ടാപ്പ് ചെയ്യുക, തുടർന്ന് ‘Add to Home Screen’ തിരഞ്ഞെടുക്കുക."
+  "ios_install_hint": "അറിയിപ്പുകൾ ലഭിക്കാൻ, vite.in നിങ്ങളുടെ ഹോം സ്ക്രീനിലേക്ക് ചേർക്കുക: പങ്കിടൽ ബട്ടൺ ടാപ്പ് ചെയ്യുക, തുടർന്ന് ‘Add to Home Screen’ തിരഞ്ഞെടുക്കുക.",
+  "create_style_label": "Style",
+  "manage_theme_heading": "Theme",
+  "template_classic_name": "Classic",
+  "template_noir_name": "Noir",
+  "template_paper_name": "Paper",
+  "template_serif_name": "Serif"
 }

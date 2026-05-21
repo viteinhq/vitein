@@ -425,5 +425,11 @@
   "install_prompt": "আপনার হোম স্ক্রিনে vite.in যোগ করুন।",
   "install_action": "ইনস্টল করুন",
   "install_dismiss": "বাতিল করুন",
-  "ios_install_hint": "বিজ্ঞপ্তি পেতে, আপনার হোম স্ক্রিনে vite.in যোগ করুন: শেয়ার বোতামে ট্যাপ করুন, তারপর ‘Add to Home Screen’।"
+  "ios_install_hint": "বিজ্ঞপ্তি পেতে, আপনার হোম স্ক্রিনে vite.in যোগ করুন: শেয়ার বোতামে ট্যাপ করুন, তারপর ‘Add to Home Screen’।",
+  "create_style_label": "Style",
+  "manage_theme_heading": "Theme",
+  "template_classic_name": "Classic",
+  "template_noir_name": "Noir",
+  "template_paper_name": "Paper",
+  "template_serif_name": "Serif"
 }

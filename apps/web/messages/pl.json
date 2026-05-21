@@ -425,5 +425,11 @@
   "install_prompt": "Dodaj vite.in do ekranu głównego.",
   "install_action": "Zainstaluj",
   "install_dismiss": "Odrzuć",
-  "ios_install_hint": "Aby otrzymywać powiadomienia, dodaj vite.in do ekranu głównego: dotknij przycisku Udostępnij, a następnie „Do ekranu początkowego”."
+  "ios_install_hint": "Aby otrzymywać powiadomienia, dodaj vite.in do ekranu głównego: dotknij przycisku Udostępnij, a następnie „Do ekranu początkowego”.",
+  "create_style_label": "Style",
+  "manage_theme_heading": "Theme",
+  "template_classic_name": "Classic",
+  "template_noir_name": "Noir",
+  "template_paper_name": "Paper",
+  "template_serif_name": "Serif"
 }

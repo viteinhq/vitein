@@ -425,5 +425,11 @@
   "install_prompt": "vite.in をホーム画面に追加しましょう。",
   "install_action": "インストール",
   "install_dismiss": "閉じる",
-  "ios_install_hint": "通知を受け取るには、vite.in をホーム画面に追加してください。共有ボタンをタップして「ホーム画面に追加」を選びます。"
+  "ios_install_hint": "通知を受け取るには、vite.in をホーム画面に追加してください。共有ボタンをタップして「ホーム画面に追加」を選びます。",
+  "create_style_label": "Style",
+  "manage_theme_heading": "Theme",
+  "template_classic_name": "Classic",
+  "template_noir_name": "Noir",
+  "template_paper_name": "Paper",
+  "template_serif_name": "Serif"
 }

@@ -425,5 +425,11 @@
   "install_prompt": "vite.in‌ను మీ హోమ్ స్క్రీన్‌కు జోడించండి.",
   "install_action": "ఇన్‌స్టాల్ చేయండి",
   "install_dismiss": "తీసివేయండి",
-  "ios_install_hint": "నోటిఫికేషన్‌లు పొందడానికి, vite.in‌ను మీ హోమ్ స్క్రీన్‌కు జోడించండి: షేర్ బటన్‌ను ట్యాప్ చేసి, తర్వాత ‘Add to Home Screen’ ఎంచుకోండి."
+  "ios_install_hint": "నోటిఫికేషన్‌లు పొందడానికి, vite.in‌ను మీ హోమ్ స్క్రీన్‌కు జోడించండి: షేర్ బటన్‌ను ట్యాప్ చేసి, తర్వాత ‘Add to Home Screen’ ఎంచుకోండి.",
+  "create_style_label": "Style",
+  "manage_theme_heading": "Theme",
+  "template_classic_name": "Classic",
+  "template_noir_name": "Noir",
+  "template_paper_name": "Paper",
+  "template_serif_name": "Serif"
 }

@@ -1,7 +1,16 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
   import { page } from '$app/state';
-  import { Banner, Button, Heading, Section, Text, TextField, TimezonePicker } from '$lib/design';
+  import {
+    Banner,
+    Button,
+    Heading,
+    Section,
+    TemplatePicker,
+    Text,
+    TextField,
+    TimezonePicker,
+  } from '$lib/design';
   import { localizeError } from '$lib/errors';
   import PushNotifications from '$lib/pwa/PushNotifications.svelte';
   import * as m from '$lib/paraglide/messages.js';
@@ -432,6 +441,15 @@
         label={m.manage_edit_location_label()}
       />
 
+      <Button type="submit">{m.manage_edit_submit()}</Button>
+    </form>
+  </Section>
+
+  <!-- Theme -->
+  <Section>
+    <Heading level="panel">{m.manage_theme_heading()}</Heading>
+    <form method="POST" action="?/update&token={data.token}" use:enhance class="space-y-4">
+      <TemplatePicker selected={data.event.templateId} />
       <Button type="submit">{m.manage_edit_submit()}</Button>
     </form>
   </Section>

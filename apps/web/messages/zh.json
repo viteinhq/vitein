@@ -425,5 +425,11 @@
   "install_prompt": "将 vite.in 添加到主屏幕。",
   "install_action": "安装",
   "install_dismiss": "忽略",
-  "ios_install_hint": "若要接收通知，请将 vite.in 添加到主屏幕：点按「分享」按钮，然后选择「添加到主屏幕」。"
+  "ios_install_hint": "若要接收通知，请将 vite.in 添加到主屏幕：点按「分享」按钮，然后选择「添加到主屏幕」。",
+  "create_style_label": "Style",
+  "manage_theme_heading": "Theme",
+  "template_classic_name": "Classic",
+  "template_noir_name": "Noir",
+  "template_paper_name": "Paper",
+  "template_serif_name": "Serif"
 }

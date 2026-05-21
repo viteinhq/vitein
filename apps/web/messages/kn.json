@@ -425,5 +425,11 @@
   "install_prompt": "vite.in ಅನ್ನು ನಿಮ್ಮ ಹೋಮ್ ಸ್ಕ್ರೀನ್‌ಗೆ ಸೇರಿಸಿ.",
   "install_action": "ಸ್ಥಾಪಿಸಿ",
   "install_dismiss": "ತಿರಸ್ಕರಿಸಿ",
-  "ios_install_hint": "ಅಧಿಸೂಚನೆಗಳನ್ನು ಪಡೆಯಲು, vite.in ಅನ್ನು ನಿಮ್ಮ ಹೋಮ್ ಸ್ಕ್ರೀನ್‌ಗೆ ಸೇರಿಸಿ: ಹಂಚಿಕೆ ಬಟನ್ ಒತ್ತಿ, ನಂತರ ‘Add to Home Screen’ ಆಯ್ಕೆಮಾಡಿ."
+  "ios_install_hint": "ಅಧಿಸೂಚನೆಗಳನ್ನು ಪಡೆಯಲು, vite.in ಅನ್ನು ನಿಮ್ಮ ಹೋಮ್ ಸ್ಕ್ರೀನ್‌ಗೆ ಸೇರಿಸಿ: ಹಂಚಿಕೆ ಬಟನ್ ಒತ್ತಿ, ನಂತರ ‘Add to Home Screen’ ಆಯ್ಕೆಮಾಡಿ.",
+  "create_style_label": "Style",
+  "manage_theme_heading": "Theme",
+  "template_classic_name": "Classic",
+  "template_noir_name": "Noir",
+  "template_paper_name": "Paper",
+  "template_serif_name": "Serif"
 }
