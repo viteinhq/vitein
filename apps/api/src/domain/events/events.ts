@@ -91,6 +91,19 @@ export async function createEvent(db: Db, input: EventCreateInput): Promise<Crea
   throw lastErr instanceof Error ? lastErr : new Error('Failed to generate a unique slug');
 }
 
+/**
+ * Mint and persist a fresh `manage` token for an existing event, returning
+ * the plaintext (only the hash is stored). Lets creator-bound mail — e.g. an
+ * RSVP notification — carry a directly-usable management link without the
+ * caller already holding a token. Additive: existing tokens stay valid.
+ */
+export async function mintManageToken(db: Db, eventId: string): Promise<string> {
+  const token = issueCreatorToken();
+  const tokenHash = await hashToken(token);
+  await db.insert(eventTokens).values({ eventId, tokenHash, purpose: 'manage' });
+  return token;
+}
+
 export async function getEventPublic(db: Db, id: string): Promise<typeof events.$inferSelect> {
   const row = await findActiveEvent(db, id);
   if (!row) throw new NotFoundError('event.not_found', 'Event not found');

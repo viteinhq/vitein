@@ -1,6 +1,7 @@
 import { zValidator } from '@hono/zod-validator';
 import { Hono } from 'hono';
 import { z } from 'zod';
+import { mintManageToken } from '../domain/events/events.js';
 import { ValidationError } from '../domain/errors.js';
 import { listRsvps, submitRsvp } from '../domain/rsvps/rsvps.js';
 import { db } from '../infra/db.js';
@@ -67,6 +68,17 @@ rsvpsRoute.post(
       });
     }
 
+    // Mint a fresh manage token so the notification carries a one-click
+    // management link. Best-effort: a mint failure falls back to the
+    // token-less URL (which still works — it routes via /recover).
+    let manageUrl = `${webBase}/e/${event.slug}/manage`;
+    try {
+      const manageToken = await mintManageToken(db(c), event.id);
+      manageUrl = `${manageUrl}?token=${manageToken}`;
+    } catch (err: unknown) {
+      c.var.logger.warn('rsvp_manage_token_mint_failed', { err: err as Error });
+    }
+
     await sendRsvpNotification(
       c.env,
       {
@@ -75,7 +87,7 @@ rsvpsRoute.post(
         guestName: input.name,
         status: input.status,
         plusOnes: input.plusOnes ?? 0,
-        manageUrl: `${webBase}/e/${event.slug}/manage`,
+        manageUrl,
       },
       creatorLocale,
     ).catch((err: unknown) => {
