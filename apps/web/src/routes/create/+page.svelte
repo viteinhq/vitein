@@ -22,18 +22,34 @@
   let templateId = $state('classic');
   let copied = $state(false);
   let shareInput = $state<HTMLInputElement | null>(null);
+  // Timezone is detected and hidden by default — most creators never need
+  // to touch it; this reveals the picker on demand.
+  let showTimezone = $state(false);
 
   const defaultTimezone = $derived(
     typeof Intl !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'UTC',
   );
+
+  // A sensible default so an empty `datetime-local` never defaults the
+  // time to "now": the next Saturday at 19:00. Picking another day in the
+  // calendar keeps the time, because the field is no longer empty.
+  const defaultStartsAt = (() => {
+    const now = new Date();
+    const daysUntilSat = (6 - now.getDay() + 7) % 7 || 7;
+    // Constructor-built (not mutated), so the date math stays side-effect-free.
+    const sat = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysUntilSat, 19, 0);
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${sat.getFullYear()}-${pad(sat.getMonth() + 1)}-${pad(sat.getDate())}T19:00`;
+  })();
 
   // Writable `$derived` — seeded from `form.values` (so a failed submit
   // re-populates every field) yet freely reassignable as the user types.
   // The user's edits hold until `form` changes again. Drives both the
   // form submit and the live invitation preview.
   let titleValue = $derived(String(form?.values?.title ?? ''));
+  let descriptionValue = $derived(String(form?.values?.description ?? ''));
   let locationValue = $derived(String(form?.values?.locationText ?? ''));
-  let startsAtValue = $derived(String(form?.values?.startsAt ?? ''));
+  let startsAtValue = $derived(String(form?.values?.startsAt ?? defaultStartsAt));
   let timezoneValue = $derived(String(form?.values?.timezone ?? defaultTimezone));
 
   function formatPreviewDate(v: string): string {
@@ -184,8 +200,9 @@
             name="description"
             maxlength="5000"
             rows="3"
-            class={textareaClass}>{form?.values?.description ?? ''}</textarea
-          >
+            class={textareaClass}
+            bind:value={descriptionValue}
+          ></textarea>
           <span class="mt-1 block font-mono text-[10px] tracking-wide text-ink-muted">
             {m.create_field_description_hint()}
           </span>
@@ -211,13 +228,27 @@
           />
         </div>
 
-        <TimezonePicker
-          name="timezone"
-          bind:value={timezoneValue}
-          label={m.create_field_timezone()}
-          hint={m.create_field_timezone_hint()}
-          listId="create-tz-list"
-        />
+        {#if showTimezone}
+          <TimezonePicker
+            name="timezone"
+            bind:value={timezoneValue}
+            label={m.create_field_timezone()}
+            hint={m.create_field_timezone_hint()}
+            listId="create-tz-list"
+          />
+        {:else}
+          <input type="hidden" name="timezone" value={timezoneValue} />
+          <p class="text-xs text-ink-muted">
+            {m.create_timezone_note({ timezone: timezoneValue })}
+            <button
+              type="button"
+              class="font-medium text-ink underline underline-offset-2"
+              onclick={() => (showTimezone = true)}
+            >
+              {m.create_timezone_change()}
+            </button>
+          </p>
+        {/if}
       </fieldset>
 
       <fieldset class="space-y-4">
@@ -231,45 +262,9 @@
         />
       </fieldset>
 
-      <fieldset class="space-y-3">
-        <legend class={legendClass}>{m.create_section_visibility()}</legend>
-
-        <label
-          class="flex cursor-pointer items-start gap-3 rounded-xl border border-rule bg-card p-4 transition hover:border-ink/30"
-        >
-          <input
-            type="radio"
-            name="visibility"
-            value="link_only"
-            checked={(form?.values?.visibility ?? 'link_only') === 'link_only'}
-            class="mt-0.5 accent-ink"
-          />
-          <span>
-            <span class="block text-sm font-semibold">{m.create_visibility_link_only()}</span>
-            <span class="mt-0.5 block text-xs text-ink-muted">
-              {m.create_visibility_link_only_hint()}
-            </span>
-          </span>
-        </label>
-
-        <label
-          class="flex cursor-pointer items-start gap-3 rounded-xl border border-rule bg-card p-4 transition hover:border-ink/30"
-        >
-          <input
-            type="radio"
-            name="visibility"
-            value="public"
-            checked={form?.values?.visibility === 'public'}
-            class="mt-0.5 accent-ink"
-          />
-          <span>
-            <span class="block text-sm font-semibold">{m.create_visibility_public()}</span>
-            <span class="mt-0.5 block text-xs text-ink-muted">
-              {m.create_visibility_public_hint()}
-            </span>
-          </span>
-        </label>
-      </fieldset>
+      <!-- Visibility (link_only vs public) is hidden until a public event
+           view exists — every event is link-only for now; the server
+           defaults the field. Restore this fieldset with that feature. -->
 
       <fieldset class="space-y-4">
         <legend class={legendClass}>{m.create_section_contact()}</legend>
@@ -310,6 +305,9 @@
                   {titleValue || m.create_field_title()}
                 </div>
               </div>
+              {#if descriptionValue}
+                <p class="line-clamp-3 px-5 pt-4 text-[13px] leading-snug">{descriptionValue}</p>
+              {/if}
               {#if previewDate || locationValue}
                 <div class="space-y-0.5 px-5 py-4 font-mono text-[10px] text-ink-muted">
                   {#if previewDate}<span class="block">{previewDate}</span>{/if}
