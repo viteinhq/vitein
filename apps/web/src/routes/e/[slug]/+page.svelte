@@ -167,19 +167,35 @@
         </div>
 
         {#if data.event.locationText}
+          {@const mapsQuery = encodeURIComponent(data.event.locationText)}
           <div>
             <dt class={kvLabel}>{m.event_where_label()}</dt>
             <dd class={kvValue}>{data.event.locationText}</dd>
-            <dd class="mt-1.5">
+            <dd class="mt-2 flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-[11px]">
+              <span class="opacity-55">{m.event_directions()}</span>
               <a
-                href="https://www.openstreetmap.org/search?query={encodeURIComponent(
-                  data.event.locationText,
-                )}"
+                href="https://www.google.com/maps/dir/?api=1&destination={mapsQuery}"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="font-mono text-[11px] underline underline-offset-2 opacity-70 hover:opacity-100"
+                class="underline underline-offset-2 opacity-75 hover:opacity-100"
               >
-                {m.event_directions()}
+                Google Maps
+              </a>
+              <a
+                href="https://maps.apple.com/?daddr={mapsQuery}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="underline underline-offset-2 opacity-75 hover:opacity-100"
+              >
+                Apple Maps
+              </a>
+              <a
+                href="https://www.openstreetmap.org/search?query={mapsQuery}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="underline underline-offset-2 opacity-75 hover:opacity-100"
+              >
+                OpenStreetMap
               </a>
             </dd>
           </div>
