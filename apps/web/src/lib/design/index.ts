@@ -25,6 +25,7 @@ export { default as Pill } from './Pill.svelte';
 export { default as Section } from './Section.svelte';
 export { default as Text } from './Text.svelte';
 export { default as TemplatePicker } from './TemplatePicker.svelte';
+export { default as TemplatePreview } from './TemplatePreview.svelte';
 export { default as TextField } from './TextField.svelte';
 export { default as TimezonePicker } from './TimezonePicker.svelte';
 export { default as Wordmark } from './Wordmark.svelte';

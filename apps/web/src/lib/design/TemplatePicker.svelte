@@ -7,7 +7,7 @@
    * create and manage forms with no client state.
    */
   import * as m from '$lib/paraglide/messages.js';
-  import { templateRegistry, templateStyle } from '$lib/templates';
+  import { templateLayout, templateRegistry, templateStyle } from '$lib/templates';
 
   let { value = $bindable('classic'), name = 'templateId' }: { value?: string; name?: string } =
     $props();
@@ -33,13 +33,28 @@
       class="cursor-pointer rounded-xl border-[1.5px] border-rule p-2 transition has-[:checked]:border-ink has-[:checked]:bg-paper-2"
     >
       <input type="radio" {name} value={t.id} bind:group={value} class="sr-only" />
-      <div style={templateStyle(t.id)} class="overflow-hidden rounded-lg border border-rule">
-        <div class="bg-accent px-2.5 py-3 font-display text-base font-bold text-accent-ink">Aa</div>
-        <div class="space-y-1.5 bg-paper px-2.5 py-2.5">
-          <div class="h-1.5 w-3/4 rounded-full bg-ink/25"></div>
-          <div class="h-1.5 w-1/2 rounded-full bg-ink/15"></div>
+      {#if templateLayout(t.id) === 'ticket'}
+        <div style={templateStyle(t.id)} class="flex overflow-hidden rounded-lg border border-rule">
+          <div
+            class="flex w-2/5 items-center justify-center bg-accent font-display text-base font-bold text-accent-ink"
+          >
+            Aa
+          </div>
+          <div class="border-l border-dashed border-rule"></div>
+          <div class="flex-1 space-y-1.5 bg-paper px-2.5 py-3">
+            <div class="h-1.5 w-3/4 rounded-full bg-ink/25"></div>
+            <div class="h-1.5 w-1/2 rounded-full bg-ink/15"></div>
+          </div>
         </div>
-      </div>
+      {:else}
+        <div style={templateStyle(t.id)} class="overflow-hidden rounded-lg border border-rule">
+          <div class="bg-accent px-2.5 py-3 font-display text-base font-bold text-accent-ink">Aa</div>
+          <div class="space-y-1.5 bg-paper px-2.5 py-2.5">
+            <div class="h-1.5 w-3/4 rounded-full bg-ink/25"></div>
+            <div class="h-1.5 w-1/2 rounded-full bg-ink/15"></div>
+          </div>
+        </div>
+      {/if}
       <span class="mt-1.5 block text-center text-xs font-semibold text-ink">{label(t.id)}</span>
     </label>
   {/each}
