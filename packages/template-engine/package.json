@@ -1,0 +1,24 @@
+{
+  "name": "@vitein/template-engine",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Event theme/template engine — the Template type, registry, and open community templates.",
+  "license": "AGPL-3.0-or-later",
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@vitein/config": "workspace:*",
+    "typescript": "^5.6.3",
+    "vitest": "^4.1.7"
+  }
+}
