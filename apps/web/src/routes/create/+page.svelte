@@ -139,7 +139,7 @@
   </section>
 {:else}
   <!-- ─── Create form ────────────────────────────────────── -->
-  <section class="mx-auto max-w-xl px-6 py-14">
+  <section class="mx-auto max-w-xl px-6 py-14 lg:max-w-4xl">
     <Eyebrow num="01" label={m.nav_create()} />
     <h1
       class="font-display mt-4 text-4xl leading-[0.95] font-bold tracking-tighter sm:text-5xl"
@@ -157,44 +157,18 @@
           submitting = false;
         };
       }}
-      class="mt-10 space-y-8"
+      class="mt-10 grid gap-10 lg:grid-cols-[1fr_18rem]"
     >
-      {#if form?.error}
-        <Banner tone="error">{localizeError(form.error)}</Banner>
-      {/if}
+      <!-- Detail fields. Source order puts them first — on mobile they
+           come before the Style section; on desktop the grid splits the
+           two columns and the Style column sticks. -->
+      <div class="space-y-8">
+        {#if form?.error}
+          <Banner tone="error">{localizeError(form.error)}</Banner>
+        {/if}
 
-      <!-- Style first: preview + picker sit together so changing a theme
-           is visible without scrolling, on desktop and mobile alike. -->
-      <fieldset class="space-y-4">
-        <legend class={legendClass}>{m.create_style_label()}</legend>
-        <div class="flex justify-center">
-          <div
-            style={templateStyle(templateId)}
-            class="flex aspect-[3/4] w-52 flex-col overflow-hidden rounded-card bg-paper text-ink shadow-[0_24px_40px_-16px_rgba(0,0,0,0.25)]"
-          >
-            <div class="bg-accent px-5 py-5 text-accent-ink">
-              <span class="font-mono text-[9px] tracking-[0.16em] uppercase opacity-70">
-                {m.invite_eyebrow()}
-              </span>
-              <div
-                class="font-display mt-3 text-2xl leading-[0.95] font-bold tracking-[var(--tracking-display)]"
-              >
-                {titleValue || m.create_field_title()}
-              </div>
-            </div>
-            {#if previewDate || locationValue}
-              <div class="space-y-0.5 px-5 py-4 font-mono text-[10px] text-ink-muted">
-                {#if previewDate}<span class="block">{previewDate}</span>{/if}
-                {#if locationValue}<span class="block">{locationValue}</span>{/if}
-              </div>
-            {/if}
-          </div>
-        </div>
-        <TemplatePicker bind:value={templateId} />
-      </fieldset>
-
-      <fieldset class="space-y-4">
-        <legend class={legendClass}>{m.create_section_basics()}</legend>
+        <fieldset class="space-y-4">
+          <legend class={legendClass}>{m.create_section_basics()}</legend>
 
         <TextField
           name="title"
@@ -310,10 +284,43 @@
         />
       </fieldset>
 
-      <Button type="submit" variant="accent" size="lg" disabled={submitting} class="w-full">
-        {submitting ? m.create_submitting() : m.create_submit()}
-        {#if !submitting}<ArrowRight size={15} />{/if}
-      </Button>
+        <Button type="submit" variant="accent" size="lg" disabled={submitting} class="w-full">
+          {submitting ? m.create_submitting() : m.create_submit()}
+          {#if !submitting}<ArrowRight size={15} />{/if}
+        </Button>
+      </div>
+
+      <!-- Style: a sticky companion beside the form on desktop, a section
+           below the details on mobile. -->
+      <div class="lg:sticky lg:top-8 lg:self-start">
+        <fieldset class="space-y-4">
+          <legend class={legendClass}>{m.create_style_label()}</legend>
+          <div class="flex justify-center">
+            <div
+              style={templateStyle(templateId)}
+              class="flex aspect-[3/4] w-52 flex-col overflow-hidden rounded-card bg-paper text-ink shadow-[0_24px_40px_-16px_rgba(0,0,0,0.25)]"
+            >
+              <div class="bg-accent px-5 py-5 text-accent-ink">
+                <span class="font-mono text-[9px] tracking-[0.16em] uppercase opacity-70">
+                  {m.invite_eyebrow()}
+                </span>
+                <div
+                  class="font-display mt-3 text-2xl leading-[0.95] font-bold tracking-[var(--tracking-display)]"
+                >
+                  {titleValue || m.create_field_title()}
+                </div>
+              </div>
+              {#if previewDate || locationValue}
+                <div class="space-y-0.5 px-5 py-4 font-mono text-[10px] text-ink-muted">
+                  {#if previewDate}<span class="block">{previewDate}</span>{/if}
+                  {#if locationValue}<span class="block">{locationValue}</span>{/if}
+                </div>
+              {/if}
+            </div>
+          </div>
+          <TemplatePicker bind:value={templateId} />
+        </fieldset>
+      </div>
     </form>
   </section>
 {/if}
