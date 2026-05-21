@@ -23,12 +23,17 @@
       dismissed = true;
       return;
     }
-    // iOS Safari exposes the non-standard `navigator.standalone`: `false`
-    // in a normal tab, `true` once added to the Home Screen. It is
-    // `undefined` everywhere else — so a strict boolean check that is
-    // false isolates "iOS, not yet installed".
-    const nav = navigator as Navigator & { standalone?: boolean };
-    if (typeof nav.standalone === 'boolean' && !nav.standalone) {
+    // Show the "Add to Home Screen" hint only on real iOS (iPhone/iPad).
+    // `navigator.standalone` is NOT enough — macOS Safari exposes it too,
+    // so it false-positives on desktop. Detect the device by UA instead;
+    // iPadOS reports as "Macintosh", so also accept a touch-capable Mac.
+    const ua = navigator.userAgent;
+    const isIOS =
+      /iphone|ipad|ipod/i.test(ua) || (/macintosh/i.test(ua) && navigator.maxTouchPoints > 1);
+    const installed =
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (navigator as Navigator & { standalone?: boolean }).standalone === true;
+    if (isIOS && !installed) {
       iosHint = true;
     }
     const onPrompt = (event: Event): void => {
