@@ -1,0 +1,12 @@
+{
+  "extends": "@vitein/config/tsconfig.base.json",
+  "compilerOptions": {
+    "moduleResolution": "Bundler",
+    "module": "ESNext",
+    "noEmit": true,
+    "rootDir": ".",
+    "baseUrl": "."
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}
