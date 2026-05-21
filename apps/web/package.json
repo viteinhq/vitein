@@ -5,7 +5,10 @@
   "description": "vite.in web client — SvelteKit on Cloudflare Pages",
   "license": "AGPL-3.0-or-later",
   "type": "module",
-  "sideEffects": ["**/*.css", "**/*.svelte"],
+  "sideEffects": [
+    "**/*.css",
+    "**/*.svelte"
+  ],
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
