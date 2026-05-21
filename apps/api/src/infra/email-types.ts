@@ -10,6 +10,15 @@ export interface CreatorMagicLinkInput {
   manageUrl: string;
 }
 
+/**
+ * One recovery email lists every event tied to the address, each with a
+ * freshly-minted management link — sent by the `/v1/auth/recover` flow.
+ */
+export interface CreatorRecoveryInput {
+  to: string;
+  events: { title: string; manageUrl: string }[];
+}
+
 export interface SignInMagicLinkInput {
   to: string;
   url: string;

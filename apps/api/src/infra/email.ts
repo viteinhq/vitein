@@ -3,6 +3,7 @@ import { templatesFor } from './email-templates.js';
 import type {
   AnnouncementInput,
   CreatorMagicLinkInput,
+  CreatorRecoveryInput,
   EmailJob,
   ReminderInput,
   RsvpConfirmationInput,
@@ -31,6 +32,7 @@ import { rootLogger } from './logger.js';
 
 export type {
   CreatorMagicLinkInput,
+  CreatorRecoveryInput,
   SignInMagicLinkInput,
   RsvpConfirmationInput,
   RsvpNotificationInput,
@@ -55,6 +57,24 @@ export async function sendCreatorMagicLink(
     subject: t.subject(input),
     text: t.body(input),
     logHint: { eventTitle: input.eventTitle, locale: locale ?? 'fallback' },
+  });
+}
+
+export async function sendCreatorRecovery(
+  env: Env,
+  input: CreatorRecoveryInput,
+  locale: Locale | undefined,
+): Promise<SendResult> {
+  const t = templatesFor(locale).creatorRecovery;
+  return sendEmail(env, {
+    to: input.to,
+    subject: t.subject(input),
+    text: t.body(input),
+    logHint: {
+      kind: 'creator-recovery',
+      events: String(input.events.length),
+      locale: locale ?? 'fallback',
+    },
   });
 }
 

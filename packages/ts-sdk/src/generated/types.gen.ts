@@ -1494,6 +1494,36 @@ export type ClaimEventsResponses = {
 
 export type ClaimEventsResponse = ClaimEventsResponses[keyof ClaimEventsResponses];
 
+export type RecoverEventsData = {
+  body: {
+    email: string;
+  };
+  path?: never;
+  query?: never;
+  url: '/v1/auth/recover';
+};
+
+export type RecoverEventsErrors = {
+  /**
+   * Request body or query parameters failed validation.
+   */
+  400: Error;
+};
+
+export type RecoverEventsError = RecoverEventsErrors[keyof RecoverEventsErrors];
+
+export type RecoverEventsResponses = {
+  /**
+   * Request accepted. If any non-deleted events were tied to the
+   * address, a recovery email with fresh management links was
+   * dispatched.
+   *
+   */
+  204: void;
+};
+
+export type RecoverEventsResponse = RecoverEventsResponses[keyof RecoverEventsResponses];
+
 export type GetVapidKeyData = {
   body?: never;
   path?: never;

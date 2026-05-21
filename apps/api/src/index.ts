@@ -15,6 +15,7 @@ import { rateLimit } from './middleware/rate-limit.js';
 import { requestId } from './middleware/request-id.js';
 import { authRoute } from './routes/auth.js';
 import { claimRoute } from './routes/claim.js';
+import { recoverRoute } from './routes/recover.js';
 import { eventsRoute } from './routes/events.js';
 import { healthRoute } from './routes/health.js';
 import { pushRoute } from './routes/push.js';
@@ -55,9 +56,10 @@ app.get('/.well-known/oauth-authorization-server/v1/auth', async (c) => {
   return handler(c.req.raw);
 });
 
-// /v1/auth/claim is ours (needs c.var.auth) and must match BEFORE the
+// /v1/auth/claim and /v1/auth/recover are ours and must match BEFORE the
 // Better-Auth catch-all below swallows everything under /v1/auth.
 app.route('/v1/auth/claim', claimRoute);
+app.route('/v1/auth/recover', recoverRoute);
 app.route('/v1/auth', authRoute);
 
 app.route('/v1/health', healthRoute);
