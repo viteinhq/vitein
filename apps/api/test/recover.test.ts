@@ -64,4 +64,17 @@ describe('issueRecoveryTokens', () => {
     const rows = await db.select().from(auditLog).where(eq(auditLog.eventId, event.id));
     expect(rows.some((r) => r.action === 'event.recovery')).toBe(true);
   });
+
+  it('does not re-issue within the cooldown window', async () => {
+    const db = await createTestDb();
+    await seedEvent(db, { creatorEmail: 'host@example.com' });
+
+    const first = await issueRecoveryTokens(db, 'host@example.com');
+    expect(first).toHaveLength(1);
+
+    // A second request moments later is silently throttled — empty result,
+    // so the route sends no email.
+    const second = await issueRecoveryTokens(db, 'host@example.com');
+    expect(second).toEqual([]);
+  });
 });
