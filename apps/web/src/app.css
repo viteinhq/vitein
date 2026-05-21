@@ -40,6 +40,11 @@
   --font-mono: 'Geist Mono Variable', ui-monospace, 'SF Mono', Menlo, monospace;
 
   --radius-card: 22px;
+
+  /* Display-heading letter-spacing. Default matches the sans display
+     face; event templates override it per theme (a serif wants it
+     relaxed) — see `templateStyle()`. */
+  --tracking-display: -0.05em;
 }
 
 @layer base {

@@ -92,7 +92,7 @@
   {#if isLocked}
     <div class="rounded-card border border-rule bg-card p-7">
       <Eyebrow num="✦" label="vite.in" />
-      <h1 class="font-display mt-4 text-3xl font-bold tracking-tighter">
+      <h1 class="font-display mt-4 text-3xl font-bold tracking-[var(--tracking-display)]">
         {m.event_locked_heading()}
       </h1>
       <p class="mt-2 text-sm leading-relaxed text-ink-muted">{m.event_locked_body()}</p>
@@ -142,7 +142,7 @@
         {m.invite_eyebrow()}
       </span>
       <h1
-        class="font-display mt-4 text-5xl leading-[0.92] font-bold tracking-tighter text-balance sm:text-6xl"
+        class="font-display mt-4 text-5xl leading-[0.92] font-bold tracking-[var(--tracking-display)] text-balance sm:text-6xl"
       >
         {data.event.title}
       </h1>

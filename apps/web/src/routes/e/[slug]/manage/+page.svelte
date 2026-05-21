@@ -449,7 +449,7 @@
   <Section>
     <Heading level="panel">{m.manage_theme_heading()}</Heading>
     <form method="POST" action="?/update&token={data.token}" use:enhance class="space-y-4">
-      <TemplatePicker selected={data.event.templateId} />
+      <TemplatePicker value={data.event.templateId} />
       <Button type="submit">{m.manage_edit_submit()}</Button>
     </form>
   </Section>
