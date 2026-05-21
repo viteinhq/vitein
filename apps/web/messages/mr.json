@@ -425,5 +425,11 @@
   "install_prompt": "vite.in तुमच्या होम स्क्रीनवर जोडा.",
   "install_action": "इन्स्टॉल करा",
   "install_dismiss": "रद्द करा",
-  "ios_install_hint": "सूचना मिळवण्यासाठी, vite.in तुमच्या होम स्क्रीनवर जोडा: शेअर बटणावर टॅप करा, नंतर ‘होम स्क्रीनवर जोडा’."
+  "ios_install_hint": "सूचना मिळवण्यासाठी, vite.in तुमच्या होम स्क्रीनवर जोडा: शेअर बटणावर टॅप करा, नंतर ‘होम स्क्रीनवर जोडा’.",
+  "create_style_label": "Style",
+  "manage_theme_heading": "Theme",
+  "template_classic_name": "Classic",
+  "template_noir_name": "Noir",
+  "template_paper_name": "Paper",
+  "template_serif_name": "Serif"
 }

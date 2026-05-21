@@ -19,6 +19,7 @@ export const actions: Actions = {
     const creatorEmail = String(form.get('creatorEmail') ?? '').trim();
     const visibilityRaw = String(form.get('visibility') ?? 'link_only');
     const visibility: 'link_only' | 'public' = visibilityRaw === 'public' ? 'public' : 'link_only';
+    const templateId = String(form.get('templateId') ?? '').trim();
 
     const values = {
       title,
@@ -45,6 +46,7 @@ export const actions: Actions = {
         locationText: locationText || null,
         creatorEmail,
         visibility,
+        templateId: templateId || undefined,
       },
     });
 

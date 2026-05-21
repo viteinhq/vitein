@@ -1,7 +1,16 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
   import { page } from '$app/state';
-  import { ArrowRight, Banner, Button, Eyebrow, InviteCard, TextField, TimezonePicker } from '$lib/design';
+  import {
+    ArrowRight,
+    Banner,
+    Button,
+    Eyebrow,
+    InviteCard,
+    TemplatePicker,
+    TextField,
+    TimezonePicker,
+  } from '$lib/design';
   import { localizeError } from '$lib/errors';
   import * as m from '$lib/paraglide/messages.js';
   import type { PageProps } from './$types';
@@ -227,6 +236,11 @@
           bind:value={locationValue}
           label={m.create_field_location_optional()}
         />
+      </fieldset>
+
+      <fieldset class="space-y-3">
+        <legend class={legendClass}>{m.create_style_label()}</legend>
+        <TemplatePicker />
       </fieldset>
 
       <fieldset class="space-y-3">

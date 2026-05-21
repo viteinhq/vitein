@@ -425,5 +425,11 @@
   "install_prompt": "vite.in ਨੂੰ ਆਪਣੀ ਹੋਮ ਸਕ੍ਰੀਨ 'ਤੇ ਜੋੜੋ.",
   "install_action": "ਇੰਸਟਾਲ ਕਰੋ",
   "install_dismiss": "ਖਾਰਜ ਕਰੋ",
-  "ios_install_hint": "ਸੂਚਨਾਵਾਂ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, vite.in ਨੂੰ ਆਪਣੀ ਹੋਮ ਸਕ੍ਰੀਨ 'ਤੇ ਜੋੜੋ: ਸ਼ੇਅਰ ਬਟਨ 'ਤੇ ਟੈਪ ਕਰੋ, ਫਿਰ ‘ਹੋਮ ਸਕ੍ਰੀਨ 'ਤੇ ਜੋੜੋ’."
+  "ios_install_hint": "ਸੂਚਨਾਵਾਂ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, vite.in ਨੂੰ ਆਪਣੀ ਹੋਮ ਸਕ੍ਰੀਨ 'ਤੇ ਜੋੜੋ: ਸ਼ੇਅਰ ਬਟਨ 'ਤੇ ਟੈਪ ਕਰੋ, ਫਿਰ ‘ਹੋਮ ਸਕ੍ਰੀਨ 'ਤੇ ਜੋੜੋ’.",
+  "create_style_label": "Style",
+  "manage_theme_heading": "Theme",
+  "template_classic_name": "Classic",
+  "template_noir_name": "Noir",
+  "template_paper_name": "Paper",
+  "template_serif_name": "Serif"
 }

@@ -425,5 +425,11 @@
   "install_prompt": "Aggiungi vite.in alla schermata Home.",
   "install_action": "Installa",
   "install_dismiss": "Ignora",
-  "ios_install_hint": "Per ricevere le notifiche, aggiungi vite.in alla schermata Home: tocca il pulsante Condividi, poi ‘Aggiungi a Home’."
+  "ios_install_hint": "Per ricevere le notifiche, aggiungi vite.in alla schermata Home: tocca il pulsante Condividi, poi ‘Aggiungi a Home’.",
+  "create_style_label": "Style",
+  "manage_theme_heading": "Theme",
+  "template_classic_name": "Classic",
+  "template_noir_name": "Noir",
+  "template_paper_name": "Paper",
+  "template_serif_name": "Serif"
 }

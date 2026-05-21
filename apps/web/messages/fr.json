@@ -425,5 +425,11 @@
   "install_prompt": "Ajoutez vite.in à votre écran d'accueil.",
   "install_action": "Installer",
   "install_dismiss": "Ignorer",
-  "ios_install_hint": "Pour recevoir des notifications, ajoutez vite.in à votre écran d'accueil : appuyez sur le bouton Partager, puis sur ‘Sur l'écran d'accueil’."
+  "ios_install_hint": "Pour recevoir des notifications, ajoutez vite.in à votre écran d'accueil : appuyez sur le bouton Partager, puis sur ‘Sur l'écran d'accueil’.",
+  "create_style_label": "Style",
+  "manage_theme_heading": "Theme",
+  "template_classic_name": "Classic",
+  "template_noir_name": "Noir",
+  "template_paper_name": "Paper",
+  "template_serif_name": "Serif"
 }

@@ -425,5 +425,11 @@
   "install_prompt": "Adicione o vite.in à sua tela inicial.",
   "install_action": "Instalar",
   "install_dismiss": "Dispensar",
-  "ios_install_hint": "Para receber notificações, adicione o vite.in à sua tela inicial: toque no botão Compartilhar e depois em ‘Adicionar à Tela de Início’."
+  "ios_install_hint": "Para receber notificações, adicione o vite.in à sua tela inicial: toque no botão Compartilhar e depois em ‘Adicionar à Tela de Início’.",
+  "create_style_label": "Style",
+  "manage_theme_heading": "Theme",
+  "template_classic_name": "Classic",
+  "template_noir_name": "Noir",
+  "template_paper_name": "Paper",
+  "template_serif_name": "Serif"
 }

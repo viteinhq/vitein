@@ -425,5 +425,11 @@
   "install_prompt": "vite.in-ஐ உங்கள் முகப்புத் திரையில் சேர்க்கவும்.",
   "install_action": "நிறுவு",
   "install_dismiss": "நிராகரி",
-  "ios_install_hint": "அறிவிப்புகளைப் பெற, vite.in-ஐ உங்கள் முகப்புத் திரையில் சேர்க்கவும்: பகிர் பொத்தானைத் தட்டி, பிறகு ‘முகப்புத் திரையில் சேர்’ என்பதைத் தேர்வு செய்யுங்கள்."
+  "ios_install_hint": "அறிவிப்புகளைப் பெற, vite.in-ஐ உங்கள் முகப்புத் திரையில் சேர்க்கவும்: பகிர் பொத்தானைத் தட்டி, பிறகு ‘முகப்புத் திரையில் சேர்’ என்பதைத் தேர்வு செய்யுங்கள்.",
+  "create_style_label": "Style",
+  "manage_theme_heading": "Theme",
+  "template_classic_name": "Classic",
+  "template_noir_name": "Noir",
+  "template_paper_name": "Paper",
+  "template_serif_name": "Serif"
 }

@@ -124,6 +124,7 @@ export const actions: Actions = {
     const endsAt = String(form.get('endsAt') ?? '');
     const timezone = String(form.get('timezone') ?? '').trim();
     const locationText = String(form.get('locationText') ?? '').trim();
+    const templateId = String(form.get('templateId') ?? '').trim();
 
     if (title) body.title = title;
     if (description) body.description = description;
@@ -131,6 +132,7 @@ export const actions: Actions = {
     if (endsAt) body.endsAt = new Date(endsAt).toISOString();
     if (timezone) body.timezone = timezone;
     if (locationText) body.locationText = locationText;
+    if (templateId) body.templateId = templateId;
 
     if (Object.keys(body).length === 0) {
       return fail(400, { updateError: 'manage_no_changes' });

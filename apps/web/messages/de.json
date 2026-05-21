@@ -425,5 +425,11 @@
   "install_prompt": "Füge vite.in zu deinem Startbildschirm hinzu.",
   "install_action": "Installieren",
   "install_dismiss": "Schließen",
-  "ios_install_hint": "Um Benachrichtigungen zu erhalten, füge vite.in zu deinem Startbildschirm hinzu: Tippe auf „Teilen“ und dann auf „Zum Home-Bildschirm“."
+  "ios_install_hint": "Um Benachrichtigungen zu erhalten, füge vite.in zu deinem Startbildschirm hinzu: Tippe auf „Teilen“ und dann auf „Zum Home-Bildschirm“.",
+  "create_style_label": "Style",
+  "manage_theme_heading": "Theme",
+  "template_classic_name": "Classic",
+  "template_noir_name": "Noir",
+  "template_paper_name": "Paper",
+  "template_serif_name": "Serif"
 }
