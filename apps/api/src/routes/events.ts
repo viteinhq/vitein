@@ -11,6 +11,7 @@ import {
 } from '../domain/events/events.js';
 import { buildEventIcs } from '../domain/events/ics.js';
 import { verifyPassword } from '../domain/events/password.js';
+import { assertTemplateAllowed } from '../domain/events/templates.js';
 import {
   issueViewToken,
   isViewTokenValid,
@@ -48,6 +49,7 @@ const eventCreateSchema = z.object({
   creatorEmail: z.string().email(),
   defaultLocale: z.string().min(2).max(10).optional(),
   visibility: z.enum(['link_only', 'public']).optional(),
+  templateId: z.string().min(1).max(64).optional(),
 });
 
 const eventUpdateSchema = z
@@ -60,6 +62,7 @@ const eventUpdateSchema = z
     locationText: z.string().max(500).nullable().optional(),
     defaultLocale: z.string().min(2).max(10).optional(),
     visibility: z.enum(['link_only', 'public']).optional(),
+    templateId: z.string().min(1).max(64).optional(),
     /** A.6b.2 password protection (Plus tier). null = clear, string = set. */
     password: z.string().min(4).max(200).nullable().optional(),
   })
@@ -78,6 +81,10 @@ eventsRoute.post(
   }),
   async (c) => {
     const input = c.req.valid('json');
+    // Only free templates may be chosen at creation — the event is unpaid.
+    if (input.templateId !== undefined) {
+      assertTemplateAllowed(input.templateId, false);
+    }
     const { event, creatorToken } = await createEvent(db(c), {
       ...input,
       startsAt: new Date(input.startsAt),
@@ -184,18 +191,23 @@ eventsRoute.patch(
     const { id } = c.req.valid('param');
     const input = c.req.valid('json');
 
-    // Feature-gate: setting a password requires the event to be on the
-    // Plus tier. Clearing (null) is always allowed so creators can drop
-    // a password after a downgrade or accidental set.
-    if (typeof input.password === 'string') {
+    // Feature-gate: setting a password (Plus tier) or a premium template
+    // (any paid tier) needs the event's current paid state — load it once.
+    // Clearing a password (null) is always allowed.
+    if (typeof input.password === 'string' || input.templateId !== undefined) {
       const existing = await getEventForCreator(db(c), id);
-      const tier = tierOf(existing);
-      if (!tier || !tierIncludes(tier, 'password_protected')) {
-        throw new DomainError(
-          'event.feature_gated',
-          'Password protection is a Plus-tier feature',
-          403,
-        );
+      if (typeof input.password === 'string') {
+        const tier = tierOf(existing);
+        if (!tier || !tierIncludes(tier, 'password_protected')) {
+          throw new DomainError(
+            'event.feature_gated',
+            'Password protection is a Plus-tier feature',
+            403,
+          );
+        }
+      }
+      if (input.templateId !== undefined) {
+        assertTemplateAllowed(input.templateId, tierOf(existing) !== null);
       }
     }
 
@@ -206,6 +218,7 @@ eventsRoute.patch(
       locationText: input.locationText,
       defaultLocale: input.defaultLocale,
       visibility: input.visibility,
+      templateId: input.templateId,
       password: input.password,
       startsAt: input.startsAt ? new Date(input.startsAt) : undefined,
       endsAt: input.endsAt === undefined ? undefined : input.endsAt ? new Date(input.endsAt) : null,
@@ -278,6 +291,7 @@ function toPublic(e: EventRow, opts: PublicOpts = { locked: false }) {
     locationText: opts.locked ? null : e.locationText,
     visibility: e.visibility,
     defaultLocale: e.defaultLocale,
+    templateId: e.templateId,
     // Surface the premium tier so guest-facing UIs can enable per-tier
     // affordances (named plus-ones, hide branding). Null for unpaid events.
     tier: tierOf(e),

@@ -22,6 +22,7 @@ const baseEvent = {
   coverMediaId: null,
   defaultLocale: 'en',
   visibility: 'link_only',
+  templateId: 'classic',
   deletedAt: null,
   createdAt: new Date(),
   updatedAt: new Date(),

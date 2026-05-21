@@ -56,6 +56,13 @@ export type EventCreateInput = {
   creatorEmail: string;
   defaultLocale?: string;
   visibility?: 'link_only' | 'public';
+  /**
+   * Theme template id (ADR 0009). Defaults to `classic`. Only free
+   * templates may be set at creation; premium templates are chosen
+   * after upgrading.
+   *
+   */
+  templateId?: string;
 };
 
 /**
@@ -70,6 +77,13 @@ export type EventUpdateInput = {
   locationText?: string | null;
   defaultLocale?: string;
   visibility?: 'link_only' | 'public';
+  /**
+   * Theme template id (ADR 0009). Setting a premium template
+   * requires the event to be on a paid tier — the server returns
+   * 403 `event.feature_gated` otherwise.
+   *
+   */
+  templateId?: string;
   /**
    * A.6b.2 password protection. `null` clears; a string sets/replaces.
    * Setting requires the event to be on the Plus tier — the server
@@ -90,6 +104,10 @@ export type EventPublic = {
   locationText?: string | null;
   visibility: 'link_only' | 'public';
   defaultLocale?: string;
+  /**
+   * Theme template id (ADR 0009); `classic` by default.
+   */
+  templateId: string;
   /**
    * Premium tier when the event is paid, otherwise `null`. Used by
    * guest-facing UIs to light up per-tier affordances (named
