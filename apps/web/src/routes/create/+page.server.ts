@@ -1,6 +1,7 @@
 import { createEvent } from '@vitein/ts-sdk';
 import { fail } from '@sveltejs/kit';
 import { configureApi } from '$lib/api';
+import { zonedWallTimeToUtc } from '$lib/datetime';
 import type { Actions } from './$types';
 
 export const actions: Actions = {
@@ -41,8 +42,10 @@ export const actions: Actions = {
       body: {
         title,
         description: description || null,
-        startsAt: new Date(startsAt).toISOString(),
-        endsAt: endsAt ? new Date(endsAt).toISOString() : null,
+        // The datetime-local value is a naive wall-clock time; interpret it
+        // in the event's timezone, not the Worker runtime's UTC.
+        startsAt: zonedWallTimeToUtc(startsAt, timezone).toISOString(),
+        endsAt: endsAt ? zonedWallTimeToUtc(endsAt, timezone).toISOString() : null,
         timezone,
         locationText: locationText || null,
         creatorEmail,

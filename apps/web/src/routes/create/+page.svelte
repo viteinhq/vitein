@@ -1,6 +1,7 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
   import { page } from '$app/state';
+  import { addHoursToWall } from '$lib/datetime';
   import {
     ArrowRight,
     Banner,
@@ -54,7 +55,15 @@
   let descriptionValue = $derived(String(form?.values?.description ?? ''));
   let locationValue = $derived(String(form?.values?.locationText ?? ''));
   let startsAtValue = $derived(String(form?.values?.startsAt ?? defaultStartsAt));
+  let endsAtValue = $derived(String(form?.values?.endsAt ?? ''));
   let timezoneValue = $derived(String(form?.values?.timezone ?? defaultTimezone));
+
+  // End time is optional, so it starts empty. When the creator first
+  // focuses the field, suggest a 2-hour event — same day, start + 2h — so
+  // the native picker opens at the start date instead of today.
+  function suggestEndsAt() {
+    if (!endsAtValue) endsAtValue = addHoursToWall(startsAtValue, 2);
+  }
 
   function formatPreviewDate(v: string): string {
     if (!v) return '';
@@ -227,7 +236,9 @@
           <TextField
             type="datetime-local"
             name="endsAt"
-            value={form?.values?.endsAt ?? ''}
+            bind:value={endsAtValue}
+            min={startsAtValue}
+            onfocus={suggestEndsAt}
             label={m.create_field_ends_at_optional()}
           />
         </div>

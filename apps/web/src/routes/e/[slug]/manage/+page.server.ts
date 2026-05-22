@@ -14,6 +14,7 @@ import {
   updateEvent,
 } from '@vitein/ts-sdk';
 import { configureApi } from '$lib/api';
+import { zonedWallTimeToUtc } from '$lib/datetime';
 import type { Actions, PageServerLoad } from './$types';
 
 function resolveBaseUrl(platform: App.Platform | undefined): string {
@@ -127,10 +128,13 @@ export const actions: Actions = {
     const themeId = String(form.get('themeId') ?? '').trim();
     const layout = String(form.get('layout') ?? '').trim();
 
+    // Naive datetime-local values are interpreted in the event's timezone
+    // (the submitted `timezone` field), not the Worker's UTC runtime.
+    const tz = timezone || 'UTC';
     if (title) body.title = title;
     if (description) body.description = description;
-    if (startsAt) body.startsAt = new Date(startsAt).toISOString();
-    if (endsAt) body.endsAt = new Date(endsAt).toISOString();
+    if (startsAt) body.startsAt = zonedWallTimeToUtc(startsAt, tz).toISOString();
+    if (endsAt) body.endsAt = zonedWallTimeToUtc(endsAt, tz).toISOString();
     if (timezone) body.timezone = timezone;
     if (locationText) body.locationText = locationText;
     if (themeId) body.themeId = themeId;
