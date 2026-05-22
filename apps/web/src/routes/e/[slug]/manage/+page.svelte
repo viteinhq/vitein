@@ -1,6 +1,7 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
   import { page } from '$app/state';
+  import { addHoursToWall, utcToZonedWallTime } from '$lib/datetime';
   import {
     Banner,
     Button,
@@ -63,13 +64,17 @@
     return null;
   });
 
-  const startsAtForInput = $derived(toLocalInputValue(data.event.startsAt));
-  const endsAtForInput = $derived(data.event.endsAt ? toLocalInputValue(data.event.endsAt) : '');
+  // Pre-fill the datetime-local inputs with the event's wall-clock time in
+  // its own timezone — not the browser's — so the value the creator sees
+  // and edits matches the event page, and the save round-trip is stable.
+  let editStartsAt = $derived(utcToZonedWallTime(data.event.startsAt, data.event.timezone));
+  let editEndsAt = $derived(
+    data.event.endsAt ? utcToZonedWallTime(data.event.endsAt, data.event.timezone) : '',
+  );
 
-  function toLocalInputValue(iso: string): string {
-    const d = new Date(iso);
-    const pad = (n: number) => String(n).padStart(2, '0');
-    return `${String(d.getFullYear())}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  // Focusing the empty end field suggests a 2-hour event (start + 2h).
+  function suggestEndsAt() {
+    if (!editEndsAt) editEndsAt = addHoursToWall(editStartsAt, 2);
   }
 
   // Writable `$derived`: seeded from the loaded event, reassignable as
@@ -415,14 +420,16 @@
       <TextField
         type="datetime-local"
         name="startsAt"
-        value={startsAtForInput}
+        bind:value={editStartsAt}
         label={m.manage_edit_starts_at_label()}
       />
 
       <TextField
         type="datetime-local"
         name="endsAt"
-        value={endsAtForInput}
+        bind:value={editEndsAt}
+        min={editStartsAt}
+        onfocus={suggestEndsAt}
         label={m.manage_edit_ends_at_label()}
         hint={m.manage_edit_ends_at_hint()}
       />
