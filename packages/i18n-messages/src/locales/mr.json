@@ -5,23 +5,19 @@
   "conflict": "सध्याच्या स्थितीशी संघर्ष",
   "internal_error": "अंतर्गत सर्व्हर त्रुटी",
   "rate_limited": "खूप जास्त विनंत्या — कृपया हळू जा",
-
   "event.not_found": "इव्हेंट सापडला नाही",
   "event.unauthorized": "हा निर्माता टोकन या इव्हेंटशी जुळत नाही",
   "event.no_password": "इव्हेंट पासवर्ड-संरक्षित नाही",
   "event.password_invalid": "चुकीचा पासवर्ड",
   "event.feature_gated": "या वैशिष्ट्यासाठी Plus स्तर आवश्यक आहे",
   "event.already_paid": "इव्हेंट आधीच प्रीमियम आहे",
-
+  "event.slug_taken": "That event URL is already taken",
   "user.not_found": "वापरकर्ता सापडला नाही",
   "user.unauthorized": "सुरू ठेवण्यासाठी कृपया साइन इन करा",
-
   "media.not_found": "मीडिया सापडला नाही",
   "media.quota_exceeded": "या इव्हेंटसाठी मीडिया मर्यादा गाठली",
-
   "announcement.too_many_recipients": "पाहुणे यादी तत्काळ-पाठवण्याच्या मर्यादेपेक्षा जास्त आहे",
   "announcement.already_sent": "या टप्प्यासाठी एक घोषणा आधीच पाठवली गेली आहे",
-
   "stripe.not_configured": "या वातावरणासाठी Stripe कॉन्फिगर केलेले नाही",
   "stripe.price_not_configured": "या स्तर आणि चलनासाठी Stripe कॉन्फिगर केलेले नाही",
   "stripe.api_error": "Stripe ने विनंती नाकारली"

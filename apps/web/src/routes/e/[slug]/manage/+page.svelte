@@ -398,7 +398,7 @@
     {#if form?.updateSuccess}
       <Banner tone="success">{m.manage_edit_saved()}</Banner>
     {/if}
-    {#if form?.updateError}
+    {#if form?.updateError && form.updateError !== 'manage_slug_taken'}
       <Banner tone="error">{localizeError(form.updateError)}</Banner>
     {/if}
 
@@ -468,6 +468,29 @@
       <Button type="submit">{m.manage_edit_submit()}</Button>
     </form>
   </Section>
+
+  <!-- Event URL — custom slug (paid tiers) -->
+  {#if data.event.tier}
+    <Section>
+      <Heading level="panel">{m.manage_event_url_heading()}</Heading>
+      {#if form?.updateError === 'manage_slug_taken'}
+        <Banner tone="error">{localizeError('manage_slug_taken')}</Banner>
+      {/if}
+      <form method="POST" action="?/update&token={data.token}" use:enhance class="space-y-4">
+        <TextField
+          name="slug"
+          value={data.event.slug}
+          label={m.manage_event_url_label()}
+          hint={m.manage_event_url_hint()}
+          pattern="[a-z0-9]([a-z0-9-]*[a-z0-9])?"
+          minlength={3}
+          maxlength={64}
+          required
+        />
+        <Button type="submit">{m.manage_edit_submit()}</Button>
+      </form>
+    </Section>
+  {/if}
 
   <!-- Announcements -->
   <Section>

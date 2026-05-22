@@ -65,6 +65,13 @@ const eventUpdateSchema = z
     visibility: z.enum(['link_only', 'public']).optional(),
     themeId: z.string().min(1).max(64).optional(),
     layout: z.string().min(1).max(64).optional(),
+    /** Custom URL slug (paid tiers). Lowercase alnum + hyphens, no edges. */
+    slug: z
+      .string()
+      .min(3)
+      .max(64)
+      .regex(/^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/)
+      .optional(),
     /** A.6b.2 password protection (Plus tier). null = clear, string = set. */
     password: z.string().min(4).max(200).nullable().optional(),
   })
@@ -201,10 +208,14 @@ eventsRoute.patch(
     if (input.layout !== undefined) {
       assertLayoutAllowed(input.layout);
     }
-    // Feature-gate: setting a password (Plus tier) or a premium theme
-    // (any paid tier) needs the event's current paid state — load it once.
-    // Clearing a password (null) is always allowed.
-    if (typeof input.password === 'string' || input.themeId !== undefined) {
+    // Feature-gate: setting a password (Plus tier), a premium theme, or a
+    // custom slug (any paid tier) needs the event's current paid state —
+    // load it once. Clearing a password (null) is always allowed.
+    if (
+      typeof input.password === 'string' ||
+      input.themeId !== undefined ||
+      input.slug !== undefined
+    ) {
       const existing = await getEventForCreator(db(c), id);
       if (typeof input.password === 'string') {
         const tier = tierOf(existing);
@@ -219,6 +230,16 @@ eventsRoute.patch(
       if (input.themeId !== undefined) {
         assertThemeAllowed(input.themeId, tierOf(existing) !== null);
       }
+      if (input.slug !== undefined) {
+        const tier = tierOf(existing);
+        if (!tier || !tierIncludes(tier, 'custom_slug')) {
+          throw new DomainError(
+            'event.feature_gated',
+            'A custom event URL requires a paid tier',
+            403,
+          );
+        }
+      }
     }
 
     const event = await updateEvent(db(c), id, {
@@ -230,6 +251,7 @@ eventsRoute.patch(
       visibility: input.visibility,
       themeId: input.themeId,
       layout: input.layout,
+      slug: input.slug,
       password: input.password,
       startsAt: input.startsAt ? new Date(input.startsAt) : undefined,
       endsAt: input.endsAt === undefined ? undefined : input.endsAt ? new Date(input.endsAt) : null,

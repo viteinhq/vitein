@@ -5,23 +5,19 @@
   "conflict": "Konflikt mit vorhandenem Zustand",
   "internal_error": "Interner Serverfehler",
   "rate_limited": "Zu viele Anfragen — bitte etwas langsamer",
-
   "event.not_found": "Event nicht gefunden",
   "event.unauthorized": "Dieser Creator-Token passt nicht zu diesem Event",
   "event.no_password": "Dieses Event ist nicht passwortgeschützt",
   "event.password_invalid": "Falsches Passwort",
   "event.feature_gated": "Diese Funktion ist Teil des Plus-Tarifs",
   "event.already_paid": "Event ist bereits Premium",
-
+  "event.slug_taken": "That event URL is already taken",
   "user.not_found": "Benutzer nicht gefunden",
   "user.unauthorized": "Bitte anmelden, um fortzufahren",
-
   "media.not_found": "Medium nicht gefunden",
   "media.quota_exceeded": "Medien-Limit für dieses Event erreicht",
-
   "announcement.too_many_recipients": "Gästeliste übersteigt das synchrone Sende-Limit",
   "announcement.already_sent": "Eine Ankündigung für diesen Schritt wurde bereits versendet",
-
   "stripe.not_configured": "Stripe ist in dieser Umgebung nicht konfiguriert",
   "stripe.price_not_configured": "Stripe ist für diesen Tarif/diese Währung nicht konfiguriert",
   "stripe.api_error": "Stripe hat die Anfrage abgelehnt"

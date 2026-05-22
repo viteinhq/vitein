@@ -5,23 +5,19 @@
   "conflict": "વર્તમાન સ્થિતિ સાથે સંઘર્ષ",
   "internal_error": "આંતરિક સર્વર ભૂલ",
   "rate_limited": "ઘણી બધી વિનંતીઓ — કૃપા કરીને ધીમે જાઓ",
-
   "event.not_found": "ઇવેન્ટ મળી નથી",
   "event.unauthorized": "આ નિર્માતા ટોકન આ ઇવેન્ટ સાથે મેળ ખાતું નથી",
   "event.no_password": "ઇવેન્ટ પાસવર્ડ-સુરક્ષિત નથી",
   "event.password_invalid": "ખોટો પાસવર્ડ",
   "event.feature_gated": "આ સુવિધા માટે Plus સ્તર જરૂરી છે",
   "event.already_paid": "ઇવેન્ટ પહેલેથી પ્રીમિયમ છે",
-
+  "event.slug_taken": "That event URL is already taken",
   "user.not_found": "વપરાશકર્તા મળ્યો નથી",
   "user.unauthorized": "ચાલુ રાખવા માટે કૃપા કરીને સાઇન ઇન કરો",
-
   "media.not_found": "મીડિયા મળ્યું નથી",
   "media.quota_exceeded": "આ ઇવેન્ટ માટે મીડિયા મર્યાદા પૂર્ણ થઈ",
-
   "announcement.too_many_recipients": "મહેમાન યાદી તાત્કાલિક-મોકલવાની મર્યાદાથી વધી ગઈ છે",
   "announcement.already_sent": "આ તબક્કા માટે એક જાહેરાત પહેલેથી મોકલાઈ ગઈ છે",
-
   "stripe.not_configured": "આ વાતાવરણ માટે Stripe કૉન્ફિગર થયેલ નથી",
   "stripe.price_not_configured": "આ સ્તર અને ચલણ માટે Stripe કૉન્ફિગર થયેલ નથી",
   "stripe.api_error": "Stripe એ વિનંતી નકારી"

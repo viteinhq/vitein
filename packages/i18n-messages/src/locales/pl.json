@@ -5,23 +5,19 @@
   "conflict": "Konflikt z istniejącym stanem",
   "internal_error": "Wewnętrzny błąd serwera",
   "rate_limited": "Zbyt wiele żądań — zwolnij tempo",
-
   "event.not_found": "Nie znaleziono wydarzenia",
   "event.unauthorized": "Ten token twórcy nie pasuje do tego wydarzenia",
   "event.no_password": "Wydarzenie nie jest chronione hasłem",
   "event.password_invalid": "Nieprawidłowe hasło",
   "event.feature_gated": "Ta funkcja wymaga planu Plus",
   "event.already_paid": "Wydarzenie jest już premium",
-
+  "event.slug_taken": "That event URL is already taken",
   "user.not_found": "Nie znaleziono użytkownika",
   "user.unauthorized": "Zaloguj się, aby kontynuować",
-
   "media.not_found": "Nie znaleziono pliku multimedialnego",
   "media.quota_exceeded": "Osiągnięto limit plików multimedialnych dla tego wydarzenia",
-
   "announcement.too_many_recipients": "Lista gości przekracza limit wysyłki synchronicznej",
   "announcement.already_sent": "Ogłoszenie dla tego etapu zostało już wysłane",
-
   "stripe.not_configured": "Stripe nie jest skonfigurowany dla tego środowiska",
   "stripe.price_not_configured": "Stripe nie jest skonfigurowany dla tego poziomu i waluty",
   "stripe.api_error": "Stripe odrzucił żądanie"
