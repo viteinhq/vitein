@@ -1,27 +1,45 @@
-import { TemplateRegistry } from './registry.js';
-import { communityTemplates } from './templates.js';
-import type { Template } from './types.js';
+import { communityLayouts } from './layouts.js';
+import { Registry } from './registry.js';
+import { communityThemes } from './themes.js';
+import type { Layout, Theme } from './types.js';
 
-export type { Template, TemplateTokens, TemplateTier, TemplateOrigin } from './types.js';
-export { TemplateRegistry, BASELINE_TEMPLATE_ID } from './registry.js';
-export { communityTemplates } from './templates.js';
+export type { Theme, ThemeTokens, Layout, Template, Tier, Origin } from './types.js';
+export { Registry } from './registry.js';
+export { communityThemes } from './themes.js';
+export { communityLayouts } from './layouts.js';
+
+/** Id of the theme every registry must contain — the resolve fallback. */
+export const BASELINE_THEME_ID = 'classic';
+/** Id of the layout every registry must contain — the resolve fallback. */
+export const BASELINE_LAYOUT_ID = 'standard';
 
 /**
- * Create a registry pre-loaded with the open community templates. The
- * hosted build additionally calls {@link registerExternalTemplates} with
- * the premium designs; the open-source build ships community-only.
+ * Create a theme registry pre-loaded with the open community themes. The
+ * hosted build additionally calls {@link registerExternalThemes} with the
+ * premium palettes; the open-source build ships community-only.
  */
-export function createTemplateRegistry(): TemplateRegistry {
-  const registry = new TemplateRegistry();
-  registry.register(...communityTemplates);
+export function createThemeRegistry(): Registry<Theme> {
+  const registry = new Registry<Theme>(BASELINE_THEME_ID);
+  registry.register(...communityThemes);
+  return registry;
+}
+
+/**
+ * Create a layout registry pre-loaded with the open community layouts.
+ * Layouts are open-source — there is no premium-layout hook (ADR 0011).
+ */
+export function createLayoutRegistry(): Registry<Layout> {
+  const registry = new Registry<Layout>(BASELINE_LAYOUT_ID);
+  registry.register(...communityLayouts);
   return registry;
 }
 
 /**
  * Extension point for the private vitein-premium package: register its
- * premium templates onto an existing registry. The open-source build
- * simply never calls this — only the seam lives in the public repo.
+ * premium themes onto an existing registry. The open-source build simply
+ * never calls this — only the seam lives in the public repo. Themes are
+ * pure data, so they register cleanly; premium layouts do not exist.
  */
-export function registerExternalTemplates(registry: TemplateRegistry, templates: Template[]): void {
-  registry.register(...templates);
+export function registerExternalThemes(registry: Registry<Theme>, themes: Theme[]): void {
+  registry.register(...themes);
 }

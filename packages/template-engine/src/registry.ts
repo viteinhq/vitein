@@ -1,53 +1,57 @@
-import type { Template, TemplateTier } from './types.js';
+import type { Tier } from './types.js';
+
+/** Minimum shape the registry needs from anything it stores. */
+interface RegistryEntry {
+  id: string;
+  tier: Tier;
+}
 
 /**
- * Id of the baseline template every registry must contain. It is the
- * default for events with no explicit template and the fallback when an
- * id cannot be resolved.
+ * In-memory id→entry lookup with a guaranteed baseline fallback. Used for
+ * both themes and layouts — these are code, not data (ADR 0009 / 0011).
+ * The registry is populated at startup from the community set plus, on the
+ * hosted build, premium themes via the extension hook.
  */
-export const BASELINE_TEMPLATE_ID = 'classic';
+export class Registry<T extends RegistryEntry> {
+  readonly #entries = new Map<string, T>();
 
-/**
- * In-memory template lookup. Templates are code, not data — the registry
- * is populated at startup from the community set plus, on the hosted
- * build, the premium set (see ADR 0009).
- */
-export class TemplateRegistry {
-  readonly #templates = new Map<string, Template>();
+  /**
+   * @param baselineId id of the entry every registry must contain — the
+   * fallback when a requested id cannot be resolved.
+   */
+  constructor(private readonly baselineId: string) {}
 
-  /** Add templates. A later registration with the same id wins. */
-  register(...templates: Template[]): void {
-    for (const template of templates) {
-      this.#templates.set(template.id, template);
+  /** Add entries. A later registration with the same id wins. */
+  register(...entries: T[]): void {
+    for (const entry of entries) {
+      this.#entries.set(entry.id, entry);
     }
   }
 
-  get(id: string): Template | undefined {
-    return this.#templates.get(id);
+  get(id: string): T | undefined {
+    return this.#entries.get(id);
   }
 
   has(id: string): boolean {
-    return this.#templates.has(id);
+    return this.#entries.has(id);
   }
 
   /**
-   * Resolve an id to a concrete template, falling back to the baseline
-   * when the id is unknown. A premium template id on a build without the
-   * premium package must degrade gracefully here, never throw.
+   * Resolve an id to a concrete entry, falling back to the baseline when
+   * the id is unknown. A premium id on a build without the premium package
+   * must degrade gracefully here, never throw.
    */
-  resolve(id: string): Template {
-    const template = this.#templates.get(id) ?? this.#templates.get(BASELINE_TEMPLATE_ID);
-    if (!template) {
-      throw new Error(
-        `TemplateRegistry: baseline template "${BASELINE_TEMPLATE_ID}" is not registered`,
-      );
+  resolve(id: string): T {
+    const entry = this.#entries.get(id) ?? this.#entries.get(this.baselineId);
+    if (!entry) {
+      throw new Error(`Registry: baseline entry "${this.baselineId}" is not registered`);
     }
-    return template;
+    return entry;
   }
 
-  /** All registered templates, optionally filtered by tier. */
-  list(filter?: { tier?: TemplateTier }): Template[] {
-    const all = [...this.#templates.values()];
-    return filter?.tier ? all.filter((template) => template.tier === filter.tier) : all;
+  /** All registered entries, optionally filtered by tier. */
+  list(filter?: { tier?: Tier }): T[] {
+    const all = [...this.#entries.values()];
+    return filter?.tier ? all.filter((entry) => entry.tier === filter.tier) : all;
   }
 }

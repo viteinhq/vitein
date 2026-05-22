@@ -1,35 +1,36 @@
 <script lang="ts">
   /**
-   * Live theme preview for the create / manage forms. Reflects both the
-   * template's palette (via `templateStyle`) AND its layout — a `ticket`
-   * template previews as a two-panel ticket, not the standard portrait
-   * card — so the picker communicates the structural difference.
+   * Live preview of an event's design for the create / manage forms.
+   * Reflects both orthogonal axes (ADR 0011): the `themeId` palette (via
+   * `themeStyle`) and the `layout` structure — a `ticket` layout previews
+   * as a two-panel ticket, not the standard portrait card.
    */
   import * as m from '$lib/paraglide/messages.js';
-  import { templateLayout, templateStyle } from '$lib/templates';
+  import { themeStyle } from '$lib/themes';
 
   let {
-    templateId,
+    themeId,
+    layout,
     title,
     description = '',
     date = '',
     location = '',
   }: {
-    templateId: string;
+    themeId: string;
+    layout: string;
     title: string;
     description?: string;
     date?: string;
     location?: string;
   } = $props();
 
-  const layout = $derived(templateLayout(templateId));
   const shadow = 'shadow-[0_24px_40px_-16px_rgba(0,0,0,0.25)]';
   const displayTitle = $derived(title || m.create_field_title());
 </script>
 
 {#if layout === 'ticket'}
   <div
-    style={templateStyle(templateId)}
+    style={themeStyle(themeId)}
     class="flex aspect-[4/3] w-64 overflow-hidden rounded-card bg-card text-ink {shadow}"
   >
     <div class="flex w-2/5 items-center justify-center bg-accent p-3 text-accent-ink">
@@ -50,7 +51,7 @@
   </div>
 {:else}
   <div
-    style={templateStyle(templateId)}
+    style={themeStyle(themeId)}
     class="flex aspect-[3/4] w-52 flex-col overflow-hidden rounded-card bg-paper text-ink {shadow}"
   >
     <div class="bg-accent px-5 py-5 text-accent-ink">

@@ -64,6 +64,13 @@
       "when": 1779349808407,
       "tag": "0008_illegal_loa",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1779425566533,
+      "tag": "0009_ancient_slapstick",
+      "breakpoints": true
     }
   ]
 }

@@ -135,7 +135,11 @@ export const events = pgTable(
     coverMediaId: uuid('cover_media_id'),
     defaultLocale: text('default_locale').notNull().default('en'),
     visibility: text().notNull().default('link_only'),
-    templateId: text('template_id').notNull().default('classic'),
+    // Design = two orthogonal axes (ADR 0011). The theme (colour/type)
+    // column keeps its legacy `template_id` name so adding `layout` stays
+    // a purely additive migration — see ADR 0011.
+    themeId: text('template_id').notNull().default('classic'),
+    layout: text().notNull().default('standard'),
     deletedAt: timestamp('deleted_at', { withTimezone: true }),
     createdAt: nowTs(),
     updatedAt: nowTs(),
