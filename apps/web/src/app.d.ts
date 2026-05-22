@@ -7,7 +7,11 @@ declare global {
     interface Locals {
       requestId: string;
     }
-    // interface PageData {}
+    interface PageData {
+      /** Set by the public event page when the event is paid — the root
+       *  layout then drops vite.in branding (Basic `no_branding`). */
+      noBranding?: boolean;
+    }
     interface Platform {
       env?: {
         API_BASE_URL?: string;

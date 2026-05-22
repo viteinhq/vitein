@@ -1,5 +1,6 @@
 <script lang="ts">
   import { version } from '$app/environment';
+  import { page } from '$app/state';
   import { ArrowRight, Button, CookieConsent, LanguageSwitcher, Wordmark } from '$lib/design';
   import InstallPrompt from '$lib/pwa/InstallPrompt.svelte';
   import * as m from '$lib/paraglide/messages.js';
@@ -13,11 +14,16 @@
     data.consent.isConsentRegion && data.consent.choice === null,
   );
 
+  // A paid event's public page drops vite.in chrome — the Basic-tier
+  // `no_branding` feature. The event page's load sets `noBranding`.
+  const hideBranding = $derived(page.data.noBranding === true);
+
   const navLink = 'rounded-full px-3 py-2 text-sm font-medium text-ink/70 transition hover:text-ink';
 </script>
 
 <div class="flex min-h-screen flex-col">
-  <header class="border-b border-rule">
+  {#if !hideBranding}
+    <header class="border-b border-rule">
       <div class="mx-auto flex max-w-5xl items-center justify-between px-5 py-3.5 sm:px-6">
         <Wordmark href="/" size={23} />
         <nav class="flex items-center gap-1">
@@ -36,13 +42,27 @@
         </nav>
       </div>
     </header>
+  {/if}
 
     <main class="flex-1">
       {@render children()}
     </main>
 
-    <footer class="bg-ink text-paper">
-      <div class="mx-auto max-w-5xl px-6 py-12">
+    {#if hideBranding}
+      <!-- No-branding event page: a quiet legal-only footer — the GDPR
+           links must stay reachable, but the vite.in brand/marketing goes. -->
+      <footer class="border-t border-rule">
+        <div
+          class="mx-auto flex max-w-5xl flex-wrap justify-center gap-x-5 gap-y-1 px-6 py-5 text-center font-mono text-[10px] tracking-wide text-ink-muted"
+        >
+          <a href="/legal/impressum" class="hover:text-ink">{m.footer_impressum()}</a>
+          <a href="/legal/privacy" class="hover:text-ink">{m.footer_privacy()}</a>
+          <a href="/legal/terms" class="hover:text-ink">{m.footer_terms()}</a>
+        </div>
+      </footer>
+    {:else}
+      <footer class="bg-ink text-paper">
+        <div class="mx-auto max-w-5xl px-6 py-12">
         <div class="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
           <div class="max-w-xs">
             <Wordmark href="/" size={26} onDark class="text-paper" />
@@ -91,8 +111,9 @@
             {version}
           </span>
         </div>
-      </div>
-    </footer>
+        </div>
+      </footer>
+    {/if}
   </div>
 <CookieConsent initialShown={showCookieBanner} />
-<InstallPrompt suppressed={showCookieBanner} />
+<InstallPrompt suppressed={showCookieBanner || hideBranding} />

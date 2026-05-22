@@ -80,7 +80,7 @@
 </script>
 
 <svelte:head>
-  <title>{data.event.title} — vite.in</title>
+  <title>{data.event.title}{data.noBranding ? '' : ' — vite.in'}</title>
   <meta name="description" content={data.event.description ?? data.event.title} />
 </svelte:head>
 
@@ -93,7 +93,7 @@
 >
   {#if isLocked}
     <div class="rounded-card border border-rule bg-card p-7">
-      <Eyebrow num="✦" label="vite.in" />
+      <Eyebrow num="✦" label={data.noBranding ? data.event.title : 'vite.in'} />
       <h1 class="font-display mt-4 text-3xl font-bold tracking-[var(--tracking-display)]">
         {m.event_locked_heading()}
       </h1>
