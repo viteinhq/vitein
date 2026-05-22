@@ -5,11 +5,12 @@
     ArrowRight,
     Banner,
     Button,
+    DesignPreview,
     Eyebrow,
+    LayoutPicker,
     LocationField,
-    TemplatePicker,
-    TemplatePreview,
     TextField,
+    ThemePicker,
     TimezonePicker,
   } from '$lib/design';
   import { localizeError } from '$lib/errors';
@@ -19,8 +20,10 @@
   let { form }: PageProps = $props();
 
   let submitting = $state(false);
-  // Drives both the picker (`bind:value`) and the live preview's theme.
-  let templateId = $state('classic');
+  // The two orthogonal design axes (ADR 0011) — each bound to its own
+  // picker and reflected together in the live preview.
+  let themeId = $state('classic');
+  let layout = $state('standard');
   let copied = $state(false);
   let shareInput = $state<HTMLInputElement | null>(null);
   // Timezone is detected and hidden by default — most creators never need
@@ -289,18 +292,26 @@
       <!-- Style: a sticky companion beside the form on desktop, a section
            below the details on mobile. -->
       <div class="lg:sticky lg:top-8 lg:self-start">
-        <fieldset class="space-y-4">
+        <fieldset class="space-y-5">
           <legend class={legendClass}>{m.create_style_label()}</legend>
           <div class="flex justify-center">
-            <TemplatePreview
-              {templateId}
+            <DesignPreview
+              {themeId}
+              {layout}
               title={titleValue}
               description={descriptionValue}
               date={previewDate}
               location={locationValue}
             />
           </div>
-          <TemplatePicker bind:value={templateId} />
+          <div class="space-y-2">
+            <span class="block {legendClass}">{m.create_layout_label()}</span>
+            <LayoutPicker bind:value={layout} />
+          </div>
+          <div class="space-y-2">
+            <span class="block {legendClass}">{m.create_theme_label()}</span>
+            <ThemePicker bind:value={themeId} />
+          </div>
         </fieldset>
       </div>
     </form>

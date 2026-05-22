@@ -1,29 +1,42 @@
 import { describe, expect, it } from 'vitest';
-import { BASELINE_TEMPLATE_ID, createTemplateRegistry } from './index.js';
+import {
+  BASELINE_LAYOUT_ID,
+  BASELINE_THEME_ID,
+  createLayoutRegistry,
+  createThemeRegistry,
+} from './index.js';
 
-describe('TemplateRegistry', () => {
-  it('loads the five community templates', () => {
-    const registry = createTemplateRegistry();
-    expect(registry.list()).toHaveLength(5);
-    expect(registry.has(BASELINE_TEMPLATE_ID)).toBe(true);
+describe('theme registry', () => {
+  it('loads the four community themes', () => {
+    const registry = createThemeRegistry();
+    expect(registry.list()).toHaveLength(4);
+    expect(registry.has(BASELINE_THEME_ID)).toBe(true);
   });
 
-  it('resolves a known id to its template', () => {
-    expect(createTemplateRegistry().resolve('noir').id).toBe('noir');
+  it('resolves a known id to its theme', () => {
+    expect(createThemeRegistry().resolve('noir').id).toBe('noir');
   });
 
-  it('falls back to the baseline for an unknown id', () => {
+  it('falls back to the baseline theme for an unknown id', () => {
     // A premium id on a build without the premium package must degrade.
-    expect(createTemplateRegistry().resolve('does-not-exist').id).toBe(BASELINE_TEMPLATE_ID);
+    expect(createThemeRegistry().resolve('does-not-exist').id).toBe(BASELINE_THEME_ID);
   });
 
-  it('filters by tier', () => {
-    const registry = createTemplateRegistry();
-    expect(registry.list({ tier: 'free' })).toHaveLength(5);
+  it('ships only free community themes', () => {
+    const registry = createThemeRegistry();
+    expect(registry.list({ tier: 'free' })).toHaveLength(4);
     expect(registry.list({ tier: 'basic' })).toHaveLength(0);
   });
+});
 
-  it('exposes the ticket template on the ticket layout', () => {
-    expect(createTemplateRegistry().resolve('ticket').layout).toBe('ticket');
+describe('layout registry', () => {
+  it('loads the community layouts including ticket', () => {
+    const registry = createLayoutRegistry();
+    expect(registry.has(BASELINE_LAYOUT_ID)).toBe(true);
+    expect(registry.has('ticket')).toBe(true);
+  });
+
+  it('falls back to the baseline layout for an unknown id', () => {
+    expect(createLayoutRegistry().resolve('does-not-exist').id).toBe(BASELINE_LAYOUT_ID);
   });
 });

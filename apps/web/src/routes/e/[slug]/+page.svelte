@@ -3,7 +3,7 @@
   import { page } from '$app/state';
   import { ArrowRight, Banner, Button, Eyebrow, TextField } from '$lib/design';
   import { localizeError } from '$lib/errors';
-  import { templateLayout, templateStyle } from '$lib/templates';
+  import { themeStyle } from '$lib/themes';
   import * as m from '$lib/paraglide/messages.js';
   import StandardHero from './StandardHero.svelte';
   import TicketHero from './TicketHero.svelte';
@@ -75,8 +75,8 @@
   const isLocked = $derived(Boolean(data.event.locked));
   let pwdSubmitting = $state(false);
 
-  // The chosen template's layout decides which hero the event page renders.
-  const layout = $derived(templateLayout(data.event.templateId));
+  // The event's layout (ADR 0011) decides which hero the page renders.
+  const layout = $derived(data.event.layout);
 </script>
 
 <svelte:head>
@@ -89,7 +89,7 @@
      itself. The site header/footer stay on the default theme. -->
 <section
   class="mx-auto max-w-2xl bg-paper px-6 py-10 text-ink"
-  style={templateStyle(data.event.templateId)}
+  style={themeStyle(data.event.themeId)}
 >
   {#if isLocked}
     <div class="rounded-card border border-rule bg-card p-7">

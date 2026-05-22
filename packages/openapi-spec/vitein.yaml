@@ -1000,13 +1000,19 @@ components:
           type: string
           enum: [link_only, public]
           default: link_only
-        templateId:
+        themeId:
           type: string
           default: classic
           description: |
-            Theme template id (ADR 0009). Defaults to `classic`. Only free
-            templates may be set at creation; premium templates are chosen
+            Colour/type theme id (ADR 0011). Defaults to `classic`. Only
+            free themes may be set at creation; premium themes are chosen
             after upgrading.
+        layout:
+          type: string
+          default: standard
+          description: |
+            Layout id (ADR 0011) — the structural arrangement of the event
+            page. Defaults to `standard`. Independent of `themeId`.
 
     EventUpdateInput:
       type: object
@@ -1020,12 +1026,17 @@ components:
         locationText: { type: [string, 'null'], maxLength: 500 }
         defaultLocale: { type: string, minLength: 2, maxLength: 10 }
         visibility: { type: string, enum: [link_only, public] }
-        templateId:
+        themeId:
           type: string
           description: |
-            Theme template id (ADR 0009). Setting a premium template
+            Colour/type theme id (ADR 0011). Setting a premium theme
             requires the event to be on a paid tier — the server returns
             403 `event.feature_gated` otherwise.
+        layout:
+          type: string
+          description: |
+            Layout id (ADR 0011) — the structural arrangement of the event
+            page. Independent of `themeId`; layouts are free.
         password:
           type: [string, 'null']
           minLength: 4
@@ -1037,7 +1048,8 @@ components:
 
     EventPublic:
       type: object
-      required: [id, slug, title, startsAt, timezone, visibility, hasPassword, locked, templateId]
+      required:
+        [id, slug, title, startsAt, timezone, visibility, hasPassword, locked, themeId, layout]
       properties:
         id: { type: string, format: uuid }
         slug: { type: string }
@@ -1049,9 +1061,12 @@ components:
         locationText: { type: [string, 'null'] }
         visibility: { type: string, enum: [link_only, public] }
         defaultLocale: { type: string }
-        templateId:
+        themeId:
           type: string
-          description: Theme template id (ADR 0009); `classic` by default.
+          description: Colour/type theme id (ADR 0011); `classic` by default.
+        layout:
+          type: string
+          description: Layout id (ADR 0011); `standard` by default.
         tier:
           type: [string, 'null']
           enum: [basic, plus, null]

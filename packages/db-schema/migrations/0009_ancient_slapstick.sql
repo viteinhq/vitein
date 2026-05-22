@@ -1,0 +1,1 @@
+ALTER TABLE "events" ADD COLUMN "layout" text DEFAULT 'standard' NOT NULL;

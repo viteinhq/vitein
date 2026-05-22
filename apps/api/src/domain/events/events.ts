@@ -14,7 +14,8 @@ export interface EventCreateInput {
   creatorEmail: string;
   defaultLocale?: string | undefined;
   visibility?: 'link_only' | 'public' | undefined;
-  templateId?: string | undefined;
+  themeId?: string | undefined;
+  layout?: string | undefined;
 }
 
 export interface EventUpdateInput {
@@ -31,8 +32,10 @@ export interface EventUpdateInput {
    * `undefined` = leave as-is. Tier gating is enforced by the route.
    */
   password?: string | null | undefined;
-  /** Theme template id (ADR 0009). Tier gating is enforced by the route. */
-  templateId?: string | undefined;
+  /** Colour/type theme id (ADR 0011). Tier gating is enforced by the route. */
+  themeId?: string | undefined;
+  /** Layout id (ADR 0011). Validated by the route; no tier gate. */
+  layout?: string | undefined;
 }
 
 export interface CreatedEvent {
@@ -69,8 +72,10 @@ export async function createEvent(db: Db, input: EventCreateInput): Promise<Crea
           creatorEmail: input.creatorEmail,
           defaultLocale: input.defaultLocale ?? 'en',
           visibility: input.visibility ?? 'link_only',
-          // Omitted when undefined — the column defaults to 'classic'.
-          templateId: input.templateId,
+          // Omitted when undefined — the columns default to
+          // 'classic' / 'standard' (ADR 0011).
+          themeId: input.themeId,
+          layout: input.layout,
         })
         .returning();
 
@@ -152,7 +157,8 @@ export async function updateEvent(
     locationText: input.locationText,
     defaultLocale: input.defaultLocale,
     visibility: input.visibility,
-    templateId: input.templateId,
+    themeId: input.themeId,
+    layout: input.layout,
     passwordHash,
     updatedAt: new Date(),
   });

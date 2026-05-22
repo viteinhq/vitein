@@ -5,10 +5,11 @@
     Banner,
     Button,
     Heading,
+    LayoutPicker,
     Section,
-    TemplatePicker,
     Text,
     TextField,
+    ThemePicker,
     TimezonePicker,
   } from '$lib/design';
   import { localizeError } from '$lib/errors';
@@ -445,11 +446,18 @@
     </form>
   </Section>
 
-  <!-- Theme -->
+  <!-- Design — layout + colour theme (ADR 0011) -->
   <Section>
     <Heading level="panel">{m.manage_theme_heading()}</Heading>
-    <form method="POST" action="?/update&token={data.token}" use:enhance class="space-y-4">
-      <TemplatePicker value={data.event.templateId} />
+    <form method="POST" action="?/update&token={data.token}" use:enhance class="space-y-5">
+      <div class="space-y-2">
+        <Text tone="muted" size="sm">{m.create_layout_label()}</Text>
+        <LayoutPicker value={data.event.layout} />
+      </div>
+      <div class="space-y-2">
+        <Text tone="muted" size="sm">{m.create_theme_label()}</Text>
+        <ThemePicker value={data.event.themeId} />
+      </div>
       <Button type="submit">{m.manage_edit_submit()}</Button>
     </form>
   </Section>

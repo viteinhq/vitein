@@ -1,11 +1,11 @@
-import type { Template, TemplateTokens } from './types.js';
+import type { Theme, ThemeTokens } from './types.js';
 
 /**
- * The community templates share the app's self-hosted webfont stacks
+ * The community themes share the app's self-hosted webfont stacks
  * (mirrored from `apps/web/src/app.css`); only `serif` swaps its display
  * face for the serif stack.
  */
-const FONTS: TemplateTokens['fonts'] = {
+const FONTS: ThemeTokens['fonts'] = {
   display: "'Bricolage Grotesque Variable', system-ui, -apple-system, 'Segoe UI', sans-serif",
   sans: "'Geist Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji'",
   serif: "'Instrument Serif', 'Times New Roman', Georgia, serif",
@@ -13,22 +13,21 @@ const FONTS: TemplateTokens['fonts'] = {
 };
 
 /**
- * The four open community templates shipped with vite.in.
+ * The four open community themes shipped with vite.in (ADR 0011 — themes
+ * are the colour/type axis, orthogonal to layout).
  *
  * `classic` is the baseline: its tokens are byte-identical to
- * `apps/web/src/app.css`, so every existing event renders unchanged after
- * the `template_id` migration defaults them to it.
+ * `apps/web/src/app.css`, so every existing event renders unchanged.
  *
  * The `noir` / `paper` / `serif` palettes are a first pass — the exact hex
  * values and per-theme WCAG-AA contrast are open to design review.
  */
-export const communityTemplates: Template[] = [
+export const communityThemes: Theme[] = [
   {
     id: 'classic',
-    name: 'template_classic_name',
+    name: 'theme_classic_name',
     tier: 'free',
     origin: 'community',
-    layout: 'standard',
     tokens: {
       colors: {
         paper: '#f1eee7',
@@ -49,10 +48,9 @@ export const communityTemplates: Template[] = [
   },
   {
     id: 'noir',
-    name: 'template_noir_name',
+    name: 'theme_noir_name',
     tier: 'free',
     origin: 'community',
-    layout: 'standard',
     tokens: {
       colors: {
         paper: '#0a0a0a',
@@ -73,10 +71,9 @@ export const communityTemplates: Template[] = [
   },
   {
     id: 'paper',
-    name: 'template_paper_name',
+    name: 'theme_paper_name',
     tier: 'free',
     origin: 'community',
-    layout: 'standard',
     tokens: {
       colors: {
         paper: '#f3efe6',
@@ -97,10 +94,9 @@ export const communityTemplates: Template[] = [
   },
   {
     id: 'serif',
-    name: 'template_serif_name',
+    name: 'theme_serif_name',
     tier: 'free',
     origin: 'community',
-    layout: 'standard',
     tokens: {
       colors: {
         paper: '#faf6ee',
@@ -117,34 +113,6 @@ export const communityTemplates: Template[] = [
       fonts: { ...FONTS, display: FONTS.serif },
       radiusCard: '14px',
       displayTracking: 'normal',
-    },
-  },
-  {
-    // M2: the first non-`standard` layout. Renders the event hero as a
-    // two-panel ticket card. Deep-coral accent (white ink — the contrast
-    // pairing already proven by `paper`), on a cooler neutral base so it
-    // reads distinct from `paper` in the picker.
-    id: 'ticket',
-    name: 'template_ticket_name',
-    tier: 'free',
-    origin: 'community',
-    layout: 'ticket',
-    tokens: {
-      colors: {
-        paper: '#e7e3da',
-        paper2: '#dcd7ca',
-        ink: '#15120d',
-        inkMuted: 'rgba(21, 18, 13, 0.6)',
-        rule: 'rgba(21, 18, 13, 0.14)',
-        card: '#f8f6f0',
-        accent: '#bf3413',
-        accentInk: '#ffffff',
-        coral: '#ff5436',
-        coralDeep: '#bf3413',
-      },
-      fonts: FONTS,
-      radiusCard: '18px',
-      displayTracking: '-0.05em',
     },
   },
 ];

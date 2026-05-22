@@ -57,12 +57,18 @@ export type EventCreateInput = {
   defaultLocale?: string;
   visibility?: 'link_only' | 'public';
   /**
-   * Theme template id (ADR 0009). Defaults to `classic`. Only free
-   * templates may be set at creation; premium templates are chosen
+   * Colour/type theme id (ADR 0011). Defaults to `classic`. Only
+   * free themes may be set at creation; premium themes are chosen
    * after upgrading.
    *
    */
-  templateId?: string;
+  themeId?: string;
+  /**
+   * Layout id (ADR 0011) — the structural arrangement of the event
+   * page. Defaults to `standard`. Independent of `themeId`.
+   *
+   */
+  layout?: string;
 };
 
 /**
@@ -78,12 +84,18 @@ export type EventUpdateInput = {
   defaultLocale?: string;
   visibility?: 'link_only' | 'public';
   /**
-   * Theme template id (ADR 0009). Setting a premium template
+   * Colour/type theme id (ADR 0011). Setting a premium theme
    * requires the event to be on a paid tier — the server returns
    * 403 `event.feature_gated` otherwise.
    *
    */
-  templateId?: string;
+  themeId?: string;
+  /**
+   * Layout id (ADR 0011) — the structural arrangement of the event
+   * page. Independent of `themeId`; layouts are free.
+   *
+   */
+  layout?: string;
   /**
    * A.6b.2 password protection. `null` clears; a string sets/replaces.
    * Setting requires the event to be on the Plus tier — the server
@@ -105,9 +117,13 @@ export type EventPublic = {
   visibility: 'link_only' | 'public';
   defaultLocale?: string;
   /**
-   * Theme template id (ADR 0009); `classic` by default.
+   * Colour/type theme id (ADR 0011); `classic` by default.
    */
-  templateId: string;
+  themeId: string;
+  /**
+   * Layout id (ADR 0011); `standard` by default.
+   */
+  layout: string;
   /**
    * Premium tier when the event is paid, otherwise `null`. Used by
    * guest-facing UIs to light up per-tier affordances (named
