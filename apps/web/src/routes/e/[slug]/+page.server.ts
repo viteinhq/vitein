@@ -30,7 +30,8 @@ export const load: PageServerLoad = async ({ params, platform, cookies }) => {
   const items = media.data?.items ?? [];
   const cover = items.find((m) => m.kind === 'cover' && m.url) ?? null;
   const gallery = items.filter((m) => m.kind === 'gallery' && m.url);
-  return { event: data, cover, gallery };
+  // Paid tiers include `no_branding` — the layout drops vite.in chrome.
+  return { event: data, cover, gallery, noBranding: Boolean(data.tier) };
 };
 
 export const actions: Actions = {
