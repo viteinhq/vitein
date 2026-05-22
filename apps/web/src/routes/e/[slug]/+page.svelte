@@ -5,8 +5,8 @@
   import { localizeError } from '$lib/errors';
   import { themeStyle } from '$lib/themes';
   import * as m from '$lib/paraglide/messages.js';
-  import StandardHero from './StandardHero.svelte';
-  import TicketHero from './TicketHero.svelte';
+  import StandardHero from '$lib/event/StandardHero.svelte';
+  import TicketHero from '$lib/event/TicketHero.svelte';
   import type { PageProps } from './$types';
 
   let { data, form }: PageProps = $props();
