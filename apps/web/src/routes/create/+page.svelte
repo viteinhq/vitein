@@ -299,8 +299,8 @@
               {themeId}
               {layout}
               title={titleValue}
-              description={descriptionValue}
               date={previewDate}
+              timezone={timezoneValue}
               location={locationValue}
             />
           </div>
