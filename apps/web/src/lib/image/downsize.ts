@@ -27,10 +27,7 @@ export interface DownsizeOptions {
   quality?: number;
 }
 
-export async function downsizeImageFile(
-  file: File,
-  options: DownsizeOptions = {},
-): Promise<File> {
+export async function downsizeImageFile(file: File, options: DownsizeOptions = {}): Promise<File> {
   const maxEdge = options.maxEdge ?? DEFAULT_MAX_EDGE;
   const quality = options.quality ?? DEFAULT_QUALITY;
 
