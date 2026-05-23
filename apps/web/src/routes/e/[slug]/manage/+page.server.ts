@@ -1,4 +1,5 @@
 import { error as httpError, fail, redirect } from '@sveltejs/kit';
+import QRCode from 'qrcode';
 import {
   createCheckout,
   deleteEvent,
@@ -97,6 +98,20 @@ export const load: PageServerLoad = async ({ params, url, platform, request }) =
     throw redirect(303, '/recover');
   }
 
+  // Save the Date affordances are Plus-only. Pre-compute the URL + QR SVG
+  // server-side: keeps `qrcode` off the client bundle, and the
+  // shareable URL needs the absolute origin which the server already has.
+  const stdUrl =
+    manage.data.tier === 'plus' ? `${url.origin}/e/${manage.data.slug}/save-the-date` : null;
+  const stdQrSvg = stdUrl
+    ? await QRCode.toString(stdUrl, {
+        type: 'svg',
+        margin: 1,
+        color: { dark: '#0a0a0a', light: '#ffffff' },
+        width: 240,
+      })
+    : null;
+
   return {
     token,
     event: manage.data,
@@ -105,6 +120,8 @@ export const load: PageServerLoad = async ({ params, url, platform, request }) =
     media: media.data?.items ?? [],
     announcements: announcements.data?.items ?? [],
     suggestedCurrency: suggestCurrency(request),
+    stdUrl,
+    stdQrSvg,
   };
 };
 
