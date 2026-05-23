@@ -253,6 +253,7 @@
   "err_manage_no_changes": "जतन करण्यासाठी कोणतेही बदल नाहीत.",
   "err_manage_save_failed": "बदल जतन करता आले नाहीत.",
   "err_manage_slug_taken": "That URL is already taken — please choose another.",
+  "err_manage_slug_invalid": "URL can only use lowercase letters, numbers and hyphens (3 to 64 characters, no leading or trailing hyphen).",
   "err_manage_reminder_failed": "स्मरणपत्र रांगेत ठेवता आले नाही.",
   "err_manage_pick_image": "कृपया एक प्रतिमा निवडा.",
   "err_manage_image_too_large": "प्रतिमा जास्तीत जास्त १० MiB असावी.",

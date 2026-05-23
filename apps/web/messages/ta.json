@@ -253,6 +253,7 @@
   "err_manage_no_changes": "சேமிக்க மாற்றங்கள் இல்லை.",
   "err_manage_save_failed": "மாற்றங்களைச் சேமிக்க முடியவில்லை.",
   "err_manage_slug_taken": "That URL is already taken — please choose another.",
+  "err_manage_slug_invalid": "URL can only use lowercase letters, numbers and hyphens (3 to 64 characters, no leading or trailing hyphen).",
   "err_manage_reminder_failed": "நினைவூட்டலை வரிசையில் சேர்க்க முடியவில்லை.",
   "err_manage_pick_image": "ஒரு படத்தைத் தேர்வு செய்யுங்கள்.",
   "err_manage_image_too_large": "படம் அதிகபட்சம் 10 MiB ஆக இருக்க வேண்டும்.",

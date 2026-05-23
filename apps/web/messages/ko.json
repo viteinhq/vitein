@@ -253,6 +253,7 @@
   "err_manage_no_changes": "저장할 변경 사항이 없습니다.",
   "err_manage_save_failed": "변경 사항을 저장할 수 없습니다.",
   "err_manage_slug_taken": "That URL is already taken — please choose another.",
+  "err_manage_slug_invalid": "URL can only use lowercase letters, numbers and hyphens (3 to 64 characters, no leading or trailing hyphen).",
   "err_manage_reminder_failed": "알림을 대기열에 추가할 수 없습니다.",
   "err_manage_pick_image": "이미지를 선택하세요.",
   "err_manage_image_too_large": "이미지는 최대 10 MiB입니다.",

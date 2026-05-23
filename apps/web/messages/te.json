@@ -253,6 +253,7 @@
   "err_manage_no_changes": "సేవ్ చేయడానికి మార్పులు లేవు.",
   "err_manage_save_failed": "మార్పులను సేవ్ చేయలేకపోయాము.",
   "err_manage_slug_taken": "That URL is already taken — please choose another.",
+  "err_manage_slug_invalid": "URL can only use lowercase letters, numbers and hyphens (3 to 64 characters, no leading or trailing hyphen).",
   "err_manage_reminder_failed": "రిమైండర్‌ను క్యూలో పెట్టలేకపోయాము.",
   "err_manage_pick_image": "దయచేసి ఒక చిత్రాన్ని ఎంచుకోండి.",
   "err_manage_image_too_large": "చిత్రం గరిష్టంగా 10 MiB ఉండాలి.",

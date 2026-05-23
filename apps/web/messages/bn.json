@@ -253,6 +253,7 @@
   "err_manage_no_changes": "সংরক্ষণের জন্য কোনো পরিবর্তন নেই।",
   "err_manage_save_failed": "পরিবর্তন সংরক্ষণ করা যায়নি।",
   "err_manage_slug_taken": "That URL is already taken — please choose another.",
+  "err_manage_slug_invalid": "URL can only use lowercase letters, numbers and hyphens (3 to 64 characters, no leading or trailing hyphen).",
   "err_manage_reminder_failed": "অনুস্মারক সারিবদ্ধ করা যায়নি।",
   "err_manage_pick_image": "অনুগ্রহ করে একটি ছবি বাছুন।",
   "err_manage_image_too_large": "ছবি সর্বোচ্চ ১০ MiB হতে হবে।",

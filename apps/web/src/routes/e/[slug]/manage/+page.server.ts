@@ -138,7 +138,12 @@ export const actions: Actions = {
     const locationText = String(form.get('locationText') ?? '').trim();
     const themeId = String(form.get('themeId') ?? '').trim();
     const layout = String(form.get('layout') ?? '').trim();
-    const slug = String(form.get('slug') ?? '').trim();
+    // Slugs are case-insensitive on the server; coerce to lowercase here so
+    // a stray uppercase from autocapitalising mobile keyboards doesn't bounce
+    // off the API's regex (which is lower-only by design).
+    const slug = String(form.get('slug') ?? '')
+      .trim()
+      .toLowerCase();
 
     // Naive datetime-local values are interpreted in the event's timezone
     // (the submitted `timezone` field), not the Worker's UTC runtime.
@@ -172,6 +177,12 @@ export const actions: Actions = {
 
     if (error) {
       if (response?.status === 409) return fail(409, { [errorKey]: 'manage_slug_taken' });
+      // A 400 on a slug-only submission is the API's slug regex/length
+      // rejecting the input. Surface the actionable message instead of
+      // the generic "save failed" so the user knows what to change.
+      if (response?.status === 400 && scope === 'slug') {
+        return fail(400, { [errorKey]: 'manage_slug_invalid' });
+      }
       return fail(response?.status ?? 500, {
         [errorKey]: 'manage_save_failed',
         updateStatus: response?.status ?? 500,

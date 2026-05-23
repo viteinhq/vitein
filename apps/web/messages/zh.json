@@ -253,6 +253,7 @@
   "err_manage_no_changes": "没有要保存的更改。",
   "err_manage_save_failed": "无法保存更改。",
   "err_manage_slug_taken": "That URL is already taken — please choose another.",
+  "err_manage_slug_invalid": "URL can only use lowercase letters, numbers and hyphens (3 to 64 characters, no leading or trailing hyphen).",
   "err_manage_reminder_failed": "无法将提醒加入队列。",
   "err_manage_pick_image": "请选择一张图片。",
   "err_manage_image_too_large": "图片最大为 10 MiB。",

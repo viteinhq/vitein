@@ -77,6 +77,19 @@
     data.event.endsAt ? utcToZonedWallTime(data.event.endsAt, data.event.timezone) : '',
   );
 
+  // Live-sanitise the slug input: lowercase everything and strip out
+  // anything outside [a-z0-9-]. Mobile keyboards autocapitalise the
+  // first character by default; the corresponding `autocapitalize="off"`
+  // hint on the input handles most of it, but a paste or a misbehaving
+  // keyboard can still slip uppercase through, so we coerce on input.
+  let slugValue = $state(data.event.slug);
+  function sanitiseSlug(e: Event) {
+    const target = e.currentTarget as HTMLInputElement;
+    const cleaned = target.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
+    if (cleaned !== target.value) target.value = cleaned;
+    slugValue = cleaned;
+  }
+
   // Focusing the empty end field suggests a 2-hour event (start + 2h).
   function suggestEndsAt() {
     if (!editEndsAt) editEndsAt = addHoursToWall(editStartsAt, 2);
@@ -513,12 +526,17 @@
         <input type="hidden" name="formScope" value="slug" />
         <TextField
           name="slug"
-          value={data.event.slug}
+          bind:value={slugValue}
+          oninput={sanitiseSlug}
           label={m.manage_event_url_label()}
           hint={m.manage_event_url_hint()}
           pattern="[a-z0-9]([a-z0-9-]*[a-z0-9])?"
           minlength={3}
           maxlength={64}
+          autocapitalize="off"
+          autocorrect="off"
+          spellcheck="false"
+          inputmode="url"
           required
         />
         <Button type="submit">{m.manage_edit_submit()}</Button>

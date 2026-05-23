@@ -253,6 +253,7 @@
   "err_manage_no_changes": "ਸੰਭਾਲਣ ਲਈ ਕੋਈ ਤਬਦੀਲੀਆਂ ਨਹੀਂ.",
   "err_manage_save_failed": "ਤਬਦੀਲੀਆਂ ਨਹੀਂ ਸੰਭਾਲੀਆਂ ਜਾ ਸਕੀਆਂ.",
   "err_manage_slug_taken": "That URL is already taken — please choose another.",
+  "err_manage_slug_invalid": "URL can only use lowercase letters, numbers and hyphens (3 to 64 characters, no leading or trailing hyphen).",
   "err_manage_reminder_failed": "ਯਾਦ-ਪੱਤਰ ਕਤਾਰ ਵਿੱਚ ਨਹੀਂ ਰੱਖਿਆ ਜਾ ਸਕਿਆ.",
   "err_manage_pick_image": "ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ ਤਸਵੀਰ ਚੁਣੋ.",
   "err_manage_image_too_large": "ਤਸਵੀਰ ਵੱਧ ਤੋਂ ਵੱਧ 10 MiB ਹੋਣੀ ਚਾਹੀਦੀ ਹੈ.",

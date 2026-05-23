@@ -253,6 +253,7 @@
   "err_manage_no_changes": "Brak zmian do zapisania.",
   "err_manage_save_failed": "Nie udało się zapisać zmian.",
   "err_manage_slug_taken": "That URL is already taken — please choose another.",
+  "err_manage_slug_invalid": "URL can only use lowercase letters, numbers and hyphens (3 to 64 characters, no leading or trailing hyphen).",
   "err_manage_reminder_failed": "Nie udało się dodać przypomnienia do kolejki.",
   "err_manage_pick_image": "Wybierz zdjęcie.",
   "err_manage_image_too_large": "Zdjęcie może mieć maksymalnie 10 MiB.",

@@ -253,6 +253,7 @@
   "err_manage_no_changes": "સાચવવા માટે કોઈ ફેરફાર નથી.",
   "err_manage_save_failed": "ફેરફારો સાચવી શકાયા નહીં.",
   "err_manage_slug_taken": "That URL is already taken — please choose another.",
+  "err_manage_slug_invalid": "URL can only use lowercase letters, numbers and hyphens (3 to 64 characters, no leading or trailing hyphen).",
   "err_manage_reminder_failed": "રિમાઇન્ડર કતારમાં મૂકી શકાયું નહીં.",
   "err_manage_pick_image": "કૃપા કરીને એક છબી પસંદ કરો.",
   "err_manage_image_too_large": "છબી મહત્તમ ૧૦ MiB હોવી જોઈએ.",

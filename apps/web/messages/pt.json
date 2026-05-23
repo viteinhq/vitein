@@ -253,6 +253,7 @@
   "err_manage_no_changes": "Sem alterações para salvar.",
   "err_manage_save_failed": "Não foi possível salvar as alterações.",
   "err_manage_slug_taken": "That URL is already taken — please choose another.",
+  "err_manage_slug_invalid": "URL can only use lowercase letters, numbers and hyphens (3 to 64 characters, no leading or trailing hyphen).",
   "err_manage_reminder_failed": "Não foi possível enfileirar o lembrete.",
   "err_manage_pick_image": "Escolha uma imagem.",
   "err_manage_image_too_large": "A imagem deve ter no máximo 10 MiB.",

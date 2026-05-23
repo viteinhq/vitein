@@ -253,6 +253,7 @@
   "err_manage_no_changes": "Nessuna modifica da salvare.",
   "err_manage_save_failed": "Impossibile salvare le modifiche.",
   "err_manage_slug_taken": "That URL is already taken — please choose another.",
+  "err_manage_slug_invalid": "URL can only use lowercase letters, numbers and hyphens (3 to 64 characters, no leading or trailing hyphen).",
   "err_manage_reminder_failed": "Impossibile mettere il promemoria in coda.",
   "err_manage_pick_image": "Scegli un'immagine.",
   "err_manage_image_too_large": "L'immagine deve essere al massimo 10 MiB.",
