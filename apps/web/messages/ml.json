@@ -253,6 +253,7 @@
   "err_manage_no_changes": "സംരക്ഷിക്കാൻ മാറ്റങ്ങളൊന്നുമില്ല.",
   "err_manage_save_failed": "മാറ്റങ്ങൾ സംരക്ഷിക്കാൻ കഴിഞ്ഞില്ല.",
   "err_manage_slug_taken": "That URL is already taken — please choose another.",
+  "err_manage_slug_invalid": "URL can only use lowercase letters, numbers and hyphens (3 to 64 characters, no leading or trailing hyphen).",
   "err_manage_reminder_failed": "ഓർമ്മപ്പെടുത്തൽ ക്യൂവിൽ ഇടാൻ കഴിഞ്ഞില്ല.",
   "err_manage_pick_image": "ദയവായി ഒരു ചിത്രം തിരഞ്ഞെടുക്കുക.",
   "err_manage_image_too_large": "ചിത്രം പരമാവധി 10 MiB ആയിരിക്കണം.",

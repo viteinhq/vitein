@@ -253,6 +253,7 @@
   "err_manage_no_changes": "保存する変更がありません。",
   "err_manage_save_failed": "変更を保存できませんでした。",
   "err_manage_slug_taken": "That URL is already taken — please choose another.",
+  "err_manage_slug_invalid": "URL can only use lowercase letters, numbers and hyphens (3 to 64 characters, no leading or trailing hyphen).",
   "err_manage_reminder_failed": "リマインダーをキューに追加できませんでした。",
   "err_manage_pick_image": "画像を選択してください。",
   "err_manage_image_too_large": "画像は最大10 MiB です。",

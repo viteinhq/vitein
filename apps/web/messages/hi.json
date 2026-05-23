@@ -253,6 +253,7 @@
   "err_manage_no_changes": "सहेजने के लिए कोई परिवर्तन नहीं।",
   "err_manage_save_failed": "परिवर्तन सहेजे नहीं जा सके।",
   "err_manage_slug_taken": "That URL is already taken — please choose another.",
+  "err_manage_slug_invalid": "URL can only use lowercase letters, numbers and hyphens (3 to 64 characters, no leading or trailing hyphen).",
   "err_manage_reminder_failed": "अनुस्मारक क़तार में नहीं लगाया जा सका।",
   "err_manage_pick_image": "कृपया एक छवि चुनें।",
   "err_manage_image_too_large": "छवि अधिकतम 10 MiB होनी चाहिए।",
