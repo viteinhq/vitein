@@ -9,6 +9,9 @@ import type {
   ClaimEventsData,
   ClaimEventsErrors,
   ClaimEventsResponses,
+  CreateAdminGrantData,
+  CreateAdminGrantErrors,
+  CreateAdminGrantResponses,
   CreateCheckoutData,
   CreateCheckoutErrors,
   CreateCheckoutResponses,
@@ -30,6 +33,9 @@ import type {
   ExportMeData,
   ExportMeErrors,
   ExportMeResponses,
+  GetAdminStatsData,
+  GetAdminStatsErrors,
+  GetAdminStatsResponses,
   GetEventBySlugData,
   GetEventBySlugErrors,
   GetEventBySlugResponses,
@@ -59,6 +65,9 @@ import type {
   GetVapidKeyData,
   GetVapidKeyErrors,
   GetVapidKeyResponses,
+  ListAdminGrantsData,
+  ListAdminGrantsErrors,
+  ListAdminGrantsResponses,
   ListAnnouncementsData,
   ListAnnouncementsErrors,
   ListAnnouncementsResponses,
@@ -80,6 +89,9 @@ import type {
   RegisterPushSubscriptionData,
   RegisterPushSubscriptionErrors,
   RegisterPushSubscriptionResponses,
+  RevokeAdminGrantData,
+  RevokeAdminGrantErrors,
+  RevokeAdminGrantResponses,
   SendAnnouncementData,
   SendAnnouncementErrors,
   SendAnnouncementResponses,
@@ -665,6 +677,69 @@ export const registerPushSubscription = <ThrowOnError extends boolean = false>(
       ...options.headers,
     },
   });
+
+/**
+ * Aggregate platform stats (admin only)
+ *
+ * Returns counts of users, events (by tier), RSVPs, recent payments,
+ * and active grants. Gated by the `ADMIN_EMAILS` allowlist.
+ *
+ */
+export const getAdminStats = <ThrowOnError extends boolean = false>(
+  options?: Options<GetAdminStatsData, ThrowOnError>,
+) =>
+  (options?.client ?? client).get<GetAdminStatsResponses, GetAdminStatsErrors, ThrowOnError>({
+    url: '/v1/admin/stats',
+    ...options,
+  });
+
+/**
+ * List premium email grants (admin only)
+ */
+export const listAdminGrants = <ThrowOnError extends boolean = false>(
+  options?: Options<ListAdminGrantsData, ThrowOnError>,
+) =>
+  (options?.client ?? client).get<ListAdminGrantsResponses, ListAdminGrantsErrors, ThrowOnError>({
+    url: '/v1/admin/grants',
+    ...options,
+  });
+
+/**
+ * Grant complimentary premium to an email (admin only)
+ *
+ * Adds an email to the premium grant list. Subsequent events created
+ * by that email address are auto-marked paid at the configured tier
+ * (default `plus`). Existing events are not retroactively upgraded.
+ *
+ */
+export const createAdminGrant = <ThrowOnError extends boolean = false>(
+  options: Options<CreateAdminGrantData, ThrowOnError>,
+) =>
+  (options.client ?? client).post<CreateAdminGrantResponses, CreateAdminGrantErrors, ThrowOnError>({
+    url: '/v1/admin/grants',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+/**
+ * Revoke an existing grant (admin only)
+ *
+ * Idempotent: revoking an already-revoked grant succeeds. Revocation
+ * stops the grant from applying to new events; events that were
+ * already upgraded by this grant remain paid.
+ *
+ */
+export const revokeAdminGrant = <ThrowOnError extends boolean = false>(
+  options: Options<RevokeAdminGrantData, ThrowOnError>,
+) =>
+  (options.client ?? client).delete<
+    RevokeAdminGrantResponses,
+    RevokeAdminGrantErrors,
+    ThrowOnError
+  >({ url: '/v1/admin/grants/{id}', ...options });
 
 /**
  * Re-bind a Web Push subscription after the browser rotates it

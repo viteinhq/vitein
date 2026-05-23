@@ -36,6 +36,8 @@ tags:
     description: Authentication — Better-Auth endpoints and event claim.
   - name: push
     description: Web Push notification subscriptions (PWA).
+  - name: admin
+    description: Operator-only endpoints (allowlisted via ADMIN_EMAILS).
 
 paths:
   /v1/health:
@@ -884,6 +886,122 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
 
+  /v1/admin/stats:
+    get:
+      operationId: getAdminStats
+      summary: Aggregate platform stats (admin only)
+      description: |
+        Returns counts of users, events (by tier), RSVPs, recent payments,
+        and active grants. Gated by the `ADMIN_EMAILS` allowlist.
+      tags: [admin]
+      responses:
+        '200':
+          description: Stats payload.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AdminStats' }
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Caller is not on the admin allowlist.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  /v1/admin/grants:
+    get:
+      operationId: listAdminGrants
+      summary: List premium email grants (admin only)
+      tags: [admin]
+      responses:
+        '200':
+          description: All grants, newest first (including revoked).
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [items]
+                properties:
+                  items:
+                    type: array
+                    items: { $ref: '#/components/schemas/PremiumEmailGrant' }
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Caller is not on the admin allowlist.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    post:
+      operationId: createAdminGrant
+      summary: Grant complimentary premium to an email (admin only)
+      description: |
+        Adds an email to the premium grant list. Subsequent events created
+        by that email address are auto-marked paid at the configured tier
+        (default `plus`). Existing events are not retroactively upgraded.
+      tags: [admin]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email: { type: string, format: email }
+                tier:
+                  type: string
+                  enum: [basic, plus]
+                  default: plus
+                note: { type: [string, 'null'], maxLength: 500 }
+      responses:
+        '201':
+          description: Grant created.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PremiumEmailGrant' }
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Caller is not on the admin allowlist.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '409':
+          description: An active grant for this email already exists.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  /v1/admin/grants/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema: { type: string, format: uuid }
+    delete:
+      operationId: revokeAdminGrant
+      summary: Revoke an existing grant (admin only)
+      description: |
+        Idempotent: revoking an already-revoked grant succeeds. Revocation
+        stops the grant from applying to new events; events that were
+        already upgraded by this grant remain paid.
+      tags: [admin]
+      responses:
+        '204':
+          description: Grant revoked (or was already revoked).
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Caller is not on the admin allowlist.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          $ref: '#/components/responses/NotFound'
+
   /v1/push/subscriptions/refresh:
     post:
       operationId: refreshPushSubscription
@@ -1377,6 +1495,56 @@ components:
           type: object
           additionalProperties: true
         createdAt: { type: string, format: date-time }
+
+    PremiumEmailGrant:
+      type: object
+      required: [id, email, tier, createdAt]
+      properties:
+        id: { type: string, format: uuid }
+        email: { type: string, format: email }
+        tier: { type: string, enum: [basic, plus] }
+        note: { type: [string, 'null'] }
+        grantedByUserId: { type: [string, 'null'], format: uuid }
+        createdAt: { type: string, format: date-time }
+        revokedAt: { type: [string, 'null'], format: date-time }
+
+    AdminStats:
+      type: object
+      required: [users, events, rsvps, payments, grants]
+      properties:
+        users:
+          type: object
+          required: [total, last30d]
+          properties:
+            total: { type: integer }
+            last30d: { type: integer }
+        events:
+          type: object
+          required: [total, paid, basic, plus, free, last30d]
+          properties:
+            total: { type: integer }
+            paid: { type: integer }
+            basic: { type: integer }
+            plus: { type: integer }
+            free: { type: integer }
+            last30d: { type: integer }
+        rsvps:
+          type: object
+          required: [total, plusOnes]
+          properties:
+            total: { type: integer }
+            plusOnes: { type: integer }
+        payments:
+          type: object
+          required: [last30dCount]
+          properties:
+            last30dCount: { type: integer }
+        grants:
+          type: object
+          required: [active, revoked]
+          properties:
+            active: { type: integer }
+            revoked: { type: integer }
 
     Error:
       type: object

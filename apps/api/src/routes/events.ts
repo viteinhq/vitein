@@ -1,6 +1,7 @@
 import { zValidator } from '@hono/zod-validator';
 import { Hono, type Context } from 'hono';
 import { z } from 'zod';
+import { applyGrantIfMatch } from '../domain/admin/grants.js';
 import {
   createEvent,
   getEventBySlug,
@@ -98,11 +99,24 @@ eventsRoute.post(
     if (input.layout !== undefined) {
       assertLayoutAllowed(input.layout);
     }
-    const { event, creatorToken } = await createEvent(db(c), {
+    const { event: created, creatorToken } = await createEvent(db(c), {
       ...input,
       startsAt: new Date(input.startsAt),
       endsAt: input.endsAt ? new Date(input.endsAt) : null,
     });
+
+    // If the creator's email is on an active admin grant, upgrade the
+    // freshly-created event in place before we serialize it. Failures
+    // here must not break event creation — log and continue.
+    let event = created;
+    try {
+      const applied = await applyGrantIfMatch(db(c), created);
+      if (applied) {
+        event = applied.event;
+      }
+    } catch (err) {
+      c.var.logger.warn('grant_apply_failed', { err: err as Error });
+    }
 
     const manageUrl = `${c.env.WEB_BASE_URL ?? 'https://vite.in'}/e/${event.slug}/manage?token=${creatorToken}`;
     const { sent } = await sendCreatorMagicLink(
