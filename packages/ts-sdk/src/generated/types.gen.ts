@@ -393,6 +393,42 @@ export type AuditEntry = {
   createdAt: string;
 };
 
+export type PremiumEmailGrant = {
+  id: string;
+  email: string;
+  tier: 'basic' | 'plus';
+  note?: string | null;
+  grantedByUserId?: string | null;
+  createdAt: string;
+  revokedAt?: string | null;
+};
+
+export type AdminStats = {
+  users: {
+    total: number;
+    last30d: number;
+  };
+  events: {
+    total: number;
+    paid: number;
+    basic: number;
+    plus: number;
+    free: number;
+    last30d: number;
+  };
+  rsvps: {
+    total: number;
+    plusOnes: number;
+  };
+  payments: {
+    last30dCount: number;
+  };
+  grants: {
+    active: number;
+    revoked: number;
+  };
+};
+
 export type Error = {
   error: {
     /**
@@ -1675,6 +1711,142 @@ export type RegisterPushSubscriptionResponses = {
 
 export type RegisterPushSubscriptionResponse =
   RegisterPushSubscriptionResponses[keyof RegisterPushSubscriptionResponses];
+
+export type GetAdminStatsData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/v1/admin/stats';
+};
+
+export type GetAdminStatsErrors = {
+  /**
+   * Missing or invalid creator token.
+   */
+  401: Error;
+  /**
+   * Caller is not on the admin allowlist.
+   */
+  403: Error;
+};
+
+export type GetAdminStatsError = GetAdminStatsErrors[keyof GetAdminStatsErrors];
+
+export type GetAdminStatsResponses = {
+  /**
+   * Stats payload.
+   */
+  200: AdminStats;
+};
+
+export type GetAdminStatsResponse = GetAdminStatsResponses[keyof GetAdminStatsResponses];
+
+export type ListAdminGrantsData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/v1/admin/grants';
+};
+
+export type ListAdminGrantsErrors = {
+  /**
+   * Missing or invalid creator token.
+   */
+  401: Error;
+  /**
+   * Caller is not on the admin allowlist.
+   */
+  403: Error;
+};
+
+export type ListAdminGrantsError = ListAdminGrantsErrors[keyof ListAdminGrantsErrors];
+
+export type ListAdminGrantsResponses = {
+  /**
+   * All grants, newest first (including revoked).
+   */
+  200: {
+    items: Array<PremiumEmailGrant>;
+  };
+};
+
+export type ListAdminGrantsResponse = ListAdminGrantsResponses[keyof ListAdminGrantsResponses];
+
+export type CreateAdminGrantData = {
+  body: {
+    email: string;
+    tier?: 'basic' | 'plus';
+    note?: string | null;
+  };
+  path?: never;
+  query?: never;
+  url: '/v1/admin/grants';
+};
+
+export type CreateAdminGrantErrors = {
+  /**
+   * Request body or query parameters failed validation.
+   */
+  400: Error;
+  /**
+   * Missing or invalid creator token.
+   */
+  401: Error;
+  /**
+   * Caller is not on the admin allowlist.
+   */
+  403: Error;
+  /**
+   * An active grant for this email already exists.
+   */
+  409: Error;
+};
+
+export type CreateAdminGrantError = CreateAdminGrantErrors[keyof CreateAdminGrantErrors];
+
+export type CreateAdminGrantResponses = {
+  /**
+   * Grant created.
+   */
+  201: PremiumEmailGrant;
+};
+
+export type CreateAdminGrantResponse = CreateAdminGrantResponses[keyof CreateAdminGrantResponses];
+
+export type RevokeAdminGrantData = {
+  body?: never;
+  path: {
+    id: string;
+  };
+  query?: never;
+  url: '/v1/admin/grants/{id}';
+};
+
+export type RevokeAdminGrantErrors = {
+  /**
+   * Missing or invalid creator token.
+   */
+  401: Error;
+  /**
+   * Caller is not on the admin allowlist.
+   */
+  403: Error;
+  /**
+   * Resource not found.
+   */
+  404: Error;
+};
+
+export type RevokeAdminGrantError = RevokeAdminGrantErrors[keyof RevokeAdminGrantErrors];
+
+export type RevokeAdminGrantResponses = {
+  /**
+   * Grant revoked (or was already revoked).
+   */
+  204: void;
+};
+
+export type RevokeAdminGrantResponse = RevokeAdminGrantResponses[keyof RevokeAdminGrantResponses];
 
 export type RefreshPushSubscriptionData = {
   body: PushSubscriptionRefreshInput;

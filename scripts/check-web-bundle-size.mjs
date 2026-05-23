@@ -35,8 +35,12 @@ const CLIENT_DIR = path.join(REPO_ROOT, 'apps/web/.svelte-kit/output/client/_app
 // its own language — but this check sums every file, so the total
 // budget stays put. Per-page transfer is what users feel and is gated
 // by Lighthouse separately.
+//
+// Recalibrated 2026-05-23: +8 KB gz headroom for the staff-only
+// `/admin` routes. These routes are not in any user-facing flow, but
+// the script sums every emitted client chunk regardless of route.
 const RAW_TOTAL_BUDGET = 1100 * 1024; // 1.1 MB
-const GZ_TOTAL_BUDGET = 320 * 1024; // 320 KB
+const GZ_TOTAL_BUDGET = 328 * 1024; // 328 KB
 
 const fmt = (n) => (n >= 1024 ? `${(n / 1024).toFixed(1)} KB` : `${n} B`);
 

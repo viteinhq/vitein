@@ -34,6 +34,13 @@ export interface Env {
    */
   AUTH_SECRET?: string;
 
+  /**
+   * Comma-separated allowlist of email addresses that may access the
+   * admin dashboard (`/v1/admin/*`). Case-insensitive. Empty / unset
+   * disables admin access entirely.
+   */
+  ADMIN_EMAILS?: string;
+
   RATE_LIMITER?: DurableObjectNamespace;
   R2_MEDIA?: R2Bucket;
   /** Base URL where R2 objects become publicly readable, e.g. https://media-staging.vite.in */
@@ -87,4 +94,6 @@ export type AppVariables = {
   logger: Logger;
   auth: AuthContext;
   dbHolder: DbHolder;
+  /** Set by `requireAdmin`: the admin's resolved (lowercased) email. */
+  adminEmail?: string;
 };

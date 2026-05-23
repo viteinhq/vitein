@@ -434,6 +434,35 @@ export const stripeEvents = pgTable('stripe_events', {
 });
 
 /**
+ * Premium email grants — admin-allowlisted email addresses that get a
+ * complimentary premium tier on every event they create. Lookup at
+ * event-creation time is by lower(email) on the (non-revoked) index;
+ * revoked grants stop applying immediately but stay around as a record.
+ * The partial unique index lets the same address be granted again after
+ * a revocation without breaking history.
+ */
+export const premiumEmailGrants = pgTable(
+  'premium_email_grants',
+  {
+    id: uuid().primaryKey().$defaultFn(genId),
+    email: text().notNull(),
+    tier: text().notNull().default('plus'),
+    note: text(),
+    grantedByUserId: uuid('granted_by_user_id').references(() => users.id, {
+      onDelete: 'set null',
+    }),
+    createdAt: nowTs(),
+    revokedAt: timestamp('revoked_at', { withTimezone: true }),
+  },
+  (t) => [
+    uniqueIndex('premium_email_grants_email_active_idx')
+      .on(sql`lower(${t.email})`)
+      .where(sql`${t.revokedAt} IS NULL`),
+    index('premium_email_grants_revoked_idx').on(t.revokedAt),
+  ],
+);
+
+/**
  * Push-notification subscriptions. Phase 1 ships Web Push for the PWA;
  * APNs / FCM transports land with the native apps (ADR 0006). A
  * subscription binds to a `user_id` OR an `event_id` — the latter lets an
@@ -500,6 +529,8 @@ export type StripeEvent = typeof stripeEvents.$inferSelect;
 export type NewStripeEvent = typeof stripeEvents.$inferInsert;
 export type PushSubscription = typeof pushSubscriptions.$inferSelect;
 export type NewPushSubscription = typeof pushSubscriptions.$inferInsert;
+export type PremiumEmailGrant = typeof premiumEmailGrants.$inferSelect;
+export type NewPremiumEmailGrant = typeof premiumEmailGrants.$inferInsert;
 
 export const schema = {
   users,
@@ -521,4 +552,5 @@ export const schema = {
   jwks,
   stripeEvents,
   pushSubscriptions,
+  premiumEmailGrants,
 };

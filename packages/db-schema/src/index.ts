@@ -20,6 +20,7 @@ export {
   jwks,
   stripeEvents,
   pushSubscriptions,
+  premiumEmailGrants,
   schema,
   type User,
   type NewUser,
@@ -59,4 +60,6 @@ export {
   type NewStripeEvent,
   type PushSubscription,
   type NewPushSubscription,
+  type PremiumEmailGrant,
+  type NewPremiumEmailGrant,
 } from './schema.js';

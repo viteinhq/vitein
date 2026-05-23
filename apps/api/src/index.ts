@@ -13,6 +13,7 @@ import { dbMiddleware } from './middleware/db.js';
 import { errorHandler } from './middleware/error.js';
 import { rateLimit } from './middleware/rate-limit.js';
 import { requestId } from './middleware/request-id.js';
+import { adminRoute } from './routes/admin.js';
 import { authRoute } from './routes/auth.js';
 import { claimRoute } from './routes/claim.js';
 import { recoverRoute } from './routes/recover.js';
@@ -66,6 +67,7 @@ app.route('/v1/health', healthRoute);
 app.route('/v1/events', eventsRoute);
 app.route('/v1/users', usersRoute);
 app.route('/v1/push', pushRoute);
+app.route('/v1/admin', adminRoute);
 app.route('/v1/webhooks/stripe', stripeWebhookRoute);
 
 app.notFound((c) => c.json({ error: { code: 'not_found', message: 'Route not found' } }, 404));
