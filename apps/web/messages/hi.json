@@ -197,6 +197,7 @@
   "manage_announcements_invitation_sent": "निमंत्रण {date} को {count} मेहमानों को भेजा गया।",
   "manage_announcements_plus_hint": "सेव-द-डेट के लिए Plus स्तर ज़रूरी है। निमंत्रण Basic और Plus दोनों पर काम करता है।",
   "manage_announcements_working": "भेजा जा रहा है…",
+  "manage_announcements_share_instead": "vite.in doesn't email guests on personal events — share the link above directly via WhatsApp, Signal, or your own email. Reminders for guests who RSVP are still sent automatically.",
   "manage_password_heading": "पासवर्ड सुरक्षा",
   "manage_password_body_locked": "इस इवेंट को देखने के लिए पासवर्ड ज़रूरी है।",
   "manage_password_body_unlocked": "एक पासवर्ड सेट करें और मेहमानों को इवेंट विवरण देखने से पहले उसे दर्ज करना होगा।",

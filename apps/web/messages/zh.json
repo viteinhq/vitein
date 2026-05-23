@@ -197,6 +197,7 @@
   "manage_announcements_invitation_sent": "邀请函已于 {date} 发送给 {count} 位宾客。",
   "manage_announcements_plus_hint": "预先通知需要 Plus 等级。邀请函在 Basic 和 Plus 中均可使用。",
   "manage_announcements_working": "正在发送…",
+  "manage_announcements_share_instead": "vite.in doesn't email guests on personal events — share the link above directly via WhatsApp, Signal, or your own email. Reminders for guests who RSVP are still sent automatically.",
   "manage_password_heading": "密码保护",
   "manage_password_body_locked": "查看此活动需要密码。",
   "manage_password_body_unlocked": "设置密码后，宾客需输入密码才能查看活动详情。",

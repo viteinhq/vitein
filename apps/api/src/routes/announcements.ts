@@ -7,6 +7,7 @@ import {
   loadAnnouncementContext,
   markAnnouncementSent,
 } from '../domain/announcements/announcements.js';
+import { canSendBulkEmail } from '../domain/auth/bulk-email.js';
 import { DomainError, ValidationError } from '../domain/errors.js';
 import { tierIncludes, tierOf } from '../domain/payments/payments.js';
 import { db } from '../infra/db.js';
@@ -64,6 +65,17 @@ announcementsRoute.post(
   async (c) => {
     const { id } = c.req.valid('param');
     const { stage } = c.req.valid('json');
+
+    // ADR 0012: personal accounts can't trigger bulk email. The gate
+    // runs before anything else (including the loadAnnouncementContext
+    // query) so even a no-op call doesn't touch the recipient list.
+    if (!canSendBulkEmail(c.var.auth)) {
+      throw new DomainError(
+        'feature.b2b_only',
+        'Bulk email is reserved for B2B accounts — share the event link directly instead',
+        403,
+      );
+    }
 
     const { event, recipients } = await loadAnnouncementContext(db(c), id, stage);
 

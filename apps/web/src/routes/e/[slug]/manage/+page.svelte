@@ -557,18 +557,12 @@
     </Section>
   {/if}
 
-  <!-- Announcements -->
+  <!-- Announcements — ADR 0012: personal accounts don't bulk-email. We keep
+       any historical send rows visible (events that were sent before the
+       decision still show their record) and otherwise nudge to the
+       share-link affordance already at the top of the page. -->
   <Section>
     <Heading level="panel">{m.manage_announcements_heading()}</Heading>
-    <Text tone="muted" size="sm">{m.manage_announcements_body()}</Text>
-
-    {#if form?.announceError}
-      <Banner tone="error">
-        {localizeError(form.announceError, {
-          status: 'announceStatus' in form ? form.announceStatus : undefined,
-        })}
-      </Banner>
-    {/if}
 
     {#each data.announcements as ann (ann.id)}
       {#if ann.sentAt}
@@ -588,26 +582,7 @@
       {/if}
     {/each}
 
-    {#if paidTier !== 'plus'}
-      <Banner tone="warn">{m.manage_announcements_plus_hint()}</Banner>
-    {/if}
-
-    <div class="flex flex-wrap gap-2">
-      {#if paidTier === 'plus' && !data.announcements.some((a) => a.stage === 'save_the_date' && a.sentAt)}
-        <form method="POST" action="?/announce&token={data.token}" use:enhance>
-          <input type="hidden" name="stage" value="save_the_date" />
-          <Button type="submit" variant="secondary" size="sm">
-            {m.manage_announcements_save_the_date()}
-          </Button>
-        </form>
-      {/if}
-      {#if data.event.isPaid && !data.announcements.some((a) => a.stage === 'invitation' && a.sentAt)}
-        <form method="POST" action="?/announce&token={data.token}" use:enhance>
-          <input type="hidden" name="stage" value="invitation" />
-          <Button type="submit" size="sm">{m.manage_announcements_invitation()}</Button>
-        </form>
-      {/if}
-    </div>
+    <Banner tone="info">{m.manage_announcements_share_instead()}</Banner>
   </Section>
 
   <!-- Password -->

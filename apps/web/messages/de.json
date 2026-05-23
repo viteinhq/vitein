@@ -197,6 +197,7 @@
   "manage_announcements_invitation_sent": "Einladung am {date} an {count} Gäste gesendet.",
   "manage_announcements_plus_hint": "Save-the-Date erfordert den Plus-Tier. Einladung funktioniert auf Basic und Plus.",
   "manage_announcements_working": "Sende…",
+  "manage_announcements_share_instead": "vite.in doesn't email guests on personal events — share the link above directly via WhatsApp, Signal, or your own email. Reminders for guests who RSVP are still sent automatically.",
   "manage_password_heading": "Passwortschutz",
   "manage_password_body_locked": "Dieses Event braucht ein Passwort zum Ansehen.",
   "manage_password_body_unlocked": "Setze ein Passwort, und Gäste müssen es eingeben, bevor sie die Event-Details sehen.",

@@ -197,6 +197,7 @@
   "manage_announcements_invitation_sent": "ക്ഷണം {date}-ന് {count} അതിഥികൾക്ക് അയച്ചു.",
   "manage_announcements_plus_hint": "സേവ്-ദി-ഡേറ്റിന് Plus ലെവൽ ആവശ്യമാണ്. ക്ഷണം Basic-ലും Plus-ലും പ്രവർത്തിക്കുന്നു.",
   "manage_announcements_working": "അയയ്ക്കുന്നു…",
+  "manage_announcements_share_instead": "vite.in doesn't email guests on personal events — share the link above directly via WhatsApp, Signal, or your own email. Reminders for guests who RSVP are still sent automatically.",
   "manage_password_heading": "പാസ്‌വേഡ് സംരക്ഷണം",
   "manage_password_body_locked": "ഈ ഇവന്റ് കാണാൻ പാസ്‌വേഡ് ആവശ്യമാണ്.",
   "manage_password_body_unlocked": "ഒരു പാസ്‌വേഡ് സജ്ജമാക്കിയാൽ, ഇവന്റ് വിശദാംശങ്ങൾ കാണുന്നതിന് മുമ്പ് അതിഥികൾ അത് നൽകണം.",

@@ -197,6 +197,7 @@
   "manage_announcements_invitation_sent": "Uitnodiging verzonden op {date} naar {count} gasten.",
   "manage_announcements_plus_hint": "Save-the-Date vereist het Plus-abonnement. Uitnodiging werkt op Basic en Plus.",
   "manage_announcements_working": "Bezig met versturen…",
+  "manage_announcements_share_instead": "vite.in doesn't email guests on personal events — share the link above directly via WhatsApp, Signal, or your own email. Reminders for guests who RSVP are still sent automatically.",
   "manage_password_heading": "Wachtwoordbeveiliging",
   "manage_password_body_locked": "Voor dit evenement is een wachtwoord nodig om het te bekijken.",
   "manage_password_body_unlocked": "Stel een wachtwoord in en gasten moeten het invoeren voordat ze de details kunnen zien.",

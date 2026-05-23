@@ -197,6 +197,7 @@
   "manage_announcements_invitation_sent": "Invito inviato il {date} a {count} invitati.",
   "manage_announcements_plus_hint": "Save-the-Date richiede il piano Plus. L'invito funziona su Basic e Plus.",
   "manage_announcements_working": "Invio…",
+  "manage_announcements_share_instead": "vite.in doesn't email guests on personal events — share the link above directly via WhatsApp, Signal, or your own email. Reminders for guests who RSVP are still sent automatically.",
   "manage_password_heading": "Protezione con password",
   "manage_password_body_locked": "Questo evento richiede una password per essere visualizzato.",
   "manage_password_body_unlocked": "Imposta una password e gli invitati dovranno inserirla prima di vedere i dettagli dell'evento.",

@@ -197,6 +197,7 @@
   "manage_announcements_invitation_sent": "ಆಮಂತ್ರಣ {date} ರಂದು {count} ಅತಿಥಿಗಳಿಗೆ ಕಳುಹಿಸಲಾಗಿದೆ.",
   "manage_announcements_plus_hint": "ಸೇವ್-ದಿ-ಡೇಟ್‌ಗೆ Plus ಹಂತ ಅಗತ್ಯ. ಆಮಂತ್ರಣವು Basic ಮತ್ತು Plus ಎರಡರಲ್ಲೂ ಕೆಲಸ ಮಾಡುತ್ತದೆ.",
   "manage_announcements_working": "ಕಳುಹಿಸಲಾಗುತ್ತಿದೆ…",
+  "manage_announcements_share_instead": "vite.in doesn't email guests on personal events — share the link above directly via WhatsApp, Signal, or your own email. Reminders for guests who RSVP are still sent automatically.",
   "manage_password_heading": "ಪಾಸ್‌ವರ್ಡ್ ರಕ್ಷಣೆ",
   "manage_password_body_locked": "ಈ ಈವೆಂಟ್ ನೋಡಲು ಪಾಸ್‌ವರ್ಡ್ ಅಗತ್ಯ.",
   "manage_password_body_unlocked": "ಒಂದು ಪಾಸ್‌ವರ್ಡ್ ಹೊಂದಿಸಿ ಮತ್ತು ಈವೆಂಟ್ ವಿವರಗಳನ್ನು ನೋಡುವ ಮೊದಲು ಅತಿಥಿಗಳು ಅದನ್ನು ನಮೂದಿಸಬೇಕು.",

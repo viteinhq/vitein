@@ -197,6 +197,7 @@
   "manage_announcements_invitation_sent": "초대장을 {date}에 손님 {count}명에게 보냈습니다.",
   "manage_announcements_plus_hint": "사전 안내에는 Plus 등급이 필요합니다. 초대장은 Basic과 Plus 모두에서 작동합니다.",
   "manage_announcements_working": "보내는 중…",
+  "manage_announcements_share_instead": "vite.in doesn't email guests on personal events — share the link above directly via WhatsApp, Signal, or your own email. Reminders for guests who RSVP are still sent automatically.",
   "manage_password_heading": "비밀번호 보호",
   "manage_password_body_locked": "이 이벤트를 보려면 비밀번호가 필요합니다.",
   "manage_password_body_unlocked": "비밀번호를 설정하면 손님이 이벤트 세부 정보를 보기 전에 비밀번호를 입력해야 합니다.",
