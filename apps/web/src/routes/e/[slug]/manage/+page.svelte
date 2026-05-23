@@ -63,6 +63,11 @@
     }
     return null;
   });
+  // Wrap-in-block usage of `paidTier !== 'plus'` narrows the inner
+  // type to `'basic' | null`, which then breaks the inner `=== 'plus'`
+  // comparisons. The boolean alias keeps the markup short without
+  // dragging the type narrowing into the block.
+  const isAtTopTier = $derived(paidTier === 'plus');
 
   // Pre-fill the datetime-local inputs with the event's wall-clock time in
   // its own timezone — not the browser's — so the value the creator sees
@@ -226,7 +231,8 @@
     {/if}
   </Section>
 
-  <!-- Upgrade -->
+  <!-- Upgrade — hidden once the event is on the highest tier (Plus). -->
+  {#if !isAtTopTier}
   <Section>
     <Heading level="panel">{m.manage_upgrade_heading()}</Heading>
     <Text tone="muted" size="sm">{m.manage_upgrade_body()}</Text>
@@ -319,6 +325,7 @@
       </div>
     {/if}
   </Section>
+  {/if}
 
   <!-- Media -->
   <Section>
@@ -395,14 +402,20 @@
   <Section>
     <Heading level="panel">{m.manage_edit_heading()}</Heading>
 
-    {#if form?.updateSuccess}
+    {#if form?.detailsSuccess}
       <Banner tone="success">{m.manage_edit_saved()}</Banner>
     {/if}
-    {#if form?.updateError && form.updateError !== 'manage_slug_taken'}
-      <Banner tone="error">{localizeError(form.updateError)}</Banner>
+    {#if form?.detailsError}
+      <Banner tone="error">
+        {localizeError(form.detailsError)}
+        {#if 'updateStatus' in form && form.updateStatus}
+          <code class="ms-2 text-xs opacity-70">HTTP {form.updateStatus}</code>
+        {/if}
+      </Banner>
     {/if}
 
     <form method="POST" action="?/update&token={data.token}" use:enhance class="space-y-3">
+      <input type="hidden" name="formScope" value="details" />
       <TextField
         name="title"
         value={data.event.title}
@@ -456,7 +469,19 @@
   <!-- Design — layout + colour theme (ADR 0011) -->
   <Section>
     <Heading level="panel">{m.manage_theme_heading()}</Heading>
+    {#if form?.designSuccess}
+      <Banner tone="success">{m.manage_edit_saved()}</Banner>
+    {/if}
+    {#if form?.designError}
+      <Banner tone="error">
+        {localizeError(form.designError)}
+        {#if 'updateStatus' in form && form.updateStatus}
+          <code class="ms-2 text-xs opacity-70">HTTP {form.updateStatus}</code>
+        {/if}
+      </Banner>
+    {/if}
     <form method="POST" action="?/update&token={data.token}" use:enhance class="space-y-5">
+      <input type="hidden" name="formScope" value="design" />
       <div class="space-y-2">
         <Text tone="muted" size="sm">{m.create_layout_label()}</Text>
         <LayoutPicker value={data.event.layout} />
@@ -473,10 +498,19 @@
   {#if data.event.tier}
     <Section>
       <Heading level="panel">{m.manage_event_url_heading()}</Heading>
-      {#if form?.updateError === 'manage_slug_taken'}
-        <Banner tone="error">{localizeError('manage_slug_taken')}</Banner>
+      {#if form?.slugSuccess}
+        <Banner tone="success">{m.manage_edit_saved()}</Banner>
+      {/if}
+      {#if form?.slugError}
+        <Banner tone="error">
+          {localizeError(form.slugError)}
+          {#if 'updateStatus' in form && form.updateStatus}
+            <code class="ms-2 text-xs opacity-70">HTTP {form.updateStatus}</code>
+          {/if}
+        </Banner>
       {/if}
       <form method="POST" action="?/update&token={data.token}" use:enhance class="space-y-4">
+        <input type="hidden" name="formScope" value="slug" />
         <TextField
           name="slug"
           value={data.event.slug}

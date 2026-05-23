@@ -114,10 +114,21 @@ export const actions: Actions = {
     const token = url.searchParams.get('token');
     const headers = ownershipHeaders(request, token, url.origin);
 
-    const bySlug = await getEventBySlug({ path: { slug: params.slug } });
-    if (bySlug.error || !bySlug.data) return fail(404, { updateError: 'manage_event_not_found' });
-
     const form = await request.formData();
+    // Each Section's form ships a `formScope` so the result lands on the
+    // matching Banner. Without it, every save error would dump into the
+    // Edit-Details banner (the original layout had a single shared key).
+    const rawScope = String(form.get('formScope') ?? 'details');
+    const scope: 'details' | 'design' | 'slug' =
+      rawScope === 'design' || rawScope === 'slug' ? rawScope : 'details';
+    const errorKey = `${scope}Error`;
+    const successKey = `${scope}Success`;
+
+    const bySlug = await getEventBySlug({ path: { slug: params.slug } });
+    if (bySlug.error || !bySlug.data) {
+      return fail(404, { [errorKey]: 'manage_event_not_found' });
+    }
+
     const body: Record<string, unknown> = {};
     const title = String(form.get('title') ?? '').trim();
     const description = String(form.get('description') ?? '').trim();
@@ -142,8 +153,15 @@ export const actions: Actions = {
     if (layout) body.layout = layout;
     if (slug) body.slug = slug;
 
+    // The slug form's value is prefilled with the current slug, so an
+    // unchanged submission would round-trip the same slug back to the API.
+    // Drop it on the slug scope so we don't trigger spurious requests.
+    if (scope === 'slug' && slug === params.slug) {
+      delete body.slug;
+    }
+
     if (Object.keys(body).length === 0) {
-      return fail(400, { updateError: 'manage_no_changes' });
+      return fail(400, { [errorKey]: 'manage_no_changes' });
     }
 
     const { error, response } = await updateEvent({
@@ -153,15 +171,18 @@ export const actions: Actions = {
     });
 
     if (error) {
-      if (response?.status === 409) return fail(409, { updateError: 'manage_slug_taken' });
-      return fail(500, { updateError: 'manage_save_failed' });
+      if (response?.status === 409) return fail(409, { [errorKey]: 'manage_slug_taken' });
+      return fail(response?.status ?? 500, {
+        [errorKey]: 'manage_save_failed',
+        updateStatus: response?.status ?? 500,
+      });
     }
     // A slug change moves the event's URL — the current /manage URL is now
     // stale, so redirect to the event's new manage URL.
     if (slug && slug !== params.slug) {
       throw redirect(303, `/e/${slug}/manage${token ? `?token=${token}` : ''}`);
     }
-    return { updateSuccess: true };
+    return { [successKey]: true };
   },
 
   remind: async ({ request, params, url, platform }) => {
