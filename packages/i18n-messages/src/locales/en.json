@@ -12,6 +12,7 @@
   "event.password_invalid": "Wrong password",
   "event.feature_gated": "This feature requires the Plus tier",
   "event.already_paid": "Event is already premium",
+  "event.slug_taken": "That event URL is already taken",
 
   "user.not_found": "User not found",
   "user.unauthorized": "Please sign in to continue",

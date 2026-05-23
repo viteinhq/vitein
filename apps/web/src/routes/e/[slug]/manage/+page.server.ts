@@ -127,6 +127,7 @@ export const actions: Actions = {
     const locationText = String(form.get('locationText') ?? '').trim();
     const themeId = String(form.get('themeId') ?? '').trim();
     const layout = String(form.get('layout') ?? '').trim();
+    const slug = String(form.get('slug') ?? '').trim();
 
     // Naive datetime-local values are interpreted in the event's timezone
     // (the submitted `timezone` field), not the Worker's UTC runtime.
@@ -139,18 +140,27 @@ export const actions: Actions = {
     if (locationText) body.locationText = locationText;
     if (themeId) body.themeId = themeId;
     if (layout) body.layout = layout;
+    if (slug) body.slug = slug;
 
     if (Object.keys(body).length === 0) {
       return fail(400, { updateError: 'manage_no_changes' });
     }
 
-    const { error } = await updateEvent({
+    const { error, response } = await updateEvent({
       path: { id: bySlug.data.id },
       headers,
       body,
     });
 
-    if (error) return fail(500, { updateError: 'manage_save_failed' });
+    if (error) {
+      if (response?.status === 409) return fail(409, { updateError: 'manage_slug_taken' });
+      return fail(500, { updateError: 'manage_save_failed' });
+    }
+    // A slug change moves the event's URL — the current /manage URL is now
+    // stale, so redirect to the event's new manage URL.
+    if (slug && slug !== params.slug) {
+      throw redirect(303, `/e/${slug}/manage${token ? `?token=${token}` : ''}`);
+    }
     return { updateSuccess: true };
   },
 

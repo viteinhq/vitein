@@ -44,6 +44,8 @@ export function localizeError(code: unknown, params?: { status?: unknown }): str
       return m.err_manage_no_changes();
     case 'manage_save_failed':
       return m.err_manage_save_failed();
+    case 'manage_slug_taken':
+      return m.err_manage_slug_taken();
     case 'manage_reminder_failed':
       return m.err_manage_reminder_failed();
     case 'manage_pick_image':

@@ -1,6 +1,7 @@
 import { and, eq, events, eventTokens, isNull, type Db } from '@vitein/db-schema';
 import { hashToken, issueCreatorToken } from '../auth/tokens.js';
-import { NotFoundError, ValidationError } from '../errors.js';
+import { isUniqueViolation } from '../db-errors.js';
+import { DomainError, NotFoundError, ValidationError } from '../errors.js';
 import { hashPassword } from './password.js';
 import { generateSlug } from './slug.js';
 
@@ -36,6 +37,8 @@ export interface EventUpdateInput {
   themeId?: string | undefined;
   /** Layout id (ADR 0011). Validated by the route; no tier gate. */
   layout?: string | undefined;
+  /** Custom URL slug. Format-validated and tier-gated by the route. */
+  slug?: string | undefined;
 }
 
 export interface CreatedEvent {
@@ -159,11 +162,21 @@ export async function updateEvent(
     visibility: input.visibility,
     themeId: input.themeId,
     layout: input.layout,
+    slug: input.slug,
     passwordHash,
     updatedAt: new Date(),
   });
 
-  const [row] = await db.update(events).set(patch).where(eq(events.id, id)).returning();
+  let row: typeof events.$inferSelect | undefined;
+  try {
+    [row] = await db.update(events).set(patch).where(eq(events.id, id)).returning();
+  } catch (err) {
+    // The only unique constraint a creator update can hit is the slug.
+    if (isUniqueViolation(err)) {
+      throw new DomainError('event.slug_taken', 'That event URL is already taken', 409);
+    }
+    throw err;
+  }
 
   if (!row) throw new NotFoundError('event.not_found', 'Event not found');
   return row;

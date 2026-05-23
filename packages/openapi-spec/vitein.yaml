@@ -171,6 +171,11 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
+        '409':
+          description: The requested custom slug is already taken.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
     delete:
       operationId: deleteEvent
       summary: Soft-delete an event (creator only)
@@ -1026,6 +1031,18 @@ components:
         locationText: { type: [string, 'null'], maxLength: 500 }
         defaultLocale: { type: string, minLength: 2, maxLength: 10 }
         visibility: { type: string, enum: [link_only, public] }
+        slug:
+          type: string
+          minLength: 3
+          maxLength: 64
+          pattern: '^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$'
+          description: |
+            Custom URL slug — the `{slug}` in `/e/{slug}`. Lowercase
+            letters, digits and hyphens; no leading/trailing hyphen.
+            Setting it requires the event to be on a paid tier (returns
+            403 `event.feature_gated` otherwise) and the slug must be
+            unused (409 `event.slug_taken`). Changing the slug
+            invalidates the event's previous URL.
         themeId:
           type: string
           description: |

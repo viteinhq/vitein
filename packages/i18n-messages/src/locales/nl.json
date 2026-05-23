@@ -5,23 +5,19 @@
   "conflict": "Conflict met bestaande status",
   "internal_error": "Interne serverfout",
   "rate_limited": "Te veel verzoeken — even rustiger aan",
-
   "event.not_found": "Evenement niet gevonden",
   "event.unauthorized": "Dit beheerderstoken hoort niet bij dit evenement",
   "event.no_password": "Dit evenement is niet met een wachtwoord beveiligd",
   "event.password_invalid": "Onjuist wachtwoord",
   "event.feature_gated": "Deze functie vereist het Plus-abonnement",
   "event.already_paid": "Het evenement is al premium",
-
+  "event.slug_taken": "That event URL is already taken",
   "user.not_found": "Gebruiker niet gevonden",
   "user.unauthorized": "Log in om door te gaan",
-
   "media.not_found": "Media niet gevonden",
   "media.quota_exceeded": "Medialimiet bereikt voor dit evenement",
-
   "announcement.too_many_recipients": "De gastenlijst overschrijdt de synchrone-verzendlimiet",
   "announcement.already_sent": "Er is al een aankondiging voor deze fase verzonden",
-
   "stripe.not_configured": "Stripe is niet geconfigureerd voor deze omgeving",
   "stripe.price_not_configured": "Stripe is niet geconfigureerd voor dit tier en deze valuta",
   "stripe.api_error": "Stripe heeft het verzoek geweigerd"

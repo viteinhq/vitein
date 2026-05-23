@@ -84,6 +84,16 @@ export type EventUpdateInput = {
   defaultLocale?: string;
   visibility?: 'link_only' | 'public';
   /**
+   * Custom URL slug — the `{slug}` in `/e/{slug}`. Lowercase
+   * letters, digits and hyphens; no leading/trailing hyphen.
+   * Setting it requires the event to be on a paid tier (returns
+   * 403 `event.feature_gated` otherwise) and the slug must be
+   * unused (409 `event.slug_taken`). Changing the slug
+   * invalidates the event's previous URL.
+   *
+   */
+  slug?: string;
+  /**
    * Colour/type theme id (ADR 0011). Setting a premium theme
    * requires the event to be on a paid tier — the server returns
    * 403 `event.feature_gated` otherwise.
@@ -632,6 +642,10 @@ export type UpdateEventErrors = {
    * Resource not found.
    */
   404: Error;
+  /**
+   * The requested custom slug is already taken.
+   */
+  409: Error;
 };
 
 export type UpdateEventError = UpdateEventErrors[keyof UpdateEventErrors];
