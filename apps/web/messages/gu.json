@@ -197,6 +197,7 @@
   "manage_announcements_invitation_sent": "આમંત્રણ {date} ના રોજ {count} મહેમાનોને મોકલ્યું.",
   "manage_announcements_plus_hint": "સેવ-ધ-ડેટ માટે Plus સ્તર જરૂરી છે. આમંત્રણ Basic અને Plus બંનેમાં કામ કરે છે.",
   "manage_announcements_working": "મોકલી રહ્યું છે…",
+  "manage_announcements_share_instead": "vite.in doesn't email guests on personal events — share the link above directly via WhatsApp, Signal, or your own email. Reminders for guests who RSVP are still sent automatically.",
   "manage_password_heading": "પાસવર્ડ સુરક્ષા",
   "manage_password_body_locked": "આ ઇવેન્ટ જોવા માટે પાસવર્ડ જરૂરી છે.",
   "manage_password_body_unlocked": "એક પાસવર્ડ સેટ કરો અને ઇવેન્ટ વિગતો જોતા પહેલાં મહેમાનોએ તે દાખલ કરવો પડશે.",

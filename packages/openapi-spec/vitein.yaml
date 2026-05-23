@@ -537,6 +537,12 @@ paths:
         requested stage. A given stage can only be sent once per event
         (unique constraint on event_id + stage); re-sending returns 409.
 
+        **Personal accounts cannot trigger bulk email** (ADR 0012) —
+        returns 403 `feature.b2b_only` for every caller today. The
+        endpoint stays so a future B2B account model can flip the gate
+        on; until then, share the event link directly via the creator's
+        own channels.
+
         Save-the-Date (`save_the_date`) is a Plus-tier feature — returns
         403 `event.feature_gated` on Basic/unpaid events. Invitation is
         available on any paid tier.

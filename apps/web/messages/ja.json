@@ -197,6 +197,7 @@
   "manage_announcements_invitation_sent": "招待状を {date} に {count} 名のゲストへ送信しました。",
   "manage_announcements_plus_hint": "日程のお知らせには Plus レベルが必要です。招待状は Basic と Plus の両方で利用できます。",
   "manage_announcements_working": "送信中…",
+  "manage_announcements_share_instead": "vite.in doesn't email guests on personal events — share the link above directly via WhatsApp, Signal, or your own email. Reminders for guests who RSVP are still sent automatically.",
   "manage_password_heading": "パスワード保護",
   "manage_password_body_locked": "このイベントの閲覧にはパスワードが必要です。",
   "manage_password_body_unlocked": "パスワードを設定すると、ゲストはイベント詳細を表示する前にパスワードを入力する必要があります。",
