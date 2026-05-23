@@ -20,6 +20,8 @@
     "@better-auth/oauth-provider": "^1.6.11",
     "@block65/webcrypto-web-push": "^1.0.2",
     "@hono/zod-validator": "^0.8.0",
+    "@jsquash/jpeg": "^1.6.0",
+    "@jsquash/resize": "^2.1.1",
     "@sentry/cloudflare": "^10.53.1",
     "@vitein/db-schema": "workspace:*",
     "@vitein/i18n-messages": "workspace:*",
