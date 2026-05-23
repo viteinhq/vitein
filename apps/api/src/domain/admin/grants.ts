@@ -13,11 +13,7 @@ import {
 } from '@vitein/db-schema';
 import { isUniqueViolation } from '../db-errors.js';
 import { ConflictError, NotFoundError, ValidationError } from '../errors.js';
-import {
-  CURRENT_BUNDLE_VERSION,
-  type PremiumTier,
-  tierOf,
-} from '../payments/payments.js';
+import { CURRENT_BUNDLE_VERSION, type PremiumTier, tierOf } from '../payments/payments.js';
 
 export interface AppliedGrant {
   event: Event;
@@ -36,10 +32,7 @@ export interface CreateGrantInput {
 const ALLOWED_TIERS: ReadonlySet<GrantTier> = new Set(['basic', 'plus']);
 
 export async function listGrants(db: Db): Promise<PremiumEmailGrant[]> {
-  return db
-    .select()
-    .from(premiumEmailGrants)
-    .orderBy(desc(premiumEmailGrants.createdAt));
+  return db.select().from(premiumEmailGrants).orderBy(desc(premiumEmailGrants.createdAt));
 }
 
 export async function createGrant(db: Db, input: CreateGrantInput): Promise<PremiumEmailGrant> {
@@ -66,7 +59,10 @@ export async function createGrant(db: Db, input: CreateGrantInput): Promise<Prem
     return row;
   } catch (err) {
     if (isUniqueViolation(err)) {
-      throw new ConflictError('grant.already_exists', 'An active grant for this email already exists');
+      throw new ConflictError(
+        'grant.already_exists',
+        'An active grant for this email already exists',
+      );
     }
     throw err;
   }

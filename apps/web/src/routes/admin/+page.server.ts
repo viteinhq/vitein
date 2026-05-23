@@ -4,7 +4,14 @@ import type { PageServerLoad } from './$types';
 
 interface AdminStats {
   users: { total: number; last30d: number };
-  events: { total: number; paid: number; basic: number; plus: number; free: number; last30d: number };
+  events: {
+    total: number;
+    paid: number;
+    basic: number;
+    plus: number;
+    free: number;
+    last30d: number;
+  };
   rsvps: { total: number; plusOnes: number };
   payments: { last30dCount: number };
   grants: { active: number; revoked: number };

@@ -40,49 +40,43 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 export async function getAdminStats(db: Db): Promise<AdminStats> {
   const since = new Date(Date.now() - 30 * DAY_MS);
 
-  const [
-    usersTotal,
-    usersRecent,
-    eventsAgg,
-    rsvpsAgg,
-    paymentsRecent,
-    grantsAgg,
-  ] = await Promise.all([
-    db
-      .select({ c: sql<number>`count(*)::int` })
-      .from(users)
-      .where(isNull(users.deletedAt)),
-    db
-      .select({ c: sql<number>`count(*)::int` })
-      .from(users)
-      .where(sql`${users.createdAt} >= ${since} and ${users.deletedAt} is null`),
-    db
-      .select({
-        total: sql<number>`count(*)::int`,
-        paid: sql<number>`count(*) filter (where ${events.isPaid})::int`,
-        basic: sql<number>`count(*) filter (where ${events.paidFeatures} ->> 'tier' = 'basic')::int`,
-        plus: sql<number>`count(*) filter (where ${events.paidFeatures} ->> 'tier' = 'plus')::int`,
-        recent: sql<number>`count(*) filter (where ${events.createdAt} >= ${since})::int`,
-      })
-      .from(events)
-      .where(isNull(events.deletedAt)),
-    db
-      .select({
-        total: sql<number>`count(*)::int`,
-        plusOnes: sql<number>`coalesce(sum(${rsvps.plusOnes}), 0)::int`,
-      })
-      .from(rsvps),
-    db
-      .select({ c: sql<number>`count(*)::int` })
-      .from(auditLog)
-      .where(sql`${auditLog.action} = 'payment.completed' and ${auditLog.createdAt} >= ${since}`),
-    db
-      .select({
-        active: sql<number>`count(*) filter (where ${premiumEmailGrants.revokedAt} is null)::int`,
-        revoked: sql<number>`count(*) filter (where ${premiumEmailGrants.revokedAt} is not null)::int`,
-      })
-      .from(premiumEmailGrants),
-  ]);
+  const [usersTotal, usersRecent, eventsAgg, rsvpsAgg, paymentsRecent, grantsAgg] =
+    await Promise.all([
+      db
+        .select({ c: sql<number>`count(*)::int` })
+        .from(users)
+        .where(isNull(users.deletedAt)),
+      db
+        .select({ c: sql<number>`count(*)::int` })
+        .from(users)
+        .where(sql`${users.createdAt} >= ${since} and ${users.deletedAt} is null`),
+      db
+        .select({
+          total: sql<number>`count(*)::int`,
+          paid: sql<number>`count(*) filter (where ${events.isPaid})::int`,
+          basic: sql<number>`count(*) filter (where ${events.paidFeatures} ->> 'tier' = 'basic')::int`,
+          plus: sql<number>`count(*) filter (where ${events.paidFeatures} ->> 'tier' = 'plus')::int`,
+          recent: sql<number>`count(*) filter (where ${events.createdAt} >= ${since})::int`,
+        })
+        .from(events)
+        .where(isNull(events.deletedAt)),
+      db
+        .select({
+          total: sql<number>`count(*)::int`,
+          plusOnes: sql<number>`coalesce(sum(${rsvps.plusOnes}), 0)::int`,
+        })
+        .from(rsvps),
+      db
+        .select({ c: sql<number>`count(*)::int` })
+        .from(auditLog)
+        .where(sql`${auditLog.action} = 'payment.completed' and ${auditLog.createdAt} >= ${since}`),
+      db
+        .select({
+          active: sql<number>`count(*) filter (where ${premiumEmailGrants.revokedAt} is null)::int`,
+          revoked: sql<number>`count(*) filter (where ${premiumEmailGrants.revokedAt} is not null)::int`,
+        })
+        .from(premiumEmailGrants),
+    ]);
 
   const eventsRow = eventsAgg[0] ?? { total: 0, paid: 0, basic: 0, plus: 0, recent: 0 };
   const rsvpsRow = rsvpsAgg[0] ?? { total: 0, plusOnes: 0 };

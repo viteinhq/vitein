@@ -12,10 +12,7 @@ import { seedEvent } from './helpers/seed.js';
 import { createTestDb } from './helpers/test-db.js';
 
 async function seedAdminUser(db: Awaited<ReturnType<typeof createTestDb>>) {
-  const [row] = await db
-    .insert(users)
-    .values({ email: 'admin@example.com' })
-    .returning();
+  const [row] = await db.insert(users).values({ email: 'admin@example.com' }).returning();
   if (!row) throw new Error('failed to seed admin user');
   return row;
 }
@@ -67,9 +64,9 @@ describe('premium email grants', () => {
     await revokeGrant(db, grant.id);
     await revokeGrant(db, grant.id); // second call must not throw
 
-    await expect(
-      revokeGrant(db, '00000000-0000-7000-8000-000000000000'),
-    ).rejects.toMatchObject({ code: 'grant.not_found' });
+    await expect(revokeGrant(db, '00000000-0000-7000-8000-000000000000')).rejects.toMatchObject({
+      code: 'grant.not_found',
+    });
   });
 
   it('findActiveGrantForEmail ignores revoked rows and matches case-insensitively', async () => {
@@ -97,10 +94,7 @@ describe('premium email grants', () => {
     expect(applied?.event.paymentProvider).toBe('admin_grant');
     expect(applied?.event.paymentRef).toMatch(/^grant:/);
 
-    const audits = await db
-      .select()
-      .from(auditLog)
-      .where(eq(auditLog.eventId, event.id));
+    const audits = await db.select().from(auditLog).where(eq(auditLog.eventId, event.id));
     expect(audits.some((a) => a.action === 'event.premium_granted')).toBe(true);
   });
 
