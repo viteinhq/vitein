@@ -32,7 +32,7 @@ describe('uploadMedia', () => {
     expect(row.height).toBe(600);
   });
 
-  it('rejects an image over the pixel ceiling', async () => {
+  it('rejects an image over the 100 MP pixel ceiling', async () => {
     const db = await createTestDb();
     const event = await seedEvent(db);
     await expect(
