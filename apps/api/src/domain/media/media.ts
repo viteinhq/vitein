@@ -1,11 +1,17 @@
 import { and, eq, eventMedia, events, isNull, type Db } from '@vitein/db-schema';
+import { rootLogger } from '../../infra/logger.js';
 import { ConflictError, NotFoundError, ValidationError } from '../errors.js';
 import { readImageDimensions } from './dimensions.js';
 import { extensionFor, sniffImageMime, type AcceptedMime } from './mime.js';
+import { maybeResizeJpeg } from './resize.js';
 
 export const MAX_BYTES = 10 * 1024 * 1024; // 10 MiB
-/** Pixel-count ceiling — defence-in-depth against decompression-bomb inputs. */
-export const MAX_PIXELS = 100_000_000; // 100 MP
+/**
+ * Pixel-count ceiling — defence-in-depth against decompression-bomb inputs.
+ * Set generously because JPEG uploads are downsized to `RESIZE_LONG_EDGE`
+ * before storage; the ceiling only stops outright-pathological inputs.
+ */
+export const MAX_PIXELS = 50_000_000; // 50 MP
 const MAX_PER_EVENT = 10;
 
 export type MediaKind = 'cover' | 'gallery';
@@ -48,6 +54,32 @@ export async function uploadMedia(
   await assertEventActive(db, input.eventId);
   await assertQuota(db, input.eventId);
 
+  // For JPEGs over the display-safe ceiling, downscale before storage so
+  // browsers (notably iOS Safari, which silently refuses to decode images
+  // past ~16 MP) can always render the cover. Failure to resize is
+  // non-fatal: we keep the original bytes and log it; the upload still
+  // succeeds, only the displayability of huge images becomes best-effort.
+  let storedBytes = input.bytes;
+  let storedWidth: number | null = dimensions?.width ?? null;
+  let storedHeight: number | null = dimensions?.height ?? null;
+
+  if (mime === 'image/jpeg' && dimensions) {
+    try {
+      const resized = await maybeResizeJpeg(input.bytes, dimensions.width, dimensions.height);
+      if (resized) {
+        storedBytes = resized.bytes;
+        storedWidth = resized.width;
+        storedHeight = resized.height;
+      }
+    } catch (err) {
+      rootLogger.warn('media_resize_failed', {
+        err: err as Error,
+        width: dimensions.width,
+        height: dimensions.height,
+      });
+    }
+  }
+
   const kind = input.kind ?? 'cover';
   // Stage a new row to get an id; we use that id in the R2 key.
   const [staged] = await db
@@ -57,16 +89,16 @@ export async function uploadMedia(
       r2Key: 'pending',
       kind,
       mimeType: mime,
-      sizeBytes: input.bytes.byteLength,
-      width: dimensions?.width ?? null,
-      height: dimensions?.height ?? null,
+      sizeBytes: storedBytes.byteLength,
+      width: storedWidth,
+      height: storedHeight,
     })
     .returning();
   if (!staged) throw new Error('Media insert returned no row');
 
   const r2Key = buildR2Key(input.eventId, staged.id, mime);
   try {
-    await bucket.put(r2Key, input.bytes, { httpMetadata: { contentType: mime } });
+    await bucket.put(r2Key, storedBytes, { httpMetadata: { contentType: mime } });
   } catch (err) {
     // Best-effort rollback — leave the DB clean on an R2 failure.
     await db.delete(eventMedia).where(eq(eventMedia.id, staged.id));
