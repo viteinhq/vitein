@@ -14,6 +14,7 @@
     TimezonePicker,
   } from '$lib/design';
   import { localizeError } from '$lib/errors';
+  import { downsizeImageFile } from '$lib/image/downsize';
   import PushNotifications from '$lib/pwa/PushNotifications.svelte';
   import * as m from '$lib/paraglide/messages.js';
   import type { PageProps } from './$types';
@@ -394,13 +395,25 @@
         method="POST"
         action="?/uploadMedia&token={data.token}"
         enctype="multipart/form-data"
-        use:enhance
+        use:enhance={async ({ formData, cancel: _cancel }) => {
+          // Downsize huge phone photos in the browser before they cross the
+          // network — Workers can't safely decode > ~5 MP into RGBA.
+          const original = formData.get('file');
+          if (original instanceof File && original.size > 0) {
+            try {
+              const compact = await downsizeImageFile(original);
+              if (compact !== original) formData.set('file', compact);
+            } catch {
+              // Stay permissive — submit the original on any failure.
+            }
+          }
+        }}
         class="flex items-center gap-3"
       >
         <input
           type="file"
           name="file"
-          accept="image/jpeg,image/png,image/webp,image/gif,image/avif"
+          accept="image/jpeg,image/png,image/webp,image/gif,image/avif,image/heic,image/heif"
           required
           class="block w-full text-sm text-ink-muted file:me-3 file:rounded-full file:border-0 file:bg-ink file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-paper"
         />
