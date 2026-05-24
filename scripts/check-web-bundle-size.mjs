@@ -39,8 +39,15 @@ const CLIENT_DIR = path.join(REPO_ROOT, 'apps/web/.svelte-kit/output/client/_app
 // Recalibrated 2026-05-23: +8 KB gz headroom for the staff-only
 // `/admin` routes. These routes are not in any user-facing flow, but
 // the script sums every emitted client chunk regardless of route.
-const RAW_TOTAL_BUDGET = 1100 * 1024; // 1.1 MB
-const GZ_TOTAL_BUDGET = 328 * 1024; // 328 KB
+//
+// Recalibrated 2026-05-24: +10 KB gz / +20 KB raw for the i18n sweep
+// of the day's batch (~316 strings translated across 19 non-EN
+// locales — real translations replace the English placeholders the
+// parity gate seeded). Paraglide v2 splits messages per locale so a
+// page only downloads one language; this all-files total grows
+// because the sum spans every locale.
+const RAW_TOTAL_BUDGET = 1120 * 1024; // 1.12 MB
+const GZ_TOTAL_BUDGET = 338 * 1024; // 338 KB
 
 const fmt = (n) => (n >= 1024 ? `${(n / 1024).toFixed(1)} KB` : `${n} B`);
 
