@@ -31,5 +31,7 @@ export const load: PageServerLoad = async ({ params, platform }) => {
   const items = media.data?.items ?? [];
   const cover = items.find((m) => m.kind === 'cover' && m.url) ?? null;
 
-  return { event: data, cover };
+  // Plus-tier-only by the gate above, so branding is always off here.
+  // The root layout reads `page.data.noBranding` to drop the chrome.
+  return { event: data, cover, noBranding: true };
 };

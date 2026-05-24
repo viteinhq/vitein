@@ -7,6 +7,29 @@ import type { RequestHandler } from './$types';
 const WIDTH = 1200;
 const HEIGHT = 630;
 
+/**
+ * Inter Regular fetched from Google Fonts at first call and cached on
+ * the module. @vercel/og's edge build tries to auto-fetch a default
+ * font using a URL pattern Cloudflare workerd can't resolve ("Invalid
+ * URL string"); providing fonts explicitly sidesteps that and locks
+ * the typography to something we control.
+ */
+let cachedFont: ArrayBuffer | null = null;
+
+async function loadFont(): Promise<ArrayBuffer> {
+  if (cachedFont) return cachedFont;
+  const cssRes = await fetch(
+    'https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap',
+    { headers: { 'User-Agent': 'Mozilla/5.0' } },
+  );
+  const css = await cssRes.text();
+  const match = /src:\s*url\(([^)]+)\)/.exec(css);
+  if (!match?.[1]) throw new Error('Could not locate Inter font URL in Google Fonts CSS response');
+  const fontRes = await fetch(match[1]);
+  cachedFont = await fontRes.arrayBuffer();
+  return cachedFont;
+}
+
 function resolveBaseUrl(platform: App.Platform | undefined): string {
   return platform?.env?.API_BASE_URL ?? process.env.API_BASE_URL ?? 'http://localhost:8787';
 }
@@ -33,6 +56,7 @@ export const GET: RequestHandler = async ({ params, platform }) => {
   // what the public STD page shows, not whatever zone the request
   // resolved to.
   const date = formatDate(data.startsAt, data.timezone);
+  const font = await loadFont();
 
   const element = {
     type: 'div',
@@ -136,6 +160,7 @@ export const GET: RequestHandler = async ({ params, platform }) => {
   return new ImageResponse(element, {
     width: WIDTH,
     height: HEIGHT,
+    fonts: [{ name: 'Inter', data: font, weight: 700, style: 'normal' }],
     headers: {
       // Same image content for the lifetime of the event's title + date;
       // tolerate a day of stale-while-revalidate on the edge.
