@@ -197,7 +197,7 @@
   "manage_announcements_invitation_sent": "Convite enviado em {date} para {count} convidados.",
   "manage_announcements_plus_hint": "Save-the-Date requer o plano Plus. O convite funciona em Basic e Plus.",
   "manage_announcements_working": "Enviando…",
-  "manage_announcements_share_instead": "O vite.in não envia e-mails aos convidados em eventos pessoais — partilha o link acima diretamente via WhatsApp, Signal ou o teu próprio e-mail. Os lembretes para quem confirmou continuam a ser enviados automaticamente.",
+  "manage_announcements_share_instead": "O vite.in não envia e-mails em massa aos convidados em eventos pessoais. Partilha o link do evento via WhatsApp, Signal ou o teu próprio e-mail — os lembretes para quem confirmou são enviados automaticamente.",
   "manage_std_heading": "Link Save the Date",
   "manage_std_body": "Partilha este link cedo — mostra uma pré-visualização mais simples do evento, só com a data. Usa-o como Save the Date; partilha o link completo do evento mais tarde.",
   "manage_std_copy_link": "Copiar link",

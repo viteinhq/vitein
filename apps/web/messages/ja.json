@@ -197,7 +197,7 @@
   "manage_announcements_invitation_sent": "招待状を {date} に {count} 名のゲストへ送信しました。",
   "manage_announcements_plus_hint": "日程のお知らせには Plus レベルが必要です。招待状は Basic と Plus の両方で利用できます。",
   "manage_announcements_working": "送信中…",
-  "manage_announcements_share_instead": "vite.in は個人イベントでゲストにメールを送りません。上のリンクを WhatsApp、Signal、ご自身のメールで直接共有してください。返信したゲストへのリマインダーは引き続き自動送信されます。",
+  "manage_announcements_share_instead": "vite.in は個人イベントでゲストに一斉メールを送りません。イベントリンクを WhatsApp、Signal、ご自身のメールで共有してください — 返信したゲストへのリマインダーは自動で送信されます。",
   "manage_std_heading": "Save the Date リンク",
   "manage_std_body": "このリンクを早めに共有してください — 日付だけが表示されたシンプルなプレビューが表示されます。Save the Date として使い、完全なイベントリンクは後で共有しましょう。",
   "manage_std_copy_link": "リンクをコピー",

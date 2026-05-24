@@ -197,7 +197,7 @@
   "manage_announcements_invitation_sent": "Uitnodiging verzonden op {date} naar {count} gasten.",
   "manage_announcements_plus_hint": "Save-the-Date vereist het Plus-abonnement. Uitnodiging werkt op Basic en Plus.",
   "manage_announcements_working": "Bezig met versturen…",
-  "manage_announcements_share_instead": "vite.in mailt geen gasten bij persoonlijke events — deel de link hierboven direct via WhatsApp, Signal of je eigen mail. Herinneringen voor gasten die hebben gereageerd worden nog steeds automatisch verstuurd.",
+  "manage_announcements_share_instead": "vite.in stuurt geen bulk-mails naar gasten bij persoonlijke events. Deel de event-link via WhatsApp, Signal of je eigen mail — herinneringen voor gasten die hebben gereageerd gaan automatisch.",
   "manage_std_heading": "Save the Date-link",
   "manage_std_body": "Deel deze link vroeg — die toont een sobere preview van het event met alleen de datum. Gebruik hem als Save the Date; de volledige event-link deel je later.",
   "manage_std_copy_link": "Link kopiëren",

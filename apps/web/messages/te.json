@@ -197,7 +197,7 @@
   "manage_announcements_invitation_sent": "ఆహ్వానం {date}న {count} అతిథులకు పంపబడింది.",
   "manage_announcements_plus_hint": "సేవ్-ది-డేట్‌కు Plus స్థాయి అవసరం. ఆహ్వానం Basic, Plus రెండింటిలోనూ పని చేస్తుంది.",
   "manage_announcements_working": "పంపుతోంది…",
-  "manage_announcements_share_instead": "వ్యక్తిగత ఈవెంట్‌లలో vite.in అతిథులకు ఇమెయిల్‌లు పంపదు — పైన ఉన్న లింక్‌ను నేరుగా WhatsApp, Signal లేదా మీ స్వంత ఇమెయిల్ ద్వారా షేర్ చేయండి. RSVP చేసిన అతిథులకు రిమైండర్‌లు ఇప్పటికీ ఆటోమేటిక్‌గా పంపబడతాయి.",
+  "manage_announcements_share_instead": "వ్యక్తిగత ఈవెంట్‌లలో vite.in అతిథులకు బల్క్ ఇమెయిల్‌లు పంపదు. ఈవెంట్ లింక్‌ను WhatsApp, Signal లేదా మీ స్వంత మెయిల్ ద్వారా షేర్ చేయండి — RSVP చేసిన అతిథులకు రిమైండర్‌లు ఆటోమేటిక్‌గా పంపబడతాయి.",
   "manage_std_heading": "Save the Date లింక్",
   "manage_std_body": "ఈ లింక్‌ను ముందుగానే షేర్ చేయండి — ఇది తేదీతో మాత్రమే ఈవెంట్ యొక్క సరళమైన ప్రివ్యూను చూపిస్తుంది. దీన్ని Save the Date గా ఉపయోగించండి; పూర్తి ఈవెంట్ లింక్‌ను తర్వాత షేర్ చేయండి.",
   "manage_std_copy_link": "లింక్‌ను కాపీ చేయండి",
