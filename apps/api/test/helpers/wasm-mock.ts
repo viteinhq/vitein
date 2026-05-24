@@ -4,6 +4,4 @@
 // spec-coverage import of `src/index.ts` doesn't blow up. Runtime
 // behaviour is unaffected — wrangler bundles the real WASM at deploy
 // time and never sees this file.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const placeholder: WebAssembly.Module = {} as any;
-export default placeholder;
+export default {};
