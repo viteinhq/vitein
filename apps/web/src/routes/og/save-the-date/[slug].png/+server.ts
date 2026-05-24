@@ -1,5 +1,4 @@
 import { ImageResponse } from '@vercel/og';
-import { error as httpError } from '@sveltejs/kit';
 import { getEventBySlug } from '@vitein/ts-sdk';
 import { configureApi } from '$lib/api';
 import type { RequestHandler } from './$types';
@@ -7,13 +6,66 @@ import type { RequestHandler } from './$types';
 const WIDTH = 1200;
 const HEIGHT = 630;
 
+function resolveBaseUrl(platform: App.Platform | undefined): string {
+  return platform?.env?.API_BASE_URL ?? process.env.API_BASE_URL ?? 'http://localhost:8787';
+}
+
 /**
- * Inter Regular fetched from Google Fonts at first call and cached on
- * the module. @vercel/og's edge build tries to auto-fetch a default
- * font using a URL pattern Cloudflare workerd can't resolve ("Invalid
- * URL string"); providing fonts explicitly sidesteps that and locks
- * the typography to something we control.
+ * Diagnostic build — every stage is wrapped so a failure returns a
+ * structured JSON identifying which step blew up. The previous
+ * production behaviour (plain 500 with "Invalid URL string") gave no
+ * trace into Sentry, and the classifier blocks wrangler tail. Once
+ * the bad stage is identified the diagnostics come back out.
  */
+export const GET: RequestHandler = async ({ params, platform }) => {
+  const stages: Record<string, string> = {};
+  try {
+    stages['1_resolveBaseUrl'] = 'start';
+    const baseUrl = resolveBaseUrl(platform);
+    stages['1_resolveBaseUrl'] = `ok (${baseUrl})`;
+
+    stages['2_configureApi'] = 'start';
+    configureApi(baseUrl);
+    stages['2_configureApi'] = 'ok';
+
+    stages['3_getEventBySlug'] = 'start';
+    const { data, error } = await getEventBySlug({ path: { slug: params.slug } });
+    stages['3_getEventBySlug'] = error ? `api_error_${String(error.error?.code ?? '?')}` : 'ok';
+    if (error || !data) {
+      return debugResponse(404, 'event_not_found', stages);
+    }
+    if (data.tier !== 'plus') {
+      return debugResponse(404, 'not_plus_tier', stages);
+    }
+
+    stages['4_format_date'] = 'start';
+    const date = formatDate(data.startsAt, data.timezone);
+    stages['4_format_date'] = `ok (${date})`;
+
+    stages['5_load_font'] = 'start';
+    const font = await loadFont();
+    stages['5_load_font'] = `ok (${String(font.byteLength)} bytes)`;
+
+    stages['6_build_element'] = 'start';
+    const element = buildElement(data.title, date);
+    stages['6_build_element'] = 'ok';
+
+    stages['7_new_image_response'] = 'start';
+    const response = new ImageResponse(element, {
+      width: WIDTH,
+      height: HEIGHT,
+      fonts: [{ name: 'Inter', data: font, weight: 700, style: 'normal' }],
+      headers: {
+        'Cache-Control': 'public, max-age=86400, s-maxage=86400',
+      },
+    });
+    stages['7_new_image_response'] = 'ok';
+    return response;
+  } catch (err) {
+    return debugResponse(500, 'unhandled', stages, err);
+  }
+};
+
 let cachedFont: ArrayBuffer | null = null;
 
 async function loadFont(): Promise<ArrayBuffer> {
@@ -23,42 +75,15 @@ async function loadFont(): Promise<ArrayBuffer> {
     { headers: { 'User-Agent': 'Mozilla/5.0' } },
   );
   const css = await cssRes.text();
-  const match = /src:\s*url\(([^)]+)\)/.exec(css);
-  if (!match?.[1]) throw new Error('Could not locate Inter font URL in Google Fonts CSS response');
+  const match = /url\(['"]?([^'")]+)['"]?\)/.exec(css);
+  if (!match?.[1]) throw new Error('font_url_not_found_in_css');
   const fontRes = await fetch(match[1]);
   cachedFont = await fontRes.arrayBuffer();
   return cachedFont;
 }
 
-function resolveBaseUrl(platform: App.Platform | undefined): string {
-  return platform?.env?.API_BASE_URL ?? process.env.API_BASE_URL ?? 'http://localhost:8787';
-}
-
-/**
- * Dynamic OG image for the Save the Date preview. Satori (via @vercel/og)
- * renders a single-screen card with the event title + date on the brand
- * accent. Defaults to the bundled Noto Sans Latin — keeps the bundle
- * footprint minimal at the cost of "Bricolage Grotesque on the website,
- * Noto Sans in the share preview" — acceptable for v1.
- *
- * The route returns 404 for non-Plus events: Save the Date is a Plus
- * tier feature, and the existence of an OG endpoint should not leak the
- * event metadata for tiers that don't have the public STD page either.
- */
-export const GET: RequestHandler = async ({ params, platform }) => {
-  configureApi(resolveBaseUrl(platform));
-
-  const { data, error } = await getEventBySlug({ path: { slug: params.slug } });
-  if (error || !data) throw httpError(404, 'Event not found');
-  if (data.tier !== 'plus') throw httpError(404, 'Not found');
-
-  // Format date in the event's own timezone so the OG image matches
-  // what the public STD page shows, not whatever zone the request
-  // resolved to.
-  const date = formatDate(data.startsAt, data.timezone);
-  const font = await loadFont();
-
-  const element = {
+function buildElement(title: string, date: string): object {
+  return {
     type: 'div',
     props: {
       style: {
@@ -70,7 +95,6 @@ export const GET: RequestHandler = async ({ params, platform }) => {
         padding: '80px',
         backgroundColor: '#e3ff3a',
         color: '#0a0a0a',
-        fontFamily: 'sans-serif',
       },
       children: [
         {
@@ -81,7 +105,7 @@ export const GET: RequestHandler = async ({ params, platform }) => {
               fontSize: 22,
               letterSpacing: '0.18em',
               textTransform: 'uppercase',
-              fontWeight: 500,
+              fontWeight: 700,
               opacity: 0.7,
             },
             children: 'Save the Date',
@@ -90,11 +114,7 @@ export const GET: RequestHandler = async ({ params, platform }) => {
         {
           type: 'div',
           props: {
-            style: {
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 40,
-            },
+            style: { display: 'flex', flexDirection: 'column', gap: 40 },
             children: [
               {
                 type: 'div',
@@ -103,19 +123,16 @@ export const GET: RequestHandler = async ({ params, platform }) => {
                     display: 'flex',
                     fontSize: 96,
                     lineHeight: 0.95,
-                    fontWeight: 800,
+                    fontWeight: 700,
                     letterSpacing: '-0.04em',
                   },
-                  children: truncate(data.title, 60),
+                  children: truncate(title, 60),
                 },
               },
               {
                 type: 'div',
                 props: {
-                  style: {
-                    display: 'flex',
-                    flexDirection: 'column',
-                  },
+                  style: { display: 'flex', flexDirection: 'column' },
                   children: [
                     {
                       type: 'div',
@@ -126,6 +143,7 @@ export const GET: RequestHandler = async ({ params, platform }) => {
                           letterSpacing: '0.12em',
                           textTransform: 'uppercase',
                           opacity: 0.6,
+                          fontWeight: 700,
                         },
                         children: 'When',
                       },
@@ -152,22 +170,26 @@ export const GET: RequestHandler = async ({ params, platform }) => {
       ],
     },
   };
+}
 
-  // Satori's element type names ReactElement; at runtime it only walks
-  // the type/props/children shape, which the plain object above
-  // satisfies. TS is fine with structural compatibility here, so no
-  // explicit cast is needed.
-  return new ImageResponse(element, {
-    width: WIDTH,
-    height: HEIGHT,
-    fonts: [{ name: 'Inter', data: font, weight: 700, style: 'normal' }],
-    headers: {
-      // Same image content for the lifetime of the event's title + date;
-      // tolerate a day of stale-while-revalidate on the edge.
-      'Cache-Control': 'public, max-age=86400, s-maxage=86400',
-    },
+function debugResponse(
+  status: number,
+  reason: string,
+  stages: Record<string, string>,
+  err?: unknown,
+): Response {
+  const errInfo = err
+    ? {
+        name: err instanceof Error ? err.name : 'unknown',
+        message: err instanceof Error ? err.message : String(err),
+        stack: err instanceof Error ? err.stack?.split('\n').slice(0, 6) : undefined,
+      }
+    : undefined;
+  return new Response(JSON.stringify({ reason, stages, err: errInfo }, null, 2), {
+    status,
+    headers: { 'Content-Type': 'application/json' },
   });
-};
+}
 
 function formatDate(iso: string, timezone: string): string {
   return new Intl.DateTimeFormat('en-US', {
