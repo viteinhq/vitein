@@ -1,15 +1,17 @@
+import { ImageResponse } from '@vercel/og';
 import type { RequestHandler } from './$types';
 
 /**
- * Diagnostic stub — no @vercel/og, no SDK calls, no fetches. If this
- * returns 200 with the slug echoed, the breakage is from one of the
- * imports/calls I had in the previous build. If this still 500s with
- * "Invalid URL string", the failure is upstream (SvelteKit or
- * Paraglide handling of the `[slug].png` route shape).
+ * Diagnostic: imports @vercel/og but never constructs an ImageResponse.
+ * If this 500s, the failure is at module-load time. If it 200s, the
+ * failure is in the constructor / runtime path.
  */
 export const GET: RequestHandler = ({ params }) => {
-  return new Response(`stub ok for slug=${params.slug}\n`, {
-    status: 200,
-    headers: { 'Content-Type': 'text/plain' },
-  });
+  return new Response(
+    `import ok: typeof ImageResponse = ${typeof ImageResponse}, slug=${params.slug}\n`,
+    {
+      status: 200,
+      headers: { 'Content-Type': 'text/plain' },
+    },
+  );
 };
