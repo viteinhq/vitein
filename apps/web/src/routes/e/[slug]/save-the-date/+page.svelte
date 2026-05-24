@@ -15,19 +15,25 @@
     timeZone: data.event.timezone,
   }).format(startsAt);
 
-  const ogImageUrl = $derived(`${page.url.origin}/og/save-the-date/${data.event.slug}.png`);
   const canonicalUrl = $derived(`${page.url.origin}/e/${data.event.slug}/save-the-date`);
+  // Cover URL is used as the fallback og:image until the dynamic OG
+  // endpoint is fixed (see follow-up). Better than pointing crawlers at
+  // a 500 endpoint, and if there's no cover we just omit og:image and
+  // let WhatsApp/iMessage decide.
+  const ogImageUrl = $derived(data.cover?.url ?? null);
 </script>
 
 <svelte:head>
   <title>{m.std_page_title({ title: data.event.title })}</title>
   <meta property="og:title" content={m.std_page_title({ title: data.event.title })} />
   <meta property="og:description" content={m.std_og_description()} />
-  <meta property="og:image" content={ogImageUrl} />
+  {#if ogImageUrl}
+    <meta property="og:image" content={ogImageUrl} />
+    <meta name="twitter:image" content={ogImageUrl} />
+    <meta name="twitter:card" content="summary_large_image" />
+  {/if}
   <meta property="og:url" content={canonicalUrl} />
   <meta property="og:type" content="website" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:image" content={ogImageUrl} />
   <link rel="canonical" href={canonicalUrl} />
 </svelte:head>
 
