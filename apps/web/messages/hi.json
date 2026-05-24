@@ -197,7 +197,7 @@
   "manage_announcements_invitation_sent": "निमंत्रण {date} को {count} मेहमानों को भेजा गया।",
   "manage_announcements_plus_hint": "सेव-द-डेट के लिए Plus स्तर ज़रूरी है। निमंत्रण Basic और Plus दोनों पर काम करता है।",
   "manage_announcements_working": "भेजा जा रहा है…",
-  "manage_announcements_share_instead": "vite.in निजी इवेंट्स में मेहमानों को ईमेल नहीं भेजता — ऊपर दिए लिंक को WhatsApp, Signal या अपने ईमेल से सीधे शेयर करें। RSVP करने वाले मेहमानों को रिमाइंडर अब भी अपने आप भेजे जाते हैं।",
+  "manage_announcements_share_instead": "vite.in निजी इवेंट्स में मेहमानों को बल्क ईमेल नहीं भेजता। इवेंट लिंक WhatsApp, Signal या अपनी मेल से शेयर करें — RSVP करने वाले मेहमानों को रिमाइंडर अपने आप भेजे जाते हैं।",
   "manage_std_heading": "Save the Date लिंक",
   "manage_std_body": "इस लिंक को जल्दी शेयर करें — यह सिर्फ़ तारीख के साथ इवेंट का संक्षिप्त प्रीव्यू दिखाता है। इसे Save the Date के तौर पर इस्तेमाल करें; पूरा इवेंट लिंक बाद में शेयर करें।",
   "manage_std_copy_link": "लिंक कॉपी करें",

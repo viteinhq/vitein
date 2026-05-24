@@ -197,7 +197,7 @@
   "manage_announcements_invitation_sent": "Invitation sent on {date} to {count} guests.",
   "manage_announcements_plus_hint": "Save-the-Date requires the Plus tier. Invitation works on Basic and Plus.",
   "manage_announcements_working": "Sending…",
-  "manage_announcements_share_instead": "vite.in doesn't email guests on personal events — share the link above directly via WhatsApp, Signal, or your own email. Reminders for guests who RSVP are still sent automatically.",
+  "manage_announcements_share_instead": "vite.in doesn't bulk-email guests on personal events. Share the event link via WhatsApp, Signal or your own mail — reminders to guests who RSVP go out automatically.",
   "manage_std_heading": "Save the Date link",
   "manage_std_body": "Share this link early — it shows a sparser preview of the event with just the date. Use it as a Save the Date; share the full event link later.",
   "manage_std_copy_link": "Copy link",

@@ -197,7 +197,7 @@
   "manage_announcements_invitation_sent": "초대장을 {date}에 손님 {count}명에게 보냈습니다.",
   "manage_announcements_plus_hint": "사전 안내에는 Plus 등급이 필요합니다. 초대장은 Basic과 Plus 모두에서 작동합니다.",
   "manage_announcements_working": "보내는 중…",
-  "manage_announcements_share_instead": "vite.in은 개인 이벤트의 게스트에게 이메일을 보내지 않습니다 — 위 링크를 WhatsApp, Signal 또는 본인 이메일로 직접 공유하세요. 응답한 게스트에 대한 알림은 계속 자동 전송됩니다.",
+  "manage_announcements_share_instead": "vite.in은 개인 이벤트에서 게스트에게 단체 이메일을 보내지 않습니다. 이벤트 링크를 WhatsApp, Signal 또는 본인 이메일로 공유하세요 — 응답한 게스트에 대한 알림은 자동 전송됩니다.",
   "manage_std_heading": "Save the Date 링크",
   "manage_std_body": "이 링크를 일찍 공유하세요 — 날짜만 표시된 간단한 미리보기가 보입니다. Save the Date로 사용하고, 전체 이벤트 링크는 나중에 공유하세요.",
   "manage_std_copy_link": "링크 복사",

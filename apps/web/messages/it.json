@@ -197,7 +197,7 @@
   "manage_announcements_invitation_sent": "Invito inviato il {date} a {count} invitati.",
   "manage_announcements_plus_hint": "Save-the-Date richiede il piano Plus. L'invito funziona su Basic e Plus.",
   "manage_announcements_working": "Invio…",
-  "manage_announcements_share_instead": "vite.in non invia e-mail agli ospiti per eventi personali — condividi il link qui sopra direttamente via WhatsApp, Signal o la tua e-mail. I promemoria per gli ospiti che hanno risposto vengono comunque inviati automaticamente.",
+  "manage_announcements_share_instead": "vite.in non invia e-mail di massa agli ospiti per eventi personali. Condividi il link dell'evento via WhatsApp, Signal o la tua e-mail — i promemoria per gli ospiti che hanno risposto partono automaticamente.",
   "manage_std_heading": "Link Save the Date",
   "manage_std_body": "Condividi questo link in anticipo — mostra un'anteprima più essenziale dell'evento, solo con la data. Usalo come Save the Date; il link completo dell'evento lo condividi dopo.",
   "manage_std_copy_link": "Copia link",

@@ -197,7 +197,7 @@
   "manage_announcements_invitation_sent": "Einladung am {date} an {count} Gäste gesendet.",
   "manage_announcements_plus_hint": "Save-the-Date erfordert den Plus-Tier. Einladung funktioniert auf Basic und Plus.",
   "manage_announcements_working": "Sende…",
-  "manage_announcements_share_instead": "vite.in versendet auf privaten Events keine Massen-E-Mails — teile den Link oben direkt per WhatsApp, Signal oder eigener E-Mail. Erinnerungen für Gäste mit RSVP gehen weiterhin automatisch raus.",
+  "manage_announcements_share_instead": "vite.in versendet auf privaten Events keine Massen-E-Mails. Teile den Event-Link per WhatsApp, Signal oder eigener Mail — Erinnerungen an Gäste mit RSVP gehen automatisch raus.",
   "manage_std_heading": "Save-the-Date-Link",
   "manage_std_body": "Teile diesen Link früh — er zeigt eine reduzierte Vorschau des Events mit nur dem Datum. Nutze ihn als Save the Date; den vollständigen Event-Link teilst du später.",
   "manage_std_copy_link": "Link kopieren",

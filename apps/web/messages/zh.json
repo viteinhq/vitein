@@ -197,7 +197,7 @@
   "manage_announcements_invitation_sent": "邀请函已于 {date} 发送给 {count} 位宾客。",
   "manage_announcements_plus_hint": "预先通知需要 Plus 等级。邀请函在 Basic 和 Plus 中均可使用。",
   "manage_announcements_working": "正在发送…",
-  "manage_announcements_share_instead": "vite.in 不会为个人活动向宾客发送邮件 — 请直接通过 WhatsApp、Signal 或你自己的邮件分享上方链接。已回复的宾客仍会自动收到提醒。",
+  "manage_announcements_share_instead": "vite.in 不会为个人活动向宾客群发邮件。请通过 WhatsApp、Signal 或你自己的邮件分享活动链接 — 已回复的宾客会自动收到提醒。",
   "manage_std_heading": "Save the Date 链接",
   "manage_std_body": "尽早分享此链接 — 它显示活动的简化预览,只有日期。把它当作 Save the Date 用,完整活动链接稍后分享。",
   "manage_std_copy_link": "复制链接",

@@ -10,7 +10,6 @@ import {
   listGuests,
   listMedia,
   listRsvps,
-  sendAnnouncement,
   sendReminder,
   updateEvent,
 } from '@vitein/ts-sdk';
@@ -270,43 +269,10 @@ export const actions: Actions = {
     return { mediaUploaded: true };
   },
 
-  announce: async ({ request, params, url, platform }) => {
-    configureApi(resolveBaseUrl(platform));
-    const headers = ownershipHeaders(request, url.searchParams.get('token'), url.origin);
-
-    const bySlug = await getEventBySlug({ path: { slug: params.slug } });
-    if (bySlug.error || !bySlug.data) return fail(404, { announceError: 'manage_event_not_found' });
-
-    const form = await request.formData();
-    const stageRaw = String(form.get('stage') ?? '');
-    const stage: 'save_the_date' | 'invitation' =
-      stageRaw === 'save_the_date' ? 'save_the_date' : 'invitation';
-
-    const { data, error, response } = await sendAnnouncement({
-      path: { id: bySlug.data.id },
-      headers,
-      body: { stage },
-    });
-
-    if (error || !data) {
-      const status = response?.status;
-      if (status === 403)
-        return fail(403, { announceError: 'announcement_plus_required', announceStage: stage });
-      if (status === 409)
-        return fail(409, { announceError: 'announcement_already_sent', announceStage: stage });
-      if (status === 400)
-        return fail(400, { announceError: 'announcement_no_guests', announceStage: stage });
-      if (status === 413)
-        return fail(413, { announceError: 'announcement_too_many', announceStage: stage });
-      return fail(status ?? 500, {
-        announceError: 'announcement_http',
-        announceStatus: status,
-        announceStage: stage,
-      });
-    }
-
-    return { announceSent: true, announceStage: stage };
-  },
+  // ADR 0012: bulk-email is gated to B2B accounts; the `?/announce` UI is
+  // gone and the API always returns 403 `feature.b2b_only` on personal
+  // tiers. The action used to live here; it was wired only to UI buttons
+  // we removed in PR #205. Dropped now — nothing calls it.
 
   setPassword: async ({ request, params, url, platform }) => {
     configureApi(resolveBaseUrl(platform));

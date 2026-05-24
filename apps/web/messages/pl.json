@@ -197,7 +197,7 @@
   "manage_announcements_invitation_sent": "Zaproszenie wysłane {date} do {count} gości.",
   "manage_announcements_plus_hint": "Save-the-Date wymaga planu Plus. Zaproszenie działa na Basic i Plus.",
   "manage_announcements_working": "Wysyłanie…",
-  "manage_announcements_share_instead": "vite.in nie wysyła e-maili gościom na prywatnych wydarzeniach — udostępnij powyższy link bezpośrednio przez WhatsApp, Signal lub własną pocztę. Przypomnienia dla gości, którzy odpowiedzieli, nadal wysyłane są automatycznie.",
+  "manage_announcements_share_instead": "vite.in nie wysyła zbiorczych e-maili gościom na prywatnych wydarzeniach. Udostępnij link do wydarzenia przez WhatsApp, Signal lub własną pocztę — przypomnienia dla gości, którzy odpowiedzieli, wysyłane są automatycznie.",
   "manage_std_heading": "Link Save the Date",
   "manage_std_body": "Udostępnij ten link wcześnie — pokazuje uproszczony podgląd wydarzenia z samą datą. Użyj go jako Save the Date; pełny link do wydarzenia udostępnij później.",
   "manage_std_copy_link": "Kopiuj link",
