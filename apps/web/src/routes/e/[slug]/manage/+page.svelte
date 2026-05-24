@@ -583,6 +583,46 @@
     {/each}
 
     <Banner tone="info">{m.manage_announcements_share_instead()}</Banner>
+
+    {#if data.stdUrl}
+      <div class="mt-2 rounded-card border border-rule bg-paper-2/40 p-5">
+        <h3 class="font-display text-lg font-bold tracking-tight">{m.manage_std_heading()}</h3>
+        <p class="mt-1 text-sm text-ink-muted">{m.manage_std_body()}</p>
+
+        <div class="mt-4 grid gap-5 sm:grid-cols-[auto_1fr]">
+          <div
+            class="flex h-32 w-32 items-center justify-center rounded-xl border border-rule bg-white p-2 sm:h-40 sm:w-40"
+          >
+            {#if data.stdQrSvg}
+              <!-- QR SVG is produced by the `qrcode` lib server-side from the
+                   Save-the-Date URL we just built — no user content lands in
+                   this string, so the @html sink is sound. -->
+              <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+              {@html data.stdQrSvg}
+            {/if}
+          </div>
+
+          <div class="flex flex-col gap-3">
+            <div class="break-all rounded-lg bg-ink/95 px-3 py-2 font-mono text-xs text-paper">
+              {data.stdUrl}
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <Button
+                onclick={() => navigator.clipboard?.writeText(data.stdUrl ?? '')}
+                variant="secondary"
+                size="sm"
+              >
+                {m.manage_std_copy_link()}
+              </Button>
+              <Button href={data.stdUrl} target="_blank" variant="secondary" size="sm">
+                {m.manage_std_preview()}
+              </Button>
+            </div>
+            <p class="text-xs text-ink-muted">{m.manage_std_qr_hint()}</p>
+          </div>
+        </div>
+      </div>
+    {/if}
   </Section>
 
   <!-- Password -->

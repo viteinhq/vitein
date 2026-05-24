@@ -25,8 +25,10 @@
     "@fontsource-variable/geist-mono": "^5.2.8",
     "@fontsource/instrument-serif": "^5.2.8",
     "@hey-api/client-fetch": "^0.13.1",
+    "@vercel/og": "^0.11.1",
     "@vitein/template-engine": "workspace:*",
-    "@vitein/ts-sdk": "workspace:*"
+    "@vitein/ts-sdk": "workspace:*",
+    "qrcode": "^1.5.4"
   },
   "devDependencies": {
     "@inlang/paraglide-js": "^2.18.0",
@@ -34,6 +36,7 @@
     "@sveltejs/kit": "^2.60.1",
     "@sveltejs/vite-plugin-svelte": "^7.1.2",
     "@tailwindcss/vite": "^4.3.0",
+    "@types/qrcode": "^1.5.6",
     "@vitein/config": "workspace:*",
     "eslint-plugin-svelte": "^3.17.1",
     "svelte": "^5.55.9",
