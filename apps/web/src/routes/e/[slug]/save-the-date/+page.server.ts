@@ -33,5 +33,7 @@ export const load: PageServerLoad = async ({ params, platform }) => {
 
   // Plus-tier-only by the gate above, so branding is always off here.
   // The root layout reads `page.data.noBranding` to drop the chrome.
-  return { event: data, cover, noBranding: true };
+  const apiBase = resolveBaseUrl(platform);
+  const ogImageUrl = `${apiBase}/v1/og/save-the-date/${data.slug}.png`;
+  return { event: data, cover, noBranding: true, ogImageUrl };
 };

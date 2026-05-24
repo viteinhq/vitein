@@ -25,11 +25,9 @@
     "@fontsource-variable/geist-mono": "^5.2.8",
     "@fontsource/instrument-serif": "^5.2.8",
     "@hey-api/client-fetch": "^0.13.1",
-    "@resvg/resvg-wasm": "^2.6.2",
     "@vitein/template-engine": "workspace:*",
     "@vitein/ts-sdk": "workspace:*",
-    "qrcode": "^1.5.4",
-    "satori": "^0.26.0"
+    "qrcode": "^1.5.4"
   },
   "devDependencies": {
     "@inlang/paraglide-js": "^2.18.0",

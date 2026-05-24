@@ -35,6 +35,9 @@ importers:
       '@hono/zod-validator':
         specifier: ^0.8.0
         version: 0.8.0(hono@4.12.21)(zod@4.4.3)
+      '@resvg/resvg-wasm':
+        specifier: ^2.6.2
+        version: 2.6.2
       '@sentry/cloudflare':
         specifier: ^10.53.1
         version: 10.53.1(@cloudflare/workers-types@4.20260520.1)
@@ -53,6 +56,9 @@ importers:
       hono:
         specifier: ^4.12.21
         version: 4.12.21
+      satori:
+        specifier: ^0.26.0
+        version: 0.26.0
       uuidv7:
         specifier: ^1.0.2
         version: 1.2.1
@@ -142,9 +148,6 @@ importers:
       '@hey-api/client-fetch':
         specifier: ^0.13.1
         version: 0.13.1(@hey-api/openapi-ts@0.97.2(typescript@5.9.3))
-      '@resvg/resvg-wasm':
-        specifier: ^2.6.2
-        version: 2.6.2
       '@vitein/template-engine':
         specifier: workspace:*
         version: link:../../packages/template-engine
@@ -154,9 +157,6 @@ importers:
       qrcode:
         specifier: ^1.5.4
         version: 1.5.4
-      satori:
-        specifier: ^0.26.0
-        version: 0.26.0
     devDependencies:
       '@inlang/paraglide-js':
         specifier: ^2.18.0
