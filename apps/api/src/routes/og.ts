@@ -1,41 +1,31 @@
+import { Hono } from 'hono';
 import { Resvg, initWasm } from '@resvg/resvg-wasm';
+// Wrangler bundles the .wasm import as a WebAssembly.Module at build time —
+// workerd refuses runtime WebAssembly.instantiate of raw bytes, so the
+// bundler path is the only one that works. The TS shim in
+// `apps/api/src/types/wasm.d.ts` types the import.
+import resvgWasm from '@resvg/resvg-wasm/index_bg.wasm';
 import satori from 'satori';
-import { getEventBySlug } from '@vitein/ts-sdk';
-import { configureApi } from '$lib/api';
-import type { RequestHandler } from './$types';
+import { getEventBySlug } from '../domain/events/events.js';
+import { tierOf } from '../domain/payments/payments.js';
+import { db } from '../infra/db.js';
+import type { AppVariables, Env } from '../types/env.js';
 
-// resvg-wasm version this fetcher targets — keep in sync with package.json.
-const RESVG_WASM_URL = 'https://unpkg.com/@resvg/resvg-wasm@2.6.2/index_bg.wasm';
+export const ogRoute = new Hono<{ Bindings: Env; Variables: AppVariables }>();
 
 const WIDTH = 1200;
 const HEIGHT = 630;
 
-function resolveBaseUrl(platform: App.Platform | undefined): string {
-  return platform?.env?.API_BASE_URL ?? process.env.API_BASE_URL ?? 'http://localhost:8787';
-}
-
-// One-shot WASM init per isolate. resvg-wasm's initWasm throws on a
-// double-init, so the cached promise + guard. We fetch the WASM at
-// runtime from unpkg rather than bundling it — the bundler-import path
-// requires fragile TS shims and Vite plugin coordination, and the
-// one-off ~200 KB pull from unpkg is paid once per isolate.
+// One-shot WASM init per isolate. resvg-wasm's initWasm throws on
+// double-init, so cache the promise.
 let wasmReady: Promise<void> | null = null;
 function ensureWasm(): Promise<void> {
-  if (!wasmReady) {
-    wasmReady = (async () => {
-      const res = await fetch(RESVG_WASM_URL);
-      if (!res.ok) throw new Error(`resvg_wasm_fetch_failed_${String(res.status)}`);
-      const buf = await res.arrayBuffer();
-      await initWasm(buf);
-    })();
-  }
+  if (!wasmReady) wasmReady = initWasm(resvgWasm);
   return wasmReady;
 }
 
-// Inter 700 fetched on the first OG request and cached for the lifetime
-// of the isolate. Google Fonts' CDN is fast enough that the one-off
-// latency is tolerable; bundling the font would add ~30 KB to the
-// server bundle without much benefit.
+// Inter 700 fetched the first time and cached for the isolate's
+// lifetime. ~30 KB pull; warm calls hit memory.
 let cachedFont: ArrayBuffer | null = null;
 async function loadFont(): Promise<ArrayBuffer> {
   if (cachedFont) return cachedFont;
@@ -45,54 +35,58 @@ async function loadFont(): Promise<ArrayBuffer> {
   );
   const css = await cssRes.text();
   const match = /url\(['"]?([^'")]+)['"]?\)/.exec(css);
-  if (!match?.[1]) throw new Error('font_url_not_found_in_google_fonts_css');
+  if (!match?.[1]) throw new Error('font_url_not_found');
   const fontRes = await fetch(match[1]);
   cachedFont = await fontRes.arrayBuffer();
   return cachedFont;
 }
 
 /**
- * Dynamic OG image for the Save the Date preview, generated with satori
- * (HTML/JSX → SVG) and @resvg/resvg-wasm (SVG → PNG). Replaces the
- * previous @vercel/og attempt which crashed at import time inside
- * Cloudflare workerd with the `Invalid URL string.` node:url legacy
- * parse error. Going through the engines directly sidesteps the
- * wrapper's URL resolution and gives us deterministic WASM loading.
+ * GET /v1/og/save-the-date/:slug.png — dynamic Open Graph image for the
+ * Save the Date preview. Renders a 1200×630 PNG with the event title +
+ * date on the brand accent. 404s for non-Plus events so the URL
+ * doesn't enumerate.
+ *
+ * Lives here (API worker) rather than in the SvelteKit app because
+ * wrangler natively bundles `.wasm` imports as `WebAssembly.Module`,
+ * which workerd requires — Vite's plugin landscape for WASM in the
+ * Pages adapter is a moving target.
  */
-export const GET: RequestHandler = async ({ params, platform }) => {
-  configureApi(resolveBaseUrl(platform));
+ogRoute.get('/save-the-date/:slug{.+\\.png}', async (c) => {
+  const param = c.req.param('slug');
+  // The route grabs `<slug>.png`; the actual slug is everything before
+  // the `.png` suffix.
+  const slug = param.replace(/\.png$/i, '');
+  if (!slug) return c.text('Not found', 404);
 
-  const { data, error } = await getEventBySlug({ path: { slug: params.slug } });
-  if (error || !data) return new Response('Event not found', { status: 404 });
-  if (data.tier !== 'plus') return new Response('Not found', { status: 404 });
+  let event: Awaited<ReturnType<typeof getEventBySlug>>;
+  try {
+    event = await getEventBySlug(db(c), slug);
+  } catch {
+    return c.text('Not found', 404);
+  }
+  if (!tierOf(event) || tierOf(event) !== 'plus') {
+    return c.text('Not found', 404);
+  }
 
-  // Format date in the event's own timezone so the OG image matches the
-  // public STD page, not the request's resolved zone.
-  const date = formatDate(data.startsAt, data.timezone);
-
+  const date = formatDate(event.startsAt, event.timezone);
   const [font] = await Promise.all([loadFont(), ensureWasm()]);
 
-  const element = buildElement(data.title, date);
-  const svg = await satori(element as Parameters<typeof satori>[0], {
+  const element = buildElement(event.title, date);
+  const svg = await satori(element, {
     width: WIDTH,
     height: HEIGHT,
     fonts: [{ name: 'Inter', data: font, weight: 700, style: 'normal' }],
   });
-
-  // Resvg returns a Uint8Array; modern TS's generic Uint8Array<ArrayBufferLike>
-  // type doesn't structurally match Response's BodyInit union, so cast at
-  // the boundary. Runtime accepts the typed array fine.
   const png = new Resvg(svg).render().asPng();
 
-  return new Response(png as unknown as BodyInit, {
+  return new Response(png, {
     headers: {
       'Content-Type': 'image/png',
-      // Same image content for the lifetime of the event's title + date;
-      // tolerate a day of edge caching.
       'Cache-Control': 'public, max-age=86400, s-maxage=86400',
     },
   });
-};
+});
 
 function buildElement(title: string, date: string): object {
   return {
@@ -185,14 +179,14 @@ function buildElement(title: string, date: string): object {
   };
 }
 
-function formatDate(iso: string, timezone: string): string {
+function formatDate(iso: Date, timezone: string): string {
   return new Intl.DateTimeFormat('en-US', {
     weekday: 'long',
     month: 'long',
     day: 'numeric',
     year: 'numeric',
     timeZone: timezone,
-  }).format(new Date(iso));
+  }).format(iso);
 }
 
 function truncate(s: string, max: number): string {

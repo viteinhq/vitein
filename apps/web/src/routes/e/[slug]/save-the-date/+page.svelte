@@ -16,11 +16,10 @@
   }).format(startsAt);
 
   const canonicalUrl = $derived(`${page.url.origin}/e/${data.event.slug}/save-the-date`);
-  // Cover URL is used as the fallback og:image until the dynamic OG
-  // endpoint is fixed (see follow-up). Better than pointing crawlers at
-  // a 500 endpoint, and if there's no cover we just omit og:image and
-  // let WhatsApp/iMessage decide.
-  const ogImageUrl = $derived(data.cover?.url ?? null);
+  // Dynamic OG endpoint on the API worker (where wrangler bundles the
+  // resvg-wasm correctly). Falls back to cover if the OG URL wasn't
+  // resolved server-side for any reason.
+  const ogImageUrl = $derived(data.ogImageUrl ?? data.cover?.url ?? null);
 </script>
 
 <svelte:head>

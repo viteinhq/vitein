@@ -19,6 +19,7 @@ import { claimRoute } from './routes/claim.js';
 import { recoverRoute } from './routes/recover.js';
 import { eventsRoute } from './routes/events.js';
 import { healthRoute } from './routes/health.js';
+import { ogRoute } from './routes/og.js';
 import { pushRoute } from './routes/push.js';
 import { usersRoute } from './routes/users.js';
 import { stripeWebhookRoute } from './routes/webhooks/stripe.js';
@@ -68,6 +69,7 @@ app.route('/v1/events', eventsRoute);
 app.route('/v1/users', usersRoute);
 app.route('/v1/push', pushRoute);
 app.route('/v1/admin', adminRoute);
+app.route('/v1/og', ogRoute);
 app.route('/v1/webhooks/stripe', stripeWebhookRoute);
 
 app.notFound((c) => c.json({ error: { code: 'not_found', message: 'Route not found' } }, 404));
