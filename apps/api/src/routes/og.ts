@@ -69,10 +69,11 @@ ogRoute.get('/save-the-date/:slug{.+\\.png}', async (c) => {
     return c.text('Not found', 404);
   }
 
-  const date = formatDate(event.startsAt, event.timezone);
+  const locale = event.defaultLocale || 'en';
+  const date = formatDate(event.startsAt, event.timezone, locale);
   const [font] = await Promise.all([loadFont(), ensureWasm()]);
 
-  const element = buildElement(event.title, date);
+  const element = buildElement(event.title, date, locale);
   const svg = await satori(element, {
     width: WIDTH,
     height: HEIGHT,
@@ -88,7 +89,42 @@ ogRoute.get('/save-the-date/:slug{.+\\.png}', async (c) => {
   });
 });
 
-function buildElement(title: string, date: string): object {
+/**
+ * `Save the Date` is a loanword that's left untranslated across our
+ * locales (see `apps/web/messages/*.json`'s `std_eyebrow`), so we keep
+ * a single string for the eyebrow. `When` differs — small per-locale
+ * table avoids dragging i18n-messages into the API worker.
+ */
+const WHEN_LABEL: Record<string, string> = {
+  en: 'When',
+  de: 'Wann',
+  fr: 'Quand',
+  es: 'Cuándo',
+  it: 'Quando',
+  nl: 'Wanneer',
+  pt: 'Quando',
+  pl: 'Kiedy',
+  ja: '日時',
+  ko: '일시',
+  zh: '时间',
+  hi: 'कब',
+  bn: 'কখন',
+  gu: 'ક્યારે',
+  kn: 'ಯಾವಾಗ',
+  ml: 'എപ്പോൾ',
+  mr: 'केव्हा',
+  pa: 'ਕਦੋਂ',
+  ta: 'எப்போது',
+  te: 'ఎప్పుడు',
+};
+
+function whenLabel(locale: string): string {
+  // BCP-47 tags like `en-US` → just take the language subtag.
+  const base = locale.toLowerCase().split('-')[0] ?? 'en';
+  return WHEN_LABEL[base] ?? WHEN_LABEL.en ?? 'When';
+}
+
+function buildElement(title: string, date: string, locale: string): object {
   return {
     type: 'div',
     props: {
@@ -152,7 +188,7 @@ function buildElement(title: string, date: string): object {
                           fontWeight: 700,
                           opacity: 0.6,
                         },
-                        children: 'When',
+                        children: whenLabel(locale),
                       },
                     },
                     {
@@ -179,8 +215,11 @@ function buildElement(title: string, date: string): object {
   };
 }
 
-function formatDate(iso: Date, timezone: string): string {
-  return new Intl.DateTimeFormat('en-US', {
+function formatDate(iso: Date, timezone: string, locale: string): string {
+  // Intl.DateTimeFormat accepts BCP-47 tags directly; if the locale is
+  // unknown to the runtime it falls back to the closest match (often
+  // English), which is the desired behaviour here.
+  return new Intl.DateTimeFormat(locale, {
     weekday: 'long',
     month: 'long',
     day: 'numeric',
