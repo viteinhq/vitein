@@ -57,18 +57,30 @@ export type EventCreateInput = {
   defaultLocale?: string;
   visibility?: 'link_only' | 'public';
   /**
-   * Colour/type theme id (ADR 0011). Defaults to `classic`. Only
-   * free themes may be set at creation; premium themes are chosen
-   * after upgrading.
+   * Colour palette id (ADR 0011 + 2026-05-26 theme-engine
+   * expansion). Defaults to `volt`. Community palettes:
+   * `volt`, `noir`, `paper`, `press`, `sorbet`, `garden`, `hot`,
+   * `sand`. All free.
    *
    */
   themeId?: string;
   /**
    * Layout id (ADR 0011) — the structural arrangement of the event
-   * page. Defaults to `standard`. Independent of `themeId`.
+   * page. Defaults to `standard`. Community layouts: `standard`,
+   * `ticket`, `editorial`, `poster`, `card`, `photo`, `bento`,
+   * `mono`. Independent of `themeId`.
    *
    */
   layout?: string;
+  /**
+   * Type-pairing id (the third axis, 2026-05-26). Defaults to
+   * `bricolage-geist`. Community pairings: `bricolage-geist`,
+   * `instrument-geist`, `space-inter`, `bricolage-mono`,
+   * `instrument-instrument`, `geist-geist`. Independent of
+   * layout and palette.
+   *
+   */
+  fontPairing?: string;
 };
 
 /**
@@ -94,18 +106,26 @@ export type EventUpdateInput = {
    */
   slug?: string;
   /**
-   * Colour/type theme id (ADR 0011). Setting a premium theme
-   * requires the event to be on a paid tier — the server returns
-   * 403 `event.feature_gated` otherwise.
+   * Colour palette id. Setting a premium palette requires the
+   * event to be on a paid tier — the server returns 403
+   * `event.feature_gated` otherwise. All community palettes
+   * (8 entries) are free.
    *
    */
   themeId?: string;
   /**
-   * Layout id (ADR 0011) — the structural arrangement of the event
-   * page. Independent of `themeId`; layouts are free.
+   * Layout id — the structural arrangement of the event page.
+   * Independent of `themeId`; layouts are free.
    *
    */
   layout?: string;
+  /**
+   * Type-pairing id — the third axis (display + body + mono
+   * font stacks). Independent of layout and palette; all
+   * community pairings are free.
+   *
+   */
+  fontPairing?: string;
   /**
    * A.6b.2 password protection. `null` clears; a string sets/replaces.
    * Setting requires the event to be on the Plus tier — the server
@@ -127,13 +147,17 @@ export type EventPublic = {
   visibility: 'link_only' | 'public';
   defaultLocale?: string;
   /**
-   * Colour/type theme id (ADR 0011); `classic` by default.
+   * Colour palette id; `volt` by default.
    */
   themeId: string;
   /**
-   * Layout id (ADR 0011); `standard` by default.
+   * Layout id; `standard` by default.
    */
   layout: string;
+  /**
+   * Type-pairing id; `bricolage-geist` by default.
+   */
+  fontPairing: string;
   /**
    * Premium tier when the event is paid, otherwise `null`. Used by
    * guest-facing UIs to light up per-tier affordances (named

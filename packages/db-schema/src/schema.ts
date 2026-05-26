@@ -135,11 +135,13 @@ export const events = pgTable(
     coverMediaId: uuid('cover_media_id'),
     defaultLocale: text('default_locale').notNull().default('en'),
     visibility: text().notNull().default('link_only'),
-    // Design = two orthogonal axes (ADR 0011). The theme (colour/type)
-    // column keeps its legacy `template_id` name so adding `layout` stays
-    // a purely additive migration — see ADR 0011.
-    themeId: text('template_id').notNull().default('classic'),
+    // Design = three orthogonal axes (ADR 0011 + 2026-05-26 expansion).
+    // The theme column keeps its legacy `template_id` name so the
+    // 2026-05 expansion stayed a metadata-only ALTER. `font_pairing` is
+    // the third axis (added 2026-05-26).
+    themeId: text('template_id').notNull().default('volt'),
     layout: text().notNull().default('standard'),
+    fontPairing: text('font_pairing').notNull().default('bricolage-geist'),
     deletedAt: timestamp('deleted_at', { withTimezone: true }),
     createdAt: nowTs(),
     updatedAt: nowTs(),

@@ -78,6 +78,13 @@
       "when": 1779513788995,
       "tag": "0010_high_master_chief",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1779806160289,
+      "tag": "0011_organic_red_hulk",
+      "breakpoints": true
     }
   ]
 }
