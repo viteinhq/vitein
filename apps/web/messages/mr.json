@@ -467,5 +467,11 @@
   "create_theme_label": "रंग थीम",
   "create_timezone_note": "वेळा {timezone} मध्ये आहेत.",
   "create_timezone_change": "बदला",
-  "event_directions": "नकाशात उघडा"
+  "event_directions": "नकाशात उघडा",
+  "layout_editorial_name": "Editorial",
+  "layout_poster_name": "Poster",
+  "layout_card_name": "Card",
+  "layout_photo_name": "Photo",
+  "layout_bento_name": "Bento",
+  "layout_mono_name": "Mono"
 }
