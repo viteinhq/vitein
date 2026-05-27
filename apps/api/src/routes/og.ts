@@ -6,6 +6,7 @@ import { Resvg, initWasm } from '@resvg/resvg-wasm';
 // `apps/api/src/types/wasm.d.ts` types the import.
 import resvgWasm from '@resvg/resvg-wasm/index_bg.wasm';
 import satori from 'satori';
+import { fontPairingRegistry, themeRegistry } from '../domain/events/themes.js';
 import { getEventBySlug } from '../domain/events/events.js';
 import { tierOf } from '../domain/payments/payments.js';
 import { db } from '../infra/db.js';
@@ -24,28 +25,88 @@ function ensureWasm(): Promise<void> {
   return wasmReady;
 }
 
-// Inter 700 fetched the first time and cached for the isolate's
-// lifetime. ~30 KB pull; warm calls hit memory.
-let cachedFont: ArrayBuffer | null = null;
-async function loadFont(): Promise<ArrayBuffer> {
-  if (cachedFont) return cachedFont;
-  const cssRes = await fetch(
-    'https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap',
-    { headers: { 'User-Agent': 'Mozilla/5.0' } },
-  );
+/**
+ * For each font-pairing id, the Google-Fonts CSS endpoint that resolves
+ * to the display font we want to draw the title in. Satori needs the
+ * raw font bytes (not a font stack), so a per-pairing fetch is the
+ * cost of correctness — and the cached map below pays it only on the
+ * first request per isolate per pairing.
+ */
+interface FontSpec {
+  family: string;
+  cssUrl: string;
+  weight: 400 | 500 | 600 | 700 | 800;
+  style: 'normal' | 'italic';
+}
+
+const FONT_SPECS: Record<string, FontSpec> = {
+  'bricolage-geist': {
+    family: 'Bricolage Grotesque',
+    cssUrl:
+      'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:ital,opsz,wght@1,12..96,700&display=swap',
+    weight: 700,
+    style: 'italic',
+  },
+  'instrument-geist': {
+    family: 'Instrument Serif',
+    cssUrl: 'https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@1&display=swap',
+    weight: 400,
+    style: 'italic',
+  },
+  'space-inter': {
+    family: 'Space Grotesk',
+    cssUrl: 'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600&display=swap',
+    weight: 600,
+    style: 'normal',
+  },
+  'bricolage-mono': {
+    family: 'Bricolage Grotesque',
+    cssUrl:
+      'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap',
+    weight: 700,
+    style: 'normal',
+  },
+  'instrument-instrument': {
+    family: 'Instrument Serif',
+    cssUrl: 'https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@1&display=swap',
+    weight: 400,
+    style: 'italic',
+  },
+  'geist-geist': {
+    family: 'Geist',
+    cssUrl: 'https://fonts.googleapis.com/css2?family=Geist:wght@800&display=swap',
+    weight: 800,
+    style: 'normal',
+  },
+};
+
+// Per-pairing font cache. Each pairing fetches once per isolate; warm
+// invocations of the same pairing hit memory.
+const cachedFonts = new Map<string, ArrayBuffer>();
+
+async function loadFontFor(fontPairingId: string): Promise<{ spec: FontSpec; data: ArrayBuffer }> {
+  const spec = FONT_SPECS[fontPairingId] ?? FONT_SPECS['bricolage-geist'];
+  if (!spec) throw new Error('font_spec_missing');
+
+  const cached = cachedFonts.get(fontPairingId);
+  if (cached) return { spec, data: cached };
+
+  const cssRes = await fetch(spec.cssUrl, { headers: { 'User-Agent': 'Mozilla/5.0' } });
   const css = await cssRes.text();
   const match = /url\(['"]?([^'")]+)['"]?\)/.exec(css);
-  if (!match?.[1]) throw new Error('font_url_not_found');
+  if (!match?.[1]) throw new Error(`font_url_not_found_${fontPairingId}`);
   const fontRes = await fetch(match[1]);
-  cachedFont = await fontRes.arrayBuffer();
-  return cachedFont;
+  const data = await fontRes.arrayBuffer();
+  cachedFonts.set(fontPairingId, data);
+  return { spec, data };
 }
 
 /**
  * GET /v1/og/save-the-date/:slug.png — dynamic Open Graph image for the
- * Save the Date preview. Renders a 1200×630 PNG with the event title +
- * date on the brand accent. 404s for non-Plus events so the URL
- * doesn't enumerate.
+ * Save the Date preview. Renders a 1200×630 PNG that picks up the
+ * event's chosen theme (palette accent + accentInk) and font pairing
+ * (display family + style + weight + tracking). 404s for non-Plus
+ * events so the URL doesn't enumerate.
  *
  * Lives here (API worker) rather than in the SvelteKit app because
  * wrangler natively bundles `.wasm` imports as `WebAssembly.Module`,
@@ -71,13 +132,20 @@ ogRoute.get('/save-the-date/:slug{.+\\.png}', async (c) => {
 
   const locale = event.defaultLocale || 'en';
   const date = formatDate(event.startsAt, event.timezone, locale);
-  const [font] = await Promise.all([loadFont(), ensureWasm()]);
 
-  const element = buildElement(event.title, date, locale);
+  // Resolve theme + font pairing. The engine's `resolve()` falls back
+  // to the baseline entries if an event's stored id has since been
+  // retired (e.g. legacy `classic`/`serif` rows pre-migration).
+  const theme = themeRegistry.resolve(event.themeId);
+  const pairing = fontPairingRegistry.resolve(event.fontPairing);
+
+  const [{ spec, data: font }] = await Promise.all([loadFontFor(pairing.id), ensureWasm()]);
+
+  const element = buildElement(event.title, date, locale, theme.tokens.colors, pairing, spec);
   const svg = await satori(element, {
     width: WIDTH,
     height: HEIGHT,
-    fonts: [{ name: 'Inter', data: font, weight: 700, style: 'normal' }],
+    fonts: [{ name: spec.family, data: font, weight: spec.weight, style: spec.style }],
   });
   const png = new Resvg(svg).render().asPng();
 
@@ -112,19 +180,42 @@ const WHEN_LABEL: Record<string, string> = {
   gu: 'ક્યારે',
   kn: 'ಯಾವಾಗ',
   ml: 'എപ്പോൾ',
-  mr: 'केव्हा',
+  mr: 'केव്हा',
   pa: 'ਕਦੋਂ',
   ta: 'எப்போது',
   te: 'ఎప్పుడు',
 };
 
 function whenLabel(locale: string): string {
-  // BCP-47 tags like `en-US` → just take the language subtag.
   const base = locale.toLowerCase().split('-')[0] ?? 'en';
   return WHEN_LABEL[base] ?? WHEN_LABEL.en ?? 'When';
 }
 
-function buildElement(title: string, date: string, locale: string): object {
+interface PaletteColors {
+  accent: string;
+  accentInk: string;
+}
+
+interface PairingTokens {
+  displayStyle: 'italic' | 'normal';
+  displayWeight: number;
+  tracking: string;
+}
+
+function buildElement(
+  title: string,
+  date: string,
+  locale: string,
+  colors: PaletteColors,
+  pairing: PairingTokens,
+  spec: FontSpec,
+): object {
+  // The display style on the page can be italic; the OG image's font
+  // file is loaded for a specific style though, so the satori element
+  // must declare exactly the style/weight we asked Google Fonts for
+  // — anything else falls back at render time.
+  const displayStyle = spec.style;
+  const displayWeight = spec.weight;
   return {
     type: 'div',
     props: {
@@ -135,9 +226,9 @@ function buildElement(title: string, date: string, locale: string): object {
         flexDirection: 'column',
         justifyContent: 'space-between',
         padding: '80px',
-        backgroundColor: '#e3ff3a',
-        color: '#0a0a0a',
-        fontFamily: 'Inter',
+        backgroundColor: colors.accent,
+        color: colors.accentInk,
+        fontFamily: spec.family,
       },
       children: [
         {
@@ -148,7 +239,8 @@ function buildElement(title: string, date: string, locale: string): object {
               fontSize: 22,
               letterSpacing: '4px',
               textTransform: 'uppercase',
-              fontWeight: 700,
+              fontStyle: displayStyle,
+              fontWeight: displayWeight,
               opacity: 0.7,
             },
             children: 'Save the Date',
@@ -166,8 +258,9 @@ function buildElement(title: string, date: string, locale: string): object {
                     display: 'flex',
                     fontSize: 96,
                     lineHeight: 0.95,
-                    fontWeight: 700,
-                    letterSpacing: '-3px',
+                    fontStyle: displayStyle,
+                    fontWeight: displayWeight,
+                    letterSpacing: pairing.tracking,
                   },
                   children: truncate(title, 60),
                 },
@@ -185,7 +278,8 @@ function buildElement(title: string, date: string, locale: string): object {
                           fontSize: 18,
                           letterSpacing: '2px',
                           textTransform: 'uppercase',
-                          fontWeight: 700,
+                          fontStyle: displayStyle,
+                          fontWeight: displayWeight,
                           opacity: 0.6,
                         },
                         children: whenLabel(locale),
@@ -197,7 +291,8 @@ function buildElement(title: string, date: string, locale: string): object {
                         style: {
                           display: 'flex',
                           fontSize: 48,
-                          fontWeight: 700,
+                          fontStyle: displayStyle,
+                          fontWeight: displayWeight,
                           letterSpacing: '-1px',
                           marginTop: 12,
                         },
