@@ -68,37 +68,88 @@ function escapeHtml(s: string): string {
 }
 
 /**
+ * Pick a sensible label for the action button based on the URL shape.
+ * The text templates don't ship a per-link label, so the shell
+ * infers one from path segments we already control:
+ *
+ *  - .../manage... -> "Manage event"
+ *  - .../auth/continue... -> "Continue"
+ *  - .../e/<slug>(/) -> "Open event"
+ *  - otherwise -> "Open link"
+ */
+function buttonLabel(href: string): string {
+  if (/\/manage(\b|\/|\?)/.test(href)) return 'Manage event';
+  if (/\/auth\/continue/.test(href)) return 'Continue';
+  if (/\/e\/[^/?#]+(\/?)(\?|#|$)/.test(href)) return 'Open event';
+  return 'Open link';
+}
+
+function renderButton(href: string): string {
+  const safeHref = escapeHtml(href);
+  const label = buttonLabel(href);
+  return `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:16px 0"><tr><td style="border-radius:9999px;background:${PALETTE.ink};padding:0"><a href="${safeHref}" style="display:inline-block;padding:12px 20px;font:600 14px/1 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:${PALETTE.paper};text-decoration:none;border-radius:9999px">${label}</a></td></tr></table>`;
+}
+
+function renderTextBlock(text: string): string {
+  const lines = text
+    .split('\n')
+    .map((line) =>
+      escapeHtml(line).replace(
+        /(https?:\/\/[^\s<]+)/g,
+        (m) => `<a href="${m}" style="color:${PALETTE.coral};text-decoration:underline">${m}</a>`,
+      ),
+    )
+    .join('<br>');
+  return `<p style="margin:0 0 16px;font:400 15px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:${PALETTE.ink}">${lines}</p>`;
+}
+
+/**
  * Turn a plain-text email body into HTML. Heuristics:
  *
- *  - Paragraph breaks: blank line separates paragraphs.
- *  - A paragraph that's a single bare URL becomes a styled button.
- *  - A sign-off line that starts with `— ` becomes muted small text.
- *  - URLs embedded inside text are auto-linkified.
- *  - All output is escaped.
+ *  - Paragraphs break on a blank line.
+ *  - Inside a paragraph, any line that's a bare URL is promoted to
+ *    its own styled button block. The lines above (if any) render
+ *    as a normal text paragraph; the URL becomes a CTA below them.
+ *    This is why templates can write "Open it:\n<url>" without a
+ *    blank line and still get a real button.
+ *  - A sign-off paragraph starting with an em-dash + space renders
+ *    as muted mono footer text.
+ *  - URLs embedded inside a text line are auto-linkified.
+ *  - All output is HTML-escaped.
  *
  * The shell wraps the body in a vite.in-branded card.
  */
 export function renderHtmlEmail(opts: { subject: string; bodyText: string }): string {
-  const paragraphs = opts.bodyText.split(/\n{2,}/).map((p) => p.trim()).filter(Boolean);
+  const paragraphs = opts.bodyText
+    .split(/\n{2,}/)
+    .map((p) => p.trim())
+    .filter(Boolean);
 
-  const blocks = paragraphs.map((p) => {
-    if (URL_LINE_RE.test(p)) {
-      const href = escapeHtml(p);
-      return `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:16px 0"><tr><td style="border-radius:9999px;background:${PALETTE.ink};padding:0"><a href="${href}" style="display:inline-block;padding:12px 20px;font:600 14px/1 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:${PALETTE.paper};text-decoration:none;border-radius:9999px">Open link</a></td></tr></table>`;
-    }
+  const blocks: string[] = [];
+  for (const p of paragraphs) {
     if (p.startsWith('— ')) {
-      return `<p style="margin:24px 0 0;font:400 12px/1.5 ui-monospace,Menlo,monospace;color:${PALETTE.inkMuted};letter-spacing:0.04em">${escapeHtml(p)}</p>`;
+      blocks.push(
+        `<p style="margin:24px 0 0;font:400 12px/1.5 ui-monospace,Menlo,monospace;color:${PALETTE.inkMuted};letter-spacing:0.04em">${escapeHtml(p)}</p>`,
+      );
+      continue;
     }
-    // Inline-linkify any URLs left inside the text (single-line
-    // paragraph that's a mix of words + URLs).
-    const lines = p
-      .split('\n')
-      .map((line) =>
-        escapeHtml(line).replace(/(https?:\/\/[^\s<]+)/g, (m) => `<a href="${m}" style="color:${PALETTE.coral};text-decoration:underline">${m}</a>`),
-      )
-      .join('<br>');
-    return `<p style="margin:0 0 16px;font:400 15px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:${PALETTE.ink}">${lines}</p>`;
-  });
+    const lines = p.split('\n');
+    let textBuffer: string[] = [];
+    const flushText = () => {
+      if (textBuffer.length === 0) return;
+      blocks.push(renderTextBlock(textBuffer.join('\n')));
+      textBuffer = [];
+    };
+    for (const line of lines) {
+      if (URL_LINE_RE.test(line)) {
+        flushText();
+        blocks.push(renderButton(line));
+      } else {
+        textBuffer.push(line);
+      }
+    }
+    flushText();
+  }
 
   // Preheader: invisible preview text shown in inbox lists by most
   // clients (Gmail/Apple Mail). Pull the first non-URL paragraph.

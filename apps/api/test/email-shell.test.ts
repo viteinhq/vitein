@@ -48,9 +48,37 @@ describe('renderHtmlEmail', () => {
   });
 
   it('turns a URL-only paragraph into a button (anchor tag with the URL)', () => {
-    expect(sample).toContain(
-      'href="https://vite.in/e/studio-launch/manage?token=abc"',
-    );
+    expect(sample).toContain('href="https://vite.in/e/studio-launch/manage?token=abc"');
+  });
+
+  it('picks a context-aware button label from the URL shape', () => {
+    const manage = renderHtmlEmail({
+      subject: 's',
+      bodyText: 'see:\nhttps://vite.in/e/x/manage?token=abc',
+    });
+    expect(manage).toContain('>Manage event<');
+
+    const view = renderHtmlEmail({
+      subject: 's',
+      bodyText: 'see:\nhttps://vite.in/e/x',
+    });
+    expect(view).toContain('>Open event<');
+
+    const cont = renderHtmlEmail({
+      subject: 's',
+      bodyText: 'see:\nhttps://vite.in/auth/continue?token=abc',
+    });
+    expect(cont).toContain('>Continue<');
+  });
+
+  it('promotes a URL line to a button even when it sits inside a paragraph with text above', () => {
+    const html = renderHtmlEmail({
+      subject: 's',
+      bodyText: 'Use the link below to manage it:\nhttps://vite.in/e/x/manage?token=abc',
+    });
+    expect(html).toContain('Use the link below to manage it:');
+    expect(html).toContain('>Manage event<');
+    expect(html).toContain('href="https://vite.in/e/x/manage?token=abc"');
   });
 
   it('renders the sign-off as muted footer text', () => {
