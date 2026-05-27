@@ -12,7 +12,11 @@ import {
 } from '../domain/events/events.js';
 import { buildEventIcs } from '../domain/events/ics.js';
 import { verifyPassword } from '../domain/events/password.js';
-import { assertLayoutAllowed, assertThemeAllowed } from '../domain/events/themes.js';
+import {
+  assertFontPairingAllowed,
+  assertLayoutAllowed,
+  assertThemeAllowed,
+} from '../domain/events/themes.js';
 import {
   issueViewToken,
   isViewTokenValid,
@@ -52,6 +56,7 @@ const eventCreateSchema = z.object({
   visibility: z.enum(['link_only', 'public']).optional(),
   themeId: z.string().min(1).max(64).optional(),
   layout: z.string().min(1).max(64).optional(),
+  fontPairing: z.string().min(1).max(64).optional(),
 });
 
 const eventUpdateSchema = z
@@ -66,6 +71,7 @@ const eventUpdateSchema = z
     visibility: z.enum(['link_only', 'public']).optional(),
     themeId: z.string().min(1).max(64).optional(),
     layout: z.string().min(1).max(64).optional(),
+    fontPairing: z.string().min(1).max(64).optional(),
     /** Custom URL slug (paid tiers). Lowercase alnum + hyphens, no edges. */
     slug: z
       .string()
@@ -92,12 +98,15 @@ eventsRoute.post(
   async (c) => {
     const input = c.req.valid('json');
     // Only free themes may be chosen at creation — the event is unpaid.
-    // Layout is free; only its id is validated.
+    // Layout and font pairing are free; only their ids are validated.
     if (input.themeId !== undefined) {
       assertThemeAllowed(input.themeId, false);
     }
     if (input.layout !== undefined) {
       assertLayoutAllowed(input.layout);
+    }
+    if (input.fontPairing !== undefined) {
+      assertFontPairingAllowed(input.fontPairing);
     }
     const { event: created, creatorToken } = await createEvent(db(c), {
       ...input,
@@ -218,9 +227,13 @@ eventsRoute.patch(
     const { id } = c.req.valid('param');
     const input = c.req.valid('json');
 
-    // Layout is free — validate the id without loading the event.
+    // Layout and font pairing are free — validate the ids without
+    // loading the event.
     if (input.layout !== undefined) {
       assertLayoutAllowed(input.layout);
+    }
+    if (input.fontPairing !== undefined) {
+      assertFontPairingAllowed(input.fontPairing);
     }
     // Feature-gate: setting a password (Plus tier), a premium theme, or a
     // custom slug (any paid tier) needs the event's current paid state —
@@ -265,6 +278,7 @@ eventsRoute.patch(
       visibility: input.visibility,
       themeId: input.themeId,
       layout: input.layout,
+      fontPairing: input.fontPairing,
       slug: input.slug,
       password: input.password,
       startsAt: input.startsAt ? new Date(input.startsAt) : undefined,
@@ -340,6 +354,7 @@ function toPublic(e: EventRow, opts: PublicOpts = { locked: false }) {
     defaultLocale: e.defaultLocale,
     themeId: e.themeId,
     layout: e.layout,
+    fontPairing: e.fontPairing,
     // Surface the premium tier so guest-facing UIs can enable per-tier
     // affordances (named plus-ones, hide branding). Null for unpaid events.
     tier: tierOf(e),

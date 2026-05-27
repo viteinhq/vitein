@@ -1131,17 +1131,29 @@ components:
           default: link_only
         themeId:
           type: string
-          default: classic
+          default: volt
           description: |
-            Colour/type theme id (ADR 0011). Defaults to `classic`. Only
-            free themes may be set at creation; premium themes are chosen
-            after upgrading.
+            Colour palette id (ADR 0011 + 2026-05-26 theme-engine
+            expansion). Defaults to `volt`. Community palettes:
+            `volt`, `noir`, `paper`, `press`, `sorbet`, `garden`, `hot`,
+            `sand`. All free.
         layout:
           type: string
           default: standard
           description: |
             Layout id (ADR 0011) — the structural arrangement of the event
-            page. Defaults to `standard`. Independent of `themeId`.
+            page. Defaults to `standard`. Community layouts: `standard`,
+            `ticket`, `editorial`, `poster`, `card`, `photo`, `bento`,
+            `mono`. Independent of `themeId`.
+        fontPairing:
+          type: string
+          default: bricolage-geist
+          description: |
+            Type-pairing id (the third axis, 2026-05-26). Defaults to
+            `bricolage-geist`. Community pairings: `bricolage-geist`,
+            `instrument-geist`, `space-inter`, `bricolage-mono`,
+            `instrument-instrument`, `geist-geist`. Independent of
+            layout and palette.
 
     EventUpdateInput:
       type: object
@@ -1170,14 +1182,21 @@ components:
         themeId:
           type: string
           description: |
-            Colour/type theme id (ADR 0011). Setting a premium theme
-            requires the event to be on a paid tier — the server returns
-            403 `event.feature_gated` otherwise.
+            Colour palette id. Setting a premium palette requires the
+            event to be on a paid tier — the server returns 403
+            `event.feature_gated` otherwise. All community palettes
+            (8 entries) are free.
         layout:
           type: string
           description: |
-            Layout id (ADR 0011) — the structural arrangement of the event
-            page. Independent of `themeId`; layouts are free.
+            Layout id — the structural arrangement of the event page.
+            Independent of `themeId`; layouts are free.
+        fontPairing:
+          type: string
+          description: |
+            Type-pairing id — the third axis (display + body + mono
+            font stacks). Independent of layout and palette; all
+            community pairings are free.
         password:
           type: [string, 'null']
           minLength: 4
@@ -1190,7 +1209,19 @@ components:
     EventPublic:
       type: object
       required:
-        [id, slug, title, startsAt, timezone, visibility, hasPassword, locked, themeId, layout]
+        [
+          id,
+          slug,
+          title,
+          startsAt,
+          timezone,
+          visibility,
+          hasPassword,
+          locked,
+          themeId,
+          layout,
+          fontPairing,
+        ]
       properties:
         id: { type: string, format: uuid }
         slug: { type: string }
@@ -1204,10 +1235,13 @@ components:
         defaultLocale: { type: string }
         themeId:
           type: string
-          description: Colour/type theme id (ADR 0011); `classic` by default.
+          description: Colour palette id; `volt` by default.
         layout:
           type: string
-          description: Layout id (ADR 0011); `standard` by default.
+          description: Layout id; `standard` by default.
+        fontPairing:
+          type: string
+          description: Type-pairing id; `bricolage-geist` by default.
         tier:
           type: [string, 'null']
           enum: [basic, plus, null]

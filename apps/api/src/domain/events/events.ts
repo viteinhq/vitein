@@ -17,6 +17,7 @@ export interface EventCreateInput {
   visibility?: 'link_only' | 'public' | undefined;
   themeId?: string | undefined;
   layout?: string | undefined;
+  fontPairing?: string | undefined;
 }
 
 export interface EventUpdateInput {
@@ -33,10 +34,12 @@ export interface EventUpdateInput {
    * `undefined` = leave as-is. Tier gating is enforced by the route.
    */
   password?: string | null | undefined;
-  /** Colour/type theme id (ADR 0011). Tier gating is enforced by the route. */
+  /** Colour theme id (ADR 0011). Tier gating is enforced by the route. */
   themeId?: string | undefined;
   /** Layout id (ADR 0011). Validated by the route; no tier gate. */
   layout?: string | undefined;
+  /** Type-pairing id (third axis, 2026-05-26). Validated by the route; no tier gate. */
+  fontPairing?: string | undefined;
   /** Custom URL slug. Format-validated and tier-gated by the route. */
   slug?: string | undefined;
 }
@@ -76,9 +79,11 @@ export async function createEvent(db: Db, input: EventCreateInput): Promise<Crea
           defaultLocale: input.defaultLocale ?? 'en',
           visibility: input.visibility ?? 'link_only',
           // Omitted when undefined — the columns default to
-          // 'classic' / 'standard' (ADR 0011).
+          // 'volt' / 'standard' / 'bricolage-geist' (ADR 0011 +
+          // 2026-05-26 theme-engine expansion).
           themeId: input.themeId,
           layout: input.layout,
+          fontPairing: input.fontPairing,
         })
         .returning();
 
@@ -162,6 +167,7 @@ export async function updateEvent(
     visibility: input.visibility,
     themeId: input.themeId,
     layout: input.layout,
+    fontPairing: input.fontPairing,
     slug: input.slug,
     passwordHash,
     updatedAt: new Date(),

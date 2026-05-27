@@ -1,6 +1,8 @@
 import {
+  createFontPairingRegistry,
   createLayoutRegistry,
   createThemeRegistry,
+  type FontPairing,
   type Layout,
   type Registry,
   type Theme,
@@ -8,12 +10,14 @@ import {
 import { DomainError, ValidationError } from '../errors.js';
 
 /**
- * Community-only theme + layout registries for the open-source API build.
- * The hosted build registers premium themes on top via the extension hook
- * (ADR 0011) — so in this repo only free themes ever resolve.
+ * Community-only theme / layout / font-pairing registries for the
+ * open-source API build. The hosted build can register premium themes
+ * on top via the extension hook (ADR 0011) — so in this repo only free
+ * entries ever resolve.
  */
 export const themeRegistry: Registry<Theme> = createThemeRegistry();
 export const layoutRegistry: Registry<Layout> = createLayoutRegistry();
+export const fontPairingRegistry: Registry<FontPairing> = createFontPairingRegistry();
 
 /**
  * Assert that a theme id may be applied to an event. The id must resolve
@@ -49,5 +53,19 @@ export function assertLayoutAllowed(
 ): void {
   if (!registry.has(layoutId)) {
     throw new ValidationError(`Unknown layout "${layoutId}"`);
+  }
+}
+
+/**
+ * Assert that a font-pairing id is known. Type pairings are free
+ * (2026-05-26 theme-engine decision) — existence check only, same
+ * shape as layouts.
+ */
+export function assertFontPairingAllowed(
+  fontPairingId: string,
+  registry: Registry<FontPairing> = fontPairingRegistry,
+): void {
+  if (!registry.has(fontPairingId)) {
+    throw new ValidationError(`Unknown font pairing "${fontPairingId}"`);
   }
 }
