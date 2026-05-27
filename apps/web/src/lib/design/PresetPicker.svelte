@@ -69,33 +69,37 @@
   }
 </script>
 
-<div class="-mx-1 flex gap-2 overflow-x-auto px-1 pb-2 sm:grid sm:grid-cols-4 sm:overflow-visible sm:px-0">
+<div
+  class="-mx-1 flex gap-2 overflow-x-auto px-1 pb-2 sm:grid sm:grid-cols-4 sm:overflow-visible sm:px-0"
+>
   {#each presets as p (p.id)}
     <button
       type="button"
       onclick={() => apply(p)}
       aria-pressed={activePresetId === p.id}
-      class="group shrink-0 cursor-pointer rounded-xl border-[1.5px] p-2 text-left transition sm:shrink"
+      class="group w-28 shrink-0 cursor-pointer rounded-xl border-[1.5px] p-2 text-left transition sm:w-auto sm:shrink"
       class:border-ink={activePresetId === p.id}
       class:bg-paper-2={activePresetId === p.id}
       class:border-rule={activePresetId !== p.id}
     >
       <div style={themeStyle(p.theme)} class="overflow-hidden rounded-lg border border-rule">
         <div
-          class="bg-accent px-2.5 py-2.5 text-base leading-none font-bold text-accent-ink"
+          class="bg-accent px-2.5 py-2.5 text-lg leading-none font-bold text-accent-ink"
           style={displayStyleFor(p.fontPairing)}
         >
           Aa
         </div>
-        <div class="space-y-1 bg-paper px-2.5 py-2">
-          <div class="h-1 w-3/4 rounded-full bg-ink/25"></div>
-          <div class="h-1 w-1/2 rounded-full bg-ink/15"></div>
+        <div class="grid h-3 grid-cols-4">
+          <div class="bg-paper"></div>
+          <div class="bg-paper-2"></div>
+          <div class="bg-ink"></div>
+          <div class="bg-accent"></div>
         </div>
       </div>
-      <span class="mt-1.5 block w-24 text-center text-xs font-semibold text-ink sm:w-auto">
+      <span class="mt-2 block text-center text-xs font-semibold text-ink">
         {(nameOf[p.id] ?? (() => p.id))()}
       </span>
-      <span class="block w-24 text-center text-[10px] text-ink-muted sm:w-auto">
+      <span class="block text-center text-[11px] leading-snug text-ink-muted">
         {(descOf[p.id] ?? (() => ''))()}
       </span>
     </button>
