@@ -17,9 +17,14 @@ import type { RequestHandler } from './$types';
  */
 export const POST: RequestHandler = async (event) => {
   const origin = new URL(event.request.url).origin;
+  // Better-Auth's /sign-out requires JSON Content-Type — without it the
+  // handler rejects the request as 415, which Cloudflare then surfaces
+  // to the client as a 500 (content-length 0). The empty `{}` body is
+  // enough; Better-Auth reads the session from the forwarded cookie.
   const apiRes = await apiFetch(event, '/v1/auth/sign-out', {
     method: 'POST',
-    headers: { Origin: origin },
+    headers: { Origin: origin, 'Content-Type': 'application/json' },
+    body: '{}',
   }).catch(() => null);
 
   const headers = new Headers({ Location: '/signin' });
