@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { enhance } from '$app/forms';
   import { page } from '$app/state';
   import { Button } from '$lib/design';
   import type { Snippet } from 'svelte';
@@ -22,7 +21,7 @@
       <a href="/admin" class="{navLink} {isActive('/admin')}">Dashboard</a>
       <a href="/admin/grants" class="{navLink} {isActive('/admin/grants')}">Grants</a>
       <a href="/account/dashboard" class={navLink}>My events</a>
-      <form method="POST" action="/account/signout" use:enhance>
+      <form method="POST" action="/account/signout">
         <Button type="submit" variant="secondary" size="sm" class="ms-1">Sign out</Button>
       </form>
     </nav>
