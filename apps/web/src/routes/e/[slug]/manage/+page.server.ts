@@ -154,6 +154,7 @@ export const actions: Actions = {
     const locationText = String(form.get('locationText') ?? '').trim();
     const themeId = String(form.get('themeId') ?? '').trim();
     const layout = String(form.get('layout') ?? '').trim();
+    const fontPairing = String(form.get('fontPairing') ?? '').trim();
     // Slugs are case-insensitive on the server; coerce to lowercase here so
     // a stray uppercase from autocapitalising mobile keyboards doesn't bounce
     // off the API's regex (which is lower-only by design).
@@ -172,6 +173,7 @@ export const actions: Actions = {
     if (locationText) body.locationText = locationText;
     if (themeId) body.themeId = themeId;
     if (layout) body.layout = layout;
+    if (fontPairing) body.fontPairing = fontPairing;
     if (slug) body.slug = slug;
 
     // The slug form's value is prefilled with the current slug, so an

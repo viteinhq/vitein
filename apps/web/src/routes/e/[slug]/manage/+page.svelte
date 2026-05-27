@@ -7,6 +7,7 @@
     Button,
     Heading,
     LayoutPicker,
+    TypePicker,
     Section,
     Text,
     TextField,
@@ -515,6 +516,10 @@
       <div class="space-y-2">
         <Text tone="muted" size="sm">{m.create_theme_label()}</Text>
         <ThemePicker value={data.event.themeId} />
+      </div>
+      <div class="space-y-2">
+        <Text tone="muted" size="sm">{m.create_typography_label()}</Text>
+        <TypePicker value={data.event.fontPairing} />
       </div>
       <Button type="submit">{m.manage_edit_submit()}</Button>
     </form>

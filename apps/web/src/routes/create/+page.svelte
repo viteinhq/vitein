@@ -10,9 +10,11 @@
     Eyebrow,
     LayoutPicker,
     LocationField,
+    PresetPicker,
     TextField,
     ThemePicker,
     TimezonePicker,
+    TypePicker,
   } from '$lib/design';
   import { localizeError } from '$lib/errors';
   import * as m from '$lib/paraglide/messages.js';
@@ -21,10 +23,12 @@
   let { form }: PageProps = $props();
 
   let submitting = $state(false);
-  // The two orthogonal design axes (ADR 0011) — each bound to its own
-  // picker and reflected together in the live preview.
-  let themeId = $state('classic');
+  // The three orthogonal design axes (ADR 0011 + 2026-05-26 expansion) —
+  // each bound to its own picker and reflected together in the live
+  // preview. A preset Quick-start can set all three at once.
+  let themeId = $state('volt');
   let layout = $state('standard');
+  let fontPairing = $state('bricolage-geist');
   let copied = $state(false);
   let shareInput = $state<HTMLInputElement | null>(null);
   // Timezone is detected and hidden by default — most creators never need
@@ -316,12 +320,20 @@
             />
           </div>
           <div class="space-y-2">
+            <span class="block {legendClass}">{m.create_preset_label()}</span>
+            <PresetPicker bind:layout bind:themeId bind:fontPairing />
+          </div>
+          <div class="space-y-2">
             <span class="block {legendClass}">{m.create_layout_label()}</span>
             <LayoutPicker bind:value={layout} />
           </div>
           <div class="space-y-2">
             <span class="block {legendClass}">{m.create_theme_label()}</span>
             <ThemePicker bind:value={themeId} />
+          </div>
+          <div class="space-y-2">
+            <span class="block {legendClass}">{m.create_typography_label()}</span>
+            <TypePicker bind:value={fontPairing} />
           </div>
         </fieldset>
       </div>
