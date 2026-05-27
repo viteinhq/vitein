@@ -24,11 +24,9 @@
 
   let open = $state(false);
   let copied = $state(false);
-  let hasNativeShare = $state(false);
-
-  $effect(() => {
-    hasNativeShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function';
-  });
+  const hasNativeShare = $derived(
+    typeof navigator !== 'undefined' && typeof navigator.share === 'function',
+  );
 
   // Body of text-based shares: the title sentence + url on its own line.
   // Each target encodes / interpolates its own way, but the source string
