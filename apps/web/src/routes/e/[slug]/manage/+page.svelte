@@ -10,6 +10,7 @@
     LayoutPicker,
     PresetPicker,
     Section,
+    ShareSheet,
     Text,
     TextField,
     ThemePicker,
@@ -140,13 +141,6 @@
   );
 
   const shareUrl = $derived(`${page.url.origin}/e/${data.event.slug}`);
-  let copied = $state(false);
-  async function copyLink() {
-    if (typeof navigator === 'undefined' || !navigator.clipboard) return;
-    await navigator.clipboard.writeText(shareUrl);
-    copied = true;
-    setTimeout(() => (copied = false), 2000);
-  }
 
   const avatarColors = ['#ff5436', '#3343ff', '#e3ff3a', '#ffba47', '#7a7670'];
   const lightAvatar = new Set(['#e3ff3a', '#ffba47']);
@@ -177,8 +171,9 @@
     </p>
   </header>
 
-  <!-- share row — the URL itself is now a live link to the public
-       event view; copy stays as the secondary action for sharing. -->
+  <!-- share row — the URL itself is a live link to the public event
+       view; the share menu beside it covers WhatsApp / iMessage /
+       email / OS-native sheet. -->
   <div class="rounded-card flex items-center gap-3 bg-ink p-3.5 ps-5 text-paper">
     <a
       href="/e/{data.event.slug}"
@@ -186,13 +181,7 @@
     >
       {page.url.host}/e/<span class="text-accent">{data.event.slug}</span>
     </a>
-    <button
-      type="button"
-      onclick={copyLink}
-      class="shrink-0 rounded-full bg-accent px-3.5 py-2 text-xs font-semibold text-accent-ink"
-    >
-      {copied ? m.event_copied() : m.event_copy_link()}
-    </button>
+    <ShareSheet url={shareUrl} title={data.event.title} />
   </div>
 
   <!-- push opt-in -->

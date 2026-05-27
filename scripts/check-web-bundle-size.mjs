@@ -52,7 +52,12 @@ const CLIENT_DIR = path.join(REPO_ROOT, 'apps/web/.svelte-kit/output/client/_app
 // / Mono — theme engine PR 2). Each is its own chunk; a page only
 // downloads the hero its event's layout id resolves to, but the
 // all-files sum carries them all.
-const RAW_TOTAL_BUDGET = 1150 * 1024; // 1.15 MB
+//
+// Recalibrated 2026-05-27 (later same day): +10 KB raw for the
+// ShareSheet component (multi-target share menu — punchlist #6).
+// Inline SVG icons for 5 targets push the chunk just past the
+// previous raw ceiling; gz total is unchanged.
+const RAW_TOTAL_BUDGET = 1170 * 1024; // 1.17 MB
 const GZ_TOTAL_BUDGET = 350 * 1024; // 350 KB
 
 const fmt = (n) => (n >= 1024 ? `${(n / 1024).toFixed(1)} KB` : `${n} B`);

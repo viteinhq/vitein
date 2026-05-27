@@ -10,6 +10,7 @@
     Eyebrow,
     LocationField,
     PresetPicker,
+    ShareSheet,
     TextField,
     TimezonePicker,
   } from '$lib/design';
@@ -26,7 +27,6 @@
   let themeId = $state('volt');
   let layout = $state('standard');
   let fontPairing = $state('bricolage-geist');
-  let copied = $state(false);
   let shareInput = $state<HTMLInputElement | null>(null);
   // Timezone is detected and hidden by default — most creators never need
   // to touch it; this reveals the picker on demand.
@@ -96,22 +96,6 @@
     shareInput?.select();
   }
 
-  async function copyShare() {
-    if (!shareUrl) return;
-    try {
-      if (navigator?.clipboard?.writeText) {
-        await navigator.clipboard.writeText(shareUrl);
-      } else {
-        shareInput?.select();
-        document.execCommand('copy');
-      }
-      copied = true;
-      setTimeout(() => (copied = false), 2000);
-    } catch {
-      shareInput?.select();
-    }
-  }
-
   const legendClass = 'font-mono text-[10px] font-medium tracking-[0.12em] text-ink-muted uppercase';
   const textareaClass =
     'mt-1.5 block w-full rounded-xl border border-rule bg-card px-4 py-3 text-[15px] text-ink placeholder:text-ink-muted/60 focus:outline-none focus:ring-2 focus:ring-accent';
@@ -146,10 +130,8 @@
         onclick={selectShareUrl}
         class="mt-2 block w-full bg-transparent font-mono text-[15px] text-paper focus:outline-none"
       />
-      <div class="mt-4 flex flex-wrap gap-2">
-        <Button onclick={copyShare} variant="accent" size="sm">
-          {copied ? m.create_success_copied() : m.create_success_copy()}
-        </Button>
+      <div class="mt-4 flex flex-wrap items-center gap-2">
+        <ShareSheet url={shareUrl} title={form.title ?? ''} />
         <a
           href="/e/{form.slug}"
           data-sveltekit-reload
