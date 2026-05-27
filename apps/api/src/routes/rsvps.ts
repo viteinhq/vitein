@@ -178,7 +178,15 @@ interface CsvRow {
 }
 
 function renderRsvpsCsv(rows: CsvRow[]): string {
-  const header = ['name', 'email', 'status', 'plus_ones', 'plus_ones_details', 'message', 'responded_at'];
+  const header = [
+    'name',
+    'email',
+    'status',
+    'plus_ones',
+    'plus_ones_details',
+    'message',
+    'responded_at',
+  ];
   const lines = [header.join(',')];
   for (const r of rows) {
     lines.push(
