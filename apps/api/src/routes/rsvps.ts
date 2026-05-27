@@ -160,7 +160,7 @@ type RsvpRow = Awaited<ReturnType<typeof submitRsvp>>['rsvp'];
  * a comma, double quote, or newline; escape internal double quotes by
  * doubling. Otherwise return the value unchanged.
  */
-function csvCell(value: unknown): string {
+function csvCell(value: string | number | null | undefined): string {
   if (value === null || value === undefined) return '';
   const s = String(value);
   if (/[",\n\r]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
