@@ -70,9 +70,7 @@ function themeCssVars(t: ThemeTokens): string {
 }
 
 function fontPairingCssVars(p: FontPairing): string {
-  return [
-    `--font-display:${p.display}`,
-    `--font-sans:${p.body}`,
-    `--font-mono:${p.mono}`,
-  ].join(';');
+  return [`--font-display:${p.display}`, `--font-sans:${p.body}`, `--font-mono:${p.mono}`].join(
+    ';',
+  );
 }
