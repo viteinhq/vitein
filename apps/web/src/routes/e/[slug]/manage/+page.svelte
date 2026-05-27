@@ -170,18 +170,22 @@
       {m.manage_label()}
     </span>
     <h1 class="font-display mt-1 text-3xl leading-none font-bold tracking-tighter sm:text-4xl">
-      {data.event.title}
+      <a href="/e/{data.event.slug}" class="hover:text-coral-deep">{data.event.title}</a>
     </h1>
     <p class="mt-2 font-mono text-[11px] text-ink-muted">
       {eventWhen}{#if data.event.locationText} · {data.event.locationText}{/if}
     </p>
   </header>
 
-  <!-- share row -->
+  <!-- share row — the URL itself is now a live link to the public
+       event view; copy stays as the secondary action for sharing. -->
   <div class="rounded-card flex items-center gap-3 bg-ink p-3.5 ps-5 text-paper">
-    <span class="min-w-0 flex-1 truncate font-mono text-sm">
+    <a
+      href="/e/{data.event.slug}"
+      class="min-w-0 flex-1 truncate font-mono text-sm text-paper hover:text-accent"
+    >
       {page.url.host}/e/<span class="text-accent">{data.event.slug}</span>
-    </span>
+    </a>
     <button
       type="button"
       onclick={copyLink}
