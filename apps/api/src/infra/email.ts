@@ -1,4 +1,5 @@
 import { negotiateLocale, type Locale } from '@vitein/i18n-messages';
+import { formatEventDate, renderHtmlEmail } from './email-shell.js';
 import { templatesFor } from './email-templates.js';
 import type {
   AnnouncementInput,
@@ -120,11 +121,22 @@ export async function sendRsvpNotification(
   });
 }
 
+// Callers populate everything except `startsAtFormatted` — the send
+// wrapper formats the date for them, locale-aware, in the event's
+// own timezone. Hiding the field from the public input prevents the
+// caller from accidentally rendering it in the wrong locale.
+type PublicReminderInput = Omit<ReminderInput, 'startsAtFormatted'>;
+type PublicAnnouncementInput = Omit<AnnouncementInput, 'startsAtFormatted'>;
+
 export async function sendReminder(
   env: Env,
-  input: ReminderInput,
+  publicInput: PublicReminderInput,
   locale: Locale | undefined,
 ): Promise<SendResult> {
+  const input: ReminderInput = {
+    ...publicInput,
+    startsAtFormatted: formatEventDate(publicInput.startsAt, locale, publicInput.timezone),
+  };
   const t = templatesFor(locale).reminder;
   return sendEmail(env, {
     to: input.to,
@@ -136,9 +148,13 @@ export async function sendReminder(
 
 export async function sendAnnouncement(
   env: Env,
-  input: AnnouncementInput,
+  publicInput: PublicAnnouncementInput,
   locale: Locale | undefined,
 ): Promise<SendResult> {
+  const input: AnnouncementInput = {
+    ...publicInput,
+    startsAtFormatted: formatEventDate(publicInput.startsAt, locale, publicInput.timezone),
+  };
   const t = templatesFor(locale).announcement;
   return sendEmail(env, {
     to: input.to,
@@ -164,10 +180,16 @@ interface SendEmailInput {
 }
 
 async function sendEmail(env: Env, input: SendEmailInput): Promise<SendResult> {
+  // Every transactional email rides on the same vite.in-branded HTML
+  // shell — see infra/email-shell.ts. The shell turns the canonical
+  // plain-text body into a styled HTML rendering, so Resend can
+  // forward both bodies and the recipient client picks one.
+  const html = renderHtmlEmail({ subject: input.subject, bodyText: input.text });
   const job: EmailJob = {
     to: input.to,
     subject: input.subject,
     text: input.text,
+    html,
     ...(input.logHint ? { logHint: input.logHint } : {}),
   };
 
@@ -215,6 +237,7 @@ export async function deliverEmail(env: Env, job: EmailJob): Promise<void> {
       to: job.to,
       subject: job.subject,
       text: job.text,
+      ...(job.html ? { html: job.html } : {}),
     }),
   });
 

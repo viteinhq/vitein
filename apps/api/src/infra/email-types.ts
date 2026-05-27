@@ -44,6 +44,10 @@ export interface ReminderInput {
   to: string;
   eventTitle: string;
   startsAt: Date;
+  /** IANA timezone of the event — used to format `startsAt` for the recipient. */
+  timezone: string;
+  /** Locale-formatted `startsAt` string, pre-rendered by the send wrapper. */
+  startsAtFormatted: string;
   eventUrl: string;
 }
 
@@ -51,6 +55,10 @@ export interface AnnouncementInput {
   to: string;
   eventTitle: string;
   startsAt: Date;
+  /** IANA timezone of the event — used to format `startsAt` for the recipient. */
+  timezone: string;
+  /** Locale-formatted `startsAt` string, pre-rendered by the send wrapper. */
+  startsAtFormatted: string;
   eventUrl: string;
   stage: 'save_the_date' | 'invitation';
 }
@@ -64,6 +72,8 @@ export interface EmailJob {
   to: string;
   subject: string;
   text: string;
+  /** Optional HTML body; Resend prefers it over `text` when both are present. */
+  html?: string;
   /** Free-form context for structured logging on the consumer side. */
   logHint?: Record<string, string>;
 }
