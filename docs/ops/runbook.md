@@ -169,9 +169,10 @@ events with Worker logs and the `audit_log` table.
 
 Sentry's alert rules are configured in the dashboard, not in code.
 The list below is the source of truth for what should be configured;
-re-create from scratch if it ever drifts. All rules route to the same
-notification target (Kim's email by default; switch to a Slack
-webhook once the workspace is set up).
+re-create from scratch if it ever drifts. Click-by-click setup steps
+live in `sentry-alerts.md`. All rules route to the same notification
+target (Kim's email by default; switch to a Slack webhook once the
+workspace is set up).
 
 | Alert name                  | Project      | Trigger                                                           | Routing            |
 | --------------------------- | ------------ | ----------------------------------------------------------------- | ------------------ |
