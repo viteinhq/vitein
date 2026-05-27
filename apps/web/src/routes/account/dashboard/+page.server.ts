@@ -23,6 +23,26 @@ const EMPTY_STATS: UserStats = {
 };
 
 export const load: PageServerLoad = async (event) => {
+  // Auto-claim anonymously-created events tied to the user's email
+  // before listing — the endpoint is idempotent (already-claimed
+  // events skip), so calling it on every dashboard load just costs a
+  // single indexed lookup. This is the post-sign-in landing page, so
+  // in practice the claim runs once right after login. A separate
+  // explicit "claim" form action stays in place for manual re-runs.
+  // Fire-and-await so the events list below picks up the new rows in
+  // the same request rather than waiting for a refresh.
+  try {
+    await apiFetch(event, '/v1/auth/claim', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: '{}',
+    });
+  } catch {
+    // Auto-claim is a soft enhancement — a failure here must not
+    // break the dashboard. The manual claim button stays as a
+    // recovery path if something genuinely goes wrong.
+  }
+
   const [eventsRes, statsRes] = await Promise.all([
     apiFetch(event, '/v1/users/me/events'),
     apiFetch(event, '/v1/users/me/stats'),
