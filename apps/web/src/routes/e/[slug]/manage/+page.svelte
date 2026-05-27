@@ -5,14 +5,16 @@
   import {
     Banner,
     Button,
+    DesignPreview,
     Heading,
     LayoutPicker,
-    TypePicker,
+    PresetPicker,
     Section,
     Text,
     TextField,
     ThemePicker,
     TimezonePicker,
+    TypePicker,
   } from '$lib/design';
   import { localizeError } from '$lib/errors';
   import { downsizeImageFile } from '$lib/image/downsize';
@@ -102,6 +104,18 @@
   let editTimezone = $derived(data.event.timezone);
 
   let deleteConfirm = $state('');
+
+  // The three design axes — local state seeded from the loaded event,
+  // bound into the pickers so each tap updates the live preview
+  // without a round-trip. The pickers' own radio `name`s submit on
+  // form save (Preset isn't form-backed; it just rewrites all three).
+  // svelte-ignore state_referenced_locally
+  let designThemeId = $state(data.event.themeId);
+  // svelte-ignore state_referenced_locally
+  let designLayout = $state(data.event.layout);
+  // svelte-ignore state_referenced_locally
+  let designFontPairing = $state(data.event.fontPairing);
+  let designTab = $state<'preset' | 'layout' | 'palette' | 'type'>('preset');
 
   const rsvpCounts = $derived.by(() => {
     const counts = { yes: 0, maybe: 0, no: 0, plusOnes: 0 };
@@ -493,7 +507,13 @@
     </form>
   </Section>
 
-  <!-- Design — layout + colour theme (ADR 0011) -->
+  <!-- Design — layout + colour palette + type pairing (ADR 0011 + 0013).
+       A single Style section organised as: large live preview at the top,
+       tab strip below, one picker visible at a time. All three pickers
+       stay mounted so their radio inputs participate in the form submit
+       regardless of which tab is open — visibility is purely CSS.
+       Preset is a curated shortcut and writes to all three axes via
+       two-way bindings. -->
   <Section>
     <Heading level="panel">{m.manage_theme_heading()}</Heading>
     {#if form?.designSuccess}
@@ -509,18 +529,61 @@
     {/if}
     <form method="POST" action="?/update&token={data.token}" use:enhance class="space-y-5">
       <input type="hidden" name="formScope" value="design" />
-      <div class="space-y-2">
-        <Text tone="muted" size="sm">{m.create_layout_label()}</Text>
-        <LayoutPicker value={data.event.layout} />
+
+      <div class="flex justify-center">
+        <DesignPreview
+          themeId={designThemeId}
+          layout={designLayout}
+          title={data.event.title}
+          date={data.event.startsAt}
+          timezone={data.event.timezone}
+          location={data.event.locationText ?? ''}
+        />
       </div>
-      <div class="space-y-2">
-        <Text tone="muted" size="sm">{m.create_theme_label()}</Text>
-        <ThemePicker value={data.event.themeId} />
+
+      <div
+        role="tablist"
+        aria-label={m.manage_theme_heading()}
+        class="grid grid-cols-4 gap-1 rounded-full border border-line bg-surface p-1"
+      >
+        {#each [{ id: 'preset', label: m.create_preset_label() }, { id: 'layout', label: m.create_layout_label() }, { id: 'palette', label: m.create_theme_label() }, { id: 'type', label: m.create_typography_label() }] as tab (tab.id)}
+          {@const active = designTab === tab.id}
+          <button
+            type="button"
+            role="tab"
+            aria-selected={active}
+            class={[
+              'rounded-full px-3 py-2 text-xs font-medium transition',
+              active ? 'bg-ink text-canvas' : 'text-ink-muted hover:text-ink',
+            ]}
+            onclick={() => (designTab = tab.id as typeof designTab)}
+          >
+            {tab.label}
+          </button>
+        {/each}
       </div>
-      <div class="space-y-2">
-        <Text tone="muted" size="sm">{m.create_typography_label()}</Text>
-        <TypePicker value={data.event.fontPairing} />
+
+      <!-- Preset is a writer over the three axes; no form field of its
+           own. Wrapping in a hidden div keeps the bindings live so a
+           preset tap updates the preview, layout, palette and type
+           pickers simultaneously. -->
+      <div class={designTab === 'preset' ? 'block' : 'hidden'}>
+        <PresetPicker
+          bind:layout={designLayout}
+          bind:themeId={designThemeId}
+          bind:fontPairing={designFontPairing}
+        />
       </div>
+      <div class={designTab === 'layout' ? 'block' : 'hidden'}>
+        <LayoutPicker bind:value={designLayout} />
+      </div>
+      <div class={designTab === 'palette' ? 'block' : 'hidden'}>
+        <ThemePicker bind:value={designThemeId} />
+      </div>
+      <div class={designTab === 'type' ? 'block' : 'hidden'}>
+        <TypePicker bind:value={designFontPairing} />
+      </div>
+
       <Button type="submit">{m.manage_edit_submit()}</Button>
     </form>
   </Section>
