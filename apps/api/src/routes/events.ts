@@ -142,6 +142,11 @@ eventsRoute.post(
       {
         event: toPublic(event),
         magicLinkSent: sent,
+        // The manage URL is the immediate channel — the creator's own
+        // browser just authored the request, so handing them the
+        // ready-to-use link is correct UX and not a leak. The email
+        // is the recovery channel for later sessions.
+        manageUrl,
         creatorTokenPreview: sent ? null : creatorToken,
       },
       201,

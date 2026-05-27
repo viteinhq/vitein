@@ -17,7 +17,7 @@
   import * as m from '$lib/paraglide/messages.js';
   import type { PageProps } from './$types';
 
-  let { form }: PageProps = $props();
+  let { form, data }: PageProps = $props();
 
   let submitting = $state(false);
   // The three orthogonal design axes (ADR 0011 + 2026-05-26 expansion) —
@@ -58,6 +58,11 @@
   let startsAtValue = $derived(String(form?.values?.startsAt ?? defaultStartsAt));
   let endsAtValue = $derived(String(form?.values?.endsAt ?? ''));
   let timezoneValue = $derived(String(form?.values?.timezone ?? defaultTimezone));
+  // Signed-in users get their session email as the default; a failed
+  // submit's value still wins (so an in-flight correction isn't lost).
+  let creatorEmailValue = $derived(
+    String(form?.values?.creatorEmail ?? data?.sessionEmail ?? ''),
+  );
 
   // End time is optional, so it starts empty. When the creator first
   // focuses the field, suggest a 2-hour event — same day, start + 2h — so
@@ -156,15 +161,33 @@
       </div>
     </div>
 
-    {#if form.magicLinkSent}
-      <p class="mt-5 text-sm leading-relaxed text-ink-muted">{m.create_success_magic_sent()}</p>
-    {:else if form.creatorTokenPreview}
-      <p class="mt-5 text-sm leading-relaxed text-ink-muted">
-        {m.create_success_dev_mode()}
-        <a class="underline" href="/e/{form.slug}/manage?token={form.creatorTokenPreview}">
-          /e/{form.slug}/manage
-        </a>
-      </p>
+    {#if form.manageUrl}
+      <!-- Manage handoff: surface the link prominently so the creator
+           doesn't have to fetch the email just to jump to the manage
+           page. The email is still the recovery channel — relabel it
+           as such when the magic link was dispatched. -->
+      <div class="mt-6 rounded-card border border-rule bg-card p-5">
+        <span class="font-mono text-[10px] tracking-[0.12em] text-ink-muted uppercase">
+          {m.create_success_manage_label()}
+        </span>
+        <div class="mt-3 flex flex-wrap items-center gap-2">
+          <a
+            href={form.manageUrl}
+            data-sveltekit-reload
+            class="inline-flex items-center gap-2 rounded-full bg-ink px-3.5 py-2 text-xs font-semibold text-paper transition hover:opacity-90"
+          >
+            {m.create_success_manage_open()}
+            <ArrowRight size={12} />
+          </a>
+        </div>
+        <p class="mt-3 text-xs leading-relaxed text-ink-muted">
+          {#if form.magicLinkSent}
+            {m.create_success_manage_email_backup()}
+          {:else}
+            {m.create_success_dev_mode()}
+          {/if}
+        </p>
+      </div>
     {/if}
   </section>
 {:else}
@@ -289,7 +312,7 @@
           type="email"
           name="creatorEmail"
           required
-          value={form?.values?.creatorEmail ?? ''}
+          value={creatorEmailValue}
           label={m.create_field_email()}
           hint={m.create_field_email_hint()}
         />
