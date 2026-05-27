@@ -467,5 +467,11 @@
   "create_theme_label": "配色主题",
   "create_timezone_note": "时间以 {timezone} 为准。",
   "create_timezone_change": "更改",
-  "event_directions": "在地图中打开"
+  "event_directions": "在地图中打开",
+  "layout_editorial_name": "Editorial",
+  "layout_poster_name": "Poster",
+  "layout_card_name": "Card",
+  "layout_photo_name": "Photo",
+  "layout_bento_name": "Bento",
+  "layout_mono_name": "Mono"
 }

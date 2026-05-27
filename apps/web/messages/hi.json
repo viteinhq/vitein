@@ -467,5 +467,11 @@
   "create_theme_label": "रंग थीम",
   "create_timezone_note": "समय {timezone} में हैं।",
   "create_timezone_change": "बदलें",
-  "event_directions": "मानचित्र में खोलें"
+  "event_directions": "मानचित्र में खोलें",
+  "layout_editorial_name": "Editorial",
+  "layout_poster_name": "Poster",
+  "layout_card_name": "Card",
+  "layout_photo_name": "Photo",
+  "layout_bento_name": "Bento",
+  "layout_mono_name": "Mono"
 }

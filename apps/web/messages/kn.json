@@ -467,5 +467,11 @@
   "create_theme_label": "ಬಣ್ಣದ ಥೀಮ್",
   "create_timezone_note": "ಸಮಯಗಳು {timezone} ವಲಯದಲ್ಲಿವೆ.",
   "create_timezone_change": "ಬದಲಾಯಿಸಿ",
-  "event_directions": "ನಕ್ಷೆಯಲ್ಲಿ ತೆರೆಯಿರಿ"
+  "event_directions": "ನಕ್ಷೆಯಲ್ಲಿ ತೆರೆಯಿರಿ",
+  "layout_editorial_name": "Editorial",
+  "layout_poster_name": "Poster",
+  "layout_card_name": "Card",
+  "layout_photo_name": "Photo",
+  "layout_bento_name": "Bento",
+  "layout_mono_name": "Mono"
 }
