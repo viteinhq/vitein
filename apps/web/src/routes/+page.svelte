@@ -1,6 +1,7 @@
 <script lang="ts">
   import { ArrowRight, Button, Eyebrow, InviteCard } from '$lib/design';
   import * as m from '$lib/paraglide/messages.js';
+  import { localizeHref } from '$lib/paraglide/runtime';
 
   const features = [
     { title: m.home_features_anonymous_title(), body: m.home_features_anonymous_body(), accent: true },
@@ -49,11 +50,13 @@
       <p class="mt-6 max-w-md text-lg leading-relaxed text-ink-muted">{m.home_sub()}</p>
 
       <div class="mt-8 flex flex-wrap gap-3">
-        <Button href="/create" variant="primary" size="lg">
+        <Button href={localizeHref('/create')} variant="primary" size="lg">
           {m.home_cta_primary()}
           <ArrowRight size={15} />
         </Button>
-        <Button href="/pricing" variant="secondary" size="lg">{m.home_cta_secondary()}</Button>
+        <Button href={localizeHref('/pricing')} variant="secondary" size="lg">
+          {m.home_cta_secondary()}
+        </Button>
       </div>
 
       <ul
@@ -202,7 +205,7 @@
     {m.home_cta_final_body()}
   </p>
   <div class="mt-8 flex justify-center">
-    <Button href="/create" variant="accent" size="lg">
+    <Button href={localizeHref('/create')} variant="accent" size="lg">
       {m.home_cta_primary()}
       <ArrowRight size={15} />
     </Button>

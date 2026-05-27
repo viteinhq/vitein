@@ -4,6 +4,7 @@
   import { ArrowRight, Button, CookieConsent, LanguageSwitcher, Wordmark } from '$lib/design';
   import InstallPrompt from '$lib/pwa/InstallPrompt.svelte';
   import * as m from '$lib/paraglide/messages.js';
+  import { localizeHref } from '$lib/paraglide/runtime';
   import type { Snippet } from 'svelte';
   import type { LayoutProps } from './$types';
   import '../app.css';
@@ -25,17 +26,24 @@
   {#if !hideBranding}
     <header class="border-b border-rule">
       <div class="mx-auto flex max-w-5xl items-center justify-between px-5 py-3.5 sm:px-6">
-        <Wordmark href="/" size={23} />
+        <Wordmark href={localizeHref('/')} size={23} />
         <nav class="flex items-center gap-1">
-          <a href="/pricing" class="{navLink} hidden sm:inline-block">{m.nav_pricing()}</a>
+          <a href={localizeHref('/pricing')} class="{navLink} hidden sm:inline-block">
+            {m.nav_pricing()}
+          </a>
           {#if data.signedIn}
-            <a href="/account/dashboard" class="{navLink} hidden sm:inline-block">
+            <a
+              href={localizeHref('/account/dashboard')}
+              class="{navLink} hidden sm:inline-block"
+            >
               {m.nav_dashboard()}
             </a>
           {:else}
-            <a href="/signin" class="{navLink} hidden sm:inline-block">{m.nav_signin()}</a>
+            <a href={localizeHref('/signin')} class="{navLink} hidden sm:inline-block">
+              {m.nav_signin()}
+            </a>
           {/if}
-          <Button href="/create" variant="accent" size="sm" class="ms-1">
+          <Button href={localizeHref('/create')} variant="accent" size="sm" class="ms-1">
             {m.nav_create()}
             <ArrowRight size={12} />
           </Button>
@@ -55,9 +63,11 @@
         <div
           class="mx-auto flex max-w-5xl flex-wrap justify-center gap-x-5 gap-y-1 px-6 py-5 text-center font-mono text-[10px] tracking-wide text-ink-muted"
         >
-          <a href="/legal/impressum" class="hover:text-ink">{m.footer_impressum()}</a>
-          <a href="/legal/privacy" class="hover:text-ink">{m.footer_privacy()}</a>
-          <a href="/legal/terms" class="hover:text-ink">{m.footer_terms()}</a>
+          <a href={localizeHref('/legal/impressum')} class="hover:text-ink">
+            {m.footer_impressum()}
+          </a>
+          <a href={localizeHref('/legal/privacy')} class="hover:text-ink">{m.footer_privacy()}</a>
+          <a href={localizeHref('/legal/terms')} class="hover:text-ink">{m.footer_terms()}</a>
         </div>
       </footer>
     {:else}
@@ -65,7 +75,7 @@
         <div class="mx-auto max-w-5xl px-6 py-12">
         <div class="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
           <div class="max-w-xs">
-            <Wordmark href="/" size={26} onDark class="text-paper" />
+            <Wordmark href={localizeHref('/')} size={26} onDark class="text-paper" />
             <p class="mt-3 text-sm leading-relaxed text-paper/55">{m.footer_tagline()}</p>
           </div>
           <nav class="flex gap-12 text-sm">
@@ -73,8 +83,12 @@
               <span class="font-mono text-[10px] tracking-[0.12em] text-paper/55 uppercase">
                 vite.in
               </span>
-              <a href="/create" class="text-paper/75 hover:text-paper">{m.nav_create()}</a>
-              <a href="/pricing" class="text-paper/75 hover:text-paper">{m.nav_pricing()}</a>
+              <a href={localizeHref('/create')} class="text-paper/75 hover:text-paper">
+                {m.nav_create()}
+              </a>
+              <a href={localizeHref('/pricing')} class="text-paper/75 hover:text-paper">
+                {m.nav_pricing()}
+              </a>
               <a
                 href="https://github.com/viteinhq/vitein"
                 class="text-paper/75 hover:text-paper"
@@ -87,13 +101,13 @@
               <span class="font-mono text-[10px] tracking-[0.12em] text-paper/55 uppercase">
                 Legal
               </span>
-              <a href="/legal/impressum" class="text-paper/75 hover:text-paper">
+              <a href={localizeHref('/legal/impressum')} class="text-paper/75 hover:text-paper">
                 {m.footer_impressum()}
               </a>
-              <a href="/legal/privacy" class="text-paper/75 hover:text-paper">
+              <a href={localizeHref('/legal/privacy')} class="text-paper/75 hover:text-paper">
                 {m.footer_privacy()}
               </a>
-              <a href="/legal/terms" class="text-paper/75 hover:text-paper">
+              <a href={localizeHref('/legal/terms')} class="text-paper/75 hover:text-paper">
                 {m.footer_terms()}
               </a>
             </div>
