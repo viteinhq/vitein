@@ -514,5 +514,6 @@
   "share_sms": "Messages",
   "share_email": "Email",
   "share_line": "LINE",
-  "share_more": "More…"
+  "share_more": "More…",
+  "manage_rsvps_download_csv": "Download CSV"
 }

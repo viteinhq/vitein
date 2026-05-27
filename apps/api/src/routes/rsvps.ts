@@ -1,7 +1,7 @@
 import { zValidator } from '@hono/zod-validator';
 import { Hono } from 'hono';
 import { z } from 'zod';
-import { mintManageToken } from '../domain/events/events.js';
+import { getEventPublic, mintManageToken } from '../domain/events/events.js';
 import { ValidationError } from '../domain/errors.js';
 import { listRsvps, submitRsvp } from '../domain/rsvps/rsvps.js';
 import { db } from '../infra/db.js';
@@ -128,7 +128,74 @@ rsvpsRoute.get(
   },
 );
 
+rsvpsRoute.get(
+  '/csv',
+  zValidator('param', idParamSchema, (r) => {
+    if (!r.success) throw new ValidationError('Invalid event id', { issues: r.error.issues });
+  }),
+  requireEventOwnership('id', { scope: 'rsvps:read' }),
+  async (c) => {
+    const { id } = c.req.valid('param');
+    const [event, items] = await Promise.all([getEventPublic(db(c), id), listRsvps(db(c), id)]);
+    const csv = renderRsvpsCsv(items.map(toRsvp));
+    // BOM so Excel opens UTF-8 CSVs with the right encoding — without
+    // it, ä/ö/ü land as mojibake on Windows. CSV viewers that don't
+    // care (Numbers, Sheets) ignore the BOM.
+    const body = '﻿' + csv;
+    return new Response(body, {
+      status: 200,
+      headers: {
+        'Content-Type': 'text/csv; charset=utf-8',
+        'Content-Disposition': `attachment; filename="${event.slug}-rsvps.csv"`,
+        'Cache-Control': 'private, no-store',
+      },
+    });
+  },
+);
+
 type RsvpRow = Awaited<ReturnType<typeof submitRsvp>>['rsvp'];
+
+/**
+ * RFC 4180 cell quoting — wrap in double quotes when the value contains
+ * a comma, double quote, or newline; escape internal double quotes by
+ * doubling. Otherwise return the value unchanged.
+ */
+function csvCell(value: unknown): string {
+  if (value === null || value === undefined) return '';
+  const s = String(value);
+  if (/[",\n\r]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
+  return s;
+}
+
+interface CsvRow {
+  name: string;
+  email: string | null;
+  status: 'yes' | 'maybe' | 'no';
+  plusOnes: number;
+  plusOnesDetails: Array<{ name: string }>;
+  message: string | null;
+  respondedAt: string;
+}
+
+function renderRsvpsCsv(rows: CsvRow[]): string {
+  const header = ['name', 'email', 'status', 'plus_ones', 'plus_ones_details', 'message', 'responded_at'];
+  const lines = [header.join(',')];
+  for (const r of rows) {
+    lines.push(
+      [
+        csvCell(r.name),
+        csvCell(r.email ?? ''),
+        csvCell(r.status),
+        csvCell(r.plusOnes),
+        csvCell(r.plusOnesDetails.map((d) => d.name).join('; ')),
+        csvCell(r.message ?? ''),
+        csvCell(r.respondedAt),
+      ].join(','),
+    );
+  }
+  // Trailing CRLF per the RFC; matters for some pickier parsers.
+  return lines.join('\r\n') + '\r\n';
+}
 
 function toRsvp(r: RsvpRow) {
   return {
