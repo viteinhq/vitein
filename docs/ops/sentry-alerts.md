@@ -7,8 +7,8 @@ that one is wired through CI; alert rules have to be clicked in
 the Sentry UI, no CLI / API path with the current scope of the
 auth token.
 
-**Source of truth for *what* alerts exist:** `runbook.md`.
-**This doc:** *how* to click them.
+**Source of truth for _what_ alerts exist:** `runbook.md`.
+**This doc:** _how_ to click them.
 
 ## Before you start
 
@@ -53,7 +53,7 @@ Metric alert. Lower priority — degrades slowly.
 
 Custom-tag alert. Requires `Sentry.setTag('db_unreachable', true)`
 to be emitted from `apps/api/src/infra/db.ts` when a query fails
-to reach Neon — *implementation pending per the runbook*. File
+to reach Neon — _implementation pending per the runbook_. File
 the alert rule now anyway; it'll start firing once the tag is
 wired.
 
@@ -96,14 +96,14 @@ Issue alert with session-percentage filter.
 ## Acceptance check (mirrored from runbook)
 
 - [ ] Every rule above appears in
-  `sentry.io/organizations/<org>/alerts/rules/` with
-  `Status: Active`.
+      `sentry.io/organizations/<org>/alerts/rules/` with
+      `Status: Active`.
 - [ ] Each rule's grouping is "issue", not "event" — one incident
-  produces one notification, not hundreds.
+      produces one notification, not hundreds.
 - [ ] Send a test event: from a non-prod request, throw a fresh
-  exception with `Sentry.captureException(new Error('alerts smoke
-  test 2026-05-27'))`. The matching rule should email within
-  ~1 minute.
+      exception with `Sentry.captureException(new Error('alerts smoke
+test 2026-05-27'))`. The matching rule should email within
+      ~1 minute.
 - [ ] Delete the smoke-test issue afterward.
 
 ## Tuning after the first week of production data
