@@ -46,8 +46,14 @@ const CLIENT_DIR = path.join(REPO_ROOT, 'apps/web/.svelte-kit/output/client/_app
 // parity gate seeded). Paraglide v2 splits messages per locale so a
 // page only downloads one language; this all-files total grows
 // because the sum spans every locale.
-const RAW_TOTAL_BUDGET = 1120 * 1024; // 1.12 MB
-const GZ_TOTAL_BUDGET = 338 * 1024; // 338 KB
+//
+// Recalibrated 2026-05-27: +12 KB gz / +30 KB raw for the 6 new
+// layout Hero components (Editorial / Poster / Card / Photo / Bento
+// / Mono — theme engine PR 2). Each is its own chunk; a page only
+// downloads the hero its event's layout id resolves to, but the
+// all-files sum carries them all.
+const RAW_TOTAL_BUDGET = 1150 * 1024; // 1.15 MB
+const GZ_TOTAL_BUDGET = 350 * 1024; // 350 KB
 
 const fmt = (n) => (n >= 1024 ? `${(n / 1024).toFixed(1)} KB` : `${n} B`);
 
