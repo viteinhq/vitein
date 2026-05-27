@@ -110,9 +110,9 @@ const en: TemplateBundle = {
   },
   reminder: {
     subject: ({ eventTitle }) => `Reminder: ${eventTitle}`,
-    body: ({ eventTitle, startsAt, eventUrl }) =>
+    body: ({ eventTitle, startsAtFormatted, eventUrl }) =>
       [
-        `Reminder: "${eventTitle}" is coming up at ${startsAt.toISOString()}.`,
+        `Reminder: "${eventTitle}" is coming up at ${startsAtFormatted}.`,
         '',
         'Event details:',
         eventUrl,
@@ -123,10 +123,10 @@ const en: TemplateBundle = {
   announcement: {
     subject: ({ eventTitle, stage }) =>
       stage === 'save_the_date' ? `Save the date — ${eventTitle}` : `You're invited: ${eventTitle}`,
-    body: ({ eventTitle, startsAt, eventUrl, stage }) => {
+    body: ({ eventTitle, startsAtFormatted, eventUrl, stage }) => {
       if (stage === 'save_the_date') {
         return [
-          `Save the date: "${eventTitle}" — ${startsAt.toISOString()}.`,
+          `Save the date: "${eventTitle}" — ${startsAtFormatted}.`,
           '',
           'The full invitation with location and details will follow. For now, please hold the date in your calendar.',
           '',
@@ -136,7 +136,7 @@ const en: TemplateBundle = {
         ].join('\n');
       }
       return [
-        `You're invited to "${eventTitle}" on ${startsAt.toISOString()}.`,
+        `You're invited to "${eventTitle}" on ${startsAtFormatted}.`,
         '',
         'Details and RSVP:',
         eventUrl,
@@ -221,9 +221,9 @@ const de: TemplateBundle = {
   },
   reminder: {
     subject: ({ eventTitle }) => `Erinnerung: ${eventTitle}`,
-    body: ({ eventTitle, startsAt, eventUrl }) =>
+    body: ({ eventTitle, startsAtFormatted, eventUrl }) =>
       [
-        `Erinnerung: „${eventTitle}" findet am ${startsAt.toISOString()} statt.`,
+        `Erinnerung: „${eventTitle}" findet am ${startsAtFormatted} statt.`,
         '',
         'Event-Details:',
         eventUrl,
@@ -234,10 +234,10 @@ const de: TemplateBundle = {
   announcement: {
     subject: ({ eventTitle, stage }) =>
       stage === 'save_the_date' ? `Save the Date — ${eventTitle}` : `Einladung: ${eventTitle}`,
-    body: ({ eventTitle, startsAt, eventUrl, stage }) => {
+    body: ({ eventTitle, startsAtFormatted, eventUrl, stage }) => {
       if (stage === 'save_the_date') {
         return [
-          `Save the Date: „${eventTitle}" — ${startsAt.toISOString()}.`,
+          `Save the Date: „${eventTitle}" — ${startsAtFormatted}.`,
           '',
           'Die vollständige Einladung mit Ort und Details folgt. Bitte halte dir den Termin bereits jetzt frei.',
           '',
@@ -247,7 +247,7 @@ const de: TemplateBundle = {
         ].join('\n');
       }
       return [
-        `Du bist eingeladen zu „${eventTitle}" am ${startsAt.toISOString()}.`,
+        `Du bist eingeladen zu „${eventTitle}" am ${startsAtFormatted}.`,
         '',
         'Details und Zu-/Absage:',
         eventUrl,
@@ -336,9 +336,9 @@ const fr: TemplateBundle = {
   },
   reminder: {
     subject: ({ eventTitle }) => `Rappel : ${eventTitle}`,
-    body: ({ eventTitle, startsAt, eventUrl }) =>
+    body: ({ eventTitle, startsAtFormatted, eventUrl }) =>
       [
-        `Rappel : « ${eventTitle} » a lieu le ${startsAt.toISOString()}.`,
+        `Rappel : « ${eventTitle} » a lieu le ${startsAtFormatted}.`,
         '',
         "Détails de l'événement :",
         eventUrl,
@@ -351,10 +351,10 @@ const fr: TemplateBundle = {
       stage === 'save_the_date'
         ? `Réservez la date — ${eventTitle}`
         : `Vous êtes invité(e) : ${eventTitle}`,
-    body: ({ eventTitle, startsAt, eventUrl, stage }) => {
+    body: ({ eventTitle, startsAtFormatted, eventUrl, stage }) => {
       if (stage === 'save_the_date') {
         return [
-          `Réservez la date : « ${eventTitle} » — ${startsAt.toISOString()}.`,
+          `Réservez la date : « ${eventTitle} » — ${startsAtFormatted}.`,
           '',
           "L'invitation complète avec le lieu et les détails suivra. Pour l'instant, veuillez bloquer cette date dans votre agenda.",
           '',
@@ -364,7 +364,7 @@ const fr: TemplateBundle = {
         ].join('\n');
       }
       return [
-        `Vous êtes invité(e) à « ${eventTitle} » le ${startsAt.toISOString()}.`,
+        `Vous êtes invité(e) à « ${eventTitle} » le ${startsAtFormatted}.`,
         '',
         'Détails et RSVP :',
         eventUrl,
@@ -453,9 +453,9 @@ const es: TemplateBundle = {
   },
   reminder: {
     subject: ({ eventTitle }) => `Recordatorio: ${eventTitle}`,
-    body: ({ eventTitle, startsAt, eventUrl }) =>
+    body: ({ eventTitle, startsAtFormatted, eventUrl }) =>
       [
-        `Recordatorio: «${eventTitle}» tendrá lugar el ${startsAt.toISOString()}.`,
+        `Recordatorio: «${eventTitle}» tendrá lugar el ${startsAtFormatted}.`,
         '',
         'Detalles del evento:',
         eventUrl,
@@ -468,10 +468,10 @@ const es: TemplateBundle = {
       stage === 'save_the_date'
         ? `Reserva la fecha — ${eventTitle}`
         : `Estás invitado/a: ${eventTitle}`,
-    body: ({ eventTitle, startsAt, eventUrl, stage }) => {
+    body: ({ eventTitle, startsAtFormatted, eventUrl, stage }) => {
       if (stage === 'save_the_date') {
         return [
-          `Reserva la fecha: «${eventTitle}» — ${startsAt.toISOString()}.`,
+          `Reserva la fecha: «${eventTitle}» — ${startsAtFormatted}.`,
           '',
           'La invitación completa con el lugar y los detalles llegará después. Por ahora, por favor reserva la fecha en tu calendario.',
           '',
@@ -481,7 +481,7 @@ const es: TemplateBundle = {
         ].join('\n');
       }
       return [
-        `Estás invitado/a a «${eventTitle}» el ${startsAt.toISOString()}.`,
+        `Estás invitado/a a «${eventTitle}» el ${startsAtFormatted}.`,
         '',
         'Detalles y respuesta:',
         eventUrl,
@@ -570,9 +570,9 @@ const it: TemplateBundle = {
   },
   reminder: {
     subject: ({ eventTitle }) => `Promemoria: ${eventTitle}`,
-    body: ({ eventTitle, startsAt, eventUrl }) =>
+    body: ({ eventTitle, startsAtFormatted, eventUrl }) =>
       [
-        `Promemoria: «${eventTitle}» si terrà il ${startsAt.toISOString()}.`,
+        `Promemoria: «${eventTitle}» si terrà il ${startsAtFormatted}.`,
         '',
         "Dettagli dell'evento:",
         eventUrl,
@@ -583,10 +583,10 @@ const it: TemplateBundle = {
   announcement: {
     subject: ({ eventTitle, stage }) =>
       stage === 'save_the_date' ? `Save the date — ${eventTitle}` : `Sei invitato/a: ${eventTitle}`,
-    body: ({ eventTitle, startsAt, eventUrl, stage }) => {
+    body: ({ eventTitle, startsAtFormatted, eventUrl, stage }) => {
       if (stage === 'save_the_date') {
         return [
-          `Save the date: «${eventTitle}» — ${startsAt.toISOString()}.`,
+          `Save the date: «${eventTitle}» — ${startsAtFormatted}.`,
           '',
           "L'invito completo con luogo e dettagli arriverà più avanti. Per ora, tieni la data libera in calendario.",
           '',
@@ -596,7 +596,7 @@ const it: TemplateBundle = {
         ].join('\n');
       }
       return [
-        `Sei invitato/a a «${eventTitle}» il ${startsAt.toISOString()}.`,
+        `Sei invitato/a a «${eventTitle}» il ${startsAtFormatted}.`,
         '',
         'Dettagli e risposta:',
         eventUrl,
@@ -680,9 +680,9 @@ const pt: TemplateBundle = {
   },
   reminder: {
     subject: ({ eventTitle }) => `Lembrete: ${eventTitle}`,
-    body: ({ eventTitle, startsAt, eventUrl }) =>
+    body: ({ eventTitle, startsAtFormatted, eventUrl }) =>
       [
-        `Lembrete: «${eventTitle}» acontece em ${startsAt.toISOString()}.`,
+        `Lembrete: «${eventTitle}» acontece em ${startsAtFormatted}.`,
         '',
         'Detalhes do evento:',
         eventUrl,
@@ -695,10 +695,10 @@ const pt: TemplateBundle = {
       stage === 'save_the_date'
         ? `Save the date — ${eventTitle}`
         : `Você está convidado(a): ${eventTitle}`,
-    body: ({ eventTitle, startsAt, eventUrl, stage }) => {
+    body: ({ eventTitle, startsAtFormatted, eventUrl, stage }) => {
       if (stage === 'save_the_date') {
         return [
-          `Save the date: «${eventTitle}» — ${startsAt.toISOString()}.`,
+          `Save the date: «${eventTitle}» — ${startsAtFormatted}.`,
           '',
           'O convite completo com local e detalhes virá em seguida. Por enquanto, reserve a data na agenda.',
           '',
@@ -708,7 +708,7 @@ const pt: TemplateBundle = {
         ].join('\n');
       }
       return [
-        `Você está convidado(a) para «${eventTitle}» em ${startsAt.toISOString()}.`,
+        `Você está convidado(a) para «${eventTitle}» em ${startsAtFormatted}.`,
         '',
         'Detalhes e confirmação:',
         eventUrl,
@@ -797,9 +797,9 @@ const nl: TemplateBundle = {
   },
   reminder: {
     subject: ({ eventTitle }) => `Herinnering: ${eventTitle}`,
-    body: ({ eventTitle, startsAt, eventUrl }) =>
+    body: ({ eventTitle, startsAtFormatted, eventUrl }) =>
       [
-        `Herinnering: "${eventTitle}" vindt plaats op ${startsAt.toISOString()}.`,
+        `Herinnering: "${eventTitle}" vindt plaats op ${startsAtFormatted}.`,
         '',
         'Evenementdetails:',
         eventUrl,
@@ -812,10 +812,10 @@ const nl: TemplateBundle = {
       stage === 'save_the_date'
         ? `Save the date — ${eventTitle}`
         : `Je bent uitgenodigd: ${eventTitle}`,
-    body: ({ eventTitle, startsAt, eventUrl, stage }) => {
+    body: ({ eventTitle, startsAtFormatted, eventUrl, stage }) => {
       if (stage === 'save_the_date') {
         return [
-          `Save the date: "${eventTitle}" — ${startsAt.toISOString()}.`,
+          `Save the date: "${eventTitle}" — ${startsAtFormatted}.`,
           '',
           'De volledige uitnodiging met locatie en details volgt nog. Houd de datum voor nu vrij in je agenda.',
           '',
@@ -825,7 +825,7 @@ const nl: TemplateBundle = {
         ].join('\n');
       }
       return [
-        `Je bent uitgenodigd voor "${eventTitle}" op ${startsAt.toISOString()}.`,
+        `Je bent uitgenodigd voor "${eventTitle}" op ${startsAtFormatted}.`,
         '',
         'Details en reactie:',
         eventUrl,
@@ -914,9 +914,9 @@ const pl: TemplateBundle = {
   },
   reminder: {
     subject: ({ eventTitle }) => `Przypomnienie: ${eventTitle}`,
-    body: ({ eventTitle, startsAt, eventUrl }) =>
+    body: ({ eventTitle, startsAtFormatted, eventUrl }) =>
       [
-        `Przypomnienie: „${eventTitle}" odbywa się ${startsAt.toISOString()}.`,
+        `Przypomnienie: „${eventTitle}" odbywa się ${startsAtFormatted}.`,
         '',
         'Szczegóły wydarzenia:',
         eventUrl,
@@ -929,10 +929,10 @@ const pl: TemplateBundle = {
       stage === 'save_the_date'
         ? `Save the date — ${eventTitle}`
         : `Jesteś zaproszony(a): ${eventTitle}`,
-    body: ({ eventTitle, startsAt, eventUrl, stage }) => {
+    body: ({ eventTitle, startsAtFormatted, eventUrl, stage }) => {
       if (stage === 'save_the_date') {
         return [
-          `Save the date: „${eventTitle}" — ${startsAt.toISOString()}.`,
+          `Save the date: „${eventTitle}" — ${startsAtFormatted}.`,
           '',
           'Pełne zaproszenie z miejscem i szczegółami pojawi się później. Na razie prosimy o zarezerwowanie daty w kalendarzu.',
           '',
@@ -942,7 +942,7 @@ const pl: TemplateBundle = {
         ].join('\n');
       }
       return [
-        `Jesteś zaproszony(a) na „${eventTitle}" ${startsAt.toISOString()}.`,
+        `Jesteś zaproszony(a) na „${eventTitle}" ${startsAtFormatted}.`,
         '',
         'Szczegóły i odpowiedź:',
         eventUrl,
@@ -1031,9 +1031,9 @@ const hi: TemplateBundle = {
   },
   reminder: {
     subject: ({ eventTitle }) => `अनुस्मारक: ${eventTitle}`,
-    body: ({ eventTitle, startsAt, eventUrl }) =>
+    body: ({ eventTitle, startsAtFormatted, eventUrl }) =>
       [
-        `अनुस्मारक: "${eventTitle}" ${startsAt.toISOString()} को होने वाला है।`,
+        `अनुस्मारक: "${eventTitle}" ${startsAtFormatted} को होने वाला है।`,
         '',
         'इवेंट विवरण:',
         eventUrl,
@@ -1046,10 +1046,10 @@ const hi: TemplateBundle = {
       stage === 'save_the_date'
         ? `तारीख़ सुरक्षित रखें — ${eventTitle}`
         : `आप आमंत्रित हैं: ${eventTitle}`,
-    body: ({ eventTitle, startsAt, eventUrl, stage }) => {
+    body: ({ eventTitle, startsAtFormatted, eventUrl, stage }) => {
       if (stage === 'save_the_date') {
         return [
-          `तारीख़ सुरक्षित रखें: "${eventTitle}" — ${startsAt.toISOString()}.`,
+          `तारीख़ सुरक्षित रखें: "${eventTitle}" — ${startsAtFormatted}.`,
           '',
           'स्थान और विवरण के साथ पूरा आमंत्रण बाद में आएगा। फ़िलहाल, कृपया अपने कैलेंडर में यह तारीख़ सुरक्षित रखें।',
           '',
@@ -1059,7 +1059,7 @@ const hi: TemplateBundle = {
         ].join('\n');
       }
       return [
-        `आप "${eventTitle}" में ${startsAt.toISOString()} को आमंत्रित हैं।`,
+        `आप "${eventTitle}" में ${startsAtFormatted} को आमंत्रित हैं।`,
         '',
         'विवरण और RSVP:',
         eventUrl,
@@ -1148,9 +1148,9 @@ const bn: TemplateBundle = {
   },
   reminder: {
     subject: ({ eventTitle }) => `অনুস্মারক: ${eventTitle}`,
-    body: ({ eventTitle, startsAt, eventUrl }) =>
+    body: ({ eventTitle, startsAtFormatted, eventUrl }) =>
       [
-        `অনুস্মারক: "${eventTitle}" ${startsAt.toISOString()}-এ অনুষ্ঠিত হবে।`,
+        `অনুস্মারক: "${eventTitle}" ${startsAtFormatted}-এ অনুষ্ঠিত হবে।`,
         '',
         'ইভেন্ট বিবরণ:',
         eventUrl,
@@ -1163,10 +1163,10 @@ const bn: TemplateBundle = {
       stage === 'save_the_date'
         ? `তারিখ সংরক্ষণ করুন — ${eventTitle}`
         : `আপনি আমন্ত্রিত: ${eventTitle}`,
-    body: ({ eventTitle, startsAt, eventUrl, stage }) => {
+    body: ({ eventTitle, startsAtFormatted, eventUrl, stage }) => {
       if (stage === 'save_the_date') {
         return [
-          `তারিখ সংরক্ষণ করুন: "${eventTitle}" — ${startsAt.toISOString()}.`,
+          `তারিখ সংরক্ষণ করুন: "${eventTitle}" — ${startsAtFormatted}.`,
           '',
           'স্থান ও বিবরণসহ সম্পূর্ণ আমন্ত্রণ পরে আসবে। আপাতত, অনুগ্রহ করে আপনার ক্যালেন্ডারে তারিখটি সংরক্ষণ করুন।',
           '',
@@ -1176,7 +1176,7 @@ const bn: TemplateBundle = {
         ].join('\n');
       }
       return [
-        `আপনি "${eventTitle}"-এ ${startsAt.toISOString()}-এ আমন্ত্রিত।`,
+        `আপনি "${eventTitle}"-এ ${startsAtFormatted}-এ আমন্ত্রিত।`,
         '',
         'বিবরণ ও RSVP:',
         eventUrl,
@@ -1265,9 +1265,9 @@ const ta: TemplateBundle = {
   },
   reminder: {
     subject: ({ eventTitle }) => `நினைவூட்டல்: ${eventTitle}`,
-    body: ({ eventTitle, startsAt, eventUrl }) =>
+    body: ({ eventTitle, startsAtFormatted, eventUrl }) =>
       [
-        `நினைவூட்டல்: "${eventTitle}" ${startsAt.toISOString()} அன்று நடைபெறுகிறது.`,
+        `நினைவூட்டல்: "${eventTitle}" ${startsAtFormatted} அன்று நடைபெறுகிறது.`,
         '',
         'நிகழ்வு விவரங்கள்:',
         eventUrl,
@@ -1280,10 +1280,10 @@ const ta: TemplateBundle = {
       stage === 'save_the_date'
         ? `தேதியை குறித்துக்கொள்ளுங்கள் — ${eventTitle}`
         : `நீங்கள் அழைக்கப்பட்டுள்ளீர்கள்: ${eventTitle}`,
-    body: ({ eventTitle, startsAt, eventUrl, stage }) => {
+    body: ({ eventTitle, startsAtFormatted, eventUrl, stage }) => {
       if (stage === 'save_the_date') {
         return [
-          `தேதியை குறித்துக்கொள்ளுங்கள்: "${eventTitle}" — ${startsAt.toISOString()}.`,
+          `தேதியை குறித்துக்கொள்ளுங்கள்: "${eventTitle}" — ${startsAtFormatted}.`,
           '',
           'இடம் மற்றும் விவரங்களுடன் முழு அழைப்பிதழ் பின்னர் வரும். தற்போதைக்கு, உங்கள் நாட்காட்டியில் இந்தத் தேதியை ஒதுக்கி வைக்கவும்.',
           '',
@@ -1293,7 +1293,7 @@ const ta: TemplateBundle = {
         ].join('\n');
       }
       return [
-        `"${eventTitle}"-க்கு ${startsAt.toISOString()} அன்று நீங்கள் அழைக்கப்பட்டுள்ளீர்கள்.`,
+        `"${eventTitle}"-க்கு ${startsAtFormatted} அன்று நீங்கள் அழைக்கப்பட்டுள்ளீர்கள்.`,
         '',
         'விவரங்கள் மற்றும் RSVP:',
         eventUrl,
@@ -1382,9 +1382,9 @@ const te: TemplateBundle = {
   },
   reminder: {
     subject: ({ eventTitle }) => `రిమైండర్: ${eventTitle}`,
-    body: ({ eventTitle, startsAt, eventUrl }) =>
+    body: ({ eventTitle, startsAtFormatted, eventUrl }) =>
       [
-        `రిమైండర్: "${eventTitle}" ${startsAt.toISOString()}‌న జరగనుంది.`,
+        `రిమైండర్: "${eventTitle}" ${startsAtFormatted}‌న జరగనుంది.`,
         '',
         'ఈవెంట్ వివరాలు:',
         eventUrl,
@@ -1397,10 +1397,10 @@ const te: TemplateBundle = {
       stage === 'save_the_date'
         ? `తేదీని గుర్తుంచుకోండి — ${eventTitle}`
         : `మీరు ఆహ్వానించబడ్డారు: ${eventTitle}`,
-    body: ({ eventTitle, startsAt, eventUrl, stage }) => {
+    body: ({ eventTitle, startsAtFormatted, eventUrl, stage }) => {
       if (stage === 'save_the_date') {
         return [
-          `తేదీని గుర్తుంచుకోండి: "${eventTitle}" — ${startsAt.toISOString()}.`,
+          `తేదీని గుర్తుంచుకోండి: "${eventTitle}" — ${startsAtFormatted}.`,
           '',
           'స్థలం మరియు వివరాలతో పూర్తి ఆహ్వానం తర్వాత వస్తుంది. ప్రస్తుతానికి, దయచేసి మీ క్యాలెండర్‌లో ఈ తేదీని కేటాయించి ఉంచండి.',
           '',
@@ -1410,7 +1410,7 @@ const te: TemplateBundle = {
         ].join('\n');
       }
       return [
-        `"${eventTitle}"‌కు ${startsAt.toISOString()}‌న మీరు ఆహ్వానించబడ్డారు.`,
+        `"${eventTitle}"‌కు ${startsAtFormatted}‌న మీరు ఆహ్వానించబడ్డారు.`,
         '',
         'వివరాలు మరియు RSVP:',
         eventUrl,
@@ -1499,9 +1499,9 @@ const mr: TemplateBundle = {
   },
   reminder: {
     subject: ({ eventTitle }) => `स्मरणपत्र: ${eventTitle}`,
-    body: ({ eventTitle, startsAt, eventUrl }) =>
+    body: ({ eventTitle, startsAtFormatted, eventUrl }) =>
       [
-        `स्मरणपत्र: "${eventTitle}" ${startsAt.toISOString()} रोजी होणार आहे.`,
+        `स्मरणपत्र: "${eventTitle}" ${startsAtFormatted} रोजी होणार आहे.`,
         '',
         'इव्हेंट तपशील:',
         eventUrl,
@@ -1514,10 +1514,10 @@ const mr: TemplateBundle = {
       stage === 'save_the_date'
         ? `तारीख राखून ठेवा — ${eventTitle}`
         : `तुम्हाला आमंत्रित केले आहे: ${eventTitle}`,
-    body: ({ eventTitle, startsAt, eventUrl, stage }) => {
+    body: ({ eventTitle, startsAtFormatted, eventUrl, stage }) => {
       if (stage === 'save_the_date') {
         return [
-          `तारीख राखून ठेवा: "${eventTitle}" — ${startsAt.toISOString()}.`,
+          `तारीख राखून ठेवा: "${eventTitle}" — ${startsAtFormatted}.`,
           '',
           'स्थान आणि तपशिलांसह संपूर्ण आमंत्रण नंतर येईल. सध्या, कृपया तुमच्या कॅलेंडरमध्ये ही तारीख राखून ठेवा.',
           '',
@@ -1527,7 +1527,7 @@ const mr: TemplateBundle = {
         ].join('\n');
       }
       return [
-        `"${eventTitle}" ला ${startsAt.toISOString()} रोजी तुम्हाला आमंत्रित केले आहे.`,
+        `"${eventTitle}" ला ${startsAtFormatted} रोजी तुम्हाला आमंत्रित केले आहे.`,
         '',
         'तपशील आणि RSVP:',
         eventUrl,
@@ -1616,9 +1616,9 @@ const gu: TemplateBundle = {
   },
   reminder: {
     subject: ({ eventTitle }) => `રિમાઇન્ડર: ${eventTitle}`,
-    body: ({ eventTitle, startsAt, eventUrl }) =>
+    body: ({ eventTitle, startsAtFormatted, eventUrl }) =>
       [
-        `રિમાઇન્ડર: "${eventTitle}" ${startsAt.toISOString()} ના રોજ યોજાનાર છે.`,
+        `રિમાઇન્ડર: "${eventTitle}" ${startsAtFormatted} ના રોજ યોજાનાર છે.`,
         '',
         'ઇવેન્ટ વિગતો:',
         eventUrl,
@@ -1631,10 +1631,10 @@ const gu: TemplateBundle = {
       stage === 'save_the_date'
         ? `તારીખ સાચવી રાખો — ${eventTitle}`
         : `તમને આમંત્રણ છે: ${eventTitle}`,
-    body: ({ eventTitle, startsAt, eventUrl, stage }) => {
+    body: ({ eventTitle, startsAtFormatted, eventUrl, stage }) => {
       if (stage === 'save_the_date') {
         return [
-          `તારીખ સાચવી રાખો: "${eventTitle}" — ${startsAt.toISOString()}.`,
+          `તારીખ સાચવી રાખો: "${eventTitle}" — ${startsAtFormatted}.`,
           '',
           'સ્થળ અને વિગતો સાથેનું સંપૂર્ણ આમંત્રણ પછીથી આવશે. હાલ પૂરતું, કૃપા કરીને તમારા કેલેન્ડરમાં આ તારીખ સાચવી રાખો.',
           '',
@@ -1644,7 +1644,7 @@ const gu: TemplateBundle = {
         ].join('\n');
       }
       return [
-        `"${eventTitle}" માં ${startsAt.toISOString()} ના રોજ તમને આમંત્રણ છે.`,
+        `"${eventTitle}" માં ${startsAtFormatted} ના રોજ તમને આમંત્રણ છે.`,
         '',
         'વિગતો અને RSVP:',
         eventUrl,
@@ -1733,9 +1733,9 @@ const kn: TemplateBundle = {
   },
   reminder: {
     subject: ({ eventTitle }) => `ಜ್ಞಾಪನೆ: ${eventTitle}`,
-    body: ({ eventTitle, startsAt, eventUrl }) =>
+    body: ({ eventTitle, startsAtFormatted, eventUrl }) =>
       [
-        `ಜ್ಞಾಪನೆ: "${eventTitle}" ${startsAt.toISOString()}‌ರಂದು ನಡೆಯಲಿದೆ.`,
+        `ಜ್ಞಾಪನೆ: "${eventTitle}" ${startsAtFormatted}‌ರಂದು ನಡೆಯಲಿದೆ.`,
         '',
         'ಈವೆಂಟ್ ವಿವರಗಳು:',
         eventUrl,
@@ -1748,10 +1748,10 @@ const kn: TemplateBundle = {
       stage === 'save_the_date'
         ? `ದಿನಾಂಕವನ್ನು ಕಾಯ್ದಿರಿಸಿ — ${eventTitle}`
         : `ನಿಮಗೆ ಆಹ್ವಾನವಿದೆ: ${eventTitle}`,
-    body: ({ eventTitle, startsAt, eventUrl, stage }) => {
+    body: ({ eventTitle, startsAtFormatted, eventUrl, stage }) => {
       if (stage === 'save_the_date') {
         return [
-          `ದಿನಾಂಕವನ್ನು ಕಾಯ್ದಿರಿಸಿ: "${eventTitle}" — ${startsAt.toISOString()}.`,
+          `ದಿನಾಂಕವನ್ನು ಕಾಯ್ದಿರಿಸಿ: "${eventTitle}" — ${startsAtFormatted}.`,
           '',
           'ಸ್ಥಳ ಮತ್ತು ವಿವರಗಳೊಂದಿಗೆ ಪೂರ್ಣ ಆಹ್ವಾನ ನಂತರ ಬರುತ್ತದೆ. ಸದ್ಯಕ್ಕೆ, ದಯವಿಟ್ಟು ನಿಮ್ಮ ಕ್ಯಾಲೆಂಡರ್‌ನಲ್ಲಿ ಈ ದಿನಾಂಕವನ್ನು ಕಾಯ್ದಿರಿಸಿ.',
           '',
@@ -1761,7 +1761,7 @@ const kn: TemplateBundle = {
         ].join('\n');
       }
       return [
-        `"${eventTitle}"‌ಗೆ ${startsAt.toISOString()}‌ರಂದು ನಿಮಗೆ ಆಹ್ವಾನವಿದೆ.`,
+        `"${eventTitle}"‌ಗೆ ${startsAtFormatted}‌ರಂದು ನಿಮಗೆ ಆಹ್ವಾನವಿದೆ.`,
         '',
         'ವಿವರಗಳು ಮತ್ತು RSVP:',
         eventUrl,
@@ -1850,9 +1850,9 @@ const ml: TemplateBundle = {
   },
   reminder: {
     subject: ({ eventTitle }) => `ഓർമ്മപ്പെടുത്തൽ: ${eventTitle}`,
-    body: ({ eventTitle, startsAt, eventUrl }) =>
+    body: ({ eventTitle, startsAtFormatted, eventUrl }) =>
       [
-        `ഓർമ്മപ്പെടുത്തൽ: "${eventTitle}" ${startsAt.toISOString()}-ന് നടക്കുന്നു.`,
+        `ഓർമ്മപ്പെടുത്തൽ: "${eventTitle}" ${startsAtFormatted}-ന് നടക്കുന്നു.`,
         '',
         'ഇവന്റ് വിശദാംശങ്ങൾ:',
         eventUrl,
@@ -1865,10 +1865,10 @@ const ml: TemplateBundle = {
       stage === 'save_the_date'
         ? `തീയതി കുറിച്ചുവയ്ക്കുക — ${eventTitle}`
         : `നിങ്ങൾ ക്ഷണിക്കപ്പെട്ടിരിക്കുന്നു: ${eventTitle}`,
-    body: ({ eventTitle, startsAt, eventUrl, stage }) => {
+    body: ({ eventTitle, startsAtFormatted, eventUrl, stage }) => {
       if (stage === 'save_the_date') {
         return [
-          `തീയതി കുറിച്ചുവയ്ക്കുക: "${eventTitle}" — ${startsAt.toISOString()}.`,
+          `തീയതി കുറിച്ചുവയ്ക്കുക: "${eventTitle}" — ${startsAtFormatted}.`,
           '',
           'സ്ഥലവും വിശദാംശങ്ങളും ഉൾപ്പെടുന്ന പൂർണ്ണ ക്ഷണം പിന്നീട് വരും. തൽക്കാലം, ദയവായി നിങ്ങളുടെ കലണ്ടറിൽ ഈ തീയതി മാറ്റിവയ്ക്കുക.',
           '',
@@ -1878,7 +1878,7 @@ const ml: TemplateBundle = {
         ].join('\n');
       }
       return [
-        `"${eventTitle}"-ലേക്ക് ${startsAt.toISOString()}-ന് നിങ്ങൾ ക്ഷണിക്കപ്പെട്ടിരിക്കുന്നു.`,
+        `"${eventTitle}"-ലേക്ക് ${startsAtFormatted}-ന് നിങ്ങൾ ക്ഷണിക്കപ്പെട്ടിരിക്കുന്നു.`,
         '',
         'വിശദാംശങ്ങളും RSVP-യും:',
         eventUrl,
@@ -1967,9 +1967,9 @@ const pa: TemplateBundle = {
   },
   reminder: {
     subject: ({ eventTitle }) => `ਯਾਦ-ਪੱਤਰ: ${eventTitle}`,
-    body: ({ eventTitle, startsAt, eventUrl }) =>
+    body: ({ eventTitle, startsAtFormatted, eventUrl }) =>
       [
-        `ਯਾਦ-ਪੱਤਰ: "${eventTitle}" ${startsAt.toISOString()} ਨੂੰ ਹੋਣ ਵਾਲਾ ਹੈ।`,
+        `ਯਾਦ-ਪੱਤਰ: "${eventTitle}" ${startsAtFormatted} ਨੂੰ ਹੋਣ ਵਾਲਾ ਹੈ।`,
         '',
         'ਇਵੈਂਟ ਵੇਰਵੇ:',
         eventUrl,
@@ -1982,10 +1982,10 @@ const pa: TemplateBundle = {
       stage === 'save_the_date'
         ? `ਤਾਰੀਖ਼ ਰਾਖਵੀਂ ਰੱਖੋ — ${eventTitle}`
         : `ਤੁਹਾਨੂੰ ਸੱਦਾ ਹੈ: ${eventTitle}`,
-    body: ({ eventTitle, startsAt, eventUrl, stage }) => {
+    body: ({ eventTitle, startsAtFormatted, eventUrl, stage }) => {
       if (stage === 'save_the_date') {
         return [
-          `ਤਾਰੀਖ਼ ਰਾਖਵੀਂ ਰੱਖੋ: "${eventTitle}" — ${startsAt.toISOString()}.`,
+          `ਤਾਰੀਖ਼ ਰਾਖਵੀਂ ਰੱਖੋ: "${eventTitle}" — ${startsAtFormatted}.`,
           '',
           'ਸਥਾਨ ਅਤੇ ਵੇਰਵਿਆਂ ਸਮੇਤ ਪੂਰਾ ਸੱਦਾ ਬਾਅਦ ਵਿੱਚ ਆਵੇਗਾ। ਫ਼ਿਲਹਾਲ, ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਕੈਲੰਡਰ ਵਿੱਚ ਇਹ ਤਾਰੀਖ਼ ਰਾਖਵੀਂ ਰੱਖੋ।',
           '',
@@ -1995,7 +1995,7 @@ const pa: TemplateBundle = {
         ].join('\n');
       }
       return [
-        `"${eventTitle}" ਵਿੱਚ ${startsAt.toISOString()} ਨੂੰ ਤੁਹਾਨੂੰ ਸੱਦਾ ਹੈ।`,
+        `"${eventTitle}" ਵਿੱਚ ${startsAtFormatted} ਨੂੰ ਤੁਹਾਨੂੰ ਸੱਦਾ ਹੈ।`,
         '',
         'ਵੇਰਵੇ ਅਤੇ RSVP:',
         eventUrl,
@@ -2084,9 +2084,9 @@ const zh: TemplateBundle = {
   },
   reminder: {
     subject: ({ eventTitle }) => `提醒：${eventTitle}`,
-    body: ({ eventTitle, startsAt, eventUrl }) =>
+    body: ({ eventTitle, startsAtFormatted, eventUrl }) =>
       [
-        `提醒：「${eventTitle}」将于 ${startsAt.toISOString()} 举行。`,
+        `提醒：「${eventTitle}」将于 ${startsAtFormatted} 举行。`,
         '',
         '活动详情：',
         eventUrl,
@@ -2097,10 +2097,10 @@ const zh: TemplateBundle = {
   announcement: {
     subject: ({ eventTitle, stage }) =>
       stage === 'save_the_date' ? `预留日期 — ${eventTitle}` : `诚邀您参加：${eventTitle}`,
-    body: ({ eventTitle, startsAt, eventUrl, stage }) => {
+    body: ({ eventTitle, startsAtFormatted, eventUrl, stage }) => {
       if (stage === 'save_the_date') {
         return [
-          `预留日期：「${eventTitle}」— ${startsAt.toISOString()}。`,
+          `预留日期：「${eventTitle}」— ${startsAtFormatted}。`,
           '',
           '包含地点和详情的完整邀请函稍后发送。目前，请先在您的日历中预留此日期。',
           '',
@@ -2110,7 +2110,7 @@ const zh: TemplateBundle = {
         ].join('\n');
       }
       return [
-        `诚邀您于 ${startsAt.toISOString()} 参加「${eventTitle}」。`,
+        `诚邀您于 ${startsAtFormatted} 参加「${eventTitle}」。`,
         '',
         '详情与回复：',
         eventUrl,
@@ -2199,9 +2199,9 @@ const ja: TemplateBundle = {
   },
   reminder: {
     subject: ({ eventTitle }) => `リマインダー：${eventTitle}`,
-    body: ({ eventTitle, startsAt, eventUrl }) =>
+    body: ({ eventTitle, startsAtFormatted, eventUrl }) =>
       [
-        `リマインダー：「${eventTitle}」は ${startsAt.toISOString()} に開催されます。`,
+        `リマインダー：「${eventTitle}」は ${startsAtFormatted} に開催されます。`,
         '',
         'イベントの詳細：',
         eventUrl,
@@ -2212,10 +2212,10 @@ const ja: TemplateBundle = {
   announcement: {
     subject: ({ eventTitle, stage }) =>
       stage === 'save_the_date' ? `日程のお知らせ — ${eventTitle}` : `ご招待：${eventTitle}`,
-    body: ({ eventTitle, startsAt, eventUrl, stage }) => {
+    body: ({ eventTitle, startsAtFormatted, eventUrl, stage }) => {
       if (stage === 'save_the_date') {
         return [
-          `日程のお知らせ：「${eventTitle}」— ${startsAt.toISOString()}。`,
+          `日程のお知らせ：「${eventTitle}」— ${startsAtFormatted}。`,
           '',
           '場所や詳細を記した正式な招待状は後ほどお送りします。まずはカレンダーにこの日程をご予定ください。',
           '',
@@ -2225,7 +2225,7 @@ const ja: TemplateBundle = {
         ].join('\n');
       }
       return [
-        `${startsAt.toISOString()} 開催の「${eventTitle}」にご招待します。`,
+        `${startsAtFormatted} 開催の「${eventTitle}」にご招待します。`,
         '',
         '詳細と出欠回答：',
         eventUrl,
@@ -2314,9 +2314,9 @@ const ko: TemplateBundle = {
   },
   reminder: {
     subject: ({ eventTitle }) => `알림: ${eventTitle}`,
-    body: ({ eventTitle, startsAt, eventUrl }) =>
+    body: ({ eventTitle, startsAtFormatted, eventUrl }) =>
       [
-        `알림: "${eventTitle}"이(가) ${startsAt.toISOString()}에 열립니다.`,
+        `알림: "${eventTitle}"이(가) ${startsAtFormatted}에 열립니다.`,
         '',
         '이벤트 세부 정보:',
         eventUrl,
@@ -2329,10 +2329,10 @@ const ko: TemplateBundle = {
       stage === 'save_the_date'
         ? `날짜를 비워 두세요 — ${eventTitle}`
         : `초대합니다: ${eventTitle}`,
-    body: ({ eventTitle, startsAt, eventUrl, stage }) => {
+    body: ({ eventTitle, startsAtFormatted, eventUrl, stage }) => {
       if (stage === 'save_the_date') {
         return [
-          `날짜를 비워 두세요: "${eventTitle}" — ${startsAt.toISOString()}.`,
+          `날짜를 비워 두세요: "${eventTitle}" — ${startsAtFormatted}.`,
           '',
           '장소와 세부 정보가 담긴 정식 초대장은 추후 보내드립니다. 우선 캘린더에 이 날짜를 비워 두세요.',
           '',
@@ -2342,7 +2342,7 @@ const ko: TemplateBundle = {
         ].join('\n');
       }
       return [
-        `${startsAt.toISOString()}에 열리는 "${eventTitle}"에 귀하를 초대합니다.`,
+        `${startsAtFormatted}에 열리는 "${eventTitle}"에 귀하를 초대합니다.`,
         '',
         '세부 정보 및 회신:',
         eventUrl,

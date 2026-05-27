@@ -112,6 +112,7 @@ announcementsRoute.post(
             to,
             eventTitle: event.title,
             startsAt: event.startsAt,
+            timezone: event.timezone,
             eventUrl,
             stage: stage,
           },

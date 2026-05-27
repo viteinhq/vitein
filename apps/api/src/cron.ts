@@ -65,6 +65,7 @@ async function sendDueReminders(env: Env, client: Db, log: Logger): Promise<void
           to: event.creatorEmail,
           eventTitle: event.title,
           startsAt: event.startsAt,
+          timezone: event.timezone,
           eventUrl: `${webBase}/e/${event.slug}`,
         },
         localeFromAcceptLanguage(event.defaultLocale),
