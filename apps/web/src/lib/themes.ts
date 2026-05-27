@@ -1,16 +1,20 @@
 import {
+  createFontPairingRegistry,
   createLayoutRegistry,
   createThemeRegistry,
+  type FontPairing,
   type ThemeTokens,
 } from '@vitein/template-engine';
 
 /**
- * Community-only theme + layout registries for the open-source web build
- * (ADR 0011). The hosted build registers premium themes on top via the
- * extension hook.
+ * Community-only theme / layout / font-pairing registries for the
+ * open-source web build (ADR 0011 + 2026-05-26 theme-engine
+ * expansion). The hosted build registers premium themes on top via
+ * the extension hook.
  */
 export const themeRegistry = createThemeRegistry();
 export const layoutRegistry = createLayoutRegistry();
+export const fontPairingRegistry = createFontPairingRegistry();
 
 /**
  * Resolve a theme id to inline CSS custom-property declarations, for use as
@@ -19,10 +23,32 @@ export const layoutRegistry = createLayoutRegistry();
  * restyles itself. Unknown ids fall back to the baseline theme.
  */
 export function themeStyle(themeId: string): string {
-  return cssVars(themeRegistry.resolve(themeId).tokens);
+  return themeCssVars(themeRegistry.resolve(themeId).tokens);
 }
 
-function cssVars(t: ThemeTokens): string {
+/**
+ * Resolve a font-pairing id to inline CSS custom-property declarations
+ * for the same `style` slot. Combine with {@link themeStyle} by joining
+ * with `;` — both push onto the same set of font variables that the
+ * theme tokens supply, with the font pairing winning where they collide
+ * (display / sans / mono). Display tracking and weight stay on the
+ * theme — a pairing's tracking only seeds the picker preview.
+ */
+export function fontPairingStyle(fontPairingId: string): string {
+  const p = fontPairingRegistry.resolve(fontPairingId);
+  return fontPairingCssVars(p);
+}
+
+/**
+ * Combine theme + font-pairing into a single inline-style string for an
+ * event page scope. Convenience wrapper; the page can also call the two
+ * individual helpers and `${}` them together.
+ */
+export function eventScopeStyle(themeId: string, fontPairingId: string): string {
+  return `${themeStyle(themeId)};${fontPairingStyle(fontPairingId)}`;
+}
+
+function themeCssVars(t: ThemeTokens): string {
   return [
     `--color-paper:${t.colors.paper}`,
     `--color-paper-2:${t.colors.paper2}`,
@@ -41,4 +67,10 @@ function cssVars(t: ThemeTokens): string {
     `--radius-card:${t.radiusCard}`,
     `--tracking-display:${t.displayTracking}`,
   ].join(';');
+}
+
+function fontPairingCssVars(p: FontPairing): string {
+  return [`--font-display:${p.display}`, `--font-sans:${p.body}`, `--font-mono:${p.mono}`].join(
+    ';',
+  );
 }

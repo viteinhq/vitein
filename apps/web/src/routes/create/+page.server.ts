@@ -22,6 +22,7 @@ export const actions: Actions = {
     const visibility: 'link_only' | 'public' = visibilityRaw === 'public' ? 'public' : 'link_only';
     const themeId = String(form.get('themeId') ?? '').trim();
     const layout = String(form.get('layout') ?? '').trim();
+    const fontPairing = String(form.get('fontPairing') ?? '').trim();
 
     const values = {
       title,
@@ -52,6 +53,7 @@ export const actions: Actions = {
         visibility,
         themeId: themeId || undefined,
         layout: layout || undefined,
+        fontPairing: fontPairing || undefined,
       },
     });
 
