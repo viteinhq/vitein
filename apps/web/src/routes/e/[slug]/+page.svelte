@@ -5,6 +5,12 @@
   import { localizeError } from '$lib/errors';
   import { themeStyle } from '$lib/themes';
   import * as m from '$lib/paraglide/messages.js';
+  import BentoHero from '$lib/event/BentoHero.svelte';
+  import CardHero from '$lib/event/CardHero.svelte';
+  import EditorialHero from '$lib/event/EditorialHero.svelte';
+  import MonoHero from '$lib/event/MonoHero.svelte';
+  import PhotoHero from '$lib/event/PhotoHero.svelte';
+  import PosterHero from '$lib/event/PosterHero.svelte';
   import StandardHero from '$lib/event/StandardHero.svelte';
   import TicketHero from '$lib/event/TicketHero.svelte';
   import type { PageProps } from './$types';
@@ -130,6 +136,60 @@
   {:else}
     {#if layout === 'ticket'}
       <TicketHero
+        event={data.event}
+        cover={data.cover}
+        {startsInEventTz}
+        {endsInEventTz}
+        {showLocalTime}
+        {startsInViewerTz}
+      />
+    {:else if layout === 'editorial'}
+      <EditorialHero
+        event={data.event}
+        cover={data.cover}
+        {startsInEventTz}
+        {endsInEventTz}
+        {showLocalTime}
+        {startsInViewerTz}
+      />
+    {:else if layout === 'poster'}
+      <PosterHero
+        event={data.event}
+        cover={data.cover}
+        {startsInEventTz}
+        {endsInEventTz}
+        {showLocalTime}
+        {startsInViewerTz}
+      />
+    {:else if layout === 'card'}
+      <CardHero
+        event={data.event}
+        cover={data.cover}
+        {startsInEventTz}
+        {endsInEventTz}
+        {showLocalTime}
+        {startsInViewerTz}
+      />
+    {:else if layout === 'photo'}
+      <PhotoHero
+        event={data.event}
+        cover={data.cover}
+        {startsInEventTz}
+        {endsInEventTz}
+        {showLocalTime}
+        {startsInViewerTz}
+      />
+    {:else if layout === 'bento'}
+      <BentoHero
+        event={data.event}
+        cover={data.cover}
+        {startsInEventTz}
+        {endsInEventTz}
+        {showLocalTime}
+        {startsInViewerTz}
+      />
+    {:else if layout === 'mono'}
+      <MonoHero
         event={data.event}
         cover={data.cover}
         {startsInEventTz}
