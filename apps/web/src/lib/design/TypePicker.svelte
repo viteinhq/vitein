@@ -37,18 +37,18 @@
     >
       <input type="radio" {name} value={p.id} bind:group={value} class="sr-only" />
       <div
-        class="text-3xl leading-none font-bold text-ink"
+        class="text-5xl leading-none font-bold text-ink"
         style="font-family:{p.display};font-style:{p.displayStyle};font-weight:{p.displayWeight};letter-spacing:{p.tracking}"
       >
         Aa
       </div>
       <div
-        class="mt-2 text-[11px] leading-snug text-ink-muted"
+        class="mt-3 line-clamp-2 text-[12px] leading-snug text-ink-muted"
         style="font-family:{p.body}"
       >
-        The quick brown fox
+        The quick brown fox jumps
       </div>
-      <span class="mt-2 block text-center text-xs font-semibold text-ink">{label(p.id)}</span>
+      <span class="mt-3 block text-center text-xs font-semibold text-ink">{label(p.id)}</span>
     </label>
   {/each}
 </div>
