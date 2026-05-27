@@ -26,6 +26,7 @@ export { default as LocationField } from './LocationField.svelte';
 export { default as Pill } from './Pill.svelte';
 export { default as PresetPicker } from './PresetPicker.svelte';
 export { default as Section } from './Section.svelte';
+export { default as ShareSheet } from './ShareSheet.svelte';
 export { default as Text } from './Text.svelte';
 export { default as ThemePicker } from './ThemePicker.svelte';
 export { default as TextField } from './TextField.svelte';

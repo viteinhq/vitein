@@ -1,7 +1,7 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
   import { page } from '$app/state';
-  import { ArrowRight, Banner, Button, Eyebrow, TextField } from '$lib/design';
+  import { ArrowRight, Banner, Button, Eyebrow, ShareSheet, TextField } from '$lib/design';
   import { localizeError } from '$lib/errors';
   import { eventScopeStyle } from '$lib/themes';
   import * as m from '$lib/paraglide/messages.js';
@@ -17,7 +17,6 @@
 
   let { data, form }: PageProps = $props();
 
-  let copied = $state(false);
   let submitting = $state(false);
   let resetForm = $state(false);
   let plusOnesCount = $state(0);
@@ -52,25 +51,6 @@
   const startsInViewerTz = $derived(showLocalTime ? formatInTz(data.event.startsAt, viewerTz) : '');
 
   const shareUrl = $derived(page.url.href);
-
-  async function copyLink() {
-    if (typeof navigator === 'undefined' || !navigator.clipboard) return;
-    await navigator.clipboard.writeText(shareUrl);
-    copied = true;
-    setTimeout(() => (copied = false), 2000);
-  }
-
-  async function shareNative() {
-    if (typeof navigator === 'undefined' || !('share' in navigator)) {
-      await copyLink();
-      return;
-    }
-    try {
-      await navigator.share({ title: data.event.title, url: shareUrl });
-    } catch {
-      /* user cancelled */
-    }
-  }
 
   function changeAnswer() {
     resetForm = true;
@@ -214,11 +194,8 @@
       </p>
     {/if}
 
-    <div class="mt-6 flex flex-wrap gap-2">
-      <Button onclick={shareNative} variant="secondary" size="sm">{m.event_share()}</Button>
-      <Button onclick={copyLink} variant="secondary" size="sm">
-        {copied ? m.event_copied() : m.event_copy_link()}
-      </Button>
+    <div class="mt-6 flex flex-wrap items-center gap-2">
+      <ShareSheet url={shareUrl} title={data.event.title} />
       <Button href="/e/{data.event.slug}/event.ics" variant="secondary" size="sm">
         {m.event_add_to_calendar()}
       </Button>

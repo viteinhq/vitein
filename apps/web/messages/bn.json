@@ -508,5 +508,11 @@
   "create_success_manage_label": "Manage this event",
   "create_success_manage_open": "Open management page",
   "create_success_manage_email_backup": "We also emailed you the same link, so you can come back any time from a different device.",
-  "dashboard_manage": "Manage"
+  "dashboard_manage": "Manage",
+  "share_whatsapp": "WhatsApp",
+  "share_telegram": "Telegram",
+  "share_sms": "Messages",
+  "share_email": "Email",
+  "share_line": "LINE",
+  "share_more": "More…"
 }
