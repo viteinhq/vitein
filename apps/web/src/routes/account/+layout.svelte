@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { enhance } from '$app/forms';
   import { Button } from '$lib/design';
   import * as m from '$lib/paraglide/messages.js';
   import type { Snippet } from 'svelte';
@@ -21,7 +20,7 @@
     <nav class="flex items-center gap-1">
       <a href="/account/dashboard" class={navLink}>{m.account_nav_dashboard()}</a>
       <a href="/account/settings" class={navLink}>{m.account_nav_settings()}</a>
-      <form method="POST" action="/account/signout" use:enhance>
+      <form method="POST" action="/account/signout">
         <Button type="submit" variant="secondary" size="sm" class="ms-1">
           {m.account_signout()}
         </Button>
