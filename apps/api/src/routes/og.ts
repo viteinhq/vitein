@@ -40,41 +40,43 @@ interface FontSpec {
 }
 
 const FONT_SPECS: Record<string, FontSpec> = {
+  // Bricolage Grotesque doesn't ship italic on Google Fonts (browsers
+  // synthesise the slant via the variable font on the page; satori
+  // won't, so the OG image renders upright). Roman 700 is the closest
+  // truthful version of the pairing's display.
   'bricolage-geist': {
     family: 'Bricolage Grotesque',
-    cssUrl:
-      'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:ital,opsz,wght@1,12..96,700&display=swap',
+    cssUrl: 'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700',
     weight: 700,
-    style: 'italic',
+    style: 'normal',
   },
   'instrument-geist': {
     family: 'Instrument Serif',
-    cssUrl: 'https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@1&display=swap',
+    cssUrl: 'https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@1',
     weight: 400,
     style: 'italic',
   },
   'space-inter': {
     family: 'Space Grotesk',
-    cssUrl: 'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600&display=swap',
+    cssUrl: 'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600',
     weight: 600,
     style: 'normal',
   },
   'bricolage-mono': {
     family: 'Bricolage Grotesque',
-    cssUrl:
-      'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700&display=swap',
+    cssUrl: 'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700',
     weight: 700,
     style: 'normal',
   },
   'instrument-instrument': {
     family: 'Instrument Serif',
-    cssUrl: 'https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@1&display=swap',
+    cssUrl: 'https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@1',
     weight: 400,
     style: 'italic',
   },
   'geist-geist': {
     family: 'Geist',
-    cssUrl: 'https://fonts.googleapis.com/css2?family=Geist:wght@800&display=swap',
+    cssUrl: 'https://fonts.googleapis.com/css2?family=Geist:wght@800',
     weight: 800,
     style: 'normal',
   },
