@@ -8,13 +8,10 @@
     Button,
     DesignPreview,
     Eyebrow,
-    LayoutPicker,
     LocationField,
     PresetPicker,
     TextField,
-    ThemePicker,
     TimezonePicker,
-    TypePicker,
   } from '$lib/design';
   import { localizeError } from '$lib/errors';
   import * as m from '$lib/paraglide/messages.js';
@@ -304,8 +301,13 @@
         </Button>
       </div>
 
-      <!-- Style: a sticky companion beside the form on desktop, a section
-           below the details on mobile. -->
+      <!-- Style: a compact companion beside the form on desktop, a
+           secondary section below the details on mobile. Only the
+           live preview + a Quick-start preset row live here — full
+           layout / palette / type pickers move to /manage so the
+           create page stays a single, fast funnel. The three axes
+           ride as hidden inputs so the preset choice (or the
+           defaults) reaches the server. -->
       <div class="lg:sticky lg:top-8 lg:self-start">
         <fieldset class="space-y-5">
           <legend class={legendClass}>{m.create_style_label()}</legend>
@@ -322,19 +324,13 @@
           <div class="space-y-2">
             <span class="block {legendClass}">{m.create_preset_label()}</span>
             <PresetPicker bind:layout bind:themeId bind:fontPairing />
+            <p class="font-mono text-[10px] tracking-wide text-ink-muted">
+              {m.create_style_polish_hint()}
+            </p>
           </div>
-          <div class="space-y-2">
-            <span class="block {legendClass}">{m.create_layout_label()}</span>
-            <LayoutPicker bind:value={layout} />
-          </div>
-          <div class="space-y-2">
-            <span class="block {legendClass}">{m.create_theme_label()}</span>
-            <ThemePicker bind:value={themeId} />
-          </div>
-          <div class="space-y-2">
-            <span class="block {legendClass}">{m.create_typography_label()}</span>
-            <TypePicker bind:value={fontPairing} />
-          </div>
+          <input type="hidden" name="themeId" value={themeId} />
+          <input type="hidden" name="layout" value={layout} />
+          <input type="hidden" name="fontPairing" value={fontPairing} />
         </fieldset>
       </div>
     </form>
