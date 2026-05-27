@@ -504,5 +504,9 @@
   "preset_show_description": "Gallery / studio",
   "preset_kids_name": "Kids",
   "preset_kids_description": "Playful",
-  "create_style_polish_hint": "Pick a vibe to start — full layout, palette and typography options live on the event's manage page once it's created."
+  "create_style_polish_hint": "Pick a vibe to start — full layout, palette and typography options live on the event's manage page once it's created.",
+  "create_success_manage_label": "Manage this event",
+  "create_success_manage_open": "Open management page",
+  "create_success_manage_email_backup": "We also emailed you the same link, so you can come back any time from a different device.",
+  "dashboard_manage": "Manage"
 }

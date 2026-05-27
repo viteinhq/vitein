@@ -202,8 +202,20 @@ export type EventCreateResponse = {
    */
   magicLinkSent: boolean;
   /**
-   * Returned only when the email was NOT sent (i.e. dev mode). The
-   * client may use it to drive UI tests. Never returned in production.
+   * Full management URL (with creator token embedded) for the
+   * just-created event. Returned alongside the magic-link email
+   * so the creator can jump straight into the manage page
+   * without having to fetch the email — the email is the
+   * recovery channel, this is the immediate channel. The token
+   * in this URL is the same as the one delivered by mail.
+   *
+   */
+  manageUrl: string;
+  /**
+   * Deprecated alias for the token component of `manageUrl`,
+   * kept for backwards compatibility with old SDK consumers.
+   * Always null when the magic-link email was sent; equals the
+   * plain token when it was not (dev mode).
    *
    */
   creatorTokenPreview?: string | null;

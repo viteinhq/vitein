@@ -2,7 +2,30 @@ import { createEvent } from '@vitein/ts-sdk';
 import { fail } from '@sveltejs/kit';
 import { configureApi } from '$lib/api';
 import { zonedWallTimeToUtc } from '$lib/datetime';
-import type { Actions } from './$types';
+import { apiFetch } from '$lib/server/api';
+import type { Actions, PageServerLoad } from './$types';
+
+interface UserProfile {
+  email: string;
+}
+
+/**
+ * If the visitor already has a Better-Auth session, surface their
+ * email so the create form can pre-fill `creatorEmail`. We never
+ * redirect — anonymous creation is the core flow. A failed lookup
+ * (no session, expired session, API hiccup) just leaves the field
+ * empty as before.
+ */
+export const load: PageServerLoad = async (event) => {
+  try {
+    const res = await apiFetch(event, '/v1/users/me');
+    if (!res.ok) return { sessionEmail: null };
+    const user = (await res.json()) as UserProfile;
+    return { sessionEmail: user.email ?? null };
+  } catch {
+    return { sessionEmail: null };
+  }
+};
 
 export const actions: Actions = {
   default: async ({ request, platform }) => {
@@ -66,6 +89,7 @@ export const actions: Actions = {
       slug: data.event.slug,
       title: data.event.title,
       magicLinkSent: data.magicLinkSent,
+      manageUrl: data.manageUrl,
       creatorTokenPreview: data.creatorTokenPreview,
     };
   },

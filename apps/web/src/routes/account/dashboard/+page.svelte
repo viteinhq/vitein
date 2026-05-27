@@ -123,7 +123,7 @@
           >
             <div class="min-w-0">
               <a
-                href="/e/{ev.slug}/manage"
+                href="/e/{ev.slug}"
                 class="font-display font-bold tracking-tight hover:text-coral-deep"
               >
                 {ev.title}
@@ -133,11 +133,19 @@
                 {#if ev.locationText}· {ev.locationText}{/if}
               </p>
             </div>
-            <span
-              class="shrink-0 rounded-full border border-rule px-2.5 py-1 font-mono text-[10px] tracking-wide text-ink-muted"
-            >
-              {ev.visibility}
-            </span>
+            <div class="flex shrink-0 items-center gap-2">
+              <a
+                href="/e/{ev.slug}/manage"
+                class="rounded-full border border-rule px-2.5 py-1 font-mono text-[10px] tracking-wide text-ink hover:bg-paper-2"
+              >
+                {m.dashboard_manage()}
+              </a>
+              <span
+                class="rounded-full border border-rule px-2.5 py-1 font-mono text-[10px] tracking-wide text-ink-muted"
+              >
+                {ev.visibility}
+              </span>
+            </div>
           </li>
         {/each}
       </ul>
@@ -158,7 +166,7 @@
           >
             <div class="min-w-0">
               <a
-                href="/e/{ev.slug}/manage"
+                href="/e/{ev.slug}"
                 class="font-display font-bold tracking-tight hover:text-coral-deep"
               >
                 {ev.title}
@@ -168,11 +176,19 @@
                 {#if ev.locationText}· {ev.locationText}{/if}
               </p>
             </div>
-            <span
-              class="shrink-0 rounded-full border border-rule px-2.5 py-1 font-mono text-[10px] tracking-wide text-ink-muted"
-            >
-              {ev.visibility}
-            </span>
+            <div class="flex shrink-0 items-center gap-2">
+              <a
+                href="/e/{ev.slug}/manage"
+                class="rounded-full border border-rule px-2.5 py-1 font-mono text-[10px] tracking-wide text-ink hover:bg-paper-2"
+              >
+                {m.dashboard_manage()}
+              </a>
+              <span
+                class="rounded-full border border-rule px-2.5 py-1 font-mono text-[10px] tracking-wide text-ink-muted"
+              >
+                {ev.visibility}
+              </span>
+            </div>
           </li>
         {/each}
       </ul>

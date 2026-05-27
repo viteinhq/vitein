@@ -1282,7 +1282,7 @@ components:
 
     EventCreateResponse:
       type: object
-      required: [event, magicLinkSent]
+      required: [event, magicLinkSent, manageUrl]
       properties:
         event: { $ref: '#/components/schemas/EventPublic' }
         magicLinkSent:
@@ -1290,11 +1290,23 @@ components:
             type: boolean,
             description: True if the magic-link email was dispatched. False in dev when RESEND_API_KEY is unset.,
           }
+        manageUrl:
+          type: string
+          format: uri
+          description: |
+            Full management URL (with creator token embedded) for the
+            just-created event. Returned alongside the magic-link email
+            so the creator can jump straight into the manage page
+            without having to fetch the email — the email is the
+            recovery channel, this is the immediate channel. The token
+            in this URL is the same as the one delivered by mail.
         creatorTokenPreview:
           type: [string, 'null']
           description: |
-            Returned only when the email was NOT sent (i.e. dev mode). The
-            client may use it to drive UI tests. Never returned in production.
+            Deprecated alias for the token component of `manageUrl`,
+            kept for backwards compatibility with old SDK consumers.
+            Always null when the magic-link email was sent; equals the
+            plain token when it was not (dev mode).
 
     RsvpInput:
       type: object
