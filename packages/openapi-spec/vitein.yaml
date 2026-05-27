@@ -261,6 +261,33 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
 
+  /v1/events/{id}/rsvps/csv:
+    parameters:
+      - $ref: '#/components/parameters/EventId'
+      - $ref: '#/components/parameters/CreatorTokenHeader'
+    get:
+      operationId: exportRsvpsCsv
+      summary: Export RSVPs as a CSV file (creator only)
+      description: |
+        Returns the same set of RSVPs as `listRsvps`, serialised as RFC
+        4180 CSV. Columns: name, email, status, plus_ones,
+        plus_ones_details, message, responded_at. Plus-one detail names
+        are joined with `; ` so the cell stays single-line. UTF-8
+        encoded, with a BOM so Excel reads non-ASCII names correctly.
+        The `Content-Disposition: attachment` header carries the
+        filename `<event-slug>-rsvps.csv`.
+      tags: [rsvps]
+      responses:
+        '200':
+          description: CSV payload.
+          content:
+            text/csv:
+              schema: { type: string }
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
   /v1/events/{id}/guests:
     parameters:
       - $ref: '#/components/parameters/EventId'

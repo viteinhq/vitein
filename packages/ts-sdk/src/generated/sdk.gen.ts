@@ -33,6 +33,9 @@ import type {
   ExportMeData,
   ExportMeErrors,
   ExportMeResponses,
+  ExportRsvpsCsvData,
+  ExportRsvpsCsvErrors,
+  ExportRsvpsCsvResponses,
   GetAdminStatsData,
   GetAdminStatsErrors,
   GetAdminStatsResponses,
@@ -283,6 +286,26 @@ export const submitRsvp = <ThrowOnError extends boolean = false>(
       'Content-Type': 'application/json',
       ...options.headers,
     },
+  });
+
+/**
+ * Export RSVPs as a CSV file (creator only)
+ *
+ * Returns the same set of RSVPs as `listRsvps`, serialised as RFC
+ * 4180 CSV. Columns: name, email, status, plus_ones,
+ * plus_ones_details, message, responded_at. Plus-one detail names
+ * are joined with `; ` so the cell stays single-line. UTF-8
+ * encoded, with a BOM so Excel reads non-ASCII names correctly.
+ * The `Content-Disposition: attachment` header carries the
+ * filename `<event-slug>-rsvps.csv`.
+ *
+ */
+export const exportRsvpsCsv = <ThrowOnError extends boolean = false>(
+  options: Options<ExportRsvpsCsvData, ThrowOnError>,
+) =>
+  (options.client ?? client).get<ExportRsvpsCsvResponses, ExportRsvpsCsvErrors, ThrowOnError>({
+    url: '/v1/events/{id}/rsvps/csv',
+    ...options,
   });
 
 /**

@@ -859,6 +859,54 @@ export type SubmitRsvpResponses = {
 
 export type SubmitRsvpResponse = SubmitRsvpResponses[keyof SubmitRsvpResponses];
 
+export type ExportRsvpsCsvData = {
+  body?: never;
+  headers?: {
+    /**
+     * Plaintext creator token (the value delivered by the magic-link email).
+     * The server hashes it and compares against `event_tokens.token_hash`.
+     *
+     * Optional: signed-in users whose `users.id` matches the event's
+     * `creator_user_id` can call the same endpoints with the
+     * Better-Auth session cookie instead of this header. OAuth bearers
+     * with the appropriate scope are accepted too. See
+     * `apps/api/src/middleware/require-event-ownership.ts`.
+     *
+     */
+    'X-Creator-Token'?: string;
+  };
+  path: {
+    /**
+     * Server-generated UUIDv7 of the event.
+     */
+    id: string;
+  };
+  query?: never;
+  url: '/v1/events/{id}/rsvps/csv';
+};
+
+export type ExportRsvpsCsvErrors = {
+  /**
+   * Missing or invalid creator token.
+   */
+  401: Error;
+  /**
+   * Resource not found.
+   */
+  404: Error;
+};
+
+export type ExportRsvpsCsvError = ExportRsvpsCsvErrors[keyof ExportRsvpsCsvErrors];
+
+export type ExportRsvpsCsvResponses = {
+  /**
+   * CSV payload.
+   */
+  200: string;
+};
+
+export type ExportRsvpsCsvResponse = ExportRsvpsCsvResponses[keyof ExportRsvpsCsvResponses];
+
 export type ListGuestsData = {
   body?: never;
   headers?: {

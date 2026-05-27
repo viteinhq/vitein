@@ -189,7 +189,18 @@
 
   <!-- RSVP overview -->
   <Section>
-    <Heading level="panel">{m.manage_rsvps_heading()}</Heading>
+    <div class="flex items-center justify-between gap-3">
+      <Heading level="panel">{m.manage_rsvps_heading()}</Heading>
+      {#if data.rsvps.length > 0}
+        <a
+          href="/e/{data.event.slug}/manage/rsvps.csv?token={data.token}"
+          class="shrink-0 rounded-full border border-rule px-3 py-1.5 font-mono text-[10px] tracking-wide text-ink hover:bg-paper-2"
+          download
+        >
+          {m.manage_rsvps_download_csv()}
+        </a>
+      {/if}
+    </div>
 
     <div class="flex items-baseline gap-2">
       <span class="font-display text-6xl leading-none font-bold tracking-tighter">
