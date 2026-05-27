@@ -483,16 +483,21 @@ Codes are dotted, stable, and documented. Clients branch on `code`, not `message
 - Components tested in RTL mode in Storybook.
 - Arabic and Hebrew added in Phase 2 when RTL QA can be resourced.
 
-### 8.4 Cultural template variants (Phase 3)
+### 8.4 Design engine — three free axes (ADR 0013)
 
-The `events` table has a `template_id` (added in P2). Templates can specify:
+Phase 1 ships a **three-axis design engine**, free across every event:
 
-- Color palette defaults
-- Typography
-- Optional fields (e.g. Indian weddings have multi-day/multi-function structure; Western weddings don't)
-- Content tone
+- **Layout** — the structural arrangement (component). Eight community layouts: `standard`, `ticket`, `editorial`, `poster`, `card`, `photo`, `bento`, `mono`.
+- **Palette** — colour tokens. Persisted on `events.template_id` (the column kept its legacy name for the migration story). Eight community palettes: `volt`, `noir`, `paper`, `press`, `sorbet`, `garden`, `hot`, `sand`.
+- **Type pairing** — display / body / mono font stacks. Persisted on `events.font_pairing`. Six community pairings: `bricolage-geist`, `instrument-geist`, `space-inter`, `bricolage-mono`, `instrument-instrument`, `geist-geist`.
 
-This means an "Indian wedding" template isn't a skin, it's a content-model variant. Schema-supported, just not activated until Phase 3.
+Eight **Presets** (Launch / Dinner / Wedding / After dark / Birthday / Garden / The show / Kids) ship as quick-start triples that set the three axes in one click. Presets are free; they're sugar over the axes, not a separate persistence model.
+
+The `Template` concept ADR 0011 reserved as a premium-curation surface is **retired** (ADR 0013) — what we shipped as "Templates" is Presets, free. If premium curation ever lands, it'll be a new concept with its own purpose.
+
+### 8.5 Cultural content-model variants (Phase 3)
+
+A separate Phase-3 concern: an "Indian wedding" event has multi-day / multi-function structure; a Western wedding doesn't. This is a **content-model** variant, not a design choice — schema additions for an event's structured fields, not a palette or layout. Schema-supported via JSONB hooks; not activated until Phase 3.
 
 ---
 
