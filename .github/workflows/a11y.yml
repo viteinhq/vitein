@@ -42,7 +42,7 @@ jobs:
       - name: Run axe-core audit
         run: node scripts/run-axe-audit.mjs https://next.vite.in
 
-      - name: Open issue on regression
+      - name: Update rolling a11y tracker issue
         if: failure()
         uses: actions/github-script@v9
         with:
@@ -67,17 +67,49 @@ jobs:
               }
             }
 
-            await github.rest.issues.create({
+            // Find the existing open tracker (one canonical issue per the
+            // 2026-05-27 sweep). If none exists, open a fresh tracker; if
+            // multiple exist, comment on the oldest (least likely to be a
+            // duplicate that itself needs cleaning up).
+            const open = await github.paginate(github.rest.issues.listForRepo, {
               owner,
               repo,
-              title: `a11y regression: ${sha.slice(0, 7)}`,
-              body: [
-                `axe-core surfaced WCAG violations on next.vite.in.`,
-                ``,
-                `**Run:** ${runUrl}`,
-                ``,
-                `Audit script: \`scripts/run-axe-audit.mjs\`. The run log lists the violating rules + nodes.`,
-                `Rules audited: WCAG 2.1 A + AA (axe-core defaults).`,
-              ].join('\n'),
-              labels: ['a11y-regression'],
+              state: 'open',
+              labels: 'a11y-regression',
+              per_page: 100,
             });
+            // Exclude PRs — listForRepo returns both.
+            const trackers = open.filter((i) => !i.pull_request).sort((a, b) => a.number - b.number);
+
+            const commentBody = [
+              `axe-core still failing on \`${sha.slice(0, 7)}\`.`,
+              ``,
+              `**Run:** ${runUrl}`,
+              ``,
+              `See the run log for the current rule + node list.`,
+            ].join('\n');
+
+            if (trackers.length === 0) {
+              await github.rest.issues.create({
+                owner,
+                repo,
+                title: `a11y: rolling tracker — axe-core violations`,
+                body: [
+                  `axe-core surfaced WCAG violations on next.vite.in.`,
+                  ``,
+                  commentBody,
+                  ``,
+                  `This is the canonical rolling tracker; the workflow will`,
+                  `comment here on subsequent failures instead of opening`,
+                  `new issues.`,
+                ].join('\n'),
+                labels: ['a11y-regression'],
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: trackers[0].number,
+                body: commentBody,
+              });
+            }
