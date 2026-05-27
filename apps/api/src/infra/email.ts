@@ -45,7 +45,17 @@ export interface SendResult {
   sent: boolean;
 }
 
-const FROM_ADDRESS = 'vite.in <no-reply@vite.in>';
+// Sender address as it appears in the recipient's `From:` header.
+// Switched from `no-reply@` to `hello@` on 2026-05-27 (a) so the
+// address matches what's already published in our terms / impressum
+// as the support inbox (single source of truth — no surprise that
+// the address that emails you is the one you write back to), and
+// (b) so the Gravatar avatar attached to `hello@vite.in` shows up
+// next to every transactional email in clients that read Gravatar
+// (Apple Mail, ProtonMail, some Outlook flavours). Mailbox provider
+// lookups hash the literal `From:` mailbox, so the Gravatar address
+// has to be exactly this one. See `email_sender_image` memory.
+const FROM_ADDRESS = 'vite.in <hello@vite.in>';
 
 export async function sendCreatorMagicLink(
   env: Env,

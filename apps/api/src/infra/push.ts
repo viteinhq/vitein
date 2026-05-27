@@ -10,7 +10,10 @@ import { withDb } from './db.js';
 import { rootLogger } from './logger.js';
 import type { PushJob } from './push-types.js';
 
-const VAPID_SUBJECT = 'mailto:no-reply@vite.in';
+// VAPID subject: a contact point the push service uses if our
+// deliveries cause problems. Aligned with the email FROM address
+// (see `email.ts`) — single inbox for anything ops-related.
+const VAPID_SUBJECT = 'mailto:hello@vite.in';
 
 /**
  * `QUEUE_PUSH` consumer. For each job, resolve the event's push
