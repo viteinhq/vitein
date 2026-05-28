@@ -11,6 +11,7 @@ import {
   users,
   verifications,
 } from '@vitein/db-schema';
+import { type Locale } from '@vitein/i18n-messages';
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { jwt, magicLink } from 'better-auth/plugins';
@@ -27,8 +28,14 @@ import { sendSignInMagicLink } from './email.js';
  *
  * Throws if required env vars are missing — callers should guard with a
  * clear error. Guarded in `middleware/auth.ts` and `routes/auth.ts`.
+ *
+ * `locale` is the recipient's negotiated locale, used only by the
+ * magic-link email. The catch-all auth handler in `routes/auth.ts`
+ * derives it from the request's `Accept-Language`; callers that never
+ * trigger an email (session resolution, OAuth metadata) can omit it and
+ * the email falls back to English.
  */
-export function createAuth(env: Env, db: Db) {
+export function createAuth(env: Env, db: Db, locale?: Locale) {
   if (!env.AUTH_SECRET) throw new Error('AUTH_SECRET is required for auth');
 
   // Better-Auth's endpoints live on the API worker, so baseURL has to point
@@ -112,11 +119,10 @@ export function createAuth(env: Env, db: Db) {
           const landing = new URL('/auth/continue', webBase);
           landing.searchParams.set('t', token);
           landing.searchParams.set('cb', callbackURL);
-          // Locale is unknown at this point — there's no session yet and
-          // Better-Auth's plugin doesn't surface the originating request.
-          // English fallback is acceptable on first-touch; a future pass
-          // can plumb Accept-Language through createAuth().
-          await sendSignInMagicLink(env, { to: email, url: landing.toString() }, undefined);
+          // Locale is plumbed from the originating request's Accept-Language
+          // via createAuth(); undefined falls back to English inside the
+          // template lookup.
+          await sendSignInMagicLink(env, { to: email, url: landing.toString() }, locale);
         },
       }),
       // JWT plugin issues signed access tokens that the MCP server (and
