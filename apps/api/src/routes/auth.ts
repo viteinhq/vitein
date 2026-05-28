@@ -2,6 +2,7 @@ import { oauthProviderAuthServerMetadata } from '@better-auth/oauth-provider';
 import { Hono } from 'hono';
 import { createAuth } from '../infra/auth.js';
 import { db } from '../infra/db.js';
+import { localeFromAcceptLanguage } from '../infra/email.js';
 import type { AppVariables, Env } from '../types/env.js';
 
 /**
@@ -27,6 +28,10 @@ authRoute.get('/.well-known/oauth-authorization-server', async (c) => {
 });
 
 authRoute.all('/*', async (c) => {
-  const auth = createAuth(c.env, db(c));
+  // Plumb the caller's locale so the sign-in magic-link email is sent in
+  // their language (the web app forwards the browser's Accept-Language via
+  // apiFetch). Other Better-Auth endpoints ignore it; no email, no effect.
+  const locale = localeFromAcceptLanguage(c.req.header('accept-language'));
+  const auth = createAuth(c.env, db(c), locale);
   return auth.handler(c.req.raw);
 });
