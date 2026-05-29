@@ -320,6 +320,7 @@
             <DesignPreview
               {themeId}
               {layout}
+              {fontPairing}
               title={titleValue}
               date={previewDate}
               timezone={timezoneValue}
