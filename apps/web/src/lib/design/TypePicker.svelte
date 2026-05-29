@@ -42,11 +42,8 @@
       >
         Aa
       </div>
-      <div
-        class="mt-3 line-clamp-2 text-[12px] leading-snug text-ink-muted"
-        style="font-family:{p.body}"
-      >
-        The quick brown fox jumps
+      <div class="mt-2 text-[13px] leading-snug text-ink-muted" style="font-family:{p.body}">
+        Angela &amp; friends, 7:30pm — the quick brown fox jumps over.
       </div>
       <span class="mt-3 block text-center text-xs font-semibold text-ink">{label(p.id)}</span>
     </label>
