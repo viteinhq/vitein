@@ -42,9 +42,9 @@
           <time datetime={event.endsAt}>{endsInEventTz}</time>
         {/if}
       </dd>
-      <dd class="mt-1 font-mono text-[11px] opacity-55">{event.timezone}</dd>
+      <dd class="mt-1 font-mono text-[11px] text-accent-ink-muted">{event.timezone}</dd>
       {#if showLocalTime}
-        <dd class="mt-0.5 font-mono text-[11px] opacity-55">
+        <dd class="mt-0.5 font-mono text-[11px] text-accent-ink-muted">
           {m.event_your_local_time()}
           {startsInViewerTz}
         </dd>

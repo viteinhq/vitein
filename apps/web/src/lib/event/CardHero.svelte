@@ -21,7 +21,7 @@
         class="mx-auto mb-8 h-36 w-full rounded-md object-cover sm:h-48"
       />
     {/if}
-    <span class="font-mono text-[10px] tracking-[0.32em] uppercase opacity-55">
+    <span class="font-mono text-[10px] tracking-[0.32em] uppercase text-ink-muted">
       {m.invite_eyebrow()}
     </span>
     <div class="my-6 flex items-center justify-center gap-3" aria-hidden="true">
@@ -42,7 +42,7 @@
         <time datetime={event.endsAt}>{endsInEventTz}</time>
       {/if}
     </p>
-    <p class="mt-1 font-mono text-[11px] opacity-55">
+    <p class="mt-1 font-mono text-[11px] text-ink-muted">
       {event.timezone}{#if showLocalTime}
         · {m.event_your_local_time()}
         {startsInViewerTz}{/if}
@@ -50,7 +50,7 @@
 
     {#if event.locationText}
       <div class="mt-6">
-        <p class="font-mono text-[10px] tracking-[0.18em] uppercase opacity-55">
+        <p class="font-mono text-[10px] tracking-[0.18em] uppercase text-ink-muted">
           {m.event_where_label()}
         </p>
         <p class="font-display mt-1 text-xl font-bold leading-tight tracking-tight">

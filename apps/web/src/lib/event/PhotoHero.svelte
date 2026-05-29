@@ -39,7 +39,7 @@
 
   <div class="grid gap-4 px-6 py-6 sm:grid-cols-2 sm:px-8">
     <div>
-      <p class="font-mono text-[10px] tracking-[0.18em] uppercase opacity-55">
+      <p class="font-mono text-[10px] tracking-[0.18em] uppercase text-ink-muted">
         {m.event_when_label()}
       </p>
       <p class="font-display mt-1 text-lg font-bold leading-tight tracking-tight">
@@ -49,9 +49,9 @@
           <time datetime={event.endsAt}>{endsInEventTz}</time>
         {/if}
       </p>
-      <p class="mt-1 font-mono text-[11px] opacity-55">{event.timezone}</p>
+      <p class="mt-1 font-mono text-[11px] text-ink-muted">{event.timezone}</p>
       {#if showLocalTime}
-        <p class="mt-0.5 font-mono text-[11px] opacity-55">
+        <p class="mt-0.5 font-mono text-[11px] text-ink-muted">
           {m.event_your_local_time()}
           {startsInViewerTz}
         </p>
@@ -59,7 +59,7 @@
     </div>
     {#if event.locationText}
       <div>
-        <p class="font-mono text-[10px] tracking-[0.18em] uppercase opacity-55">
+        <p class="font-mono text-[10px] tracking-[0.18em] uppercase text-ink-muted">
           {m.event_where_label()}
         </p>
         <p class="font-display mt-1 text-lg font-bold leading-tight tracking-tight">

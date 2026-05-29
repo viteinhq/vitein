@@ -23,7 +23,7 @@
   </div>
 
   <div class="rounded-card border border-rule bg-card p-5 sm:p-6">
-    <p class="font-mono text-[10px] tracking-[0.18em] uppercase opacity-55">
+    <p class="font-mono text-[10px] tracking-[0.18em] uppercase text-ink-muted">
       {m.event_when_label()}
     </p>
     <p class="font-display mt-2 text-lg font-bold leading-tight tracking-tight">
@@ -35,9 +35,9 @@
         <time datetime={event.endsAt}>{endsInEventTz}</time>
       </p>
     {/if}
-    <p class="mt-2 font-mono text-[11px] opacity-55">{event.timezone}</p>
+    <p class="mt-2 font-mono text-[11px] text-ink-muted">{event.timezone}</p>
     {#if showLocalTime}
-      <p class="mt-0.5 font-mono text-[11px] opacity-55">
+      <p class="mt-0.5 font-mono text-[11px] text-ink-muted">
         {m.event_your_local_time()}
         {startsInViewerTz}
       </p>
@@ -55,7 +55,7 @@
       class="rounded-card border border-rule bg-card p-5 sm:p-6"
       class:sm:col-span-2={!cover?.url}
     >
-      <p class="font-mono text-[10px] tracking-[0.18em] uppercase opacity-55">
+      <p class="font-mono text-[10px] tracking-[0.18em] uppercase text-ink-muted">
         {m.event_where_label()}
       </p>
       <p class="font-display mt-2 text-lg font-bold leading-tight tracking-tight">

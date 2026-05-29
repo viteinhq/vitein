@@ -10,7 +10,7 @@
 </script>
 
 <div class="flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-[11px]">
-  <span class="opacity-55">{m.event_directions()}</span>
+  <span class="text-ink-muted">{m.event_directions()}</span>
   <a
     href="https://www.google.com/maps/dir/?api=1&destination={q}"
     target="_blank"

@@ -58,6 +58,7 @@ function themeCssVars(t: ThemeTokens): string {
     `--color-card:${t.colors.card}`,
     `--color-accent:${t.colors.accent}`,
     `--color-accent-ink:${t.colors.accentInk}`,
+    `--color-accent-ink-muted:${t.colors.accentInkMuted}`,
     `--color-coral:${t.colors.coral}`,
     `--color-coral-deep:${t.colors.coralDeep}`,
     `--font-display:${t.fonts.display}`,
