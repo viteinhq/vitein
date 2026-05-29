@@ -28,6 +28,13 @@ export interface ThemeTokens {
     card: string;
     accent: string;
     accentInk: string;
+    /**
+     * A muted variant of `accentInk` for secondary text on the accent
+     * surface (eyebrow labels, timezone hints). Hand-picked per theme to
+     * stay ≥4.5:1 against `accent` — opacity-based dimming can't guarantee
+     * that on warm/light accents. See the a11y note in ARCHITECTURE §8.4.
+     */
+    accentInkMuted: string;
     coral: string;
     coralDeep: string;
   };

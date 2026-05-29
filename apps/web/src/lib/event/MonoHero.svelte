@@ -11,7 +11,7 @@
 </script>
 
 <article class="px-1">
-  <span class="font-mono text-[10px] tracking-[0.24em] uppercase opacity-55">
+  <span class="font-mono text-[10px] tracking-[0.24em] uppercase text-ink-muted">
     {m.invite_eyebrow()}
   </span>
   <h1
@@ -22,7 +22,7 @@
 
   <dl class="mt-10 divide-y divide-rule border-t border-b border-rule">
     <div class="grid grid-cols-[8rem_1fr] items-baseline gap-4 py-4">
-      <dt class="font-mono text-[10px] tracking-[0.18em] uppercase opacity-55">
+      <dt class="font-mono text-[10px] tracking-[0.18em] uppercase text-ink-muted">
         {m.event_when_label()}
       </dt>
       <dd>
@@ -33,9 +33,9 @@
             <time datetime={event.endsAt}>{endsInEventTz}</time>
           {/if}
         </p>
-        <p class="mt-1 font-mono text-[11px] opacity-55">{event.timezone}</p>
+        <p class="mt-1 font-mono text-[11px] text-ink-muted">{event.timezone}</p>
         {#if showLocalTime}
-          <p class="mt-0.5 font-mono text-[11px] opacity-55">
+          <p class="mt-0.5 font-mono text-[11px] text-ink-muted">
             {m.event_your_local_time()}
             {startsInViewerTz}
           </p>
@@ -44,7 +44,7 @@
     </div>
     {#if event.locationText}
       <div class="grid grid-cols-[8rem_1fr] items-baseline gap-4 py-4">
-        <dt class="font-mono text-[10px] tracking-[0.18em] uppercase opacity-55">
+        <dt class="font-mono text-[10px] tracking-[0.18em] uppercase text-ink-muted">
           {m.event_where_label()}
         </dt>
         <dd>

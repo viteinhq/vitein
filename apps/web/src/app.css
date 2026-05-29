@@ -21,6 +21,10 @@
   --color-card: #ffffff;
   --color-accent: #e3ff3a;
   --color-accent-ink: #0a0a0a;
+  /* Muted accent-ink for secondary text on the accent surface — solid
+     per-theme token (not opacity-dimmed) so it clears WCAG AA 4.5:1 on
+     every palette's accent, including the warm ones. */
+  --color-accent-ink-muted: #65711e;
   /* `coral` is the bright brand pop — safe as a decorative fill and as
      text on dark surfaces. `coral-deep` is the WCAG-AA shade for coral
      *text* on light backgrounds and fills carrying white text (clears

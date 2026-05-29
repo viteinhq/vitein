@@ -13,7 +13,7 @@
 <article class="overflow-hidden rounded-card border border-rule bg-card">
   <div class="grid gap-0 sm:grid-cols-[1.6fr_1fr]">
     <div class="border-b border-rule px-6 py-8 sm:border-r sm:border-b-0 sm:px-10 sm:py-12">
-      <span class="font-mono text-[10px] tracking-[0.24em] uppercase opacity-55">
+      <span class="font-mono text-[10px] tracking-[0.24em] uppercase text-ink-muted">
         {m.invite_eyebrow()}
       </span>
       <h1
@@ -34,7 +34,7 @@
 
     <div class="space-y-6 px-6 py-6 sm:px-8 sm:py-12">
       <div>
-        <p class="font-mono text-[10px] tracking-[0.18em] uppercase opacity-55">
+        <p class="font-mono text-[10px] tracking-[0.18em] uppercase text-ink-muted">
           {m.event_when_label()}
         </p>
         <p class="font-display mt-1 text-xl font-bold leading-tight tracking-tight">
@@ -44,9 +44,9 @@
             <time datetime={event.endsAt}>{endsInEventTz}</time>
           {/if}
         </p>
-        <p class="mt-1 font-mono text-[11px] opacity-55">{event.timezone}</p>
+        <p class="mt-1 font-mono text-[11px] text-ink-muted">{event.timezone}</p>
         {#if showLocalTime}
-          <p class="mt-0.5 font-mono text-[11px] opacity-55">
+          <p class="mt-0.5 font-mono text-[11px] text-ink-muted">
             {m.event_your_local_time()}
             {startsInViewerTz}
           </p>
@@ -55,7 +55,7 @@
 
       {#if event.locationText}
         <div>
-          <p class="font-mono text-[10px] tracking-[0.18em] uppercase opacity-55">
+          <p class="font-mono text-[10px] tracking-[0.18em] uppercase text-ink-muted">
             {m.event_where_label()}
           </p>
           <p class="font-display mt-1 text-xl font-bold leading-tight tracking-tight">

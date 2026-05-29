@@ -8,7 +8,7 @@
   let { event, cover, startsInEventTz, endsInEventTz, showLocalTime, startsInViewerTz }: EventHeroProps =
     $props();
 
-  const kvLabel = 'font-mono text-[10px] tracking-[0.12em] uppercase opacity-55';
+  const kvLabel = 'font-mono text-[10px] tracking-[0.12em] uppercase text-ink-muted';
   const kvValue = 'font-display mt-1 text-lg font-bold leading-tight tracking-tight';
   // bg-paper matches the page behind the card, so a notch reads as a punch-out.
   const notch = 'absolute size-4 rounded-full bg-paper';
@@ -49,7 +49,7 @@
 
   <!-- details -->
   <div class="flex-1 p-6 sm:p-8">
-    <span class="font-mono text-[10px] tracking-[0.18em] uppercase opacity-55">
+    <span class="font-mono text-[10px] tracking-[0.18em] uppercase text-ink-muted">
       {m.invite_eyebrow()}
     </span>
     <h1
@@ -68,9 +68,9 @@
             <time datetime={event.endsAt}>{endsInEventTz}</time>
           {/if}
         </p>
-        <p class="mt-1 font-mono text-[11px] opacity-55">{event.timezone}</p>
+        <p class="mt-1 font-mono text-[11px] text-ink-muted">{event.timezone}</p>
         {#if showLocalTime}
-          <p class="mt-0.5 font-mono text-[11px] opacity-55">
+          <p class="mt-0.5 font-mono text-[11px] text-ink-muted">
             {m.event_your_local_time()}
             {startsInViewerTz}
           </p>

@@ -64,7 +64,7 @@
       <dd class="mt-1 font-display text-2xl font-bold tracking-tight leading-tight">
         <time datetime={data.event.startsAt}>{startsInEventTz}</time>
       </dd>
-      <dd class="mt-1 font-mono text-[11px] opacity-55">{data.event.timezone}</dd>
+      <dd class="mt-1 font-mono text-[11px] text-accent-ink-muted">{data.event.timezone}</dd>
     </dl>
 
     <p class="mt-6 text-sm opacity-75">{m.std_tagline()}</p>
