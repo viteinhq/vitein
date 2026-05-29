@@ -23,7 +23,7 @@
   import StandardHero from '$lib/event/StandardHero.svelte';
   import TicketHero from '$lib/event/TicketHero.svelte';
   import * as m from '$lib/paraglide/messages.js';
-  import { eventScopeStyle } from '$lib/themes';
+  import { eventScopeStyle, themeStyle } from '$lib/themes';
 
   let {
     themeId,
@@ -45,10 +45,22 @@
 
   // The event page renders the hero inside `max-w-2xl` (672px).
   const STAGE_WIDTH = 672;
+  // Fixed preview frame — the box never resizes when the layout changes.
+  // Instead the rendered hero is scaled to fit inside and centred, so
+  // switching layouts (which have very different natural heights) no
+  // longer makes the frame jump. Short layouts sit centred with padding;
+  // tall ones (poster) scale down a touch more.
   const DISPLAY_WIDTH = 280;
-  const scale = DISPLAY_WIDTH / STAGE_WIDTH;
+  const DISPLAY_HEIGHT = 360;
 
   let stageHeight = $state(0);
+
+  // Fit the hero into the frame: width-bound for most layouts, height-
+  // bound for the tall ones. `stageHeight || STAGE_WIDTH` guards the
+  // first paint before the height is measured.
+  const scale = $derived(
+    Math.min(DISPLAY_WIDTH / STAGE_WIDTH, DISPLAY_HEIGHT / (stageHeight || STAGE_WIDTH)),
+  );
 
   const event = $derived({
     title: title || m.create_field_title(),
@@ -69,13 +81,13 @@
 </script>
 
 <div
-  class="overflow-hidden rounded-card shadow-[0_24px_40px_-16px_rgba(0,0,0,0.25)]"
-  style="width:{DISPLAY_WIDTH}px;height:{stageHeight * scale}px"
+  class="flex items-center justify-center overflow-hidden rounded-card bg-paper shadow-[0_24px_40px_-16px_rgba(0,0,0,0.25)]"
+  style="width:{DISPLAY_WIDTH}px;height:{DISPLAY_HEIGHT}px;{themeStyle(themeId)}"
 >
   <div
     bind:clientHeight={stageHeight}
-    class="bg-paper px-6 py-8 text-ink"
-    style="width:{STAGE_WIDTH}px;transform:scale({scale});transform-origin:top left;{eventScopeStyle(
+    class="shrink-0 bg-paper px-6 py-8 text-ink"
+    style="width:{STAGE_WIDTH}px;transform:scale({scale});transform-origin:center;{eventScopeStyle(
       themeId,
       fontPairing,
     )}"
