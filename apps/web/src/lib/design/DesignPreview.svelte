@@ -6,13 +6,17 @@
    *
    * The heroes use `sm:` viewport breakpoints, so they must be rendered at
    * the real event-page width to lay out correctly. We render the hero at
-   * that full width (`STAGE_WIDTH`) and scale the whole stage down to fit
-   * the form's preview slot — real component, real proportions, smaller.
-   * The displayed box height is measured from the (unscaled) stage so the
-   * preview is never a fixed/cropped square.
+   * that full width (`STAGE_WIDTH`) and scale the whole stage down to the
+   * form's preview width. The frame hugs the scaled content's height and
+   * animates between sizes so switching layouts (very different natural
+   * heights) reads as a smooth resize rather than a jump.
    *
    * The layout → hero mapping below mirrors `routes/e/[slug]/+page.svelte`;
-   * keep the two in sync when a layout is added.
+   * keep the two in sync when a layout is added. The optional description
+   * paragraph mirrors the same block on the event page — it's the only
+   * place the body font (the axis that separates e.g. instrument-geist
+   * from instrument-instrument) actually shows, since heroes only use the
+   * display + mono fonts.
    */
   import BentoHero from '$lib/event/BentoHero.svelte';
   import CardHero from '$lib/event/CardHero.svelte';
@@ -30,6 +34,7 @@
     layout,
     fontPairing = 'bricolage-geist',
     title,
+    description = '',
     date = '',
     timezone = '',
     location = '',
@@ -38,6 +43,7 @@
     layout: string;
     fontPairing?: string;
     title: string;
+    description?: string;
     date?: string;
     timezone?: string;
     location?: string;
@@ -45,22 +51,10 @@
 
   // The event page renders the hero inside `max-w-2xl` (672px).
   const STAGE_WIDTH = 672;
-  // Fixed preview frame — the box never resizes when the layout changes.
-  // Instead the rendered hero is scaled to fit inside and centred, so
-  // switching layouts (which have very different natural heights) no
-  // longer makes the frame jump. Short layouts sit centred with padding;
-  // tall ones (poster) scale down a touch more.
   const DISPLAY_WIDTH = 280;
-  const DISPLAY_HEIGHT = 360;
+  const scale = DISPLAY_WIDTH / STAGE_WIDTH;
 
   let stageHeight = $state(0);
-
-  // Fit the hero into the frame: width-bound for most layouts, height-
-  // bound for the tall ones. `stageHeight || STAGE_WIDTH` guards the
-  // first paint before the height is measured.
-  const scale = $derived(
-    Math.min(DISPLAY_WIDTH / STAGE_WIDTH, DISPLAY_HEIGHT / (stageHeight || STAGE_WIDTH)),
-  );
 
   const event = $derived({
     title: title || m.create_field_title(),
@@ -81,13 +75,13 @@
 </script>
 
 <div
-  class="flex items-center justify-center overflow-hidden rounded-card bg-paper shadow-[0_24px_40px_-16px_rgba(0,0,0,0.25)]"
-  style="width:{DISPLAY_WIDTH}px;height:{DISPLAY_HEIGHT}px;{themeStyle(themeId)}"
+  class="overflow-hidden rounded-card bg-paper shadow-[0_24px_40px_-16px_rgba(0,0,0,0.25)] transition-[height] duration-300 ease-out"
+  style="width:{DISPLAY_WIDTH}px;height:{stageHeight * scale}px;{themeStyle(themeId)}"
 >
   <div
     bind:clientHeight={stageHeight}
-    class="shrink-0 bg-paper px-6 py-8 text-ink"
-    style="width:{STAGE_WIDTH}px;transform:scale({scale});transform-origin:center;{eventScopeStyle(
+    class="bg-paper px-6 py-7 text-ink"
+    style="width:{STAGE_WIDTH}px;transform:scale({scale});transform-origin:top left;{eventScopeStyle(
       themeId,
       fontPairing,
     )}"
@@ -108,6 +102,10 @@
       <MonoHero {...heroProps} />
     {:else}
       <StandardHero {...heroProps} />
+    {/if}
+
+    {#if description}
+      <p class="mt-5 text-base leading-relaxed whitespace-pre-line text-ink">{description}</p>
     {/if}
   </div>
 </div>

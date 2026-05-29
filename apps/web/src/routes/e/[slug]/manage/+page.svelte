@@ -540,6 +540,7 @@
           layout={designLayout}
           fontPairing={designFontPairing}
           title={data.event.title}
+          description={data.event.description ?? ''}
           date={data.event.startsAt}
           timezone={data.event.timezone}
           location={data.event.locationText ?? ''}
