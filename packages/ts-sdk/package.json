@@ -24,7 +24,7 @@
     "@hey-api/client-fetch": "^0.13.1"
   },
   "devDependencies": {
-    "@hey-api/openapi-ts": "^0.97.2",
+    "@hey-api/openapi-ts": "^0.97.3",
     "@vitein/config": "workspace:*",
     "@vitein/openapi-spec": "workspace:*",
     "typescript": "^5.6.3"
