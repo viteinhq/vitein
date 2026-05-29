@@ -538,6 +538,7 @@
         <DesignPreview
           themeId={designThemeId}
           layout={designLayout}
+          fontPairing={designFontPairing}
           title={data.event.title}
           date={data.event.startsAt}
           timezone={data.event.timezone}
@@ -548,7 +549,7 @@
       <div
         role="tablist"
         aria-label={m.manage_theme_heading()}
-        class="grid grid-cols-4 gap-1 rounded-full border border-line bg-surface p-1"
+        class="grid grid-cols-4 gap-1 rounded-full border border-rule bg-card p-1"
       >
         {#each [{ id: 'preset', label: m.create_preset_label() }, { id: 'layout', label: m.create_layout_label() }, { id: 'palette', label: m.create_theme_label() }, { id: 'type', label: m.create_typography_label() }] as tab (tab.id)}
           {@const active = designTab === tab.id}
@@ -558,7 +559,7 @@
             aria-selected={active}
             class={[
               'rounded-full px-3 py-2 text-xs font-medium transition',
-              active ? 'bg-ink text-canvas' : 'text-ink-muted hover:text-ink',
+              active ? 'bg-ink text-paper' : 'text-ink-muted hover:text-ink',
             ]}
             onclick={() => (designTab = tab.id as typeof designTab)}
           >
