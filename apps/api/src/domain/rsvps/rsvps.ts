@@ -56,11 +56,7 @@ export async function submitRsvp(
     .where(eq(rsvps.eventId, eventId));
   const n = countRows[0]?.n ?? 0;
   if (n >= MAX_RSVPS_PER_EVENT) {
-    throw new DomainError(
-      'event.rsvp_limit_reached',
-      'This event has reached its RSVP limit',
-      429,
-    );
+    throw new DomainError('event.rsvp_limit_reached', 'This event has reached its RSVP limit', 429);
   }
 
   // Named plus-one details are a Plus-tier feature. Basic-tier events (and
