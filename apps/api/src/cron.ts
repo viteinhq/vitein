@@ -1,5 +1,5 @@
 import { type Db } from '@vitein/db-schema';
-import { findDueReminders, markReminderSent } from './domain/reminders/reminders.js';
+import { claimDueReminders, recordReminderSent } from './domain/reminders/reminders.js';
 import { purgeSoftDeleted } from './domain/retention/purge.js';
 import { dbConnectionString, withDb } from './infra/db.js';
 import { localeFromAcceptLanguage, sendReminder } from './infra/email.js';
@@ -10,8 +10,9 @@ import type { Env } from './types/env.js';
  * Hourly cron handler. Cloudflare schedules this via the `[triggers]` block
  * in `wrangler.toml`. Two jobs:
  *
- * 1. Send due reminders (idempotent — each reminder row is single-fire;
- *    `sentAt` is stamped the moment the email is dispatched).
+ * 1. Send due reminders. Rows are claimed atomically (`sentAt` stamped in
+ *    the selecting UPDATE) before any email is sent, so overlapping or
+ *    retried cron runs cannot double-send the same reminder.
  * 2. Hard-delete soft-deleted rows past their 30-day grace. FK cascades
  *    handle dependent rows; audit_log survives by design.
  *
@@ -51,7 +52,7 @@ export async function runScheduled(env: Env): Promise<void> {
 }
 
 async function sendDueReminders(env: Env, client: Db, log: Logger): Promise<void> {
-  const due = await findDueReminders(client);
+  const due = await claimDueReminders(client);
   if (due.length === 0) return;
 
   const webBase = env.WEB_BASE_URL ?? 'https://vite.in';
@@ -70,11 +71,14 @@ async function sendDueReminders(env: Env, client: Db, log: Logger): Promise<void
         },
         localeFromAcceptLanguage(event.defaultLocale),
       );
-      await markReminderSent(client, reminder.id, event.id, {
+      await recordReminderSent(client, reminder.id, event.id, {
         sent: result.sent,
         kind: reminder.kind,
       });
     } catch (err) {
+      // The reminder is already claimed (sentAt stamped), so it will not be
+      // retried — log loudly for ops. At-most-once is the deliberate trade
+      // for never double-mailing guests.
       log.error('cron_reminder_send_failed', {
         reminder_id: reminder.id,
         err: err as Error,
