@@ -87,11 +87,15 @@ export async function listMedia(
   eventId: string,
 ): Promise<(typeof eventMedia.$inferSelect)[]> {
   await assertEventActive(db, eventId);
+  // Media is already quota-capped per event (see MAX_MEDIA_PER_EVENT), but
+  // bound the query defensively so a stale/over-quota state can't load an
+  // unbounded set.
   return db
     .select()
     .from(eventMedia)
     .where(eq(eventMedia.eventId, eventId))
-    .orderBy(eventMedia.position, eventMedia.createdAt);
+    .orderBy(eventMedia.position, eventMedia.createdAt)
+    .limit(100);
 }
 
 export async function deleteMedia(

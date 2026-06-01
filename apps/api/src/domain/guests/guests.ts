@@ -3,6 +3,9 @@ import { NotFoundError } from '../errors.js';
 
 export type InvitedVia = 'link' | 'email' | 'sms' | 'whatsapp' | 'agent';
 
+/** Hard cap on guest rows loaded into the Worker in one list call. */
+const GUEST_LIST_CAP = 5000;
+
 export interface GuestInput {
   name?: string | null | undefined;
   email?: string | null | undefined;
@@ -34,7 +37,12 @@ export async function addGuest(
 
 export async function listGuests(db: Db, eventId: string): Promise<(typeof guests.$inferSelect)[]> {
   await assertEventActive(db, eventId);
-  return db.select().from(guests).where(eq(guests.eventId, eventId)).orderBy(guests.invitedAt);
+  return db
+    .select()
+    .from(guests)
+    .where(eq(guests.eventId, eventId))
+    .orderBy(guests.invitedAt)
+    .limit(GUEST_LIST_CAP);
 }
 
 async function assertEventActive(db: Db, eventId: string): Promise<void> {

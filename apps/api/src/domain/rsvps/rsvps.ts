@@ -1,8 +1,20 @@
-import { and, eq, events, isNull, rsvps, type Db } from '@vitein/db-schema';
-import { NotFoundError } from '../errors.js';
+import { and, eq, events, isNull, rsvps, sql, type Db } from '@vitein/db-schema';
+import { DomainError, NotFoundError } from '../errors.js';
 import { tierOf } from '../payments/payments.js';
 
 export type RsvpStatus = 'yes' | 'maybe' | 'no';
+
+/**
+ * Generous-but-finite ceiling on RSVPs per event. RSVP submission is
+ * unauthenticated, so without a cap a single event's response set is
+ * unbounded — a memory/DoS hazard for the list + CSV paths that load it
+ * all into a 128 MB Worker. 5000 comfortably covers real events; beyond it
+ * the host should be on a plan with proper pagination (follow-up).
+ */
+export const MAX_RSVPS_PER_EVENT = 5000;
+
+/** Hard cap on rows any single list query loads into the Worker. */
+const LIST_HARD_CAP = MAX_RSVPS_PER_EVENT;
 
 export interface PlusOneDetail {
   name: string;
@@ -35,6 +47,18 @@ export async function submitRsvp(
 ): Promise<SubmittedRsvp> {
   const event = await findActiveEvent(db, eventId);
 
+  // Bound the unauthenticated write path: refuse new RSVPs once the event
+  // hits its ceiling, so the response set (and the list/CSV that load it)
+  // stays finite.
+  const countRows = await db
+    .select({ n: sql<number>`count(*)::int` })
+    .from(rsvps)
+    .where(eq(rsvps.eventId, eventId));
+  const n = countRows[0]?.n ?? 0;
+  if (n >= MAX_RSVPS_PER_EVENT) {
+    throw new DomainError('event.rsvp_limit_reached', 'This event has reached its RSVP limit', 429);
+  }
+
   // Named plus-one details are a Plus-tier feature. Basic-tier events (and
   // unpaid ones) keep the integer count but we drop the names, so the
   // feature can't be abused without paying.
@@ -61,7 +85,12 @@ export async function submitRsvp(
 
 export async function listRsvps(db: Db, eventId: string): Promise<(typeof rsvps.$inferSelect)[]> {
   await findActiveEvent(db, eventId);
-  return db.select().from(rsvps).where(eq(rsvps.eventId, eventId)).orderBy(rsvps.respondedAt);
+  return db
+    .select()
+    .from(rsvps)
+    .where(eq(rsvps.eventId, eventId))
+    .orderBy(rsvps.respondedAt)
+    .limit(LIST_HARD_CAP);
 }
 
 async function findActiveEvent(db: Db, id: string): Promise<typeof events.$inferSelect> {
