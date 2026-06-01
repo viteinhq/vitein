@@ -1,15 +1,16 @@
 import { auditLog, eq, reminders } from '@vitein/db-schema';
 import { describe, expect, it } from 'vitest';
-import {
-  claimDueReminders,
-  recordReminderSent,
-} from '../src/domain/reminders/reminders.js';
+import { claimDueReminders, recordReminderSent } from '../src/domain/reminders/reminders.js';
 import { seedEvent } from './helpers/seed.js';
 import { createTestDb } from './helpers/test-db.js';
 
 type TestDb = Awaited<ReturnType<typeof createTestDb>>;
 
-async function seedDueReminder(db: TestDb, eventId: string, scheduledAt = new Date(Date.now() - 1000)) {
+async function seedDueReminder(
+  db: TestDb,
+  eventId: string,
+  scheduledAt = new Date(Date.now() - 1000),
+) {
   const [row] = await db
     .insert(reminders)
     .values({ eventId, scheduledAt, kind: 'manual' })
