@@ -43,20 +43,51 @@ export async function deletePushSubscription(db: Db, endpoint: string): Promise<
 
 export interface RefreshPushInput {
   oldEndpoint: string;
+  /**
+   * The rotating subscription's existing `auth` secret. Proves the caller
+   * actually holds the old subscription — the push endpoint URL is not a
+   * secret (it appears in logs), but `auth` never leaves the browser/server
+   * encryption path, so it is the right capability for re-pointing.
+   */
+  oldAuth: string;
   endpoint: string;
   p256dh: string;
   auth: string;
 }
 
 /**
+ * Constant-time string compare, so a mismatched `auth` secret cannot be
+ * recovered byte-by-byte through response timing.
+ */
+export function pushSecretMatches(stored: string, provided: string): boolean {
+  if (stored.length !== provided.length) return false;
+  let diff = 0;
+  for (let i = 0; i < stored.length; i++) {
+    diff |= stored.charCodeAt(i) ^ provided.charCodeAt(i);
+  }
+  return diff === 0;
+}
+
+/**
  * Migrate a subscription the browser has rotated (`pushsubscriptionchange`).
  * The row matching `oldEndpoint` keeps its owner binding (user or event)
- * and adopts the new endpoint and keys. An unknown `oldEndpoint` is a
- * no-op. If the new endpoint is already stored — a concurrent re-register
- * raced ahead — the unique-constraint violation is swallowed: that browser
- * is already subscribed, so there is nothing left to migrate.
+ * and adopts the new endpoint and keys.
+ *
+ * Re-pointing is gated on proving possession of the OLD subscription's
+ * `auth` secret — without it, anyone who learned a victim's endpoint (e.g.
+ * from logs) could redirect that owner's notifications to attacker keys.
+ * An unknown `oldEndpoint`, or a mismatched secret, is a silent no-op. If
+ * the new endpoint is already stored — a concurrent re-register raced
+ * ahead — the unique-constraint violation is swallowed.
  */
 export async function refreshPushSubscription(db: Db, input: RefreshPushInput): Promise<void> {
+  const [row] = await db
+    .select({ auth: pushSubscriptions.auth })
+    .from(pushSubscriptions)
+    .where(eq(pushSubscriptions.endpoint, input.oldEndpoint))
+    .limit(1);
+  if (!row || row.auth === null || !pushSecretMatches(row.auth, input.oldAuth)) return;
+
   try {
     await db
       .update(pushSubscriptions)

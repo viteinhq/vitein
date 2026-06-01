@@ -168,11 +168,17 @@ sw.addEventListener('notificationclick', (event) => {
 // token — so the server keys the migration on it.
 sw.addEventListener('pushsubscriptionchange', (event) => {
   const change = event as ExtendableEvent & { oldSubscription?: PushSubscription };
-  change.waitUntil(resubscribe(change.oldSubscription?.endpoint));
+  change.waitUntil(resubscribe(change.oldSubscription));
 });
 
-async function resubscribe(oldEndpoint: string | undefined): Promise<void> {
-  if (!oldEndpoint) return;
+async function resubscribe(oldSubscription: PushSubscription | undefined): Promise<void> {
+  // The server re-points the stored row only if we prove possession of the
+  // old subscription's `auth` secret, so without `oldSubscription` (and its
+  // keys) there is nothing we can safely migrate.
+  const old = oldSubscription?.toJSON();
+  const oldEndpoint = old?.endpoint;
+  const oldKeys = old?.keys;
+  if (!oldEndpoint || !oldKeys) return;
   try {
     const keyRes = await fetch('/api/push');
     if (!keyRes.ok) return;
@@ -184,7 +190,7 @@ async function resubscribe(oldEndpoint: string | undefined): Promise<void> {
     await fetch('/api/push', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ oldEndpoint, subscription: subscription.toJSON() }),
+      body: JSON.stringify({ oldEndpoint, oldKeys, subscription: subscription.toJSON() }),
     });
   } catch {
     // Best-effort — if this fails the user re-enables manually next visit.

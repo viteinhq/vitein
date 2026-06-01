@@ -25,6 +25,7 @@ export const POST: RequestHandler = async (event) => {
   const body = (await event.request.json()) as {
     token?: string;
     oldEndpoint?: string;
+    oldKeys?: unknown;
     subscription?: { endpoint?: string; keys?: unknown };
   };
 
@@ -35,6 +36,7 @@ export const POST: RequestHandler = async (event) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         oldEndpoint: body.oldEndpoint,
+        oldKeys: body.oldKeys,
         endpoint: sub.endpoint,
         keys: sub.keys,
       }),
