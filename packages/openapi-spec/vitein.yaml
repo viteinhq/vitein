@@ -240,6 +240,14 @@ paths:
           $ref: '#/components/responses/ValidationError'
         '404':
           $ref: '#/components/responses/NotFound'
+        '429':
+          description: |
+            The event has reached its RSVP ceiling
+            (`event.rsvp_limit_reached`). The cap bounds the unauthenticated
+            response set; very large events need pagination (planned).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
     get:
       operationId: listRsvps
       summary: List RSVPs for an event (creator only)

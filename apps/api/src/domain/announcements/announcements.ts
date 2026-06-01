@@ -30,7 +30,8 @@ export async function listAnnouncements(db: Db, eventId: string): Promise<Announ
   const rows = await db
     .select()
     .from(eventAnnouncements)
-    .where(eq(eventAnnouncements.eventId, eventId));
+    .where(eq(eventAnnouncements.eventId, eventId))
+    .limit(100);
   return rows.map((r) => ({
     id: r.id,
     eventId: r.eventId,

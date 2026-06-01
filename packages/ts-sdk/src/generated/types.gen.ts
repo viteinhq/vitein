@@ -846,6 +846,13 @@ export type SubmitRsvpErrors = {
    * Resource not found.
    */
   404: Error;
+  /**
+   * The event has reached its RSVP ceiling
+   * (`event.rsvp_limit_reached`). The cap bounds the unauthenticated
+   * response set; very large events need pagination (planned).
+   *
+   */
+  429: Error;
 };
 
 export type SubmitRsvpError = SubmitRsvpErrors[keyof SubmitRsvpErrors];
