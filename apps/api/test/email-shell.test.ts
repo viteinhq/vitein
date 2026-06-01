@@ -93,4 +93,13 @@ describe('renderHtmlEmail', () => {
     expect(dangerous).not.toContain('<script>alert(1)</script>');
     expect(dangerous).toContain('&lt;script&gt;alert(1)&lt;/script&gt;');
   });
+
+  it('escapes single quotes in user-controlled text (GHSA-jp6m)', () => {
+    const html = renderHtmlEmail({
+      subject: "Anna's party",
+      bodyText: "Welcome to Anna's '30s-themed night",
+    });
+    expect(html).not.toContain("Anna's");
+    expect(html).toContain('Anna&#39;s');
+  });
 });

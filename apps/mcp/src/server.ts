@@ -54,10 +54,14 @@ export async function dispatch(
     if (err instanceof JsonRpcError) {
       return { jsonrpc: '2.0', id, error: { code: err.code, message: err.message } };
     }
+    // Never surface a raw internal error message to the client/LLM — it can
+    // carry stack/DB/user detail (GHSA-jp6m). Log it server-side, return a
+    // generic message.
+    console.error('mcp_dispatch_internal_error', err);
     return {
       jsonrpc: '2.0',
       id,
-      error: { code: -32000, message: err instanceof Error ? err.message : 'Internal error' },
+      error: { code: -32000, message: 'Internal error' },
     };
   }
 }
