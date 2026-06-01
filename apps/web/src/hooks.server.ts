@@ -1,5 +1,6 @@
 import { paraglideMiddleware } from '$lib/paraglide/server';
 import { getTextDirection } from '$lib/paraglide/runtime';
+import { cspFor, isLocalhost } from '$lib/server/csp';
 import { captureToSentry } from '$lib/server/sentry';
 import { sequence } from '@sveltejs/kit/hooks';
 import type { Handle, HandleServerError } from '@sveltejs/kit';
@@ -46,8 +47,12 @@ const withHeaders: Handle = async ({ event, resolve }) => {
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
   response.headers.set('Permissions-Policy', 'geolocation=(), camera=(), microphone=()');
 
+  // CSP is set in every environment so the clickjacking control
+  // (`frame-ancestors 'none'`) is consistent with the unconditional
+  // `X-Frame-Options: DENY` above. On localhost `cspFor` returns only
+  // `frame-ancestors` so dev/HMR scripts aren't blocked.
+  response.headers.set('Content-Security-Policy', cspFor(event.url, event.platform));
   if (!isLocalhost(event.url)) {
-    response.headers.set('Content-Security-Policy', productionCsp(event.platform));
     response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
   }
 
@@ -78,39 +83,6 @@ export const handleError: HandleServerError = async ({ error, event, status }) =
     message: error instanceof Error ? error.message : 'Unknown error',
   };
 };
-
-function isLocalhost(url: URL): boolean {
-  return url.hostname === 'localhost' || url.hostname === '127.0.0.1';
-}
-
-function productionCsp(platform: App.Platform | undefined): string {
-  const apiOrigin = new URL(platform?.env?.API_BASE_URL ?? 'https://api.vite.in').origin;
-  // NB: `default-src` is deliberately omitted. Its presence would fall
-  // back for missing `script-src` / `style-src` and intersect with
-  // SvelteKit's per-page meta CSP (see svelte.config.js `kit.csp`),
-  // blocking the hashes the meta tag grants. Each directive we care
-  // about is set explicitly here, and scripts/styles are handled by
-  // the meta CSP.
-  return [
-    "base-uri 'self'",
-    "object-src 'none'",
-    "frame-ancestors 'none'",
-    // Stripe Checkout: our /e/[slug]/manage upgrade form POSTs to a
-    // SvelteKit action that 303s to checkout.stripe.com. CSP
-    // form-action enforces the entire redirect chain (not just the
-    // initial target), so we must allowlist Stripe's checkout origin
-    // here — otherwise the browser silently aborts the navigation
-    // and the user stays put.
-    "form-action 'self' https://checkout.stripe.com",
-    "img-src 'self' https: data:",
-    "font-src 'self' data:",
-    "manifest-src 'self'",
-    "worker-src 'self'",
-    "media-src 'self'",
-    `connect-src 'self' ${apiOrigin}`,
-    'upgrade-insecure-requests',
-  ].join('; ');
-}
 
 function randomRequestId(): string {
   const bytes = crypto.getRandomValues(new Uint8Array(16));
