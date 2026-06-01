@@ -1,4 +1,14 @@
-import { and, auditLog, eq, events, isNull, reminders, sql, type Db } from '@vitein/db-schema';
+import {
+  and,
+  auditLog,
+  eq,
+  events,
+  inArray,
+  isNull,
+  reminders,
+  sql,
+  type Db,
+} from '@vitein/db-schema';
 import { DomainError, NotFoundError } from '../errors.js';
 import { tierIncludes, tierOf } from '../payments/payments.js';
 
@@ -9,10 +19,24 @@ export interface DueReminder {
   event: typeof events.$inferSelect;
 }
 
-/** List reminders that should fire now and have not been sent yet. */
-export async function findDueReminders(db: Db, now = new Date()): Promise<DueReminder[]> {
-  const rows = await db
-    .select({ reminder: reminders, event: events })
+/**
+ * Atomically claim the reminders that should fire now and have not been
+ * sent, stamping `sentAt` in the SAME statement that selects them, then
+ * return them joined with their (live) event.
+ *
+ * Claiming up front is what makes the cron safe under overlap/retry: the
+ * `UPDATE … WHERE sent_at IS NULL … RETURNING` takes a row lock and
+ * re-checks `sent_at IS NULL`, so two concurrent cron runs cannot both
+ * claim the same reminder — eliminating the duplicate-send bug. The
+ * trade-off is at-most-once delivery: a send that fails AFTER the claim is
+ * logged but not retried (acceptable for hourly best-effort reminders, and
+ * far better than mailing guests twice).
+ */
+export async function claimDueReminders(db: Db, now = new Date()): Promise<DueReminder[]> {
+  // Sub-select the due, unsent reminders for live events (bounded). Postgres
+  // UPDATE has no LIMIT, so the cap rides on this `IN (… LIMIT n)` subquery.
+  const dueIds = db
+    .select({ id: reminders.id })
     .from(reminders)
     .innerJoin(events, eq(events.id, reminders.eventId))
     .where(
@@ -23,23 +47,39 @@ export async function findDueReminders(db: Db, now = new Date()): Promise<DueRem
       ),
     )
     .limit(DUE_BATCH_LIMIT);
-  return rows;
+
+  const claimed = await db
+    .update(reminders)
+    .set({ sentAt: now })
+    .where(and(isNull(reminders.sentAt), inArray(reminders.id, dueIds)))
+    .returning({ id: reminders.id });
+
+  if (claimed.length === 0) return [];
+
+  const ids = claimed.map((r) => r.id);
+  return db
+    .select({ reminder: reminders, event: events })
+    .from(reminders)
+    .innerJoin(events, eq(events.id, reminders.eventId))
+    .where(inArray(reminders.id, ids));
 }
 
-/** Mark a reminder as sent and append an audit-log row. */
-export async function markReminderSent(
+/**
+ * Record that a claimed reminder was dispatched. `sentAt` is already stamped
+ * at claim time (see `claimDueReminders`); this only appends the audit row.
+ */
+export async function recordReminderSent(
   db: Db,
   reminderId: string,
   eventId: string,
   metadata: Record<string, unknown>,
 ): Promise<void> {
-  await db.update(reminders).set({ sentAt: new Date() }).where(eq(reminders.id, reminderId));
   await db.insert(auditLog).values({
     actorType: 'system',
     actorId: 'cron:reminders',
     eventId,
     action: 'reminder.sent',
-    metadata,
+    metadata: { reminderId, ...metadata },
   });
 }
 
