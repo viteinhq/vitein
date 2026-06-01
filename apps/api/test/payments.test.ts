@@ -12,11 +12,12 @@ describe('tierOf', () => {
     expect(tierOf({ isPaid: true, paidFeatures: { tier: 'plus' } })).toBe('plus');
   });
 
-  it('returns null for a paid event with no / unknown tier', () => {
-    // Paid before the two-tier model existed.
-    expect(tierOf({ isPaid: true, paidFeatures: {} })).toBeNull();
-    expect(tierOf({ isPaid: true, paidFeatures: null })).toBeNull();
-    expect(tierOf({ isPaid: true, paidFeatures: { tier: 'gold' } })).toBeNull();
+  it('falls back to the basic floor for a paid event with no / unknown tier (#294)', () => {
+    // A paid event whose tier is missing or unrecognized must not silently
+    // lose all premium features — honour the base bundle.
+    expect(tierOf({ isPaid: true, paidFeatures: {} })).toBe('basic');
+    expect(tierOf({ isPaid: true, paidFeatures: null })).toBe('basic');
+    expect(tierOf({ isPaid: true, paidFeatures: { tier: 'gold' } })).toBe('basic');
   });
 });
 

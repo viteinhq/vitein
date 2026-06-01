@@ -86,16 +86,23 @@ export async function markEventPaid(db: Db, input: MarkEventPaidInput): Promise<
 
 /**
  * Read the stored premium tier off an event row. Returns null for unpaid
- * events, and for paid events that pre-date the two-tier model (no
- * `tier` field in paid_features).
+ * events.
+ *
+ * A *paid* event whose `paid_features` is missing or carries an unknown
+ * `tier` falls back to the `basic` floor rather than null. `markEventPaid`
+ * and `applyGrantIfMatch` always write a valid tier, so this only covers
+ * legacy / manually-edited rows — but treating "paid, tier unknown" as
+ * unpaid silently stripped EVERY premium feature (custom slug, reminders,
+ * media), a quiet failure mode (#294). Basic is the safe floor: the user
+ * paid, so honour at least the base bundle.
  */
 export function tierOf(event: { isPaid: boolean; paidFeatures: unknown }): PremiumTier | null {
   if (!event.isPaid) return null;
   const pf = event.paidFeatures;
-  if (!pf || typeof pf !== 'object') return null;
+  if (!pf || typeof pf !== 'object') return 'basic';
   const tier = (pf as Record<string, unknown>)['tier'];
   if (tier === 'basic' || tier === 'plus') return tier;
-  return null;
+  return 'basic';
 }
 
 /**
