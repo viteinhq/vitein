@@ -38,10 +38,19 @@ function makeLimiter(stub: FakeStub) {
   return { namespace, captured };
 }
 
+const noopLogger: AppVariables['logger'] = {
+  debug: () => undefined,
+  info: () => undefined,
+  warn: () => undefined,
+  error: () => undefined,
+  with: () => noopLogger,
+};
+
 function buildApp(auth: AuthContext, _namespace: DurableObjectNamespace | undefined) {
   const app = new Hono<{ Bindings: Env; Variables: AppVariables }>();
   app.use('*', async (c, next) => {
     c.set('auth', auth);
+    c.set('logger', noopLogger);
     await next();
   });
   app.use('*', rateLimit);
@@ -51,15 +60,48 @@ function buildApp(auth: AuthContext, _namespace: DurableObjectNamespace | undefi
   return app.fetch.bind(app) as (req: Request, env: Env) => Promise<Response>;
 }
 
-function env(rl: DurableObjectNamespace | undefined): Env {
-  return { RATE_LIMITER: rl } as unknown as Env;
+function env(
+  rl: DurableObjectNamespace | undefined,
+  environment: Env['ENVIRONMENT'] = 'dev',
+): Env {
+  return { RATE_LIMITER: rl, ENVIRONMENT: environment };
 }
 
 describe('rate-limit middleware', () => {
-  it('skips when RATE_LIMITER binding is absent', async () => {
+  it('skips (with a warning) when RATE_LIMITER binding is absent in dev', async () => {
     const fetcher = buildApp({ kind: 'anonymous' }, undefined);
-    const res = await fetcher(new Request('https://x/r'), env(undefined));
+    const res = await fetcher(new Request('https://x/r'), env(undefined, 'dev'));
     expect(res.status).toBe(200);
+  });
+
+  it('fails closed (503) when RATE_LIMITER binding is absent in production (GHSA-v92r)', async () => {
+    const fetcher = buildApp({ kind: 'anonymous' }, undefined);
+    const res = await fetcher(new Request('https://x/r'), env(undefined, 'production'));
+    expect(res.status).toBe(503);
+    const body: { error: { code: string } } = await res.json();
+    expect(body.error.code).toBe('rate_limiter_unavailable');
+  });
+
+  it('fails closed (503) when the binding is absent in staging', async () => {
+    const fetcher = buildApp({ kind: 'anonymous' }, undefined);
+    const res = await fetcher(new Request('https://x/r'), env(undefined, 'staging'));
+    expect(res.status).toBe(503);
+  });
+
+  it('gives OAuth agents a dedicated per-(user,client) bucket, not the shared IP one', async () => {
+    const stub = { limit: 300, remaining: 10, retryAfter: 30 } satisfies FakeStub;
+    const { namespace, captured } = makeLimiter(stub);
+    const fetcher = buildApp(
+      { kind: 'oauth', userId: 'usr-9', clientId: 'mcp_first_party', scopes: ['events:read'] },
+      namespace,
+    );
+
+    await fetcher(
+      new Request('https://x/r', { headers: { 'cf-connecting-ip': '9.9.9.9' } }),
+      env(namespace),
+    );
+    expect(captured.ids).toEqual(['oauth:usr-9:mcp_first_party:read']);
+    expect(captured.lastUrl).toContain('limit=300');
   });
 
   it('keys anonymous traffic by ip and op (read = GET, higher budget)', async () => {
