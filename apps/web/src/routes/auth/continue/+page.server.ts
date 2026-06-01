@@ -1,5 +1,6 @@
 import { error as httpError, redirect } from '@sveltejs/kit';
 import type { Cookies } from '@sveltejs/kit';
+import { safeCallback } from '$lib/safe-callback';
 import { resolveBaseUrl } from '$lib/server/api';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -20,13 +21,17 @@ type CookieOpts = Parameters<Cookies['set']>[2];
 
 function requireParams(url: URL): { token: string; callbackURL: string } {
   const token = url.searchParams.get('t');
-  const cb = url.searchParams.get('cb');
-  if (!token || !cb)
+  if (!token)
     throw httpError(400, {
-      message: 'Missing token or callback',
-      code: 'http_missing_token_or_callback',
+      message: 'Missing token',
+      code: 'http_missing_token',
     });
-  return { token, callbackURL: cb };
+  // Constrain the callback to this origin: an attacker-supplied
+  // `?cb=https://evil` (or `//evil`) must not become an open redirect,
+  // and must not be forwarded as the upstream `callbackURL`. Falls back
+  // to the dashboard when absent or cross-origin.
+  const callbackURL = safeCallback(url.searchParams.get('cb'), url.origin);
+  return { token, callbackURL };
 }
 
 export const load: PageServerLoad = ({ url }) => {
