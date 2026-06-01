@@ -4,6 +4,7 @@ import {
   markEventPaid,
   releaseStripeEvent,
 } from '../../domain/payments/payments.js';
+import { NotFoundError } from '../../domain/errors.js';
 import { db } from '../../infra/db.js';
 import { verifyWebhookSignature, WebhookVerificationError } from '../../infra/stripe.js';
 import type { AppVariables, Env } from '../../types/env.js';
@@ -109,7 +110,16 @@ stripeWebhookRoute.post('/', async (c) => {
       metadata: { stripeEventId: evt.id },
     });
   } catch (err) {
-    // Release the claim so Stripe's retry can re-process this event.
+    if (err instanceof NotFoundError) {
+      // The referenced event is missing or soft-deleted — a PERMANENT
+      // condition that can never succeed on retry. Keep the idempotency
+      // claim and 200-ack so Stripe stops redelivering (a 5xx here makes
+      // Stripe retry the bad event indefinitely). Log for ops.
+      logger.warn('stripe_webhook_event_missing', { stripeEventId: evt.id, eventId });
+      return c.json({ received: true, handled: false, reason: 'event_not_found' });
+    }
+    // Transient failure (DB blip, etc.) — release the claim so Stripe's
+    // retry can re-process this event, and surface a 5xx.
     await releaseStripeEvent(dbc, evt.id).catch(() => {});
     throw err;
   }
