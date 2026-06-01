@@ -9,7 +9,7 @@ import { and, eq, eventTokens } from '@vitein/db-schema';
 import type { Context, MiddlewareHandler } from 'hono';
 import type { AuthContext } from '../domain/auth/context.js';
 import { hashToken } from '../domain/auth/tokens.js';
-import { createAuth } from '../infra/auth.js';
+import { createAuth, deriveMcpUrl } from '../infra/auth.js';
 import { db, dbConnectionString } from '../infra/db.js';
 import { rootLogger } from '../infra/logger.js';
 import type { AppVariables, Env } from '../types/env.js';
@@ -127,11 +127,12 @@ async function resolveOAuthBearer(c: AppContext, token: string): Promise<AuthCon
   // Better-Auth's JWT issuer matches the discovery doc's `issuer`,
   // which is `<api-base>/v1/auth` (baseURL + basePath), not `<api-base>`.
   const issuer = `${apiBaseURL}/v1/auth`;
-  // MCP clients pass `resource=<mcp-url>` per RFC 8707, so tokens
-  // issued to them are bound to the MCP audience. Accept either the
-  // API origin (server-to-server in Phase 3) or the MCP worker URL.
-  const mcpURL = `${apiBaseURL.replace('://api', '://mcp')}/mcp`;
-  const audience = [apiBaseURL, mcpURL];
+  // MCP clients pass `resource=<mcp-url>` per RFC 8707, so tokens issued
+  // to them are bound to the MCP audience. Only that audience is honored
+  // here — the bare API origin (Phase-3 server-to-server) is excluded so
+  // an API-audience token cannot be replayed against the core API today
+  // (GHSA-rx56).
+  const audience = [deriveMcpUrl(apiBaseURL)];
 
   try {
     // Fetch JWKS in-process via the Better-Auth API instead of
