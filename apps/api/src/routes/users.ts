@@ -14,11 +14,20 @@ import {
 import { ValidationError } from '../domain/errors.js';
 import { db } from '../infra/db.js';
 import { requireScope } from '../middleware/require-scope.js';
+import { requireSession } from '../middleware/require-session.js';
 import { requireUser } from '../middleware/require-user.js';
 import type { AppVariables, Env } from '../types/env.js';
 
 export const usersRoute = new Hono<{ Bindings: Env; Variables: AppVariables }>();
 
+// Baseline: every /me route needs *some* authenticated identity (never
+// anonymous). Account-management routes additionally mount `requireSession`
+// so a delegated OAuth token cannot reach them — see the per-route notes.
+//
+// IMPORTANT: a new account-management route added here is, by default, only
+// guarded by `requireUser` and is therefore reachable by ANY OAuth token
+// regardless of scope. Add `requireSession` to it unless it is genuinely a
+// scoped, delegate-able read (like `/me/events`).
 usersRoute.use('*', requireUser);
 
 /**
@@ -32,7 +41,7 @@ function userIdFromAuth(auth: AuthContext): string {
   return auth.userId;
 }
 
-usersRoute.get('/me', async (c) => {
+usersRoute.get('/me', requireSession, async (c) => {
   const user = await getMe(db(c), userIdFromAuth(c.var.auth));
   return c.json(toProfile(user));
 });
@@ -45,6 +54,7 @@ const updateMeInputSchema = z.object({
 
 usersRoute.patch(
   '/me',
+  requireSession,
   zValidator('json', updateMeInputSchema, (result) => {
     if (!result.success)
       throw new ValidationError('Invalid profile update', { issues: result.error.issues });
@@ -56,7 +66,7 @@ usersRoute.patch(
   },
 );
 
-usersRoute.delete('/me', async (c) => {
+usersRoute.delete('/me', requireSession, async (c) => {
   await softDeleteMe(db(c), userIdFromAuth(c.var.auth));
   return c.body(null, 204);
 });
@@ -79,12 +89,12 @@ usersRoute.get('/me/events', requireScope('events:read'), async (c) => {
   });
 });
 
-usersRoute.get('/me/stats', async (c) => {
+usersRoute.get('/me/stats', requireSession, async (c) => {
   const stats = await getMyStats(db(c), userIdFromAuth(c.var.auth));
   return c.json(stats);
 });
 
-usersRoute.get('/me/audit', async (c) => {
+usersRoute.get('/me/audit', requireSession, async (c) => {
   const rows = await listAuditForUser(db(c), userIdFromAuth(c.var.auth));
   return c.json({
     items: rows.map((r) => ({
@@ -97,7 +107,7 @@ usersRoute.get('/me/audit', async (c) => {
   });
 });
 
-usersRoute.get('/me/export', async (c) => {
+usersRoute.get('/me/export', requireSession, async (c) => {
   const bundle = await exportMe(db(c), userIdFromAuth(c.var.auth));
   return c.json({
     exportedAt: bundle.exportedAt.toISOString(),
