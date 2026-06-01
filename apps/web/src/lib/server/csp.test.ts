@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { cspFor, isLocalhost, productionCsp } from './csp';
 
-const platform = { env: { API_BASE_URL: 'https://api-staging.vite.in' } } as unknown as App.Platform;
+const platform = {
+  env: { API_BASE_URL: 'https://api-staging.vite.in' },
+} as unknown as App.Platform;
 
 describe('cspFor (issue #293 — frame-ancestors in every env)', () => {
   it("emits frame-ancestors 'none' on localhost (without script/style restrictions)", () => {
