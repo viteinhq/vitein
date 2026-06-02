@@ -3,6 +3,7 @@ import { Hono } from 'hono';
 import { z } from 'zod';
 import { getEventPublic, mintManageToken } from '../domain/events/events.js';
 import { ValidationError } from '../domain/errors.js';
+import { renderRsvpsCsv } from '../domain/rsvps/csv.js';
 import { listRsvps, submitRsvp } from '../domain/rsvps/rsvps.js';
 import { db } from '../infra/db.js';
 import {
@@ -154,56 +155,6 @@ rsvpsRoute.get(
 );
 
 type RsvpRow = Awaited<ReturnType<typeof submitRsvp>>['rsvp'];
-
-/**
- * RFC 4180 cell quoting — wrap in double quotes when the value contains
- * a comma, double quote, or newline; escape internal double quotes by
- * doubling. Otherwise return the value unchanged.
- */
-function csvCell(value: string | number | null | undefined): string {
-  if (value === null || value === undefined) return '';
-  const s = String(value);
-  if (/[",\n\r]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
-  return s;
-}
-
-interface CsvRow {
-  name: string;
-  email: string | null;
-  status: 'yes' | 'maybe' | 'no';
-  plusOnes: number;
-  plusOnesDetails: Array<{ name: string }>;
-  message: string | null;
-  respondedAt: string;
-}
-
-function renderRsvpsCsv(rows: CsvRow[]): string {
-  const header = [
-    'name',
-    'email',
-    'status',
-    'plus_ones',
-    'plus_ones_details',
-    'message',
-    'responded_at',
-  ];
-  const lines = [header.join(',')];
-  for (const r of rows) {
-    lines.push(
-      [
-        csvCell(r.name),
-        csvCell(r.email ?? ''),
-        csvCell(r.status),
-        csvCell(r.plusOnes),
-        csvCell(r.plusOnesDetails.map((d) => d.name).join('; ')),
-        csvCell(r.message ?? ''),
-        csvCell(r.respondedAt),
-      ].join(','),
-    );
-  }
-  // Trailing CRLF per the RFC; matters for some pickier parsers.
-  return lines.join('\r\n') + '\r\n';
-}
 
 function toRsvp(r: RsvpRow) {
   return {
