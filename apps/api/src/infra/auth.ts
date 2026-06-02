@@ -35,6 +35,19 @@ import { sendSignInMagicLink } from './email.js';
  * trigger an email (session resolution, OAuth metadata) can omit it and
  * the email falls back to English.
  */
+/**
+ * Derive the MCP worker's resource-indicator URL from the API base URL
+ * (`api` host → `mcp` host, `/mcp` path). MCP clients pass this as the
+ * RFC 8707 `resource` on authorize/token, so issued tokens are
+ * audience-bound to it. The bare API origin is intentionally NOT a valid
+ * audience: no first-party flow sends OAuth bearers straight to the core
+ * API today (that is Phase-3 server-to-server), so accepting
+ * API-audience tokens would only widen the attack surface (GHSA-rx56).
+ */
+export function deriveMcpUrl(apiBaseURL: string): string {
+  return `${apiBaseURL.replace('://api', '://mcp')}/mcp`;
+}
+
 export function createAuth(env: Env, db: Db, locale?: Locale) {
   if (!env.AUTH_SECRET) throw new Error('AUTH_SECRET is required for auth');
 
@@ -174,7 +187,7 @@ export function createAuth(env: Env, db: Db, locale?: Locale) {
         // to the specific resource server. Accept the API origin AND
         // each MCP worker URL. The MCP host derives from the API
         // host (api-staging → mcp-staging, api → mcp).
-        validAudiences: [apiBaseURL, apiBaseURL.replace('://api', '://mcp') + '/mcp'],
+        validAudiences: [deriveMcpUrl(apiBaseURL)],
       }),
     ],
   });
