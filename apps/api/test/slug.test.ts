@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { generateSlug } from '../src/domain/events/slug.js';
 
 describe('generateSlug', () => {
-  it('returns a string of the requested length (default 8)', () => {
-    expect(generateSlug()).toHaveLength(8);
+  it('returns a string of the requested length (default 16 = 80 bits)', () => {
+    expect(generateSlug()).toHaveLength(16);
     expect(generateSlug(12)).toHaveLength(12);
   });
 
