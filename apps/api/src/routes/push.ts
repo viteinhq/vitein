@@ -55,15 +55,21 @@ pushRoute.post(
 
 /**
  * Public — no auth. A rotated subscription is re-bound by its old
- * endpoint: the service worker fires `pushsubscriptionchange` without
- * access to a creator token or session, so the unguessable old endpoint
- * URL is the capability. See `refreshPushSubscription`.
+ * endpoint: the service worker fires `pushsubscriptionchange` with neither
+ * a creator token nor a session. Re-pointing is instead gated on proving
+ * possession of the OLD subscription's `auth` secret (`oldKeys`), taken
+ * from `event.oldSubscription`. The endpoint URL alone — which leaks into
+ * logs — is NOT sufficient. See `refreshPushSubscription`.
  */
 pushRoute.post(
   '/subscriptions/refresh',
   zValidator(
     'json',
-    z.object({ oldEndpoint: z.string().url(), ...subscriptionSchema.shape }),
+    z.object({
+      oldEndpoint: z.string().url(),
+      oldKeys: z.object({ p256dh: z.string().min(1), auth: z.string().min(1) }),
+      ...subscriptionSchema.shape,
+    }),
     (r) => {
       if (!r.success) {
         throw new ValidationError('Invalid push subscription', { issues: r.error.issues });
@@ -74,6 +80,7 @@ pushRoute.post(
     const input = c.req.valid('json');
     await refreshPushSubscription(db(c), {
       oldEndpoint: input.oldEndpoint,
+      oldAuth: input.oldKeys.auth,
       endpoint: input.endpoint,
       p256dh: input.keys.p256dh,
       auth: input.keys.auth,

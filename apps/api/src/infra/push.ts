@@ -16,6 +16,20 @@ import type { PushJob } from './push-types.js';
 const VAPID_SUBJECT = 'mailto:hello@vite.in';
 
 /**
+ * Reduce a push endpoint to its origin for logging. The full endpoint URL
+ * is a per-subscriber capability (its path is effectively a bearer token);
+ * logging it verbatim let anyone with log access re-point a subscription.
+ * The origin alone is enough to tell which push provider rejected us.
+ */
+function redactEndpoint(endpoint: string): string {
+  try {
+    return new URL(endpoint).origin;
+  } catch {
+    return 'invalid';
+  }
+}
+
+/**
  * `QUEUE_PUSH` consumer. For each job, resolve the event's push
  * subscriptions and deliver a Web Push notification to each. Subscriptions
  * the push service reports as gone (404 / 410) are pruned.
@@ -81,10 +95,16 @@ async function deliverPushJob(env: Env, db: Db, job: PushJob): Promise<void> {
       if (res.status === 404 || res.status === 410) {
         await deletePushSubscription(db, sub.endpoint); // subscription expired — prune
       } else if (!res.ok) {
-        rootLogger.warn('push_send_rejected', { endpoint: sub.endpoint, status: res.status });
+        rootLogger.warn('push_send_rejected', {
+          endpoint: redactEndpoint(sub.endpoint),
+          status: res.status,
+        });
       }
     } catch (err) {
-      rootLogger.warn('push_send_failed', { endpoint: sub.endpoint, err: err as Error });
+      rootLogger.warn('push_send_failed', {
+        endpoint: redactEndpoint(sub.endpoint),
+        err: err as Error,
+      });
     }
   }
 }

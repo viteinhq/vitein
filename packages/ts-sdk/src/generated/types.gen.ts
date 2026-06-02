@@ -365,9 +365,13 @@ export type PushSubscriptionInput = {
 };
 
 /**
- * A rotated Web Push subscription. `oldEndpoint` identifies the
- * existing stored record to migrate; `endpoint` + `keys` are the
- * replacement subscription from `PushSubscription.toJSON()`.
+ * A rotated Web Push subscription. `oldEndpoint` + `oldKeys` identify
+ * the existing stored record AND prove ownership of it (the `auth`
+ * secret is the capability — the endpoint URL alone is not, since it
+ * leaks into logs); `endpoint` + `keys` are the replacement
+ * subscription from `PushSubscription.toJSON()`. Both key bags come
+ * from `event.oldSubscription.toJSON()` / the new `PushSubscription`.
+ * A mismatched or unknown `oldEndpoint`/`oldKeys` is a silent no-op.
  *
  */
 export type PushSubscriptionRefreshInput = {
@@ -375,6 +379,19 @@ export type PushSubscriptionRefreshInput = {
    * Endpoint URL of the subscription being replaced.
    */
   oldEndpoint: string;
+  /**
+   * Keys of the subscription being replaced; the `auth` secret proves ownership.
+   */
+  oldKeys: {
+    /**
+     * Old client public key (base64url).
+     */
+    p256dh: string;
+    /**
+     * Old client auth secret (base64url) — must match the stored value.
+     */
+    auth: string;
+  };
   /**
    * The new Web Push service endpoint URL.
    */
