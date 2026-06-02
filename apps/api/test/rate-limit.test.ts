@@ -60,10 +60,7 @@ function buildApp(auth: AuthContext, _namespace: DurableObjectNamespace | undefi
   return app.fetch.bind(app) as (req: Request, env: Env) => Promise<Response>;
 }
 
-function env(
-  rl: DurableObjectNamespace | undefined,
-  environment: Env['ENVIRONMENT'] = 'dev',
-): Env {
+function env(rl: DurableObjectNamespace | undefined, environment: Env['ENVIRONMENT'] = 'dev'): Env {
   return { RATE_LIMITER: rl, ENVIRONMENT: environment };
 }
 
