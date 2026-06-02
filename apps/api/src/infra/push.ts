@@ -95,10 +95,16 @@ async function deliverPushJob(env: Env, db: Db, job: PushJob): Promise<void> {
       if (res.status === 404 || res.status === 410) {
         await deletePushSubscription(db, sub.endpoint); // subscription expired — prune
       } else if (!res.ok) {
-        rootLogger.warn('push_send_rejected', { endpoint: redactEndpoint(sub.endpoint), status: res.status });
+        rootLogger.warn('push_send_rejected', {
+          endpoint: redactEndpoint(sub.endpoint),
+          status: res.status,
+        });
       }
     } catch (err) {
-      rootLogger.warn('push_send_failed', { endpoint: redactEndpoint(sub.endpoint), err: err as Error });
+      rootLogger.warn('push_send_failed', {
+        endpoint: redactEndpoint(sub.endpoint),
+        err: err as Error,
+      });
     }
   }
 }
