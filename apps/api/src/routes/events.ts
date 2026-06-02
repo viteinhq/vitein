@@ -1,7 +1,6 @@
 import { zValidator } from '@hono/zod-validator';
 import { Hono, type Context } from 'hono';
 import { z } from 'zod';
-import { applyGrantIfMatch } from '../domain/admin/grants.js';
 import {
   createEvent,
   getEventBySlug,
@@ -108,24 +107,18 @@ eventsRoute.post(
     if (input.fontPairing !== undefined) {
       assertFontPairingAllowed(input.fontPairing);
     }
-    const { event: created, creatorToken } = await createEvent(db(c), {
+    const { event, creatorToken } = await createEvent(db(c), {
       ...input,
       startsAt: new Date(input.startsAt),
       endsAt: input.endsAt ? new Date(input.endsAt) : null,
     });
 
-    // If the creator's email is on an active admin grant, upgrade the
-    // freshly-created event in place before we serialize it. Failures
-    // here must not break event creation — log and continue.
-    let event = created;
-    try {
-      const applied = await applyGrantIfMatch(db(c), created);
-      if (applied) {
-        event = applied.event;
-      }
-    } catch (err) {
-      c.var.logger.warn('grant_apply_failed', { err: err as Error });
-    }
+    // NOTE: admin grants are deliberately NOT applied here. Event creation
+    // is anonymous and the creator email is unverified at this point, so
+    // auto-upgrading by raw email would let anyone who knows a granted
+    // address mint unlimited free premium events (GHSA-h8p7). The grant is
+    // applied when the event is claimed by a signed-in user whose verified
+    // email matches — see `claimEventsForUser`.
 
     const manageUrl = `${c.env.WEB_BASE_URL ?? 'https://vite.in'}/e/${event.slug}/manage?token=${creatorToken}`;
     const { sent } = await sendCreatorMagicLink(
